@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bx58wliq8tvtn"
+path="res://.godot/imported/ground-tile-64px.aseprite-f1f6e6cad1fcd634c52de810d2e8a9ea.res"
+
+[deps]
+
+source_file="res://assets/sprites/ground-tile-64px.aseprite"
+dest_files=["res://.godot/imported/ground-tile-64px.aseprite-f1f6e6cad1fcd634c52de810d2e8a9ea.res"]
+
+[params]
+
