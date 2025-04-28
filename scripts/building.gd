@@ -1,11 +1,14 @@
 extends Node2D
 
+class_name Building
+
 @onready var tilesWalls : TileMapLayer = $ForegroundTiles
 @onready var tilesRoof : TileMapLayer = $RoofTiles
 
 var floors = {}
 
-const room_empty: PackedScene = preload("res://scenes/room.tscn")
+const room_empty: PackedScene = preload("res://scenes/room_empty.tscn")
+const room_stairs: PackedScene = preload("res://scenes/room_stairs.tscn")
 
 enum levelDifference {
 	SAME,
@@ -32,21 +35,23 @@ enum roofIndexMap {
 }
 
 func _ready():
-	set_room(room_empty, -1,0)
-	set_room(room_empty, 0,0)
-	set_room(room_empty, 1,0)
-	set_room(room_empty, 2,0)
-	set_room(room_empty, 3,0)
-	set_room(room_empty, 0,1)
-	set_room(room_empty, 1,1)
-	set_room(room_empty, 2,1)
-	set_room(room_empty, 0,-1)
-	set_room(room_empty, 1,-1)
-	set_room(room_empty, 2,-1)
+	Global.building = self
+	
+	set_room(room_empty, -1,1, false)
+	set_room(room_empty, 0,1, false)
+	set_room(room_stairs, 1,1, false)
+	set_room(room_empty, -1,0, false)
+	set_room(room_empty, 0,0, false)
+	set_room(room_stairs, 1,0, false)
+	set_room(room_empty, 0,-1, false)
+	set_room(room_stairs, 1,-1, false)
+	
+	InitalizeAllRooms()
 	update_foreground_tiles()
 
-func set_room(scene : PackedScene, x : int, y : int):
-	var instance = room_empty.instantiate();
+func set_room(scene : PackedScene, x : int, y : int, autoInitialize = true):
+	var instance = scene.instantiate();
+	instance.name = str("room_", x, "_", y)
 	add_child(instance)
 	instance.position = Vector2(x * 48, y * -48)
 	
@@ -56,7 +61,15 @@ func set_room(scene : PackedScene, x : int, y : int):
 		floors[y][x] = instance;
 	else:
 		floors[y] = { x : instance }
+		
+	if autoInitialize:
+		instance.InitRoom(x,y)
 
+func InitalizeAllRooms():
+	for y in floors.keys():
+		for x in floors[y].keys():
+			floors[y][x].InitRoom(x,y)
+	
 func update_foreground_tiles():
 	
 	tilesWalls.clear()
@@ -157,4 +170,71 @@ func set_roof(x : int, y : int, context : int = -1, clear : bool = false):
 		tilesRoof.set_cell(cords, 1 if y < 0 else 0, Vector2i(context,0))
 	elif clear:
 		tilesRoof.erase_cell(cords)
+	
+func get_current_room_from_global_position(global_pos : Vector2):
+	var listOfAllRooms = []
+	for y in floors.keys():
+		for x in floors[y]:
+			listOfAllRooms.append(floors[y][x])
+			
+	var closestRoom
+	var shortest_distance: float = INF
+
+	for room in listOfAllRooms:
+		var distance = room.global_position.distance_to(global_pos)
+		if distance < shortest_distance:
+			shortest_distance = distance
+			closestRoom = room
+	
+	return closestRoom
+	
+func round_room_index_from_global_position(global_pos : Vector2):
+	var x = floor((global_pos.x -24) / 48)
+	var y = floor(global_pos.y / -48)
+	return Vector2i(x,y)
+	
+func global_position_from_room_index(room_index : Vector2i):
+	var x = room_index.x * 48 + 24
+	var y = room_index.y * -48
+
+func is_bottom_floor(y : int):
+	if floors.is_empty():
+		return false
+		
+	var floorIndexes = floors.keys()
+	floorIndexes.sort()
+	return floorIndexes[0] == y
+
+func is_top_floor(y : int):
+	if floors.is_empty():
+		return false
+		
+	var floorIndexes = floors.keys()
+	floorIndexes.sort()
+	return floorIndexes[len(floorIndexes)-1] == y
+	
+func get_closest_room_of_type(type, global_pos : Vector2, y):
+	var closestRoom
+	var shortest_distance: float = INF
+
+	for x in floors[y]:
+		var room = floors[y][x]
+		
+		if room:
+			pass
+			
+		if room is not RoomEmpty:
+			continue
+			
+		if not is_instance_of(room, type):
+			continue
+			
+		var distance = room.global_position.distance_to(global_pos)
+		if distance < shortest_distance:
+			shortest_distance = distance	
+			closestRoom = room
+	
+	return closestRoom
+		
+#func get_closest_room_of_type(type, global_pos : Vector2):
 	

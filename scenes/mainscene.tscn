@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=20 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="1_hm37i"]
@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="8_jifap"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/sounds/music/Sun Up Gunned Down.mp3" id="10_jifap"]
+[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="10_xl61e"]
+[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/navigation_module.gd" id="11_0o2or"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_katdn"]
 font = ExtResource("1_hm37i")
@@ -180,7 +182,19 @@ z_index = 2100
 position = Vector2(0, -23)
 tile_set = SubResource("TileSet_xl61e")
 
+[node name="NPCSpawner" type="Node2D" parent="Content"]
+
+[node name="NPC" type="Node2D" parent="Content/NPCSpawner"]
+
+[node name="Visuals" type="Sprite2D" parent="Content/NPCSpawner/NPC"]
+texture = ExtResource("10_xl61e")
+offset = Vector2(0, -12)
+
+[node name="NavigationModule" type="Node2D" parent="Content/NPCSpawner/NPC"]
+script = ExtResource("11_0o2or")
+
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")
 volume_db = -12.0
 autoplay = true
+parameters/looping = false

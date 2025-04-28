@@ -22,6 +22,7 @@ import/import_plugin/default_automatic_importer="Static Texture"
 [autoload]
 
 DebugDraw2D="*res://addons/debugdraw2d/DebugDraw2D.gd"
+Global="*res://scripts/global.gd"
 
 [display]
 
