@@ -2,7 +2,10 @@ extends RoomEmpty
 
 class_name RoomStairs
 
-@onready var stairsSprite = $Stairs
+const GRID_SIZE = 48
+
+@onready var stairsBackgroundSprite = $"Stairs-Background"
+@onready var stairsForegroundSprite = $"Stairs-Foreground"
 
 func InitRoom(x : int, y : int):
 	super.InitRoom(x,y)
@@ -18,6 +21,5 @@ func InitRoom(x : int, y : int):
 	elif Global.building.is_top_floor(y):
 		stairSpriteIndex = 0
 		
-	stairsSprite.region_rect = Rect2(0, 48 * stairSpriteIndex, 48, 48)
-	
-	print(stairSpriteIndex)
+	stairsBackgroundSprite.region_rect = Rect2(0, GRID_SIZE * stairSpriteIndex, GRID_SIZE, GRID_SIZE)
+	stairsForegroundSprite.region_rect = Rect2(GRID_SIZE, GRID_SIZE * stairSpriteIndex, GRID_SIZE, GRID_SIZE)

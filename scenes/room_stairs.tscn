@@ -12,7 +12,14 @@ script = ExtResource("1_52gol")
 position = Vector2(24, -23)
 texture = ExtResource("1_1o2tr")
 
-[node name="Stairs" type="Sprite2D" parent="."]
+[node name="Stairs-Background" type="Sprite2D" parent="."]
+position = Vector2(24, -24)
+texture = ExtResource("3_nnuq8")
+region_enabled = true
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="Stairs-Foreground" type="Sprite2D" parent="."]
+z_index = 1000
 position = Vector2(24, -24)
 texture = ExtResource("3_nnuq8")
 region_enabled = true

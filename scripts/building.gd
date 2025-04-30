@@ -149,7 +149,6 @@ func update_foreground_tiles():
 				
 		set_roof(x,y, ownRoofIndex)	
 	
-	print(triplets)	
 	if len(triplets) > 0:
 		var index = triplets[(len(triplets) - 1)/2]
 		var x = index.x
