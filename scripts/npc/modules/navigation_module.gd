@@ -1,18 +1,31 @@
 extends Node2D
 
+class_name NavigationModule
 
+var npc : NPC
 var currentRoomIndex
-var targetFinal
 var targetPath = []
+var targetFinal
 
-@onready var animationModule : AnimationModule = $"../Visuals"
+var has_target = false
+var is_moving = false
 
 const MOVE_SPEED = 24
 
+func _ready():
+	npc = get_parent() as NPC
+	if npc:
+		pass
+		
+	npc.Navigation = self
+	
 func _process(delta):
 	currentRoomIndex = Global.building.round_room_index_from_global_position(global_position + Vector2(0,-1))
 	
-	animationModule.direction = Vector2.ZERO
+	if not has_target:
+		return
+	
+	npc.Animator.direction = Vector2.ZERO
 	
 	#debug draw nav path
 	var previous = global_position;
@@ -20,27 +33,32 @@ func _process(delta):
 		DebugDraw2D.line(previous, p)
 		previous = p
 	
-	#refresh target path
-	if not targetFinal:
-		targetFinal = pick_next_target()
-		refresh_target_path()
-	
 	#check reached target
 	if global_position.distance_to(targetPath[0]) < 1:
 		targetPath.remove_at(0)
 		if targetPath.is_empty():
-			targetFinal = 0
+			stop_navigation()
 			return
 	
 	if len(targetPath) == 0:
 		return
 	
 	#move towards next target position
-	var prnt = get_parent()
-	animationModule.direction = targetPath[0] - prnt.global_position
-	prnt.global_position = prnt.global_position.move_toward(targetPath[0], delta * MOVE_SPEED)
-	
-func pick_next_target():
+	npc.Animator.direction = targetPath[0] - npc.global_position
+	npc.global_position = npc.global_position.move_toward(targetPath[0], delta * MOVE_SPEED)
+
+func stop_navigation():
+	targetFinal = null
+	has_target = false
+	is_moving = false
+
+func set_target(target):
+	targetFinal = target
+	refresh_target_path()
+	is_moving = true
+	has_target = true
+
+func get_random_target():
 	var floor = Util.get_random_element(Global.building.floors)
 	return Util.get_random_element(floor)
 	
@@ -59,7 +77,7 @@ func refresh_target_path():
 		var multiplier = 1 if goDownwards else -1
 		
 		for i in range(currentRoomIndex.y, targetRoomIndex.y, -1 * multiplier):
-			var stairs = Global.building.get_closest_room_of_type(RoomStairs, last_position, i) as RoomStairs
+			var stairs = Global.building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i) as RoomStairs
 			targetPath.append(stairs.global_position + Vector2(8  if goDownwards else 36, 0 * multiplier))
 			targetPath.append(stairs.global_position + Vector2(28 if goDownwards else 36, 24 * multiplier))
 			targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 28, 24 * multiplier))

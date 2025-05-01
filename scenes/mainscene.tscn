@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=24 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="1_hm37i"]
@@ -10,9 +10,11 @@
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="8_jifap"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/sounds/music/Sun Up Gunned Down.mp3" id="10_jifap"]
+[ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="10_l58e3"]
 [ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="10_xl61e"]
-[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/navigation_module.gd" id="11_0o2or"]
-[ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/animation_module.gd" id="11_457mv"]
+[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="11_0o2or"]
+[ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="11_457mv"]
+[ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="14_hvbcb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_katdn"]
 font = ExtResource("1_hm37i")
@@ -62,6 +64,10 @@ texture_region_size = Vector2i(48, 48)
 [sub_resource type="TileSet" id="TileSet_xl61e"]
 tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
+radius = 7.0
+height = 24.0
 
 [node name="MainScene" type="Node"]
 
@@ -185,15 +191,25 @@ tile_set = SubResource("TileSet_xl61e")
 
 [node name="NPCSpawner" type="Node2D" parent="Content"]
 
-[node name="NPC" type="Node2D" parent="Content/NPCSpawner"]
+[node name="NPCWorker" type="Area2D" parent="Content/NPCSpawner"]
+script = ExtResource("10_l58e3")
 
-[node name="Visuals" type="Sprite2D" parent="Content/NPCSpawner/NPC"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Content/NPCSpawner/NPCWorker"]
+position = Vector2(0, -11)
+shape = SubResource("CapsuleShape2D_hvbcb")
+
+[node name="AnimationModule" type="Sprite2D" parent="Content/NPCSpawner/NPCWorker"]
 texture = ExtResource("10_xl61e")
 offset = Vector2(0, -12)
 script = ExtResource("11_457mv")
 
-[node name="NavigationModule" type="Node2D" parent="Content/NPCSpawner/NPC"]
+[node name="NavigationModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker"]
 script = ExtResource("11_0o2or")
+
+[node name="BehaviourModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker"]
+script = ExtResource("14_hvbcb")
+
+[node name="Host" type="Node" parent="Content/NPCSpawner/NPCWorker/BehaviourModule"]
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")

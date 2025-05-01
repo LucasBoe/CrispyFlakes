@@ -1,3 +1,3 @@
 extends Node
 
-var building
+var building : Building

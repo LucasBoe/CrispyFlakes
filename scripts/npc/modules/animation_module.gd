@@ -10,6 +10,13 @@ const IDLE_PEAK_SHARPNESS = 4
 const WALK_ANIMATION_SPEED = 15.0
 const WALK_ROTATION_STRENGTH = .15
 
+func _ready():
+	var npc = get_parent() as NPC
+	if npc:
+		pass
+		
+	npc.Animator = self
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	

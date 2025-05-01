@@ -212,7 +212,7 @@ func is_top_floor(y : int):
 	floorIndexes.sort()
 	return floorIndexes[len(floorIndexes)-1] == y
 	
-func get_closest_room_of_type(type, global_pos : Vector2, y):
+func get_closest_room_of_type_on_floor(type, global_pos : Vector2, y):
 	var closestRoom
 	var shortest_distance: float = INF
 
@@ -235,5 +235,26 @@ func get_closest_room_of_type(type, global_pos : Vector2, y):
 	
 	return closestRoom
 		
-#func get_closest_room_of_type(type, global_pos : Vector2):
+func get_closest_room_of_type(type, global_pos : Vector2):
+	var closestRoom
+	var shortest_distance: float = INF
+
+	for y in floors:
+		for x in floors[y]:
+			var room = floors[y][x]
+					
+			if room:
+				pass
+				
+			if room is not RoomEmpty:
+				continue
+				
+			if not is_instance_of(room, type):
+				continue
+				
+			var distance = room.global_position.distance_to(global_pos)
+			if distance < shortest_distance:
+				shortest_distance = distance	
+				closestRoom = room
 	
+	return closestRoom
