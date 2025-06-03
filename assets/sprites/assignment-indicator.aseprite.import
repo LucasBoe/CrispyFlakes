@@ -1,0 +1,16 @@
+[remap]
+
+importer="aseprite_wizard.plugin.static-texture"
+type="PortableCompressedTexture2D"
+uid="uid://cqmmyu6huh46s"
+path="res://.godot/imported/assignment-indicator.aseprite-6c8313405bc80d79f6988c2d1ed0f412.res"
+
+[deps]
+
+source_file="res://assets/sprites/assignment-indicator.aseprite"
+dest_files=["res://.godot/imported/assignment-indicator.aseprite-6c8313405bc80d79f6988c2d1ed0f412.res"]
+
+[params]
+
+layer/exclude_layers_pattern=""
+layer/only_visible_layers=false

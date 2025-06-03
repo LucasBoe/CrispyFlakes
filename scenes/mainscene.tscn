@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=28 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="1_hm37i"]
@@ -68,6 +68,32 @@ sources/0 = SubResource("TileSetAtlasSource_jifap")
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 radius = 7.0
 height = 24.0
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hvbcb"]
+_data = PackedByteArray("AAADAAUAAAABAAAAIAAAABAAAACAAAAAUklGRngAAABXRUJQVlA4TGsAAAAvH8ADEB8gFkzm/8ebhkCAcKxTFSEBwWH/m/kP4C9lwCiSJCk9y+UBNSNhX4hAzYrgPq0ghvfZs4GFiP6bTdvG2Sr6COJ5sZ2FpSYnsZ+7bythx34JKUyTkHSqQcJY4iPzRkIQSwpDZop4AAA=")
+size_override = Vector2(32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lj14v"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4amiu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_owwh3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lj14v")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [node name="MainScene" type="Node"]
 
@@ -210,6 +236,28 @@ script = ExtResource("11_0o2or")
 script = ExtResource("14_hvbcb")
 
 [node name="Host" type="Node" parent="Content/NPCSpawner/NPCWorker/BehaviourModule"]
+
+[node name="RoomAssignmentIndiactor" type="AnimatedSprite2D" parent="Content/NPCSpawner/NPCWorker"]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_4amiu")
+frame_progress = 0.432881
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": false,
+"pending_changes": {},
+"slice_section": true
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"should_round_fps": true,
+"slice": "",
+"source": "res://assets/sprites/assignment-indicator.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "60e55888432e38d0f49cf19d155afde0"
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")

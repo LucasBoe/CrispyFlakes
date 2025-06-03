@@ -1,5 +1,4 @@
 extends RoomEmpty
-
 class_name RoomStairs
 
 const GRID_SIZE = 48

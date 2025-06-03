@@ -9,6 +9,7 @@ var floors = {}
 
 const room_empty: PackedScene = preload("res://scenes/room_empty.tscn")
 const room_stairs: PackedScene = preload("res://scenes/room_stairs.tscn")
+const room_brewery: PackedScene = preload("res://scenes/room_brewery.tscn")
 
 enum levelDifference {
 	SAME,
@@ -43,7 +44,7 @@ func _ready():
 	set_room(room_empty, -1,0, false)
 	set_room(room_empty, 0,0, false)
 	set_room(room_stairs, 1,0, false)
-	set_room(room_empty, 0,-1, false)
+	set_room(room_brewery, 0,-1, false)
 	set_room(room_stairs, 1,-1, false)
 	
 	InitalizeAllRooms()
@@ -252,7 +253,7 @@ func get_closest_room_of_type(type, global_pos : Vector2):
 			if not is_instance_of(room, type):
 				continue
 				
-			var distance = room.global_position.distance_to(global_pos)
+			var distance = room.global_position.distance_to(global_pos - Vector2(24,0))
 			if distance < shortest_distance:
 				shortest_distance = distance	
 				closestRoom = room

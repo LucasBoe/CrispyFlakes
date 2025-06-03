@@ -8,5 +8,6 @@ texture_filter = 1
 script = ExtResource("1_doe6n")
 
 [node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
 position = Vector2(24, -23)
 texture = ExtResource("1_xnl3r")

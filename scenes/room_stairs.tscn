@@ -9,10 +9,12 @@ texture_filter = 1
 script = ExtResource("1_52gol")
 
 [node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
 position = Vector2(24, -23)
 texture = ExtResource("1_1o2tr")
 
 [node name="Stairs-Background" type="Sprite2D" parent="."]
+z_index = -100
 position = Vector2(24, -24)
 texture = ExtResource("3_nnuq8")
 region_enabled = true
