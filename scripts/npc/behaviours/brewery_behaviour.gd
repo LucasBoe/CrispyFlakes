@@ -7,7 +7,8 @@ func loop():
 	brewery = Global.Building.get_closest_room_of_type(RoomBrewery, npc.global_position)
 	
 	while isRunning:
-		await pause(1)
+		await progress(6, brewery.progressBar)
+		#await pause(1)
 		var itemSpawnPos = brewery.get_random_floor_position()
 		var item = Global.ItemSpawner.Create(Enum.Items.WISKEY, itemSpawnPos)
 		npc.Item.PickUp(item)

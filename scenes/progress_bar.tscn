@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://g7bl2gw0ev3i"]
+
+[ext_resource type="Texture2D" uid="uid://d3dxpn3qrk6ox" path="res://assets/sprites/progressbar/under.png" id="1_1iuoo"]
+[ext_resource type="Texture2D" uid="uid://bvusfbh02tyaq" path="res://assets/sprites/progressbar/bar.png" id="2_eu8db"]
+[ext_resource type="Texture2D" uid="uid://dgsnjdewqwawh" path="res://assets/sprites/progressbar/fill.png" id="3_tumid"]
+
+[node name="ProgressBar" type="TextureProgressBar"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 11.0
+offset_top = -39.0
+offset_right = 39.0
+offset_bottom = -34.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(14, 2.5)
+texture_under = ExtResource("1_1iuoo")
+texture_over = ExtResource("2_eu8db")
+texture_progress = ExtResource("3_tumid")
+texture_progress_offset = Vector2(1, 1)
+tint_under = Color(0, 0, 0.32549, 0.490196)
+tint_progress = Color(0.211765, 1, 1, 1)

@@ -23,5 +23,15 @@ func move(target):
 func pause(duration):
 	return get_tree().create_timer(duration).timeout
 	
+func progress(duration, bar : TextureProgressBar):
+	var t = float(duration)
+	bar.visible = true
+	while t > 0:
+		t -= get_process_delta_time()
+		bar.value = (1.0 - (t / duration)) * 100
+		await endOfFrame()
+		
+	bar.visible = false
+	
 func endOfFrame():
 	return get_tree().process_frame
