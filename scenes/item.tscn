@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvtb8xmkpwbgi"]
+
+[ext_resource type="Script" uid="uid://d1asgrd7apnys" path="res://scripts/items/item.gd" id="1_4gq7n"]
+[ext_resource type="Texture2D" uid="uid://c1s4oca1gheeo" path="res://assets/sprites/item_crate.png" id="1_s8enn"]
+
+[node name="Item" type="Sprite2D"]
+texture_filter = 1
+texture = ExtResource("1_s8enn")
+offset = Vector2(0, -6.5)
+flip_h = true
+script = ExtResource("1_4gq7n")

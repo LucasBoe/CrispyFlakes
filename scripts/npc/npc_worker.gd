@@ -34,7 +34,7 @@ func _input(event):
 		
 	var targetPos = null
 	
-	var room = Global.building.get_closest_room_of_type(RoomEmpty, global_position)
+	var room = Global.Building.get_closest_room_of_type(RoomEmpty, global_position)
 	if room:
 		targetPos = room.global_position + Vector2(24,0)
 
@@ -66,4 +66,5 @@ func checkJobChange(room : RoomEmpty):
 	if current_job != newJob:
 		print(str("change job to ", Enum.Jobs.keys()[newJob]))	
 		current_job = newJob
+		
 		Behaviour.set_behaviour_from_job(current_job);

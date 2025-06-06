@@ -1,3 +1,4 @@
 extends Node
 
-var building : Building
+var Building : Building
+var ItemSpawner : ItemSpawner

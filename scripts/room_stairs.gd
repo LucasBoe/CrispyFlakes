@@ -13,11 +13,11 @@ func InitRoom(x : int, y : int):
 	var stairSpriteIndex = 1;
 	
 	if isBasement:
-		if Global.building.is_bottom_floor(y):
+		if Global.Building.is_bottom_floor(y):
 			stairSpriteIndex = 3
 		else:
 			stairSpriteIndex = 2
-	elif Global.building.is_top_floor(y):
+	elif Global.Building.is_top_floor(y):
 		stairSpriteIndex = 0
 		
 	stairsBackgroundSprite.region_rect = Rect2(0, GRID_SIZE * stairSpriteIndex, GRID_SIZE, GRID_SIZE)

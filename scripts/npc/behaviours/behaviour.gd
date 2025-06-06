@@ -1,7 +1,7 @@
 extends Node
 
 class_name Behaviour
-var npc
+var npc : NPC
 var isRunning = true
 
 func _init():
@@ -15,8 +15,12 @@ func start_loop():
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
 	
+func move(target):
+	npc.Navigation.set_target(target)
+	while npc.Navigation.is_moving:	
+		await endOfFrame()
+	
 func pause(duration):
-	print(str("pause for ", duration, "s"))
 	return get_tree().create_timer(duration).timeout
 	
 func endOfFrame():

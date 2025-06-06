@@ -20,7 +20,7 @@ func _ready():
 	npc.Navigation = self
 	
 func _process(delta):
-	currentRoomIndex = Global.building.round_room_index_from_global_position(global_position + Vector2(0,-1))
+	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0,-1))
 	
 	if not has_target:
 		return
@@ -59,14 +59,14 @@ func set_target(target):
 	has_target = true
 
 func get_random_target():
-	var floor = Util.get_random_element(Global.building.floors)
+	var floor = Util.get_random_element(Global.Building.floors)
 	return Util.get_random_element(floor)
 	
 func refresh_target_path():
 	
 	targetPath.clear()
 	
-	var targetRoomIndex = Global.building.round_room_index_from_global_position(targetFinal.global_position)
+	var targetRoomIndex = Global.Building.round_room_index_from_global_position(targetFinal.global_position)
 	var last_position = global_position
 	var currentY = currentRoomIndex.y
 	var targetY = targetRoomIndex.y
@@ -77,7 +77,7 @@ func refresh_target_path():
 		var multiplier = 1 if goDownwards else -1
 		
 		for i in range(currentRoomIndex.y, targetRoomIndex.y, -1 * multiplier):
-			var stairs = Global.building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i) as RoomStairs
+			var stairs = Global.Building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i) as RoomStairs
 			targetPath.append(stairs.global_position + Vector2(8  if goDownwards else 36, 0 * multiplier))
 			targetPath.append(stairs.global_position + Vector2(28 if goDownwards else 36, 24 * multiplier))
 			targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 28, 24 * multiplier))

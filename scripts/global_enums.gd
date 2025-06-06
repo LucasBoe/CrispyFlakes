@@ -4,3 +4,7 @@ enum Jobs {
 	IDLE,
 	BREWERY
 }
+
+enum Items {
+	WISKEY
+}

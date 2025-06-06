@@ -10,6 +10,7 @@ var floors = {}
 const room_empty: PackedScene = preload("res://scenes/room_empty.tscn")
 const room_stairs: PackedScene = preload("res://scenes/room_stairs.tscn")
 const room_brewery: PackedScene = preload("res://scenes/room_brewery.tscn")
+const room_buttery: PackedScene = preload("res://scenes/room_buttery.tscn")
 
 enum levelDifference {
 	SAME,
@@ -36,13 +37,13 @@ enum roofIndexMap {
 }
 
 func _ready():
-	Global.building = self
+	Global.Building = self
 	
 	set_room(room_empty, -1,1, false)
 	set_room(room_empty, 0,1, false)
 	set_room(room_stairs, 1,1, false)
 	set_room(room_empty, -1,0, false)
-	set_room(room_empty, 0,0, false)
+	set_room(room_buttery, 0,0, false)
 	set_room(room_stairs, 1,0, false)
 	set_room(room_brewery, 0,-1, false)
 	set_room(room_stairs, 1,-1, false)

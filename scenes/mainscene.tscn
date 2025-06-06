@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=30 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="1_hm37i"]
@@ -15,6 +15,8 @@
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="11_0o2or"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="11_457mv"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="14_hvbcb"]
+[ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="15_owwh3"]
+[ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_katdn"]
 font = ExtResource("1_hm37i")
@@ -229,6 +231,10 @@ texture = ExtResource("10_xl61e")
 offset = Vector2(0, -12)
 script = ExtResource("11_457mv")
 
+[node name="ItemModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker/AnimationModule"]
+position = Vector2(0, -3)
+script = ExtResource("15_owwh3")
+
 [node name="NavigationModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker"]
 script = ExtResource("11_0o2or")
 
@@ -240,7 +246,7 @@ script = ExtResource("14_hvbcb")
 [node name="RoomAssignmentIndiactor" type="AnimatedSprite2D" parent="Content/NPCSpawner/NPCWorker"]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_4amiu")
-frame_progress = 0.432881
+frame_progress = 0.367471
 metadata/_aseprite_wizard_interface_config_ = {
 "layer_section": false,
 "pending_changes": {},
@@ -258,6 +264,9 @@ metadata/_aseprite_wizard_config_ = {
 "source": "res://assets/sprites/assignment-indicator.aseprite"
 }
 metadata/_aseprite_wizard_source_file_hash_ = "60e55888432e38d0f49cf19d155afde0"
+
+[node name="ItemSpawner" type="Node2D" parent="Content"]
+script = ExtResource("16_4amiu")
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")

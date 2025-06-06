@@ -1,0 +1,39 @@
+extends RoomEmpty
+class_name RoomButtery
+
+var items = []
+var maxX = 9
+var maxY = 3
+
+func InitRoom(x : int, y : int):
+	super.InitRoom(x,y)
+	items.resize(maxX * maxY)
+	items.fill(null)
+
+func TryReceive(item) -> bool:
+	var freeSlotIndex = get_next_free_slot()
+	
+	if freeSlotIndex >= 0:
+		item.reparent(self)
+		item.position = index_to_xy(freeSlotIndex)
+		item.rotation = 0
+		items[freeSlotIndex] = item
+		return true
+	else:
+		return false
+
+func get_next_free_slot() -> int:
+	for i in (maxX * maxY):	
+		if not items[i]:
+			return i
+			
+	return -1
+
+func index_to_xy(index: int) -> Vector2:
+	var col = float(index % maxX)
+	var row = float(index / maxX)
+
+	var x = 8 + (col / maxX) * 34
+	var y = -1 - ((maxY - 1 - row) / maxY) * 35.0
+	
+	return Vector2(x, y)

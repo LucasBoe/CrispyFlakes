@@ -17,3 +17,7 @@ func InitRoom(x : int, y : int):
 	self.y = y
 	isBasement = y < 0
 	backWallSprite2D.texture = backwallBasement if isBasement else backwallDefault
+
+func get_random_floor_position():
+	var offset = Vector2(randi_range(4, 44), 0)
+	return global_position + offset

@@ -39,7 +39,6 @@ func _input(event):
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			zoomTarget *= 0.9
 			zoom_in_out();
-			
 		
 	if event is InputEventPanGesture:
 		if event.delta.y < 0:
@@ -88,4 +87,4 @@ func zoom_in_out():
 	var diff = mousePositionBefore - get_global_mouse_position()
 	offset += diff
 	
-	print(diff)
+	#print(diff)
