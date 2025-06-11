@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cpgc0apf65bdm"]
+
+[ext_resource type="Script" uid="uid://cynsaheyuqki6" path="res://scripts/room_buttery.gd" id="1_x8anq"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_s50b3"]
+[ext_resource type="Texture2D" uid="uid://ftv45kuneih7" path="res://assets/sprites/buttery-shelf.png" id="3_5bxbu"]
+
+[node name="Room_Buttery" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_x8anq")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_s50b3")
+
+[node name="Shelf" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -18)
+texture = ExtResource("3_5bxbu")

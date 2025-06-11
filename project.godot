@@ -24,6 +24,7 @@ import/import_plugin/default_automatic_importer="Static Texture"
 DebugDraw2D="*res://addons/debugdraw2d/DebugDraw2D.gd"
 Global="*res://scripts/global.gd"
 Enum="*res://scripts/global_enums.gd"
+ResourceHandler="*res://scripts/resources/resource_handler.gd"
 
 [display]
 

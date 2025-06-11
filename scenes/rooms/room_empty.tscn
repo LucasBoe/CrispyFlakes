@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bequo7bfenqop"]
+
+[ext_resource type="Script" uid="uid://bsxq5bjs7pb2w" path="res://scripts/room_empty.gd" id="1_ps7y8"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_xb5b7"]
+
+[node name="Room_Empty" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_ps7y8")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_xb5b7")

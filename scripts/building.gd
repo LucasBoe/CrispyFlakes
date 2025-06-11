@@ -7,10 +7,11 @@ class_name Building
 
 var floors = {}
 
-const room_empty: PackedScene = preload("res://scenes/room_empty.tscn")
-const room_stairs: PackedScene = preload("res://scenes/room_stairs.tscn")
-const room_brewery: PackedScene = preload("res://scenes/room_brewery.tscn")
-const room_buttery: PackedScene = preload("res://scenes/room_buttery.tscn")
+const room_empty: PackedScene = preload("res://scenes/rooms/room_empty.tscn")
+const room_stairs: PackedScene = preload("res://scenes/rooms/room_stairs.tscn")
+const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn")
+const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
+const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
 
 enum levelDifference {
 	SAME,
@@ -42,7 +43,9 @@ func _ready():
 	set_room(room_empty, -1,1, false)
 	set_room(room_empty, 0,1, false)
 	set_room(room_stairs, 1,1, false)
-	set_room(room_empty, -1,0, false)
+	set_room(room_empty, -3,0, false)
+	set_room(room_empty, -2,0, false)
+	set_room(room_bar, -1,0, false)
 	set_room(room_buttery, 0,0, false)
 	set_room(room_stairs, 1,0, false)
 	set_room(room_brewery, 0,-1, false)

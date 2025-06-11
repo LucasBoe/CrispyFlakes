@@ -1,0 +1,84 @@
+[gd_scene load_steps=12 format=4 uid="uid://dexn3jgkl81oo"]
+
+[ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
+[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="2_ivbhr"]
+[ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_escwn"]
+[ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_dc1yn"]
+[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
+[ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
+radius = 7.0
+height = 24.0
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hvbcb"]
+_data = PackedByteArray("AAADAAUAAAABAAAAIAAAABAAAACAAAAAUklGRngAAABXRUJQVlA4TGsAAAAvH8ADEB8gFkzm/8ebhkCAcKxTFSEBwWH/m/kP4C9lwCiSJCk9y+UBNSNhX4hAzYrgPq0ghvfZs4GFiP6bTdvG2Sr6COJ5sZ2FpSYnsZ+7bythx34JKUyTkHSqQcJY4iPzRkIQSwpDZop4AAA=")
+size_override = Vector2(32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lj14v"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4amiu"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_owwh3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lj14v")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="NPCWorker" type="Area2D"]
+script = ExtResource("1_d0f16")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -11)
+shape = SubResource("CapsuleShape2D_hvbcb")
+
+[node name="AnimationModule" type="Sprite2D" parent="."]
+texture = ExtResource("2_ivbhr")
+offset = Vector2(0, -12)
+script = ExtResource("3_escwn")
+
+[node name="ItemModule" type="Node2D" parent="AnimationModule"]
+position = Vector2(0, -3)
+script = ExtResource("4_dc1yn")
+
+[node name="NavigationModule" type="Node2D" parent="."]
+script = ExtResource("5_aq4br")
+
+[node name="BehaviourModule" type="Node2D" parent="."]
+script = ExtResource("6_lmhvm")
+
+[node name="Host" type="Node" parent="BehaviourModule"]
+
+[node name="RoomAssignmentIndiactor" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_4amiu")
+frame_progress = 0.367471
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": false,
+"pending_changes": {},
+"slice_section": true
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"should_round_fps": true,
+"slice": "",
+"source": "res://assets/sprites/assignment-indicator.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "60e55888432e38d0f49cf19d155afde0"

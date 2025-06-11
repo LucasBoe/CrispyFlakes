@@ -3,6 +3,7 @@ class_name AnimationModule
 
 @export var direction : Vector2 = Vector2(0,0);
 var xOrientation = 1;
+var randomInstanceOffset = 0
 
 const SQUASH_STRENGTH = 0.05
 const IDLE_ANIMATION_SPEED = 3
@@ -16,11 +17,12 @@ func _ready():
 		pass
 		
 	npc.Animator = self
+	randomInstanceOffset = randf() * 1000.0
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	
-	var timeInSeconds = Time.get_ticks_msec() / 1000.0
+	var timeInSeconds = (Time.get_ticks_msec() + randomInstanceOffset) / 1000.0
 	var target = idle_tween(timeInSeconds)
 	
 	if direction.length() > 0:

@@ -1,28 +1,17 @@
-[gd_scene load_steps=30 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=19 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
-[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="1_hm37i"]
-[ext_resource type="Script" uid="uid://cfdiynhg0751b" path="res://scripts/pause.gd" id="1_nx3wj"]
+[ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="Texture2D" uid="uid://ulsbt763ecmh" path="res://assets/sprites/sky.png" id="2_golqe"]
+[ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
 [ext_resource type="Texture2D" uid="uid://5bdykruptoea" path="res://assets/sprites/montains.png" id="5_mo382"]
 [ext_resource type="Script" uid="uid://ft3abdx5faf3" path="res://scripts/building.gd" id="6_ao358"]
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="7_bw6rn"]
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="8_jifap"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
+[ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/sounds/music/Sun Up Gunned Down.mp3" id="10_jifap"]
-[ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="10_l58e3"]
-[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="10_xl61e"]
-[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="11_0o2or"]
-[ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="11_457mv"]
-[ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="14_hvbcb"]
-[ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="15_owwh3"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_katdn"]
-font = ExtResource("1_hm37i")
-font_size = 24
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hm37i"]
 _data = PackedByteArray("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")
@@ -67,36 +56,6 @@ texture_region_size = Vector2i(48, 48)
 tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
-radius = 7.0
-height = 24.0
-
-[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hvbcb"]
-_data = PackedByteArray("AAADAAUAAAABAAAAIAAAABAAAACAAAAAUklGRngAAABXRUJQVlA4TGsAAAAvH8ADEB8gFkzm/8ebhkCAcKxTFSEBwWH/m/kP4C9lwCiSJCk9y+UBNSNhX4hAzYrgPq0ghvfZs4GFiP6bTdvG2Sr6COJ5sZ2FpSYnsZ+7bythx34JKUyTkHSqQcJY4iPzRkIQSwpDZop4AAA=")
-size_override = Vector2(32, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
-atlas = SubResource("PortableCompressedTexture2D_hvbcb")
-region = Rect2(0, 0, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_lj14v"]
-atlas = SubResource("PortableCompressedTexture2D_hvbcb")
-region = Rect2(16, 0, 16, 16)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_4amiu"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_owwh3")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_lj14v")
-}],
-"loop": true,
-"name": &"default",
-"speed": 10.0
-}]
-
 [node name="MainScene" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -104,42 +63,27 @@ script = ExtResource("1_4c2fu")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="UIPause" type="Control" parent="UI"]
+[node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
+
+[node name="UIResources" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-script = ExtResource("1_nx3wj")
+mouse_filter = 2
+script = ExtResource("3_l58e3")
 
-[node name="ColorRect" type="ColorRect" parent="UI/UIPause"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources"]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 24.0
 grow_horizontal = 2
-grow_vertical = 2
-color = Color(0, 0, 0, 0.501961)
-
-[node name="Label" type="Label" parent="UI/UIPause"]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -11.5
-offset_right = 20.0
-offset_bottom = 11.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "PAUSED"
-label_settings = SubResource("LabelSettings_katdn")
 
 [node name="World" type="Node2D" parent="."]
 texture_filter = 1
@@ -218,52 +162,7 @@ position = Vector2(0, -23)
 tile_set = SubResource("TileSet_xl61e")
 
 [node name="NPCSpawner" type="Node2D" parent="Content"]
-
-[node name="NPCWorker" type="Area2D" parent="Content/NPCSpawner"]
-script = ExtResource("10_l58e3")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Content/NPCSpawner/NPCWorker"]
-position = Vector2(0, -11)
-shape = SubResource("CapsuleShape2D_hvbcb")
-
-[node name="AnimationModule" type="Sprite2D" parent="Content/NPCSpawner/NPCWorker"]
-texture = ExtResource("10_xl61e")
-offset = Vector2(0, -12)
-script = ExtResource("11_457mv")
-
-[node name="ItemModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker/AnimationModule"]
-position = Vector2(0, -3)
-script = ExtResource("15_owwh3")
-
-[node name="NavigationModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker"]
-script = ExtResource("11_0o2or")
-
-[node name="BehaviourModule" type="Node2D" parent="Content/NPCSpawner/NPCWorker"]
-script = ExtResource("14_hvbcb")
-
-[node name="Host" type="Node" parent="Content/NPCSpawner/NPCWorker/BehaviourModule"]
-
-[node name="RoomAssignmentIndiactor" type="AnimatedSprite2D" parent="Content/NPCSpawner/NPCWorker"]
-texture_filter = 1
-sprite_frames = SubResource("SpriteFrames_4amiu")
-frame_progress = 0.367471
-metadata/_aseprite_wizard_interface_config_ = {
-"layer_section": false,
-"pending_changes": {},
-"slice_section": true
-}
-metadata/_aseprite_wizard_config_ = {
-"embed_tex": true,
-"layers": [],
-"o_ex_p": "",
-"o_folder": "",
-"o_name": "",
-"only_visible": false,
-"should_round_fps": true,
-"slice": "",
-"source": "res://assets/sprites/assignment-indicator.aseprite"
-}
-metadata/_aseprite_wizard_source_file_hash_ = "60e55888432e38d0f49cf19d155afde0"
+script = ExtResource("10_0o2or")
 
 [node name="ItemSpawner" type="Node2D" parent="Content"]
 script = ExtResource("16_4amiu")

@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://y7ent6yu2agy"]
+
+[ext_resource type="Script" uid="uid://bo5d5mtcgiq1p" path="res://scripts/room_brewery.gd" id="1_i7va0"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_7sj4r"]
+[ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/brewery.png" id="3_o8qhr"]
+[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_4elfk"]
+
+[node name="Room_Brewery" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_i7va0")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_7sj4r")
+
+[node name="Brewery" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(21, -19)
+texture = ExtResource("3_o8qhr")
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="ProgressBar" parent="." instance=ExtResource("4_4elfk")]
+z_index = 4096
+offset_bottom = -35.0
+pivot_offset = Vector2(14, 2)

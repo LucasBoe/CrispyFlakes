@@ -1,0 +1,69 @@
+[gd_scene load_steps=6 format=3 uid="uid://cm0dwggnb5efg"]
+
+[ext_resource type="Script" uid="uid://du2csrk6l5smg" path="res://scripts/ui/ui_resource_label.gd" id="1_pu0rc"]
+[ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="2_8cvpp"]
+[ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="3_ywpoi"]
+[ext_resource type="FontFile" uid="uid://cqgt3j07l3lop" path="res://assets/fonts/modern_dos/ModernDOS9x14.ttf" id="4_el4hf"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4amiu"]
+font = ExtResource("4_el4hf")
+
+[node name="UIResourceLabel" type="Control"]
+custom_minimum_size = Vector2(52, 16)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_pu0rc")
+
+[node name="Background" type="NinePatchRect" parent="."]
+modulate = Color(0.380392, 0, 0, 1)
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_8cvpp")
+patch_margin_left = 8
+patch_margin_right = 8
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 6.0
+offset_top = -11.0
+offset_right = 30.0
+offset_bottom = 13.0
+grow_vertical = 2
+texture = ExtResource("3_ywpoi")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 1.0
+offset_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+label_settings = SubResource("LabelSettings_4amiu")
+horizontal_alignment = 1
+
+[node name="ChangeLabel" type="Label" parent="Label"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "999"
+horizontal_alignment = 1
