@@ -1,7 +1,7 @@
 [gd_scene load_steps=12 format=4 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
-[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="2_ivbhr"]
+[ext_resource type="Texture2D" uid="uid://m83v8bxndfmq" path="res://assets/sprites/worker.png" id="2_d0f16"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_escwn"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_dc1yn"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
@@ -45,7 +45,7 @@ position = Vector2(0, -11)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
-texture = ExtResource("2_ivbhr")
+texture = ExtResource("2_d0f16")
 offset = Vector2(0, -12)
 script = ExtResource("3_escwn")
 

@@ -1,8 +1,9 @@
 extends NPC
 
 var current_job = Enum.Jobs.IDLE
-var isPickedUp = false
 var pickUpOrigin
+
+static var picked_up_npc : NPC = null
 
 @onready var assignmentIndicator : AnimatedSprite2D = $RoomAssignmentIndiactor
 
@@ -10,7 +11,7 @@ func _ready():
 	assignmentIndicator.visible = false
 
 func _process(delta):
-	if isPickedUp:
+	if picked_up_npc == self:
 		global_position = get_global_mouse_position()
 		
 	if Behaviour.has_behaviour:
@@ -20,14 +21,18 @@ func _process(delta):
 	
 
 func _input_event(viewport, event, shape_idx):
+	
+	if picked_up_npc != null:
+		return;
+	
 	if event.is_action_pressed("click"):
-		isPickedUp = true
+		picked_up_npc = self
 		Navigation.set_process(false)
 		pickUpOrigin = global_position
 
 func _input(event):
 	
-	if not isPickedUp:
+	if picked_up_npc != self:
 		#if (assignmentIndicator.visible):
 		#	assignmentIndicator.visible = false
 		return
@@ -52,7 +57,7 @@ func _input(event):
 			Animator.direction = Vector2.ZERO
 		else:
 			global_position = pickUpOrigin
-		isPickedUp = false
+		picked_up_npc = null
 
 		assignmentIndicator.visible = false
 		Navigation.set_process(true)
