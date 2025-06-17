@@ -11,5 +11,6 @@ enum Items {
 }
 
 enum Resources {
-	MONEY
+	MONEY,
+	FAME
 }

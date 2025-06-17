@@ -21,3 +21,6 @@ func InitRoom(x : int, y : int):
 func get_random_floor_position():
 	var offset = Vector2(randi_range(4, 44), 0)
 	return global_position + offset
+
+func get_center_position():
+	return global_position + Vector2(24,-24)

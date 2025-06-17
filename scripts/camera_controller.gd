@@ -88,3 +88,12 @@ func zoom_in_out():
 	offset += diff
 	
 	#print(diff)
+
+func get_camera_screen_rect() -> Rect2:
+	var viewport := get_viewport_rect() # size in pixels
+
+	var adjusted_size := viewport.size / zoom
+	var center := global_position + offset
+
+	var top_left := center - adjusted_size / 2.0
+	return Rect2(top_left, adjusted_size)
