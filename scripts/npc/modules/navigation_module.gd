@@ -66,7 +66,10 @@ func refresh_target_path():
 	
 	targetPath.clear()
 	
-	var targetRoomIndex = Global.Building.round_room_index_from_global_position(targetFinal.global_position)
+	if targetFinal is Node2D:
+		targetFinal = targetFinal.global_position + Vector2(24,0)
+	
+	var targetRoomIndex = Global.Building.round_room_index_from_global_position(targetFinal)
 	var last_position = global_position
 	var currentY = currentRoomIndex.y
 	var targetY = targetRoomIndex.y
@@ -85,4 +88,4 @@ func refresh_target_path():
 			last_position = stairs.global_position
 				
 	#move to target location
-	targetPath.append(targetFinal.global_position + Vector2(24,0));
+	targetPath.append(targetFinal);

@@ -3,7 +3,6 @@ extends Behaviour
 var brewery
 
 func loop():
-	
 	brewery = Global.Building.get_closest_room_of_type(RoomBrewery, npc.global_position)
 	
 	while isRunning:
