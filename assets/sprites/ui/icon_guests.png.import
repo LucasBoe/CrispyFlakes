@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b43jvnq8dk4k"
-path="res://.godot/imported/item_wiskey.png-a881ea0221689e8072cd5be0105d6554.ctex"
+uid="uid://1ydjllt1xy3d"
+path="res://.godot/imported/icon_guests.png-cfaa3455e4392cdc7736cbf733ed0288.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/item_wiskey.png"
-dest_files=["res://.godot/imported/item_wiskey.png-a881ea0221689e8072cd5be0105d6554.ctex"]
+source_file="res://assets/sprites/ui/icon_guests.png"
+dest_files=["res://.godot/imported/icon_guests.png-cfaa3455e4392cdc7736cbf733ed0288.ctex"]
 
 [params]
 

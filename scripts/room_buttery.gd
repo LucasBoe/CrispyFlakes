@@ -15,12 +15,28 @@ func TryReceive(item) -> bool:
 	
 	if freeSlotIndex >= 0:
 		item.reparent(self)
-		item.position = index_to_xy(freeSlotIndex)
+		item.global_position = index_to_xy(freeSlotIndex)
 		item.rotation = 0
 		items[freeSlotIndex] = item
 		return true
 	else:
 		return false
+		
+func Take(itemType : Enum.Items) -> Item:
+	for i in (maxX * maxY):	
+		if items[i] && (items[i] as Item).itemType == itemType:
+			var item = items[i]
+			items[i] = null
+			return item
+	
+	return null
+
+func has(itemType : Enum.Items):
+	for i in (maxX * maxY):	
+		if items[i] && (items[i] as Item).itemType == itemType:
+			return true
+	
+	return false
 
 func get_next_free_slot() -> int:
 	for i in (maxX * maxY):	

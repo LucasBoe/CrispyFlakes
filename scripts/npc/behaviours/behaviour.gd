@@ -1,6 +1,6 @@
 extends Node
-
 class_name Behaviour
+
 var npc : NPC
 var isRunning = true
 

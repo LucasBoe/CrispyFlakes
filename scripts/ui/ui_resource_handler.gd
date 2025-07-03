@@ -11,6 +11,7 @@ func _ready():
 	for resourceType in Enum.Resources.values():
 		var instance = labelScene.instantiate()
 		($HBoxContainer).add_child(instance)
+		instance.Init(resourceType);
 		labelResourceDict[resourceType] = instance
 		
 	ResourceHandler.on_resource_changed.connect(on_resource_changed)

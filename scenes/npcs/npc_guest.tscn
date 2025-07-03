@@ -1,0 +1,40 @@
+[gd_scene load_steps=9 format=3 uid="uid://b82qlyorfhc7q"]
+
+[ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
+[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="2_prewa"]
+[ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_p1iho"]
+[ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_n6wgk"]
+[ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_482k3"]
+[ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_cyq43"]
+[ext_resource type="Script" uid="uid://qx7b2210t8x7" path="res://scripts/npc/modules/needs_module.gd" id="7_prewa"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
+radius = 7.0
+height = 24.0
+
+[node name="NPCGuest" type="Area2D"]
+script = ExtResource("1_sa74h")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -11)
+shape = SubResource("CapsuleShape2D_hvbcb")
+
+[node name="AnimationModule" type="Sprite2D" parent="."]
+texture = ExtResource("2_prewa")
+offset = Vector2(0, -12)
+script = ExtResource("3_p1iho")
+
+[node name="ItemModule" type="Node2D" parent="AnimationModule"]
+position = Vector2(0, -3)
+script = ExtResource("4_n6wgk")
+
+[node name="NavigationModule" type="Node2D" parent="."]
+script = ExtResource("5_482k3")
+
+[node name="BehaviourModule" type="Node2D" parent="."]
+script = ExtResource("6_cyq43")
+
+[node name="Host" type="Node" parent="BehaviourModule"]
+
+[node name="NeedsModule" type="Node" parent="."]
+script = ExtResource("7_prewa")

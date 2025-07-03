@@ -1,12 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://cm0dwggnb5efg"]
+[gd_scene load_steps=8 format=3 uid="uid://cm0dwggnb5efg"]
 
 [ext_resource type="Script" uid="uid://du2csrk6l5smg" path="res://scripts/ui/ui_resource_label.gd" id="1_pu0rc"]
 [ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="2_8cvpp"]
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="3_ywpoi"]
 [ext_resource type="FontFile" uid="uid://cqgt3j07l3lop" path="res://assets/fonts/modern_dos/ModernDOS9x14.ttf" id="4_el4hf"]
+[ext_resource type="FontFile" uid="uid://cvcefhu641q68" path="res://assets/fonts/modern_dos/ModernDOS8x14.ttf" id="5_ycm38"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_4amiu"]
 font = ExtResource("4_el4hf")
+
+[sub_resource type="LabelSettings" id="LabelSettings_po10x"]
+font = ExtResource("5_ycm38")
+font_color = Color(0, 1, 0, 1)
 
 [node name="UIResourceLabel" type="Control"]
 custom_minimum_size = Vector2(52, 16)
@@ -65,5 +70,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "999"
+text = "123"
+label_settings = SubResource("LabelSettings_po10x")
 horizontal_alignment = 1

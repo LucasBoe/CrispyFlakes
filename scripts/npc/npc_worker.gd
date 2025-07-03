@@ -18,17 +18,15 @@ func _process(delta):
 		return
 		
 	Behaviour.set_behaviour_from_job(current_job);
-	
 
-func _input_event(viewport, event, shape_idx):
+func click_on_self():
 	
 	if picked_up_npc != null:
-		return;
-	
-	if event.is_action_pressed("click"):
-		picked_up_npc = self
-		Navigation.set_process(false)
-		pickUpOrigin = global_position
+		return;		
+		
+	picked_up_npc = self
+	Navigation.set_process(false)
+	pickUpOrigin = global_position
 
 func _input(event):
 	

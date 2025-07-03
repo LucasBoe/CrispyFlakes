@@ -7,10 +7,11 @@ enum Jobs {
 }
 
 enum Items {
-	WISKEY
+	WISKEY_BARREL,
+	WISKEY_DRINK
 }
 
 enum Resources {
 	MONEY,
-	FAME
+	GUEST
 }

@@ -3,9 +3,6 @@ extends Node
 class_name BehaviourModule
 
 @onready var behaviourHost = $Host;
-const script_idle = preload("res://scripts/npc/behaviours/idle_behaviour.gd")
-const script_brewery = preload("res://scripts/npc/behaviours/brewery_behaviour.gd")
-const script_bar = preload("res://scripts/npc/behaviours/bar_behaviour.gd")
 
 var npc;
 var has_behaviour = false
@@ -16,30 +13,36 @@ func _ready():
 		pass
 		
 	npc.Behaviour = self
+	
+func clear_behaviour():
+	if has_behaviour:
+		var previous = behaviourHost.get_script()
+		if previous is Behaviour:
+			previous.isRunning = false
+			
+	behaviourHost.set_process(false)
+	has_behaviour = false
 
 func set_behaviour_from_job(job : Enum.Jobs):
-	var script
-	
-	if has_behaviour:
-		script = behaviourHost.get_script()
-		if script is Behaviour:
-			script.isRunning = false
-	
 	match job:
-		
+	
 		Enum.Jobs.IDLE:
-			script = script_idle
+			set_behaviour(IdleBehaviour)
 		
 		Enum.Jobs.BREWERY:
-			script = script_brewery
+			set_behaviour(JobBreweryBehaviour)
 			
 		Enum.Jobs.BAR:
-			script = script_bar
+			set_behaviour(JobBarBehaviour)
 	
-	if script:
-		pass
+func set_behaviour(behaviour):
 	
-	behaviourHost.set_script(script)
+	if has_behaviour:
+		var previous = behaviourHost.get_script()
+		if previous is Behaviour:
+			previous.isRunning = false
+			
+	behaviourHost.set_script(behaviour)
 	(behaviourHost as Behaviour).npc = npc
 	behaviourHost.set_process(true)
 	has_behaviour = true

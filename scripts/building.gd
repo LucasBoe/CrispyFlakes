@@ -12,6 +12,7 @@ const room_stairs: PackedScene = preload("res://scenes/rooms/room_stairs.tscn")
 const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn")
 const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
 const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
+const room_table: PackedScene = preload("res://scenes/rooms/room_table.tscn")
 
 enum levelDifference {
 	SAME,
@@ -44,7 +45,7 @@ func _ready():
 	set_room(room_empty, 0,1, false)
 	set_room(room_stairs, 1,1, false)
 	set_room(room_empty, -3,0, false)
-	set_room(room_empty, -2,0, false)
+	set_room(room_table, -2,0, false)
 	set_room(room_bar, -1,0, false)
 	set_room(room_buttery, 0,0, false)
 	set_room(room_stairs, 1,0, false)
@@ -263,3 +264,22 @@ func get_closest_room_of_type(type, global_pos : Vector2):
 				closestRoom = room
 	
 	return closestRoom
+
+func get_all_rooms_of_type(type):
+	var rooms = []
+	for y in floors:
+		for x in floors[y]:
+			var room = floors[y][x]
+						
+			if room:
+				pass
+					
+			if room is not RoomEmpty:
+				continue
+					
+			if not is_instance_of(room, type):
+				continue
+				
+			rooms.append(room)
+		
+	return rooms

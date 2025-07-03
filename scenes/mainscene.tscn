@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=29 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -8,9 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://c0ibpaimkooux" path="res://assets/sprites/coins-sprite-sheet.png" id="5_hvbcb"]
 [ext_resource type="Texture2D" uid="uid://5bdykruptoea" path="res://assets/sprites/montains.png" id="5_mo382"]
 [ext_resource type="Script" uid="uid://ft3abdx5faf3" path="res://scripts/building.gd" id="6_ao358"]
+[ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/time/time-button_play.png" id="6_lj14v"]
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="7_bw6rn"]
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="8_jifap"]
+[ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
+[ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/sounds/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
@@ -97,6 +100,8 @@ sources/0 = SubResource("TileSetAtlasSource_jifap")
 [node name="MainScene" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+limit_smoothed = true
+position_smoothing_enabled = true
 script = ExtResource("1_4c2fu")
 
 [node name="AnimatedUIResources" type="Node2D" parent="."]
@@ -132,6 +137,45 @@ offset_right = -8.0
 offset_bottom = 24.0
 grow_horizontal = 2
 
+[node name="UITime" type="Control" parent="UI"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UITime"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -40.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 24.0
+grow_horizontal = 2
+
+[node name="Button" type="Button" parent="UI/UITime/HBoxContainer"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+theme_type_variation = &"FlatButton"
+
+[node name="Background" type="ColorRect" parent="UI/UITime/HBoxContainer/Button"]
+layout_mode = 1
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 17.0
+offset_bottom = 17.0
+color = Color(0, 0, 0, 1)
+
+[node name="Texture" type="TextureRect" parent="UI/UITime/HBoxContainer/Button"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 15.0
+offset_bottom = 15.0
+texture = ExtResource("6_lj14v")
+
 [node name="World" type="Node2D" parent="."]
 texture_filter = 1
 
@@ -142,7 +186,7 @@ texture_repeat = 2
 position = Vector2(0, 32)
 texture = SubResource("PortableCompressedTexture2D_hm37i")
 region_enabled = true
-region_rect = Rect2(0, 0, 1024, 64)
+region_rect = Rect2(0, 0, 10240, 64)
 metadata/_aseprite_wizard_interface_config_ = {
 "pending_changes": {}
 }
@@ -163,18 +207,26 @@ metadata/_aseprite_wizard_source_file_hash_ = "28d7aa6a6176d7ac03748c09142fd994"
 
 [node name="ColorRect" type="ColorRect" parent="World/Ground"]
 z_index = -2000
-offset_left = -512.0
+offset_left = -5120.0
 offset_top = 32.0
-offset_right = 512.0
-offset_bottom = 349.0
+offset_right = 5120.0
+offset_bottom = 5152.0
 color = Color(0, 0, 0, 1)
 
 [node name="Sky" type="Sprite2D" parent="World"]
 z_index = -4096
 texture_filter = 1
 position = Vector2(4.76837e-07, -54.5)
-scale = Vector2(32, 1.69722)
+scale = Vector2(320, 1.697)
 texture = ExtResource("2_golqe")
+
+[node name="ColorRect" type="ColorRect" parent="World/Sky"]
+z_index = -4096
+offset_left = -16.0
+offset_top = -2228.0
+offset_right = 16.0
+offset_bottom = -180.0
+color = Color(0.274806, 0.476909, 0.669251, 1)
 
 [node name="Montains" type="Sprite2D" parent="World"]
 z_index = -3000
@@ -189,6 +241,14 @@ texture_filter = 1
 position = Vector2(271, 22)
 texture = ExtResource("5_mo382")
 offset = Vector2(0, -40.5)
+
+[node name="CloudHandler" type="Node2D" parent="World"]
+script = ExtResource("8_owwh3")
+
+[node name="Cloud" type="Sprite2D" parent="World/CloudHandler"]
+z_index = -3100
+position = Vector2(0, -123)
+texture = ExtResource("9_lj14v")
 
 [node name="Content" type="Node2D" parent="."]
 texture_filter = 1

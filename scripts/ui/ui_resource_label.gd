@@ -2,7 +2,19 @@ extends Control
 
 @onready var label: Label = $Label
 @onready var change_label: Label = $Label/ChangeLabel
+@onready var icon : TextureRect = $TextureRect
+
 var rng := RandomNumberGenerator.new()
+
+func Init(resource):
+	
+	match resource:
+		
+		Enum.Resources.MONEY:
+			icon.texture = load("res://assets/sprites/ui/icon_money.png")
+			
+		Enum.Resources.GUEST:
+			icon.texture = load("res://assets/sprites/ui/icon_guests.png")
 
 func _ready() -> void:
 	rng.randomize()

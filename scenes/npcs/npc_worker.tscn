@@ -64,7 +64,7 @@ script = ExtResource("6_lmhvm")
 [node name="RoomAssignmentIndiactor" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_4amiu")
-frame_progress = 0.367471
+frame_progress = 0.614066
 metadata/_aseprite_wizard_interface_config_ = {
 "layer_section": false,
 "pending_changes": {},
