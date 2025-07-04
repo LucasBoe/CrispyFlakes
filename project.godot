@@ -25,6 +25,8 @@ DebugDraw2D="*res://addons/debugdraw2d/DebugDraw2D.gd"
 Global="*res://scripts/global.gd"
 Enum="*res://scripts/global_enums.gd"
 ResourceHandler="*res://scripts/resources/resource_handler.gd"
+MouseInputHandler="res://scripts/mouse_input_handler.gd"
+RoomHighlighter="*res://scenes/room_highlighter.tscn"
 
 [display]
 

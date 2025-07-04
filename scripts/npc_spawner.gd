@@ -5,6 +5,8 @@ class_name NPCSpawner
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn");
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 
+var guests = []
+
 func _ready():
 	Global.NPCSpawner = self
 
@@ -24,3 +26,10 @@ func SpawnNewGuest():
 	var guest = guestScene.instantiate()
 	guest.global_position = Vector2(-320,0)
 	add_child(guest)
+	
+	guests.append(guest)
+	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
+
+func on_guest_destroy(guest):
+	guests.erase(guest)
+	ResourceHandler.change_resource(Enum.Resources.GUEST, -1)

@@ -1,0 +1,60 @@
+[gd_scene load_steps=7 format=4 uid="uid://dc2ivw8t5ba5a"]
+
+[ext_resource type="Script" uid="uid://dibl81e3mj8l5" path="res://scripts/room_highlight_handler.gd" id="1_a1pht"]
+[ext_resource type="Texture2D" uid="uid://t0b7d5g7cuuj" path="res://assets/sprites/room_highlight.png" id="2_p2okt"]
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hvbcb"]
+_data = PackedByteArray("AAADAAUAAAABAAAAIAAAABAAAACAAAAAUklGRngAAABXRUJQVlA4TGsAAAAvH8ADEB8gFkzm/8ebhkCAcKxTFSEBwWH/m/kP4C9lwCiSJCk9y+UBNSNhX4hAzYrgPq0ghvfZs4GFiP6bTdvG2Sr6COJ5sZ2FpSYnsZ+7bythx34JKUyTkHSqQcJY4iPzRkIQSwpDZop4AAA=")
+size_override = Vector2(32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lj14v"]
+atlas = SubResource("PortableCompressedTexture2D_hvbcb")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xva53"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_owwh3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lj14v")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="RoomHighlighter" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_a1pht")
+
+[node name="Rect" type="Sprite2D" parent="."]
+z_index = 3500
+texture = ExtResource("2_p2okt")
+
+[node name="Arrow" type="AnimatedSprite2D" parent="."]
+z_index = 3500
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_xva53")
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": false,
+"pending_changes": {},
+"slice_section": true
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"should_round_fps": true,
+"slice": "",
+"source": "res://assets/sprites/assignment-indicator.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "60e55888432e38d0f49cf19d155afde0"

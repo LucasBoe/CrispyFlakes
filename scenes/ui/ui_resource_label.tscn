@@ -20,7 +20,7 @@ anchors_preset = 0
 script = ExtResource("1_pu0rc")
 
 [node name="Background" type="NinePatchRect" parent="."]
-modulate = Color(0.380392, 0, 0, 1)
+modulate = Color(0, 0, 0, 1)
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 15

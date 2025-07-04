@@ -15,5 +15,6 @@ func loop():
 		var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, npc.global_position)
 		await move(closestButtery)
 		if not npc.Item.TryPutTo(closestButtery):
+			await move(closestButtery.get_random_floor_position())
 			npc.Item.DropCurrent()
 		await move(brewery)

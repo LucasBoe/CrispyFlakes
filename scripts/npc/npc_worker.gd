@@ -1,14 +1,14 @@
 extends NPC
 
 var current_job = Enum.Jobs.IDLE
+var current_job_room = null
 var pickUpOrigin
 
+var current_job_room_highlight = null
+var new_job_room_highlight = null
+var new_room_highlight = null
+
 static var picked_up_npc : NPC = null
-
-@onready var assignmentIndicator : AnimatedSprite2D = $RoomAssignmentIndiactor
-
-func _ready():
-	assignmentIndicator.visible = false
 
 func _process(delta):
 	if picked_up_npc == self:
@@ -37,15 +37,29 @@ func _input(event):
 		
 	var targetPos = null
 	
-	var room = Global.Building.get_closest_room_of_type(RoomEmpty, global_position)
+	var room : RoomEmpty = Global.Building.get_closest_room_of_type(RoomEmpty, global_position)
 	if room:
 		targetPos = room.global_position + Vector2(24,0)
 
-	if not assignmentIndicator.visible:
-		assignmentIndicator.visible = true
+	#if not assignmentIndicator.visible:
+	#	assignmentIndicator.visible = true
+	
+	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
+		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,1,0.5))
 		
-	if targetPos:
-		assignmentIndicator.global_position = targetPos + Vector2(0,-16)
+	if not new_room_highlight && room:
+		new_room_highlight = RoomHighlighter.request_rect(room)
+		
+	if targetPos && new_room_highlight:
+		new_room_highlight.global_position = room.get_center_position()
+		
+	if room && room.associatedJob:
+		if not new_job_room_highlight:
+			new_job_room_highlight = RoomHighlighter.request_arrow(room)
+		new_job_room_highlight.global_position = targetPos + Vector2(0,-16)
+	else:
+		RoomHighlighter.dispose(new_job_room_highlight)	
+		new_job_room_highlight = null
 	
 	if event.is_action_released("click"):
 		if targetPos:
@@ -57,12 +71,21 @@ func _input(event):
 			global_position = pickUpOrigin
 		picked_up_npc = null
 
-		assignmentIndicator.visible = false
+		RoomHighlighter.dispose(current_job_room_highlight)
+		current_job_room_highlight = null
+
+		RoomHighlighter.dispose(new_job_room_highlight)
+		new_job_room_highlight = null
+		
+		RoomHighlighter.dispose(new_room_highlight)
+		new_room_highlight = null		
+		
 		Navigation.set_process(true)
 		print("released")
 
 func checkJobChange(room : RoomEmpty):
 	var newJob = room.associatedJob
+	current_job_room = room
 	if not newJob:
 		newJob = Enum.Jobs.IDLE
 			
