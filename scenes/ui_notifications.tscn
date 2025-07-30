@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://cbiagv3wch5jo"]
+
+[ext_resource type="Script" uid="uid://dqi0cet2rinmj" path="res://scripts/ui_notification_handler.gd" id="1_q2bjm"]
+[ext_resource type="Theme" uid="uid://c4484uuc0plfm" path="res://assets/notification.tres" id="2_rbolc"]
+[ext_resource type="Texture2D" uid="uid://ct75bphreujht" path="res://assets/sprites/ui/icon_exclaimation.png" id="3_rbolc"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="4_ts1og"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nu268"]
+line_spacing = 0.0
+font = ExtResource("4_ts1og")
+font_size = 11
+
+[node name="UINotifications" type="Node2D"]
+script = ExtResource("1_q2bjm")
+
+[node name="Dummy" type="PanelContainer" parent="."]
+z_index = 4000
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_right = 27.0
+offset_bottom = 9.0
+grow_vertical = 0
+pivot_offset = Vector2(0, 14)
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme = ExtResource("2_rbolc")
+
+[node name="MarginContainer" type="MarginContainer" parent="Dummy"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = -3
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = -6
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Dummy/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Dummy/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = -1
+theme_override_constants/margin_bottom = 1
+
+[node name="TextureRect" type="TextureRect" parent="Dummy/MarginContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_rbolc")
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Dummy/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "TEXT"
+label_settings = SubResource("LabelSettings_nu268")

@@ -175,6 +175,13 @@ func set_roof(x : int, y : int, context : int = -1, clear : bool = false):
 		tilesRoof.set_cell(cords, 1 if y < 0 else 0, Vector2i(context,0))
 	elif clear:
 		tilesRoof.erase_cell(cords)
+		
+func get_room_from_index(index : Vector2i):
+	if floors.has(index.y):
+		if floors[index.y].has(index.x):
+			return floors[index.y][index.x]
+			
+	return null
 	
 func get_current_room_from_global_position(global_pos : Vector2):
 	var listOfAllRooms = []
@@ -201,6 +208,7 @@ func round_room_index_from_global_position(global_pos : Vector2):
 func global_position_from_room_index(room_index : Vector2i):
 	var x = room_index.x * 48 + 24
 	var y = room_index.y * -48
+	return Vector2(x,y)
 
 func is_bottom_floor(y : int):
 	if floors.is_empty():

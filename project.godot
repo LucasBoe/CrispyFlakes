@@ -27,6 +27,8 @@ Enum="*res://scripts/global_enums.gd"
 ResourceHandler="*res://scripts/resources/resource_handler.gd"
 MouseInputHandler="res://scripts/mouse_input_handler.gd"
 RoomHighlighter="*res://scenes/room_highlighter.tscn"
+PlacementHandler="*res://scripts/placement_handler.gd"
+UiNotifications="*res://scenes/ui_notifications.tscn"
 
 [display]
 
@@ -63,5 +65,6 @@ click={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
