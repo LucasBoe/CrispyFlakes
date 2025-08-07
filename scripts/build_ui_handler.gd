@@ -1,6 +1,10 @@
 extends Control
 
-@onready var buttonDummy : Button = $GridContainer/Button;
+@onready var buttonDummy : Button = $GridContainer/Button
+@onready var buttonToggle : Button = $Button
+
+var all_buttons = []
+var buttons_visible = true
 
 func _ready():
 	buttonDummy.visible = false
@@ -9,6 +13,8 @@ func _ready():
 	create_button("Bar", Global.Building.room_bar, 300)
 	create_button("Buttery", Global.Building.room_buttery, 200)
 	create_button("Brewery", Global.Building.room_brewery, 500)
+	toggle_button_visibility()
+	buttonToggle.pressed.connect(toggle_button_visibility)
 	
 func create_button(name, packedScene : PackedScene, cost : int, custom_placement_check = null):
 	var instance : Button = buttonDummy.duplicate()
@@ -16,4 +22,9 @@ func create_button(name, packedScene : PackedScene, cost : int, custom_placement
 	instance.visible = true
 	instance.text = str(name, ", ", cost, "$")
 	instance.pressed.connect(PlacementHandler.start_building.bind(packedScene, cost, custom_placement_check))
+	all_buttons.append(instance)
 	
+func toggle_button_visibility():
+	buttons_visible = !buttons_visible
+	for b in all_buttons:
+		b.visible = buttons_visible
