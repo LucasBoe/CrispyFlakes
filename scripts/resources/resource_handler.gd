@@ -9,7 +9,6 @@ func _ready():
 		resources[r] = 0
 		print("init resource", r)
 	
-		
 func change_resource(resource, change):
 	var r = resource as Enum.Resources
 	print("on change resource", r , change)

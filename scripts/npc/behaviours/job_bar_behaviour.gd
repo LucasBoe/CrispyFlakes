@@ -28,6 +28,9 @@ func loop():
 				var item = npc.Item.DropCurrent()
 				item.Destroy()
 				drinks_available = 1.0
+			else:
+				var wiskey_icon = Item.get_info(Enum.Items.WISKEY_BARREL).Tex
+				UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), wiskey_icon)
 				
 		else:		
 			await move(bar.get_random_floor_position())

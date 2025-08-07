@@ -18,7 +18,7 @@ z_index = 4000
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_right = 27.0
+offset_right = 15.0
 offset_bottom = 9.0
 grow_vertical = 0
 pivot_offset = Vector2(0, 14)
@@ -45,6 +45,7 @@ theme_override_constants/margin_top = -1
 theme_override_constants/margin_bottom = 1
 
 [node name="TextureRect" type="TextureRect" parent="Dummy/MarginContainer/HBoxContainer/MarginContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("3_rbolc")
@@ -52,5 +53,5 @@ stretch_mode = 5
 
 [node name="Label" type="Label" parent="Dummy/MarginContainer/HBoxContainer"]
 layout_mode = 2
-text = "TEXT"
+text = "#"
 label_settings = SubResource("LabelSettings_nu268")

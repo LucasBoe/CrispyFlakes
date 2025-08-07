@@ -34,10 +34,7 @@ func update_amount(new_amount: int, change: int) -> void:
 	# 3) Set text & color
 	var is_increase := change > 0
 	change_clone.text = ("+" if is_increase else "") + str(change)
-	change_clone.add_theme_color_override(
-		"font_color",
-		Color(0, 1, 0) if is_increase else Color(1, 0, 0)
-	)
+	change_clone.modulate = Color(0, 1, 0) if is_increase else Color(1, 0, 0)
 
 	# 4) Randomize start offset & tilt & reset opacity
 	change_clone.position.x += rng.randi_range(-10, 20)

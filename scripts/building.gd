@@ -183,6 +183,13 @@ func get_room_from_index(index : Vector2i):
 			
 	return null
 	
+func has_any_rooms_on_x(xx):
+	for y in floors.keys():
+		for x in floors[y]:
+			if x == xx:
+				return true
+	return false
+	
 func get_current_room_from_global_position(global_pos : Vector2):
 	var listOfAllRooms = []
 	for y in floors.keys():

@@ -20,6 +20,7 @@ func create(text, icon, color):
 	var tex : TextureRect = instance.get_node("MarginContainer/HBoxContainer/MarginContainer/TextureRect")
 	if icon:
 		tex.texture = icon
+		tex.visible = true
 	else:
 		tex.visible = false
 		
@@ -42,19 +43,33 @@ func create(text, icon, color):
 func create_notification_static(text, target_position, icon = null, color = Color.BLACK):
 	var i = create(text, icon, color)
 	i.instance.position = target_position - i.instance.pivot_offset
+	return i
 
-func create_notification_dynamic(text, target : Node2D, offset = Vector2i.ZERO, icon = null, color = Color.BLACK):
+func create_notification_dynamic(text, target : Node2D = null, offset = Vector2.ZERO, icon = null, color = Color.BLACK):
 	var i = create(text, icon, color)
+	i.target_object = target
 	i.offset = offset
+	return i
 	
 func _process(delta):
-	dummy.position = get_global_mouse_position() - dummy.pivot_offset
+	dummy.global_position = get_global_mouse_position() - dummy.pivot_offset
 	
 	for i in instances:
-		if i.target_object:
-			i.instance.position = i.target_object + i.offset
+		if i.target_object != null:
+			var p = i.target_object.global_position + i.offset
+			i.instance.global_position = p
 			
 		i.lifetime_left -= delta
 		if i.lifetime_left <= 0.0:
-			i.instance.queue_free()
-			instances.erase(i)
+			try_kill(i)
+
+func try_kill(i):
+	
+	if not i:
+		return
+		
+	if not i.instance:
+		return
+	
+	i.instance.queue_free()
+	instances.erase(i)

@@ -8,3 +8,4 @@ func loop():
 	while isRunning:
 		await pause(3)
 		await move(npc.Navigation.get_random_target())
+		UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32))
