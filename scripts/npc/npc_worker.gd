@@ -1,4 +1,5 @@
 extends NPC
+class_name NPCWorker
 
 var current_job = Enum.Jobs.IDLE
 var current_job_room = null
@@ -18,6 +19,7 @@ func _process(delta):
 		return
 		
 	Behaviour.set_behaviour_from_job(current_job);
+	JobHandler.on_job_changed(self, null, current_job)
 
 func click_on_self():
 	
@@ -84,13 +86,14 @@ func _input(event):
 		print("released")
 
 func checkJobChange(room : RoomEmpty):
-	var newJob = room.associatedJob
+	var new_job = room.associatedJob
 	current_job_room = room
-	if not newJob:
-		newJob = Enum.Jobs.IDLE
+	if not new_job:
+		new_job = Enum.Jobs.IDLE
 			
-	if current_job != newJob:
-		print(str("change job to ", Enum.Jobs.keys()[newJob]))	
-		current_job = newJob
+	if current_job != new_job:
+		print(str("change job to ", Enum.Jobs.keys()[new_job]))
+		JobHandler.on_job_changed(self, current_job, new_job)
+		current_job = new_job
 		
 		Behaviour.set_behaviour_from_job(current_job);

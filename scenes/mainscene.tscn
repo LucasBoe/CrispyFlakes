@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=48 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -17,11 +17,14 @@
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
-[ext_resource type="Texture2D" uid="uid://cxjv0hvnnjg5p" path="res://assets/sprites/ui/build-menu-toggle-button-sheet.png" id="9_w0i17"]
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
-[ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="10_vh0bn"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
+[ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
+[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
+[ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
+[ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -123,30 +126,6 @@ sources/0 = SubResource("TileSetAtlasSource_jifap")
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w0i17"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rt53s"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4o78i"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(0, 0, 24, 24)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_60k3h"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(48, 0, 24, 24)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vh0bn"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(24, 0, 24, 24)
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jtb7t"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i3302"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fcesb"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1f2rr"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gejso"]
 
 [node name="MainScene" type="Node"]
 
@@ -338,6 +317,67 @@ offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("6_lj14v")
 
+[node name="UIWorkers" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("19_6ravm")
+
+[node name="Button" type="Button" parent="UI/UIWorkers"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -58.0
+offset_top = 8.0
+offset_right = -34.0
+offset_bottom = 32.0
+grow_horizontal = 0
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("22_4o78i")
+icon_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIWorkers"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -48.0
+offset_top = 40.0
+offset_right = -8.0
+offset_bottom = 80.0
+grow_horizontal = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIWorkers/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIWorkers/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIWorkers/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "No Jobs to see here...
+line"
+
 [node name="UIBuild" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
@@ -358,15 +398,9 @@ offset_top = 8.0
 offset_right = -8.0
 offset_bottom = 32.0
 grow_horizontal = 0
-theme_override_styles/normal = SubResource("StyleBoxTexture_4o78i")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_60k3h")
-theme_override_styles/hover = SubResource("StyleBoxTexture_vh0bn")
-theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_jtb7t")
-theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_i3302")
-theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_fcesb")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_1f2rr")
-theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_3ou18")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_gejso")
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("21_hpv7r")
+icon_alignment = 1
 
 [node name="GridContainer" type="VBoxContainer" parent="UI/UIBuild"]
 layout_mode = 1
@@ -379,12 +413,13 @@ offset_top = 36.0
 offset_right = -8.0
 grow_horizontal = 0
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="Button" type="Button" parent="UI/UIBuild/GridContainer"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 8
-theme = ExtResource("10_vh0bn")
+theme = ExtResource("22_hpv7r")
 text = "toast"
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]

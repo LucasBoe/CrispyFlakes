@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxjv0hvnnjg5p"
-path="res://.godot/imported/build-menu-toggle-button-sheet.png-a7fed720be9586ad8ab9edc82585a2e7.ctex"
+uid="uid://1dxspjogn75f"
+path="res://.godot/imported/icon_people.png-16e43c31b6ef599a697d1ee3d1a8a092.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/build-menu-toggle-button-sheet.png"
-dest_files=["res://.godot/imported/build-menu-toggle-button-sheet.png-a7fed720be9586ad8ab9edc82585a2e7.ctex"]
+source_file="res://assets/sprites/ui/icon_people.png"
+dest_files=["res://.godot/imported/icon_people.png-16e43c31b6ef599a697d1ee3d1a8a092.ctex"]
 
 [params]
 
