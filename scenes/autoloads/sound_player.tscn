@@ -1,0 +1,42 @@
+[gd_scene load_steps=8 format=3 uid="uid://30u0ocyt7b1b"]
+
+[ext_resource type="Script" uid="uid://duxcoiiie55lx" path="res://scripts/autoloads/sound_player.gd" id="1_urxkt"]
+[ext_resource type="AudioStream" uid="uid://ciffirf75ummr" path="res://assets/audio/sounds/click_down.wav" id="2_ex2sn"]
+[ext_resource type="AudioStream" uid="uid://brm2uqlo8yyle" path="res://assets/audio/sounds/click_up.wav" id="3_bu3la"]
+[ext_resource type="AudioStream" uid="uid://dpnmp6wwppjny" path="res://assets/audio/sounds/construction.wav" id="4_wjscn"]
+[ext_resource type="Script" uid="uid://b53o5dtlde2vg" path="res://scripts/custom_audio_stream_player.gd" id="5_q5ukx"]
+[ext_resource type="AudioStream" uid="uid://cqn4a4q88s784" path="res://assets/audio/sounds/coin.wav" id="6_vb5iq"]
+[ext_resource type="AudioStream" uid="uid://0r0dwugdb41c" path="res://assets/audio/sounds/treasure.wav" id="7_l6ka0"]
+
+[node name="SoundPlayer" type="Node2D"]
+script = ExtResource("1_urxkt")
+
+[node name="MouseClickDown" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_ex2sn")
+volume_db = -12.0
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"
+
+[node name="MouseClickUp" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_bu3la")
+volume_db = -18.0
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"
+
+[node name="ConstructionPlaced" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_wjscn")
+volume_db = -8.0
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"
+
+[node name="Coin" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_vb5iq")
+volume_db = -8.0
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"
+
+[node name="Treasure" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_l6ka0")
+volume_db = -8.0
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"

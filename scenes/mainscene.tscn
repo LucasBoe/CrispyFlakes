@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=54 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -19,7 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
 [ext_resource type="Texture2D" uid="uid://cxjv0hvnnjg5p" path="res://assets/sprites/ui/build-menu-toggle-button-sheet.png" id="9_w0i17"]
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
-[ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/sounds/music/Sun Up Gunned Down.mp3" id="10_jifap"]
+[ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="10_vh0bn"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 
@@ -58,40 +58,6 @@ animations = [{
 "name": &"default",
 "speed": 5.0
 }]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rt53s"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w0i17"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vh0bn"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_60k3h"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o78i"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hpv7r"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6ravm"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wkmvq"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jj3vu"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wvm38"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vh0bn"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(24, 0, 24, 24)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_60k3h"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(48, 0, 24, 24)
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4o78i"]
-texture = ExtResource("9_w0i17")
-region_rect = Rect2(0, 0, 24, 24)
 
 [sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hm37i"]
 _data = PackedByteArray("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")
@@ -136,6 +102,52 @@ texture_region_size = Vector2i(48, 48)
 tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wvm38"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jj3vu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_wkmvq"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_6ravm"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_hpv7r"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4o78i"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_60k3h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vh0bn"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w0i17"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rt53s"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4o78i"]
+texture = ExtResource("9_w0i17")
+region_rect = Rect2(0, 0, 24, 24)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_60k3h"]
+texture = ExtResource("9_w0i17")
+region_rect = Rect2(48, 0, 24, 24)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vh0bn"]
+texture = ExtResource("9_w0i17")
+region_rect = Rect2(24, 0, 24, 24)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jtb7t"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i3302"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_fcesb"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1f2rr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gejso"]
+
 [node name="MainScene" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -150,126 +162,7 @@ script = ExtResource("4_l58e3")
 z_index = 4096
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_w0i17")
-frame_progress = 0.177752
-
-[node name="UI" type="CanvasLayer" parent="."]
-
-[node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
-
-[node name="UIResources" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("3_l58e3")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 24.0
-grow_horizontal = 2
-
-[node name="UITime" type="Control" parent="UI"]
-texture_filter = 1
-layout_mode = 3
-anchors_preset = 10
-anchor_right = 1.0
-grow_horizontal = 2
-script = ExtResource("6_rt53s")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UITime"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -40.0
-offset_top = 8.0
-offset_right = 40.0
-offset_bottom = 24.0
-grow_horizontal = 2
-
-[node name="Button" type="Button" parent="UI/UITime/HBoxContainer"]
-custom_minimum_size = Vector2(16, 0)
-layout_mode = 2
-theme_type_variation = &"FlatButton"
-theme_override_styles/focus = SubResource("StyleBoxEmpty_rt53s")
-theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_w0i17")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_vh0bn")
-theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_60k3h")
-theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_4o78i")
-theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_hpv7r")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_6ravm")
-theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_wkmvq")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_jj3vu")
-theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_wvm38")
-theme_override_styles/normal = SubResource("StyleBoxEmpty_q3hll")
-script = ExtResource("6_4amiu")
-
-[node name="Background" type="ColorRect" parent="UI/UITime/HBoxContainer/Button"]
-layout_mode = 1
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 17.0
-offset_bottom = 17.0
-color = Color(0, 0, 0, 1)
-
-[node name="Texture" type="TextureRect" parent="UI/UITime/HBoxContainer/Button"]
-layout_mode = 0
-offset_left = -1.0
-offset_top = -1.0
-offset_right = 15.0
-offset_bottom = 15.0
-texture = ExtResource("6_lj14v")
-
-[node name="UIBuild" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("9_60k3h")
-
-[node name="Button" type="Button" parent="UI/UIBuild"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -32.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 32.0
-grow_horizontal = 0
-theme_override_styles/hover = SubResource("StyleBoxTexture_vh0bn")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_60k3h")
-theme_override_styles/normal = SubResource("StyleBoxTexture_4o78i")
-
-[node name="GridContainer" type="VBoxContainer" parent="UI/UIBuild"]
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -119.0
-offset_top = 36.0
-offset_right = -8.0
-grow_horizontal = 0
-grow_vertical = 2
-
-[node name="Button" type="Button" parent="UI/UIBuild/GridContainer"]
-custom_minimum_size = Vector2(32, 16)
-layout_mode = 2
-size_flags_horizontal = 8
-theme = ExtResource("10_vh0bn")
-text = "brewery, 30$"
+frame_progress = 0.8107657
 
 [node name="World" type="Node2D" parent="."]
 texture_filter = 1
@@ -369,7 +262,133 @@ script = ExtResource("10_0o2or")
 [node name="ItemSpawner" type="Node2D" parent="Content"]
 script = ExtResource("16_4amiu")
 
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
+
+[node name="UIResources" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_l58e3")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 24.0
+grow_horizontal = 2
+
+[node name="UITime" type="Control" parent="UI"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+script = ExtResource("6_rt53s")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UITime"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -40.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 24.0
+grow_horizontal = 2
+
+[node name="Button" type="Button" parent="UI/UITime/HBoxContainer"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+theme_type_variation = &"FlatButton"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_q3hll")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_wvm38")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_jj3vu")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_wkmvq")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_6ravm")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_hpv7r")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_4o78i")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_60k3h")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_vh0bn")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_w0i17")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_rt53s")
+script = ExtResource("6_4amiu")
+
+[node name="Background" type="ColorRect" parent="UI/UITime/HBoxContainer/Button"]
+layout_mode = 1
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 17.0
+offset_bottom = 17.0
+color = Color(0, 0, 0, 1)
+
+[node name="Texture" type="TextureRect" parent="UI/UITime/HBoxContainer/Button"]
+layout_mode = 0
+offset_left = -1.0
+offset_top = -1.0
+offset_right = 15.0
+offset_bottom = 15.0
+texture = ExtResource("6_lj14v")
+
+[node name="UIBuild" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_60k3h")
+
+[node name="Button" type="Button" parent="UI/UIBuild"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 32.0
+grow_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxTexture_4o78i")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_60k3h")
+theme_override_styles/hover = SubResource("StyleBoxTexture_vh0bn")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_jtb7t")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_i3302")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_fcesb")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_1f2rr")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_gejso")
+
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIBuild"]
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -119.0
+offset_top = 36.0
+offset_right = -8.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="UI/UIBuild/GridContainer"]
+custom_minimum_size = Vector2(32, 16)
+layout_mode = 2
+size_flags_horizontal = 8
+theme = ExtResource("10_vh0bn")
+text = "toast"
+
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")
-volume_db = -12.0
+volume_db = -18.0
+autoplay = true
 parameters/looping = false

@@ -11,11 +11,21 @@ func _ready():
 	
 func change_resource(resource, change):
 	var r = resource as Enum.Resources
-	print("on change resource", r , change)
+	print("on change resource ", Enum.Resources.keys()[r], " (", change, ")")
 	resources[r] += change
 	on_resource_changed.emit(r, resources[r], change)
 	
+	#if r == Enum.Resources.MONEY:
+		#for c in clamp(change, 1, 5):
+			#SoundPlayer.coin.play_random_pitch()
+			#await get_tree().create_timer(.05).timeout
+			
+	
 func add_animated(resource, amount, global_pos):
+	
+	if resource == Enum.Resources.MONEY:
+		SoundPlayer.treasure.play_random_pitch()
+	
 	var animation_duration = 1.0
 	on_animate_resource_add.emit(resource, amount, global_pos, animation_duration)
 	await get_tree().create_timer(animation_duration).timeout

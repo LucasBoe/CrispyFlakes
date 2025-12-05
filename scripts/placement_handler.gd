@@ -61,6 +61,7 @@ func _process(delta):
 	
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if can_place:
+			SoundPlayer.construction_placed.play()
 			Global.Building.set_room(building, location.x, location.y)
 			Global.Building.update_foreground_tiles()
 			stop_building()

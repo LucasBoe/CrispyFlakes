@@ -13,6 +13,7 @@ const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn"
 const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
 const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
 const room_table: PackedScene = preload("res://scenes/rooms/room_table.tscn")
+const room_well: PackedScene = preload("res://scenes/rooms/room_well.tscn")
 
 enum levelDifference {
 	SAME,
@@ -49,6 +50,7 @@ func _ready():
 	set_room(room_bar, -1,0, false)
 	set_room(room_buttery, 0,0, false)
 	set_room(room_stairs, 1,0, false)
+	set_room(room_well, 4,0, false)
 	set_room(room_brewery, 0,-1, false)
 	set_room(room_stairs, 1,-1, false)
 	
@@ -86,27 +88,17 @@ func update_foreground_tiles():
 	var maxFloorLevel = -1;
 	var triplets = []
 	
-	var CompareLevel = func(floorHeightsOverX : Dictionary, x : int, offset : int):
-		
-		if not floorHeightsOverX.has(x + offset):
-			return levelDifference.LOWER
-		
-		var y = floorHeightsOverX[x]
-		var otherY = floorHeightsOverX[x + offset]
-		
-		if y == otherY:
-			return levelDifference.SAME
-		elif y > otherY:
-			return levelDifference.LOWER
-		else:
-			return levelDifference.HIGHER
-	
 	for y in floors.keys():
 		listOfRoomIndexesOnFloor[y] = []
 		
 		maxFloorLevel = max(maxFloorLevel, y)
 		
 		for x in floors[y].keys():
+			
+			#skip all rooms that are outside rooms
+			if floors[y][x].isOutsideRoom:
+				continue
+			
 			listOfRoomIndexesOnFloor[y].append(x)
 			listOfRoomIndexesOnFloor[y].sort()
 			
@@ -132,8 +124,8 @@ func update_foreground_tiles():
 	for x in listOfXPositions:
 		var y = maxFloorHeightAtX[x];
 		
-		var previousLevel = CompareLevel.call(maxFloorHeightAtX, x, - 1)
-		var nextLevel = CompareLevel.call(maxFloorHeightAtX, x, + 1)
+		var previousLevel = compare_level.call(maxFloorHeightAtX, x, - 1)
+		var nextLevel = compare_level.call(maxFloorHeightAtX, x, + 1)
 			
 		if y == maxFloorLevel and previousLevel == levelDifference.SAME and nextLevel == levelDifference.SAME:
 			triplets.append(Vector2i(x,y))
@@ -163,6 +155,21 @@ func update_foreground_tiles():
 		set_roof(x-1,y, -1, true)
 		set_roof(x, y, roofIndexMap.SIGN)
 		set_roof(x+1,y, -1, true)	
+		
+func compare_level(floorHeightsOverX : Dictionary, x : int, offset : int):
+
+		if not floorHeightsOverX.has(x + offset):
+			return levelDifference.LOWER
+		
+		var y = floorHeightsOverX[x]
+		var otherY = floorHeightsOverX[x + offset]
+		
+		if y == otherY:
+			return levelDifference.SAME
+		elif y > otherY:
+			return levelDifference.LOWER
+		else:
+			return levelDifference.HIGHER
 		
 func set_wall(x : int, y : int, context : int = -1):
 	tilesWalls.set_cell(Vector2i(x,y*-1 -1), 1 if y < 0 else 0, Vector2i(context,0))

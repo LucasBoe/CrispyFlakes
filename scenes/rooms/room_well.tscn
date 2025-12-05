@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://ds54o420pb2t7"]
+
+[ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scenes/rooms/room_well.gd" id="1_bkap1"]
+[ext_resource type="Texture2D" uid="uid://dkygfkyxds8yp" path="res://assets/sprites/well.png" id="2_d5ivy"]
+
+[node name="Room_Well" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_bkap1")
+
+[node name="Well" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, 0)
+texture = ExtResource("2_d5ivy")
+offset = Vector2(0, -16.5)

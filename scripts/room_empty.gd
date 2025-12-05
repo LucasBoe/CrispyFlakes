@@ -5,6 +5,7 @@ var x
 var y
 var isBasement
 var associatedJob = null
+var isOutsideRoom = false
 
 @onready var backWallSprite2D = $"Back-wall"
 
@@ -16,7 +17,9 @@ func InitRoom(x : int, y : int):
 	self.x = x
 	self.y = y
 	isBasement = y < 0
-	backWallSprite2D.texture = backwallBasement if isBasement else backwallDefault
+	
+	if not isOutsideRoom:
+		backWallSprite2D.texture = backwallBasement if isBasement else backwallDefault
 
 func get_random_floor_position():
 	var offset = Vector2(randi_range(4, 44), 0)
