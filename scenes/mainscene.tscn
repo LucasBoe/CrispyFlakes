@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=51 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -21,10 +21,13 @@
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
+[ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
+[ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/menu_ui_handler.gd" id="20_wvm38"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -317,7 +320,26 @@ offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("6_lj14v")
 
-[node name="UIWorkers" type="Control" parent="UI"]
+[node name="TextureProgressBar" type="TextureProgressBar" parent="UI/UITime"]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -8.0
+offset_top = 30.0
+offset_right = 8.0
+offset_bottom = 46.0
+grow_horizontal = 2
+max_value = 1.0
+step = 0.01
+value = 0.33
+fill_mode = 4
+texture_under = ExtResource("19_wkmvq")
+texture_progress = ExtResource("19_wkmvq")
+tint_under = Color(0, 0, 0, 1)
+
+[node name="UIMenu" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -325,34 +347,36 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("20_wvm38")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="UIWorkers" type="Control" parent="UI/UIMenu/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
 script = ExtResource("19_6ravm")
 
-[node name="Button" type="Button" parent="UI/UIWorkers"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIWorkers"]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -58.0
-offset_top = 8.0
-offset_right = -34.0
-offset_bottom = 32.0
-grow_horizontal = 0
-theme = ExtResource("22_hpv7r")
-icon = ExtResource("22_4o78i")
-icon_alignment = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UIWorkers"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -48.0
-offset_top = 40.0
-offset_right = -8.0
-offset_bottom = 80.0
+offset_left = -91.0
+offset_bottom = 37.0
 grow_horizontal = 0
 
-[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIWorkers/MarginContainer"]
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer"]
 layout_mode = 2
 texture = ExtResource("21_6ravm")
 region_rect = Rect2(16, 0, 8, 8)
@@ -361,66 +385,69 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UIWorkers/MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="GridContainer" type="VBoxContainer" parent="UI/UIWorkers/MarginContainer/MarginContainer"]
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="UI/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "No Jobs to see here...
 line"
 
-[node name="UIBuild" type="Control" parent="UI"]
-layout_mode = 3
+[node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("9_60k3h")
+
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("9_60k3h")
 
-[node name="Button" type="Button" parent="UI/UIBuild"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -32.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 32.0
-grow_horizontal = 0
-theme = ExtResource("22_hpv7r")
-icon = ExtResource("21_hpv7r")
-icon_alignment = 1
-
-[node name="GridContainer" type="VBoxContainer" parent="UI/UIBuild"]
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -119.0
-offset_top = 36.0
-offset_right = -8.0
-grow_horizontal = 0
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="Button" type="Button" parent="UI/UIBuild/GridContainer"]
+[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIBuild/GridContainer"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
+theme_override_font_sizes/font_size = 9
 text = "toast"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -57.0
+offset_top = 8.0
+offset_right = -5.0
+offset_bottom = 32.0
+grow_horizontal = 0
+
+[node name="Button_Workers" type="Button" parent="UI/UIMenu/HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme = ExtResource("26_jj3vu")
+icon = ExtResource("22_4o78i")
+icon_alignment = 1
+
+[node name="Button_Build" type="Button" parent="UI/UIMenu/HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme = ExtResource("26_jj3vu")
+icon = ExtResource("21_hpv7r")
+icon_alignment = 1
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")
