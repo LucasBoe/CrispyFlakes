@@ -23,7 +23,7 @@ func set_tab(tab):
 	(SoundPlayer.mouse_click_down if visible else SoundPlayer.mouse_click_up).play()
 	
 	if tab != null and tab == visible_tab:
-		tab.hide()
+		tab.visible = not tab.visible
 	else:
 		for t in all_tabs:
 			t.visible = t == tab

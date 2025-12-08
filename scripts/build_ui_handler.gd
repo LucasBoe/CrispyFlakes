@@ -11,6 +11,7 @@ func _ready():
 	create_button("Bar", Global.Building.room_bar, 300)
 	create_button("Buttery", Global.Building.room_buttery, 200)
 	create_button("Brewery", Global.Building.room_brewery, 500)
+	buttonDummy.hide()
 	
 func create_button(name, packedScene : PackedScene, cost : int, custom_placement_check = null):
 	var instance : Button = buttonDummy.duplicate()
