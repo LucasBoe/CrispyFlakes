@@ -1,4 +1,4 @@
-[gd_scene load_steps=51 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=57 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -14,7 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="7_bw6rn"]
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="8_jifap"]
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
-[ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/build_ui_handler.gd" id="9_60k3h"]
+[ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="9_bw6rn"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
@@ -22,12 +22,17 @@
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
 [ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
-[ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/menu_ui_handler.gd" id="20_wvm38"]
+[ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/ui/menu_ui_handler.gd" id="20_wvm38"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
+[ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
+[ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
+[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
+[ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -129,6 +134,8 @@ sources/0 = SubResource("TileSetAtlasSource_jifap")
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w0i17"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rt53s"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 
 [node name="MainScene" type="Node"]
 
@@ -245,8 +252,6 @@ script = ExtResource("10_0o2or")
 script = ExtResource("16_4amiu")
 
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
 
 [node name="UIResources" type="Control" parent="UI"]
 layout_mode = 3
@@ -402,6 +407,11 @@ theme = ExtResource("22_hpv7r")
 text = "No Jobs to see here...
 line"
 
+[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Hire"
+
 [node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
@@ -421,7 +431,8 @@ custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
-theme_override_font_sizes/font_size = 9
+theme_override_fonts/font = ExtResource("25_q3hll")
+theme_override_font_sizes/font_size = 11
 text = "toast"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu"]
@@ -449,8 +460,129 @@ theme = ExtResource("26_jj3vu")
 icon = ExtResource("21_hpv7r")
 icon_alignment = 1
 
+[node name="UIFullscreen" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="UIHire" type="PanelContainer" parent="UI/UIFullscreen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -30.5
+offset_right = 72.0
+offset_bottom = 30.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("28_1f2rr")
+
+[node name="ButtonDrag" type="Button" parent="UI/UIFullscreen/UIHire"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIFullscreen/UIHire"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIFullscreen/UIHire/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("28_3ou18")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIFullscreen/UIHire/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("29_1f2rr")
+text = "Hire more people"
+
+[node name="ColorRect" type="ColorRect" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Button" type="Button" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+script = ExtResource("31_fcesb")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Name"
+
+[node name="Label2" type="Label" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = "12$ / D"
+horizontal_alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="ButtonClose" type="Button" parent="UI/UIFullscreen/UIHire/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Back"
+
+[node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
+visible = false
+
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")
 volume_db = -18.0
 autoplay = true
-parameters/looping = false
+parameters/looping = true

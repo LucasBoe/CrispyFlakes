@@ -19,8 +19,19 @@ func change_resource(resource, change):
 		#for c in clamp(change, 1, 5):
 			#SoundPlayer.coin.play_random_pitch()
 			#await get_tree().create_timer(.05).timeout
+
+func has(resource, amount):
+	if not resources.has(resource):
+		return false
+		
+	if resources[resource] < amount:
+		return false
+		
+	return true
 			
-	
+func has_money(amount) -> bool:
+	return has(Enum.Resources.MONEY, amount)
+
 func add_animated(resource, amount, global_pos):
 	
 	if resource == Enum.Resources.MONEY:

@@ -32,7 +32,7 @@ func _process(delta):
 	var mouse = get_global_mouse_position()
 	location = Global.Building.round_room_index_from_global_position(mouse + Vector2(24,0))
 	has_valid_target = Global.Building.get_room_from_index(location) == null
-	var has_money = ResourceHandler.resources[Enum.Resources.MONEY] >= cost
+	var has_money = ResourceHandler.has_money(cost)
 	
 	# check adjacent_rooms
 	var has_adjacent_room_or_is_ground_floor = false
