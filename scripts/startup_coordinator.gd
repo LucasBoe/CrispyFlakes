@@ -8,7 +8,7 @@ func _process(delta):
 		
 	ResourceHandler.change_resource(Enum.Resources.MONEY, 500)
 	
-	for i in 4:
+	for i in 2:
 		Global.NPCSpawner.SpawnNewWorker()
 		
 	done = true

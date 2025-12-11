@@ -1,9 +1,7 @@
 extends Control
-
 class_name UIRessourceHandler
 
 const labelScene : PackedScene = preload("res://scenes/ui/ui_resource_label.tscn")
-
 
 var labelResourceDict : Dictionary = {}
 

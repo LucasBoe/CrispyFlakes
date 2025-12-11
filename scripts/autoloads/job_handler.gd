@@ -4,7 +4,6 @@ var workers : Dictionary[Enum.Jobs, Array]
 
 var payment_total = 0
 var payment_cycle_progression = 0.0
-var payment_cycle_duration = 60.0
 
 signal on_jobs_changed_signal
 
@@ -12,6 +11,14 @@ func on_job_changed(npc : NPCWorker, previous_job, new_job):
 	
 	if npc is not NPCWorker:
 		return
+		
+	if previous_job == null:
+		for job in workers.keys():
+			for worker in workers[job]:
+				if npc == worker:
+					previous_job = job
+		
+	print_debug("npc ", npc.get_script().get_global_name(), " changed job from ",previous_job ," to ", new_job)
 	
 	if workers.has(previous_job):
 		workers[previous_job].erase(npc)
@@ -31,7 +38,7 @@ func on_job_changed(npc : NPCWorker, previous_job, new_job):
 	on_jobs_changed_signal.emit()
 	
 func _process(delta):
-	payment_cycle_progression += delta / payment_cycle_duration
+	payment_cycle_progression += delta / Global.DAY_DURATION
 	if payment_cycle_progression >= 1.0:
 		payment_cycle_progression = 0.0
 		execute_payments()

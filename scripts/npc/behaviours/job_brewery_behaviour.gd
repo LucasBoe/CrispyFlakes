@@ -6,7 +6,7 @@ var brewery
 func loop():
 	brewery = Global.Building.get_closest_room_of_type(RoomBrewery, npc.global_position)
 	
-	while isRunning:
+	while is_running:
 		await progress(6, brewery.progressBar)
 		#await pause(1)
 		var itemSpawnPos = brewery.get_random_floor_position()

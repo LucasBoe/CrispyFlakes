@@ -2,7 +2,7 @@ extends Node
 class_name Behaviour
 
 var npc : NPC
-var isRunning = true
+var is_running = true
 
 func _init():
 	start_loop()
@@ -10,7 +10,9 @@ func _init():
 func start_loop():	
 	while not npc:
 		await endOfFrame()	
-	loop()
+		
+	await loop()
+	npc.Behaviour.clear_behaviour()
 	
 func loop():
 	print("loop base, make sure to override in inheriting scripts")

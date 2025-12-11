@@ -14,29 +14,34 @@ script = ExtResource("1_urxkt")
 [node name="MouseClickDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_ex2sn")
 volume_db = -12.0
+bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"
 
 [node name="MouseClickUp" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_bu3la")
 volume_db = -18.0
+bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"
 
 [node name="ConstructionPlaced" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_wjscn")
 volume_db = -8.0
+bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"
 
 [node name="Coin" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_vb5iq")
 volume_db = -8.0
+bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"
 
 [node name="Treasure" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_l6ka0")
 volume_db = -8.0
+bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"

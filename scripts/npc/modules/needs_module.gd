@@ -6,6 +6,8 @@ var Mood : Need
 var Drunkenness : Need
 var Energy : Need
 
+var npc
+
 func _ready():
 	Money = new_need()
 	Mood = new_need()
@@ -17,7 +19,7 @@ func _ready():
 	Drunkenness.Strength = randf_range(0.0, 0.2)
 	Energy.Strength = randf_range(0.5, 1.0)
 	
-	var npc = get_parent() as NPCGuest
+	npc = get_parent() as NPCGuest
 	if npc:
 		pass
 		

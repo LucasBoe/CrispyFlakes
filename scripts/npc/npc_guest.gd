@@ -9,5 +9,6 @@ func _process(delta):
 		return
 		
 	var newBehaviour = Needs.get_behaviour_from_needs()
+	print_debug("set behaviour to ", newBehaviour.get_global_name())
 	Behaviour.set_behaviour(newBehaviour)
 	

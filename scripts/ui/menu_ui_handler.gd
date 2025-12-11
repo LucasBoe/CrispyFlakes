@@ -3,9 +3,11 @@ class_name MenuUIHandler
 
 @onready var worker_tab = $MarginContainer/UIWorkers
 @onready var build_tab = $MarginContainer/UIBuild
+@onready var settings_tab = $MarginContainer/UISettings
 
 @onready var worker_button = $HBoxContainer/Button_Workers
 @onready var build_button = $HBoxContainer/Button_Build
+@onready var settings_button = $HBoxContainer/Button_Settings
 
 var visible_tab = null
 var all_tabs : Array
@@ -13,6 +15,7 @@ var all_tabs : Array
 func _ready():
 	bind_slot(worker_button, worker_tab)
 	bind_slot(build_button, build_tab)
+	bind_slot(settings_button, settings_tab)
 	set_tab(null)
 	
 func bind_slot(button, tab):

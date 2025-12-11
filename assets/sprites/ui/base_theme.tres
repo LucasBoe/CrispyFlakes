@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=17 format=3 uid="uid://cqa0uge758fkj"]
+[gd_resource type="Theme" load_steps=20 format=3 uid="uid://cqa0uge758fkj"]
 
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="1_1wyd7"]
 [ext_resource type="FontFile" uid="uid://7am1h57ldd6" path="res://examples_dd3d/PixelatedElegance.ttf" id="1_5wple"]
+[ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/hande_8x8.png" id="3_trfhs"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="3_ytpqb"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1wyd7"]
@@ -50,6 +51,21 @@ region_rect = Rect2(16, 0, 8, 8)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vly6k"]
 
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_7qa4f"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+color = Color(1, 1, 1, 1)
+grow_begin = -3.0
+grow_end = -3.0
+thickness = 3
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_qfkch"]
+color = Color(1, 1, 1, 1)
+grow_begin = -3.0
+grow_end = -3.0
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ytpqb"]
 bg_color = Color(1, 1, 1, 1)
 draw_center = false
@@ -89,6 +105,11 @@ Button/styles/normal = SubResource("StyleBoxTexture_5wple")
 Button/styles/normal_mirrored = SubResource("StyleBoxEmpty_c80o7")
 Button/styles/pressed = SubResource("StyleBoxTexture_7qa4f")
 Button/styles/pressed_mirrored = SubResource("StyleBoxEmpty_vly6k")
+HSlider/icons/grabber = ExtResource("3_trfhs")
+HSlider/icons/grabber_highlight = ExtResource("3_trfhs")
+HSlider/styles/grabber_area = SubResource("StyleBoxLine_7qa4f")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxLine_7qa4f")
+HSlider/styles/slider = SubResource("StyleBoxLine_qfkch")
 Label/constants/line_spacing = -3
 Label/font_sizes/font_size = 11
 Label/fonts/font = ExtResource("3_ytpqb")

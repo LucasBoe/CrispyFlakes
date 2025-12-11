@@ -90,12 +90,12 @@ func _input(event):
 func checkJobChange(room : RoomEmpty):
 	var new_job = room.associatedJob
 	current_job_room = room
-	if not new_job:
+	
+	if new_job == null:
 		new_job = Enum.Jobs.IDLE
 			
 	if current_job != new_job:
 		print(str("change job to ", Enum.Jobs.keys()[new_job]))
 		JobHandler.on_job_changed(self, current_job, new_job)
 		current_job = new_job
-		
 		Behaviour.set_behaviour_from_job(current_job);

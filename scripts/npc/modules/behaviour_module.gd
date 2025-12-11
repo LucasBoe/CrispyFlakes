@@ -16,9 +16,9 @@ func _ready():
 	
 func clear_behaviour():
 	if has_behaviour:
-		var previous = behaviourHost.get_script()
+		var previous = get_behaviour()
 		if previous is Behaviour:
-			previous.isRunning = false
+			previous.is_running = false
 			
 	behaviourHost.set_process(false)
 	has_behaviour = false
@@ -35,15 +35,17 @@ func set_behaviour_from_job(job : Enum.Jobs):
 		Enum.Jobs.BAR:
 			set_behaviour(JobBarBehaviour)
 	
-func set_behaviour(behaviour):
-	
+func set_behaviour(behaviour):	
 	if has_behaviour:
-		var previous = behaviourHost.get_script()
+		var previous = get_behaviour()
 		if previous is Behaviour:
-			previous.isRunning = false
+			previous.is_running = false
 			
+	behaviourHost.set_script(null)
 	behaviourHost.set_script(behaviour)
 	(behaviourHost as Behaviour).npc = npc
 	behaviourHost.set_process(true)
 	has_behaviour = true
 	
+func get_behaviour():
+	return behaviourHost.get_script()

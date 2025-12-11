@@ -7,7 +7,7 @@ var drinks_available = 0.0
 func loop():
 	bar = Global.Building.get_closest_room_of_type(RoomBar, npc.global_position)
 	
-	while isRunning:
+	while is_running:
 		
 		await pause(1)
 		
@@ -26,7 +26,6 @@ func loop():
 				var buttery : RoomButtery = valid_butteries[0][0]
 				await move(buttery)
 				wiskey_item = buttery.Take(Enum.Items.WISKEY_BARREL)
-				
 			if wiskey_item != null:
 				npc.Item.PickUp(wiskey_item)
 				await move(bar.get_random_floor_position())

@@ -7,6 +7,9 @@ const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 
 var guests = []
 
+var guests_per_day_rate = 3.0
+var next_guest_progression = 0.0
+
 func _ready():
 	Global.NPCSpawner = self
 
@@ -14,6 +17,11 @@ func _process(delta):
 	if Input.is_key_pressed(KEY_P):
 		SpawnNewGuest()
 		
+	next_guest_progression += delta * (guests_per_day_rate / Global.DAY_DURATION)
+	if next_guest_progression > 1.0:
+		SpawnNewGuest()
+		next_guest_progression = 0.0	
+	
 func SpawnNewWorker():
 	var worker = workerScene.instantiate()
 	worker.global_position = Vector2(-320,0)
