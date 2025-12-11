@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=15 format=3 uid="uid://cqa0uge758fkj"]
+[gd_resource type="Theme" load_steps=17 format=3 uid="uid://cqa0uge758fkj"]
 
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="1_1wyd7"]
 [ext_resource type="FontFile" uid="uid://7am1h57ldd6" path="res://examples_dd3d/PixelatedElegance.ttf" id="1_5wple"]
@@ -50,6 +50,25 @@ region_rect = Rect2(16, 0, 8, 8)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vly6k"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ytpqb"]
+bg_color = Color(1, 1, 1, 1)
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_trfhs"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+color = Color(1, 1, 1, 1)
+grow_begin = 0.0
+grow_end = 0.0
+thickness = 8
+
 [resource]
 Button/colors/font_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
 Button/colors/font_focus_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
@@ -73,3 +92,5 @@ Button/styles/pressed_mirrored = SubResource("StyleBoxEmpty_vly6k")
 Label/constants/line_spacing = -3
 Label/font_sizes/font_size = 11
 Label/fonts/font = ExtResource("3_ytpqb")
+ProgressBar/styles/background = SubResource("StyleBoxFlat_ytpqb")
+ProgressBar/styles/fill = SubResource("StyleBoxLine_trfhs")

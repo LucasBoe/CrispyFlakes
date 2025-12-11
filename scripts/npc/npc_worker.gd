@@ -9,6 +9,8 @@ var current_job_room_highlight = null
 var new_job_room_highlight = null
 var new_room_highlight = null
 
+var salary = 12
+
 static var picked_up_npc : NPC = null
 
 func _process(delta):

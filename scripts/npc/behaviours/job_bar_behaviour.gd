@@ -18,12 +18,17 @@ func loop():
 				if (b as RoomButtery).has(Enum.Items.WISKEY_BARREL):
 					var distance_to_npc = npc.global_position.direction_to(b.get_center_position())
 					valid_butteries.append([b,distance_to_npc])
+			
+			var wiskey_item = null
 					
 			if valid_butteries.size() > 0:
 				valid_butteries.sort_custom(Callable(self, "custom_array_sort"))
 				var buttery : RoomButtery = valid_butteries[0][0]
 				await move(buttery)
-				npc.Item.PickUp(buttery.Take(Enum.Items.WISKEY_BARREL))
+				wiskey_item = buttery.Take(Enum.Items.WISKEY_BARREL)
+				
+			if wiskey_item != null:
+				npc.Item.PickUp(wiskey_item)
 				await move(bar.get_random_floor_position())
 				var item = npc.Item.DropCurrent()
 				item.Destroy()

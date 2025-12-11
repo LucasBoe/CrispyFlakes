@@ -12,10 +12,7 @@ func _ready():
 
 func _process(delta):
 	if Input.is_key_pressed(KEY_P):
-		if randf() < .5:
-			SpawnNewWorker()
-		else:
-			SpawnNewGuest()
+		SpawnNewGuest()
 		
 func SpawnNewWorker():
 	var worker = workerScene.instantiate()

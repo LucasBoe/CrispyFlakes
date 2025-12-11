@@ -20,6 +20,9 @@ func change_resource(resource, change):
 			#SoundPlayer.coin.play_random_pitch()
 			#await get_tree().create_timer(.05).timeout
 
+func change_money(change):
+	change_resource(Enum.Resources.MONEY, change)
+
 func has(resource, amount):
 	if not resources.has(resource):
 		return false

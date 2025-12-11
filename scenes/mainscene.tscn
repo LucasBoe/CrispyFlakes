@@ -401,11 +401,30 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 mouse_filter = 2
 
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+value = 0.13
+show_percentage = false
+
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "69 $"
+
 [node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "No Jobs to see here...
 line"
+horizontal_alignment = 2
 
 [node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2
@@ -413,6 +432,7 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("9_60k3h")
