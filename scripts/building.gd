@@ -208,7 +208,7 @@ func get_current_room_from_global_position(global_pos : Vector2):
 	var shortest_distance: float = INF
 
 	for room in listOfAllRooms:
-		var distance = room.global_position.distance_to(global_pos)
+		var distance = room.get_center_position().distance_to(global_pos)
 		if distance < shortest_distance:
 			shortest_distance = distance
 			closestRoom = room

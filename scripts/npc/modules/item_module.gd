@@ -17,8 +17,9 @@ func PickUp(item):
 		DropCurrent()
 		
 	currentItem = item
-	currentItem.reparent(self)
+	currentItem.reparent(self, false)
 	currentItem.position = Vector2.ZERO
+	currentItem.z_index = 0
 
 func TryPutTo(storage) -> bool:
 	if storage.TryReceive(currentItem):
