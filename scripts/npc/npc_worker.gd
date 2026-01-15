@@ -4,14 +4,162 @@ class_name NPCWorker
 var current_job = Enum.Jobs.IDLE
 var current_job_room = null
 var pickUpOrigin
-
+ 
 var current_job_room_highlight = null
 var new_job_room_highlight = null
 var new_room_highlight = null
 
 var salary = 12
+var character_name = ""
+
+const possible_names = [
+"Wyatt McGraw",
+"Jesse Dalton",
+"Silas Crowley",
+"Clint Hargrove",
+"Colt Ransom",
+"Jedediah Boone",
+"Virgil Haines",
+"Doc Hollister",
+"Amos Redford",
+"Rufus Calhoun",
+"Levi Pickett",
+"Zeke Hartwell",
+"Hank Mercer",
+"Clay Thornton",
+"Gus McAllister",
+"Boone Kincaid",
+"Eli Sutter",
+"Seth Callahan",
+"Otis Barrow",
+"Abe Whitlock",
+"Calvin Prescott",
+"Emmett Tolland",
+"Fletcher Grady",
+"Gideon Pruitt",
+"Harvey Bledsoe",
+"Irving Tatum",
+"Jasper Sloane",
+"Kip Hardin",
+"Leland Driscoll",
+"Miles Sorrell",
+"Nolan Breckin",
+"Orville Tanner",
+"Percy Maddox",
+"Quincy Marlow",
+"Roscoe Vance",
+"Sawyer Keene",
+"Thaddeus Wicker",
+"Tucker Hollis",
+"Wade Cavanaugh",
+"Yancy Cole",
+"Brody Lang",
+"Casey Ridley",
+"Dusty Monroe",
+"Earl Dwyer",
+"Franklin Rourke",
+"Graham Pike",
+"Howell Strickland",
+"Ike Malloy",
+"Jonah Merritt",
+"Kendrick Lowry",
+"Lonnie Rusk",
+"Marshall Dempsey",
+"Newton Briggs",
+"Owen Talbot",
+"Porter Galloway",
+"Reed Huxley",
+"Sterling Vaughn",
+"Travis Morrow",
+"Vernon Slade",
+"Walker Brannigan",
+"Rhett Winslow",
+"Beau Whitaker",
+"Jebediah Knox",
+"Ryder Folsom",
+"Darby Hawke",
+"Cyrus Lockwood",
+"Finn O'Riley",
+"Garrett Blackwell",
+"Hayes Donnelly",
+"Judd Kilpatrick",
+"Kellan Ashford",
+"Luther McKenna",
+"Monty Barlow",
+"Nate Buckner",
+"Ransom DeWitt",
+"Shane Everhart",
+"Temple Rawlings",
+"Vince Harland",
+"Wesley Kearns",
+"Zachary Flint",
+"Archie Baines",
+"Benji Carver",
+"Carlisle Quinn",
+"Duncan Mears",
+"Edwin Larkin",
+"Felix Harlan",
+"Griffin Mallory",
+"Hugh Redd",
+"Isaac Dunbar",
+"Jeremiah Holt",
+"Kirkland Shaw",
+"Lyle Montrose",
+"Marty Ketter",
+"Noah Burnett",
+"Oren Wycliff",
+"Perry Stokes",
+"Rowan Bickford",
+"Stuart Blaine",
+"Terrence Cobb",
+"Vaughn Redding",
+"Wilbur Kersey",
+"Zebediah Price",
+"Abigail Hart",
+"Ada Mayfield",
+"Alma Prescott",
+"Annabelle Crowe",
+"Beatrice Hensley",
+"Belle Whitman",
+"Clara McCoy",
+"Daisy Kellan",
+"Delilah Rose",
+"Ellie Sumner",
+"Faye Langley",
+"Georgia Wren",
+"Hattie Sinclair",
+"Ivy Calloway",
+"Josie Caldwell",
+"Kitty Marston",
+"Loretta Sloan",
+"Maeve Holliday",
+"Molly Redfern",
+"Nora Penrose",
+"Opal Greer",
+"Pearl Whitlock",
+"Rosemary Keene",
+"Sadie Barlow",
+"Tessa Hartley",
+"Violet Quinn",
+"Willa Drury",
+"Bonnie Raines",
+"Cora Tolland",
+"Dottie Kincaid",
+"Etta Galloway",
+"Flora Maddox",
+"Greta Winslow",
+"Honor Sutter",
+"June Calhoun",
+"Lillian Vance",
+"Millie Talbot",
+"Nevaeh? nope"
+]
 
 static var picked_up_npc : NPC = null
+
+func _ready():
+	super._ready()
+	character_name = possible_names.pick_random()
 
 func _process(delta):
 	if picked_up_npc == self:
@@ -20,8 +168,13 @@ func _process(delta):
 	if Behaviour.has_behaviour:
 		return
 		
+	change_job(current_job)
+
+func change_job(new):
+	current_job = new
 	Behaviour.set_behaviour_from_job(current_job);
-	JobHandler.on_job_changed(self, null, current_job)
+	JobHandler.on_job_changed(self, current_job)
+	print(str("change job to ", Enum.Jobs.keys()[current_job]))
 
 func click_on_self():
 	
@@ -95,7 +248,4 @@ func checkJobChange(room : RoomEmpty):
 		new_job = Enum.Jobs.IDLE
 			
 	if current_job != new_job:
-		print(str("change job to ", Enum.Jobs.keys()[new_job]))
-		JobHandler.on_job_changed(self, current_job, new_job)
-		current_job = new_job
-		Behaviour.set_behaviour_from_job(current_job);
+		change_job(new_job)

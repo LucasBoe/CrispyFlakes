@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ww5uiq2q6ol7"
-path="res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"
+uid="uid://hyt8nvqdaup7"
+path="res://.godot/imported/cowboy_dirty_overlayt.png-887720294efe17d351caecf8b027095e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/cowboy.png"
-dest_files=["res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"]
+source_file="res://assets/sprites/cowboy_dirty_overlayt.png"
+dest_files=["res://.godot/imported/cowboy_dirty_overlayt.png-887720294efe17d351caecf8b027095e.ctex"]
 
 [params]
 

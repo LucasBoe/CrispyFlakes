@@ -3,7 +3,17 @@ class_name NPCGuest
 
 var Needs : NeedsModule
 
+@onready var dirt = $AnimationModule/Dirt
+
+func _ready():
+	super._ready()
+	while dirt.visible:
+		try_drop_dirt()
+		await get_tree().create_timer(1).timeout
+
 func _process(delta):
+	
+	dirt.get_child(0).visible = Navigation.is_moving
 		
 	if Behaviour.has_behaviour:
 		return
@@ -12,3 +22,11 @@ func _process(delta):
 	print_debug("set behaviour to ", newBehaviour.get_global_name())
 	Behaviour.set_behaviour(newBehaviour)
 	
+func try_drop_dirt():
+	if not dirt.get_child(0).visible:
+		return
+		
+	if randf() < .8:
+		return
+		
+	DirtHandler.create_dirt_at(global_position)

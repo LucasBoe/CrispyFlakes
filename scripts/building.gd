@@ -263,7 +263,7 @@ func get_closest_room_of_type_on_floor(type, global_pos : Vector2, y):
 	
 	return closestRoom
 		
-func get_closest_room_of_type(type, global_pos : Vector2):
+func get_closest_room_of_type(type, global_pos : Vector2, blacklist = null):
 	var closestRoom
 	var shortest_distance: float = INF
 
@@ -278,6 +278,9 @@ func get_closest_room_of_type(type, global_pos : Vector2):
 				continue
 				
 			if not is_instance_of(room, type):
+				continue
+				
+			if blacklist != null and blacklist.has(room):
 				continue
 				
 			var distance = room.global_position.distance_to(global_pos - Vector2(24,0))

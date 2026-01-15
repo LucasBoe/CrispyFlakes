@@ -26,6 +26,9 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 		Enum.Items.WISKEY_DRINK:
 			tex = load("res://assets/sprites/item_drink.png")
 			offset = Vector2i(3 ,-2)
+			
+		Enum.Items.WATER_BUCKET:
+			tex = load("res://assets/sprites/item_water-bucket.png")
 	
 	var info = TextureInfo.new()
 	info.Tex = tex

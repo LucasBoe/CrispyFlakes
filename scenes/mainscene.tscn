@@ -1,4 +1,4 @@
-[gd_scene load_steps=63 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=65 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
+[ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="14_rnjso"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
@@ -30,6 +31,7 @@
 [ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
+[ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
@@ -264,6 +266,10 @@ script = ExtResource("10_0o2or")
 
 [node name="ItemSpawner" type="Node2D" parent="Content"]
 script = ExtResource("16_4amiu")
+
+[node name="Signpost" type="Sprite2D" parent="Content"]
+position = Vector2(-320, -12)
+texture = ExtResource("14_rnjso")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -516,11 +522,42 @@ theme_override_constants/line_spacing = -3
 text = "69 $"
 
 [node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(106.9, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "No Jobs to see here...
 line"
 horizontal_alignment = 2
+
+[node name="WorkerUIAddRemove" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+script = ExtResource("26_fq3y7")
+
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "Cleaner"
+horizontal_alignment = 2
+
+[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "-"
+
+[node name="Label2" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "0"
+
+[node name="Button2" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "+"
 
 [node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2
@@ -528,6 +565,7 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("9_60k3h")
@@ -551,6 +589,7 @@ theme_override_font_sizes/font_size = 11
 text = "toast"
 
 [node name="UISettings" type="Control" parent="UI/UIMenu/MarginContainer"]
+visible = false
 layout_mode = 2
 script = ExtResource("28_1jyyk")
 

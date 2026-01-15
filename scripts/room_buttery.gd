@@ -10,13 +10,15 @@ func InitRoom(x : int, y : int):
 	items.resize(maxX * maxY)
 	items.fill(null)
 
-func TryReceive(item) -> bool:
+func TryReceive(item : Item) -> bool:
 	var freeSlotIndex = get_next_free_slot()
 	
 	if freeSlotIndex >= 0:
-		item.reparent(self)
+		item.reparent(self, false)
 		item.global_position = index_to_xy(freeSlotIndex)
-		item.rotation = 0
+		item.global_rotation = 0
+		item.scale = Vector2.ONE
+		item.z_index = -(maxX * maxY) + freeSlotIndex
 		items[freeSlotIndex] = item
 		return true
 	else:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ww5uiq2q6ol7"
-path="res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"
+uid="uid://cyja1cqs40thq"
+path="res://.godot/imported/cockroach.png-7af6feb42566ecb60b69caec27ce63ee.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/cowboy.png"
-dest_files=["res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"]
+source_file="res://assets/sprites/cockroach.png"
+dest_files=["res://.godot/imported/cockroach.png-7af6feb42566ecb60b69caec27ce63ee.ctex"]
 
 [params]
 

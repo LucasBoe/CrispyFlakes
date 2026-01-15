@@ -4,12 +4,21 @@ class_name JobBarBehaviour
 var bar : RoomBar
 var drinks_available = 0.0
 
+static var ocupied_bars = []
+
 func loop():
-	bar = Global.Building.get_closest_room_of_type(RoomBar, npc.global_position)
+	
+	bar = Global.Building.get_closest_room_of_type(RoomBar, npc.global_position, ocupied_bars)
+	
+	if bar == null:
+		npc.change_job(Enum.Jobs.IDLE)
+		return
+	
+	ocupied_bars.append(bar)
 	
 	while is_running:
 		
-		await pause(1)
+		await move(bar.get_random_floor_position())
 		
 		if drinks_available < .1:
 			var butteries = Global.Building.get_all_rooms_of_type(RoomButtery)
@@ -45,8 +54,9 @@ func loop():
 				bar.drinkRequests[bar.drinkRequests.keys()[0]] = item;
 				drinks_available -= .3
 				ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bar.get_center_position())
-				
-			await move(bar.get_random_floor_position())
+			
+func stop_loop():
+	ocupied_bars.erase(bar)
 
 func custom_array_sort(a, b):
 		return a[1] < b[1]

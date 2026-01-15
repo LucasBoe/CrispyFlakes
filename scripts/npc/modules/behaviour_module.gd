@@ -4,7 +4,8 @@ class_name BehaviourModule
 
 @onready var behaviourHost = $Host;
 
-var npc;
+var npc
+var behaviour_instance = null
 var has_behaviour = false
 
 func _ready():
@@ -13,15 +14,6 @@ func _ready():
 		pass
 		
 	npc.Behaviour = self
-	
-func clear_behaviour():
-	if has_behaviour:
-		var previous = get_behaviour()
-		if previous is Behaviour:
-			previous.is_running = false
-			
-	behaviourHost.set_process(false)
-	has_behaviour = false
 
 func set_behaviour_from_job(job : Enum.Jobs):
 	match job:
@@ -34,18 +26,28 @@ func set_behaviour_from_job(job : Enum.Jobs):
 			
 		Enum.Jobs.BAR:
 			set_behaviour(JobBarBehaviour)
+			
+		Enum.Jobs.WELL:
+			set_behaviour(JobWellBehaviour)
 	
 func set_behaviour(behaviour):	
-	if has_behaviour:
-		var previous = get_behaviour()
-		if previous is Behaviour:
-			previous.is_running = false
+	clear_behaviour()
 			
-	behaviourHost.set_script(null)
 	behaviourHost.set_script(behaviour)
-	(behaviourHost as Behaviour).npc = npc
+	
+	behaviour_instance = (behaviourHost as Behaviour)
+	behaviour_instance.npc = npc
+	
 	behaviourHost.set_process(true)
 	has_behaviour = true
 	
-func get_behaviour():
-	return behaviourHost.get_script()
+func clear_behaviour():
+	
+	if behaviour_instance != null:
+		behaviour_instance.stop_loop()
+		behaviour_instance.is_running = false
+		
+	behaviourHost.set_process(false)
+	behaviourHost.set_script(null)
+	behaviour_instance = null
+	has_behaviour = false

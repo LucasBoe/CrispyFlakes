@@ -12,8 +12,15 @@ func start_loop():
 		await endOfFrame()	
 		
 	await loop()
-	npc.Behaviour.clear_behaviour()
 	
+	#if npc != null:
+	#	npc.Behaviour.clear_behaviour()
+
+#optional override
+func stop_loop():
+	return
+	
+#mandatory override
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
 	

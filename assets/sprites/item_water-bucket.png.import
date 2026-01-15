@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ww5uiq2q6ol7"
-path="res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"
+uid="uid://djv63sd8uxt6f"
+path="res://.godot/imported/item_water-bucket.png-82802e2645b610fd1891f8440fb07deb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/cowboy.png"
-dest_files=["res://.godot/imported/cowboy.png-ac779f2ddda95fa31b0e8eb49f326320.ctex"]
+source_file="res://assets/sprites/item_water-bucket.png"
+dest_files=["res://.godot/imported/item_water-bucket.png-82802e2645b610fd1891f8440fb07deb.ctex"]
 
 [params]
 

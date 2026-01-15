@@ -3,12 +3,14 @@ extends Node
 enum Jobs {
 	IDLE,
 	BREWERY,
-	BAR
+	BAR,
+	WELL
 }
 
 enum Items {
 	WISKEY_BARREL,
-	WISKEY_DRINK
+	WISKEY_DRINK,
+	WATER_BUCKET
 }
 
 enum Resources {

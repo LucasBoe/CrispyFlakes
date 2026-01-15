@@ -6,7 +6,7 @@ const labelScene : PackedScene = preload("res://scenes/ui/ui_resource_label.tscn
 var labelResourceDict : Dictionary = {}
 
 func _ready():
-	for resourceType in Enum.Resources.values():
+	for resourceType in [Enum.Resources.MONEY]:
 		var instance = labelScene.instantiate()
 		($HBoxContainer).add_child(instance)
 		instance.Init(resourceType);
@@ -16,6 +16,10 @@ func _ready():
 	print(get_rect().size)
 	
 func on_resource_changed(resourceType, newAmount, change):
+	
+	if not labelResourceDict.has(resourceType):
+		return
+	
 	print(str("on resource changed", resourceType))
 	labelResourceDict[resourceType].update_amount(newAmount, change)
 	
