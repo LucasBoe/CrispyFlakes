@@ -32,9 +32,10 @@ func new_need():
 
 func get_behaviour_from_needs():
 	var all = []
-	try_add(all, IdleBehaviour, "Idle")
+	#try_add(all, IdleBehaviour, "Idle")
 	try_add(all, NeedLeaveBehaviour, "Leave")
 	try_add(all, NeedDrinkingBehaviour, "Drinking")
+	try_add(all, NeedCleaningBehaviour, "Cleaning")
 	var pick = all.pick_random();
 	return pick;
 

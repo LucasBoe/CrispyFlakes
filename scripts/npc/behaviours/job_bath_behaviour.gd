@@ -1,0 +1,57 @@
+extends Behaviour
+class_name JobBathBehaviour
+
+var bath : RoomBath
+
+static var occupied_baths = []
+
+func loop():
+	
+	bath = Global.Building.get_closest_room_of_type(RoomBath, npc.global_position, occupied_baths)
+	
+	if bath == null:
+		npc.change_job(Enum.Jobs.IDLE)
+		return
+		
+	occupied_baths.append(bath)
+	await move(bath.get_random_floor_position())
+	
+	while is_running:
+		var butteries = Global.Building.get_all_rooms_of_type(RoomButtery)
+		var valid_butteries = []
+		for b in butteries:
+			if (b as RoomButtery).has(Enum.Items.WATER_BUCKET):
+					var distance_to_npc = npc.global_position.direction_to(b.get_center_position())
+					valid_butteries.append([b,distance_to_npc])
+		
+		var water_item = null
+				
+		if valid_butteries.size() > 0:
+			valid_butteries.sort_custom(Callable(self, "custom_array_sort"))
+			var buttery : RoomButtery = valid_butteries[0][0]
+			await move(buttery)
+			water_item = buttery.Take(Enum.Items.WATER_BUCKET)
+		if water_item != null:
+			npc.Item.PickUp(water_item)
+			await move(bath.get_random_floor_position())
+			
+			if not bath.has_customer:
+				await bath.customer_arrive
+			
+			var i = npc.Item.DropCurrent()
+			i.Destroy()
+			
+			await progress(6, bath.progressBar)
+			
+			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position())
+			bath.clean_customer()
+		else:
+			await pause(3)
+			var water_icon = Item.get_info(Enum.Items.WATER_BUCKET).Tex
+			UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), water_icon)	
+			
+func custom_array_sort(a, b):
+		return a[1] < b[1]
+
+func stop_loop():
+	occupied_baths.erase(bath)

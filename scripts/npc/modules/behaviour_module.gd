@@ -16,19 +16,7 @@ func _ready():
 	npc.Behaviour = self
 
 func set_behaviour_from_job(job : Enum.Jobs):
-	match job:
-	
-		Enum.Jobs.IDLE:
-			set_behaviour(IdleBehaviour)
-		
-		Enum.Jobs.BREWERY:
-			set_behaviour(JobBreweryBehaviour)
-			
-		Enum.Jobs.BAR:
-			set_behaviour(JobBarBehaviour)
-			
-		Enum.Jobs.WELL:
-			set_behaviour(JobWellBehaviour)
+	set_behaviour(Enum.job_to_behaviour(job))
 	
 func set_behaviour(behaviour):	
 	clear_behaviour()

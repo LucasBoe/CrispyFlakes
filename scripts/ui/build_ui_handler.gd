@@ -10,6 +10,7 @@ func _ready():
 	create_button("Well", Global.Building.room_well, 150, RoomWell.custom_placement_check)
 	create_button("Bar", Global.Building.room_bar, 300)
 	create_button("Buttery", Global.Building.room_buttery, 200)
+	create_button("Bath", Global.Building.room_bath, 250)
 	create_button("Brewery", Global.Building.room_brewery, 500)
 	buttonDummy.hide()
 	

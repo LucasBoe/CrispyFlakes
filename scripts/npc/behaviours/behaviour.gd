@@ -13,8 +13,8 @@ func start_loop():
 		
 	await loop()
 	
-	#if npc != null:
-	#	npc.Behaviour.clear_behaviour()
+	if is_instance_valid(npc):
+		npc.Behaviour.clear_behaviour()
 
 #optional override
 func stop_loop():
