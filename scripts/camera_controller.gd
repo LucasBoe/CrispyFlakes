@@ -89,7 +89,7 @@ func zoom_in_out():
 	
 	#print(diff)
 
-func get_camera_screen_rect() -> Rect2:
+func get_camera_world_rect() -> Rect2:
 	var viewport := get_viewport_rect() # size in pixels
 
 	var adjusted_size := viewport.size / zoom

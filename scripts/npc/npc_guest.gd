@@ -4,10 +4,12 @@ class_name NPCGuest
 var Needs : NeedsModule
 var is_dirty = true
 
+@onready var sprite = $AnimationModule
 @onready var dirt = $AnimationModule/Dirt
 
 func _ready():
 	super._ready()
+	sprite.modulate = Color.GRAY
 	while is_dirty:
 		try_drop_dirt()
 		await get_tree().create_timer(1).timeout
@@ -34,3 +36,4 @@ func try_drop_dirt():
 
 func clean():
 	is_dirty = false
+	sprite.modulate = Color.WHITE

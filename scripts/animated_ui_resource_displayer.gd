@@ -2,7 +2,7 @@ extends Node2D
 
 @onready var coin_dummy = $Coin
 @onready var ui_resource_handler : UIRessourceHandler = $"../UI/UIResources"
-@onready var camera = $"../Camera2D"
+@onready var camera = %Camera
 @onready var canvas : CanvasLayer = $"../UI";
 
 var actively_animated = []
@@ -42,7 +42,7 @@ func _process(delta):
 		
 		var lll = l*l*l*l*l*l
 		
-		var rect = camera.get_camera_screen_rect()
+		var rect = camera.get_camera_world_rect()
 		
 		var topLeft = rect.position
 		var bottomRight = rect.end

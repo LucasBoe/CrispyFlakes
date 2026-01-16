@@ -1,20 +1,20 @@
 extends Node2D
 
 @onready var cloudDummy = $Cloud
-@onready var camera = $"../../Camera2D"
+@onready var camera = %Camera
 
 var activeClouds = []
 
 func _ready():
 	cloudDummy.visible = false
 	var targetAmount = int(8.0 / camera.zoom.x)
-	var rect : Rect2 = camera.get_camera_screen_rect()
+	var rect : Rect2 = camera.get_camera_world_rect()
 	while activeClouds.size() < targetAmount:
 		spawn_new_cloud(rect, true)
 
 func _process(delta):
 	var targetAmount = int(8.0 / camera.zoom.x)
-	var rect : Rect2 = camera.get_camera_screen_rect()
+	var rect : Rect2 = camera.get_camera_world_rect()
 	while activeClouds.size() < targetAmount:
 		spawn_new_cloud(rect)
 		

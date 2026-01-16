@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=67 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -21,9 +21,11 @@
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="14_rnjso"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
+[ext_resource type="Script" uid="uid://bulscv1cynjq2" path="res://scripts/ui/ui_room_selected.gd" id="15_v27vk"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
+[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="19_v28my"]
 [ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
 [ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/ui/menu_ui_handler.gd" id="20_wvm38"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
@@ -155,7 +157,8 @@ modulate_color = Color(18.892157, 18.892157, 18.892157, 0.3764706)
 
 [node name="MainScene" type="Node"]
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera" type="Camera2D" parent="."]
+unique_name_in_owner = true
 limit_smoothed = true
 position_smoothing_enabled = true
 script = ExtResource("1_4c2fu")
@@ -272,6 +275,104 @@ position = Vector2(-320, -12)
 texture = ExtResource("14_rnjso")
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIRoom" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("15_v27vk")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -42.0
+offset_top = -20.0
+offset_right = 42.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIRoom/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("28_3ou18")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Room Name"
+horizontal_alignment = 1
+
+[node name="ProductSelection" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Dummy" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection"]
+custom_minimum_size = Vector2(38, 52)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "Product"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+mouse_filter = 2
+texture = ExtResource("19_v28my")
+stretch_mode = 3
+
+[node name="Label2" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "999$"
+horizontal_alignment = 1
 
 [node name="UIResources" type="Control" parent="UI"]
 layout_mode = 3

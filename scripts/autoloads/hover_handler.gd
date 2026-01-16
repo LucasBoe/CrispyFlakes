@@ -8,7 +8,7 @@ func _process(delta):
 	var previously_hovered_room = currently_hovered_room
 	currently_hovered_room = Global.Building.get_current_room_from_global_position(mouse_position)
 	
-	if currently_hovered_room != null and Input.is_action_just_pressed("click"):
+	if Input.is_action_just_pressed("click"):
 		click_room_signal.emit(currently_hovered_room)
 	
 	if previously_hovered_room == currently_hovered_room:

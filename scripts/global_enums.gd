@@ -1,8 +1,9 @@
 extends Node
 
 enum Items {
-	WISKEY_BARREL,
-	WISKEY_DRINK,
+	BEER_BARREL,
+	WISKEY_BOX,
+	DRINK,
 	WATER_BUCKET
 }
 

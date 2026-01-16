@@ -4,6 +4,8 @@ class_name RoomBar
 @onready var progressBar : TextureProgressBar = $ProgressBar
 var drinkRequests : Dictionary
 
+@export var drink_type : Enum.Items
+
 func InitRoom(x : int, y : int):
 	super.InitRoom(x,y)
 	associatedJob = Enum.Jobs.BAR

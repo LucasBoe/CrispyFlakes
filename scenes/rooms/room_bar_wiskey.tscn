@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://c6nm7mh5lj463"]
+
+[ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_0kw68"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_0c2xs"]
+[ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="3_jw8a6"]
+[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_tltj0"]
+
+[node name="Room_Bar_Wiskey" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_0kw68")
+drink_type = 1
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_0c2xs")
+
+[node name="Shelf" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(28.5, -18)
+texture = ExtResource("3_jw8a6")
+
+[node name="ProgressBar" parent="." instance=ExtResource("4_tltj0")]
+z_index = 4096
+offset_bottom = -35.0
+pivot_offset = Vector2(14, 2)

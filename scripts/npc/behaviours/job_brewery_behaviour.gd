@@ -17,20 +17,33 @@ func loop():
 	await move(brewery.get_random_floor_position())
 	
 	while is_running:
+		
+		var water_item = null
+		
+		#fetch water from buttery
 		var butteries = Global.Building.get_all_rooms_of_type(RoomButtery)
 		var valid_butteries = []
 		for b in butteries:
 			if (b as RoomButtery).has(Enum.Items.WATER_BUCKET):
 					var distance_to_npc = npc.global_position.direction_to(b.get_center_position())
 					valid_butteries.append([b,distance_to_npc])
-		
-		var water_item = null
-				
 		if valid_butteries.size() > 0:
 			valid_butteries.sort_custom(Callable(self, "custom_array_sort"))
 			var buttery : RoomButtery = valid_butteries[0][0]
 			await move(buttery)
 			water_item = buttery.Take(Enum.Items.WATER_BUCKET)
+			
+		#fetch water from well
+		if water_item == null:
+			var well = Global.Building.get_closest_room_of_type(RoomWell, npc.global_position)
+			await move(well)
+			well.register(npc)
+			while well.current_user != npc:
+				await endOfFrame()
+			await progress(1, well.progressBar)
+			water_item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, well.get_center_position())
+			well.unregister(npc)
+			
 		if water_item != null:
 			npc.Item.PickUp(water_item)
 			await move(brewery.get_random_floor_position())
@@ -39,7 +52,7 @@ func loop():
 			
 			await progress(6, brewery.progressBar)
 			var itemSpawnPos = brewery.get_random_floor_position()
-			var item = Global.ItemSpawner.Create(Enum.Items.WISKEY_BARREL, itemSpawnPos)
+			var item = Global.ItemSpawner.Create(Enum.Items.BEER_BARREL, itemSpawnPos)
 			npc.Item.PickUp(item)
 			var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, npc.global_position)
 			await move(closestButtery)

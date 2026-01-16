@@ -27,3 +27,6 @@ func get_random_floor_position():
 
 func get_center_position():
 	return global_position + Vector2(24,-24)
+	
+func get_top_center_position():
+	return global_position + Vector2(24,-48)

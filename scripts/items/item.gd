@@ -20,10 +20,13 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 	var offset = Vector2i.ZERO
 	
 	match itemType:
-		Enum.Items.WISKEY_BARREL:
+		Enum.Items.BEER_BARREL:
 			tex = load("res://assets/sprites/item_barrel.png")
 			
-		Enum.Items.WISKEY_DRINK:
+		Enum.Items.WISKEY_BOX:
+			tex = load("res://assets/sprites/item_wiskey_crate.png")
+			
+		Enum.Items.DRINK:
 			tex = load("res://assets/sprites/item_drink.png")
 			offset = Vector2i(3 ,-2)
 			

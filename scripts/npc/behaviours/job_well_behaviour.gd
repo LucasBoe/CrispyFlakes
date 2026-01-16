@@ -17,7 +17,11 @@ func loop():
 	await move(well)
 	
 	while is_running:
+		well.register(npc)
+		while well.current_user != npc:
+			await endOfFrame()
 		await progress(1, well.progressBar)
+		well.unregister(npc)
 		var itemSpawnPos = well.get_random_floor_position()
 		var item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, itemSpawnPos)
 		npc.Item.PickUp(item)

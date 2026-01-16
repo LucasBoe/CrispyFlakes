@@ -9,7 +9,7 @@ var current_job_room_highlight = null
 var new_job_room_highlight = null
 var new_room_highlight = null
 
-var salary = 12
+var salary = 6
 var character_name = ""
 
 const possible_names = [
@@ -155,11 +155,15 @@ const possible_names = [
 "Nevaeh? nope"
 ]
 
+@onready var anim : Sprite2D = $AnimationModule 
+var possible_sprites = ["res://assets/sprites/worker_charesmatitc.png", "res://assets/sprites/worker_fast.png", "res://assets/sprites/worker_strongt.png"]
+
 static var picked_up_npc : NPC = null
 
 func _ready():
 	super._ready()
 	character_name = possible_names.pick_random()
+	anim.texture = load(possible_sprites.pick_random())
 
 func _process(delta):
 	if picked_up_npc == self:

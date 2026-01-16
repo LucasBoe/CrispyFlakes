@@ -14,7 +14,8 @@ func InitRoom(x : int, y : int):
 
 func clean_customer():
 	var customer = customers[0]
-	customer.npc.clean()
+	if is_instance_valid(customer):
+		customer.npc.clean()
 	customers.erase(customer)
 	has_customer = customers.size() > 0
 
