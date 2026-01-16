@@ -20,6 +20,12 @@ enum Jobs {
 	BATH
 }
 
+enum RequestStatus {
+	OPEN,
+	TIMEOUT,
+	FULFILLED
+}
+
 static func job_to_behaviour(job : Jobs):
 	match job:
 		Enum.Jobs.IDLE:

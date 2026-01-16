@@ -62,10 +62,9 @@ func loop():
 		else:		
 			await move(bar.get_random_floor_position())
 			
-			if bar.drinkRequests.keys().size() > 0:
+			if bar.drinkRequests.size() > 0:
 				await progress(2, bar.progressBar)
-				var item = Global.ItemSpawner.Create(Enum.Items.DRINK, bar.get_random_floor_position())
-				bar.drinkRequests[bar.drinkRequests.keys()[0]] = item;
+				bar.fullfill_next_request()
 				drinks_available -= .3
 				
 				var payment = 1

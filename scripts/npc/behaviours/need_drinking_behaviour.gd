@@ -12,15 +12,20 @@ func loop():
 	bar = Global.Building.get_all_rooms_of_type(RoomBar).pick_random();
 	table = Global.Building.get_closest_room_of_type(RoomTable, bar.global_position)
 	
-	await move(bar)
-	bar.request_drink(self)
-	while not bar.has_drink(self):
-		await endOfFrame()
-	npc.Item.PickUp(bar.pick_up_drink(self))
-	if table:
-		await move(table.get_random_floor_position())
-	else:
-		await move(Global.Building.floors.values().pick_random().pick_random().get_random_floor_position())
+	await move(bar.get_random_floor_position())
+	var request = bar.request_drink(self)
+	UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)	
 	
-	await pause(8)
-	npc.Item.DropCurrent().Destroy()
+	while request.status == Enum.RequestStatus.OPEN:
+		await endOfFrame()
+		
+	if request.status == Enum.RequestStatus.FULFILLED:
+		var item = Global.ItemSpawner.Create(Enum.Items.DRINK, bar.get_random_floor_position())
+		npc.Item.PickUp(item)
+		if table:
+			await move(table.get_random_floor_position())
+		else:
+			await move(Global.Building.floors.values().pick_random().pick_random().get_random_floor_position())
+		
+		await pause(8)
+		npc.Item.DropCurrent().Destroy()
