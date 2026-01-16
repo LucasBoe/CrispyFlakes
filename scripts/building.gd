@@ -8,6 +8,7 @@ class_name Building
 var floors = {}
 
 const room_empty: PackedScene = preload("res://scenes/rooms/room_empty.tscn")
+const room_junk: PackedScene = preload("res://scenes/rooms/room_junk.tscn")
 const room_stairs: PackedScene = preload("res://scenes/rooms/room_stairs.tscn")
 const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn")
 const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
@@ -45,17 +46,12 @@ enum roofIndexMap {
 func _ready():
 	Global.Building = self
 	
-	set_room(room_empty, -1,1, false)
-	set_room(room_empty, 0,1, false)
-	set_room(room_stairs, 1,1, false)
-	set_room(room_empty, -3,0, false)
-	set_room(room_table, -2,0, false)
+	set_room(room_empty, -2,0, false)
 	set_room(room_bar_water, -1,0, false)
-	set_room(room_buttery, 0,0, false)
-	set_room(room_stairs, 1,0, false)
+	set_room(room_stairs, 0,0, false)
 	set_room(room_well, 4,0, false)
-	set_room(room_brewery, 0,-1, false)
-	set_room(room_stairs, 1,-1, false)
+	set_room(room_stairs, 0,-1, false)
+	set_room(room_junk, -1,-1, false)
 	
 	InitalizeAllRooms()
 	update_foreground_tiles()
@@ -80,6 +76,11 @@ func InitalizeAllRooms():
 	for y in floors.keys():
 		for x in floors[y].keys():
 			floors[y][x].InitRoom(x,y)
+			
+func delete_room(room : RoomBase):
+	set_room(room_empty, room.x, room.y)
+	RoomHighlighter.end_request(room)
+	room.queue_free()
 	
 func update_foreground_tiles():
 	
@@ -253,7 +254,7 @@ func get_closest_room_of_type_on_floor(type, global_pos : Vector2, y):
 		if room:
 			pass
 			
-		if room is not RoomEmpty:
+		if room is not RoomBase:
 			continue
 			
 		if not is_instance_of(room, type):
@@ -277,7 +278,7 @@ func get_closest_room_of_type(type, global_pos : Vector2, blacklist = null):
 			if room:
 				pass
 				
-			if room is not RoomEmpty:
+			if room is not RoomBase:
 				continue
 				
 			if not is_instance_of(room, type):
@@ -302,7 +303,7 @@ func get_all_rooms_of_type(type):
 			if room:
 				pass
 					
-			if room is not RoomEmpty:
+			if room is not RoomBase:
 				continue
 					
 			if not is_instance_of(room, type):

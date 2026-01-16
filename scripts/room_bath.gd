@@ -1,4 +1,4 @@
-extends RoomEmpty
+extends RoomBase
 class_name RoomBath
 
 @onready var progressBar : TextureProgressBar = $ProgressBar

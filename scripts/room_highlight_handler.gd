@@ -3,7 +3,7 @@ extends Node2D
 @onready var rectDummy = $Rect;
 @onready var arrowDummy = $Arrow;
 
-var active : Dictionary[RoomEmpty, Array] = {}
+var active : Dictionary[RoomBase, Array] = {}
 
 func _ready():
 	rectDummy.visible = false
@@ -18,7 +18,7 @@ func request_arrow(room):
 	var inst = create(arrowDummy, room)
 	return inst
 	
-func create(dummy, room : RoomEmpty):
+func create(dummy, room : RoomBase):
 	var instance = dummy.duplicate()
 	instance.visible = true
 	instance.position = room.get_center_position()

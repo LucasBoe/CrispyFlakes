@@ -31,7 +31,8 @@ func _process(delta):
 		
 	var mouse = get_global_mouse_position()
 	location = Global.Building.round_room_index_from_global_position(mouse + Vector2(24,0))
-	has_valid_target = Global.Building.get_room_from_index(location) == null
+	var room_at_location =  Global.Building.get_room_from_index(location)
+	has_valid_target = room_at_location == null or room_at_location is RoomEmpty
 	var has_money = ResourceHandler.has_money(cost)
 	
 	# check adjacent_rooms
@@ -62,6 +63,8 @@ func _process(delta):
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		if can_place:
 			SoundPlayer.construction_placed.play()
+			if room_at_location != null:
+				room_at_location.queue_free()
 			Global.Building.set_room(building, location.x, location.y)
 			Global.Building.update_foreground_tiles()
 			stop_building()

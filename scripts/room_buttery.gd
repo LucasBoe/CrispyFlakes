@@ -1,4 +1,4 @@
-extends RoomEmpty
+extends RoomBase
 class_name RoomButtery
 
 var items = []

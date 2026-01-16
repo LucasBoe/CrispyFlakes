@@ -10,6 +10,11 @@ static func get_probability_by_needs(needs : NeedsModule):
 func loop():
 	
 	bar = Global.Building.get_all_rooms_of_type(RoomBar).pick_random();
+	
+	if not bar:
+		await pause(3)
+		return
+		
 	table = Global.Building.get_closest_room_of_type(RoomTable, bar.global_position)
 	
 	await move(bar.get_random_floor_position())

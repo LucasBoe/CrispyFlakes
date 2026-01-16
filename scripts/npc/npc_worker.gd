@@ -198,7 +198,7 @@ func _input(event):
 		
 	var targetPos = null
 	
-	var room : RoomEmpty = Global.Building.get_closest_room_of_type(RoomEmpty, global_position)
+	var room : RoomBase = Global.Building.get_closest_room_of_type(RoomBase, global_position)
 	if room:
 		targetPos = room.global_position + Vector2(24,0)
 
@@ -244,7 +244,7 @@ func _input(event):
 		Navigation.set_process(true)
 		print("released")
 
-func checkJobChange(room : RoomEmpty):
+func checkJobChange(room : RoomBase):
 	var new_job = room.associatedJob
 	current_job_room = room
 	

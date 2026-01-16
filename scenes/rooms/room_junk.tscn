@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dyxbds1h886uy"]
+
+[ext_resource type="Script" uid="uid://bpqpa16mn42r1" path="res://scripts/room_junk.gd" id="1_7fgr5"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_vpolm"]
+[ext_resource type="Texture2D" uid="uid://dfwyooj7vyi8t" path="res://assets/sprites/basement_junk.png" id="3_j18j6"]
+
+[node name="Room_Junk" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_7fgr5")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_vpolm")
+
+[node name="Shelf" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -21)
+texture = ExtResource("3_j18j6")

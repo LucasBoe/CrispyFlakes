@@ -1,4 +1,4 @@
-extends RoomEmpty
+extends RoomBase
 class_name RoomBrewery
 
 const GRID_SIZE = 48
