@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomUpgrade" load_steps=3 format=3 uid="uid://b6jcsxehoredw"]
+
+[ext_resource type="Script" uid="uid://c2eta6ma87pwg" path="res://scripts/room_upgrade.gd" id="1_0gnlj"]
+[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="1_q3ji6"]
+
+[resource]
+script = ExtResource("1_0gnlj")
+name = "Beer"
+cost = 200
+icon = ExtResource("1_q3ji6")
+metadata/_custom_type_script = "uid://c2eta6ma87pwg"

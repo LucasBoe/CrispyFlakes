@@ -1,4 +1,5 @@
 extends FullscreenDragable
+class_name UIHire
 
 @onready var hire_dummy = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button
 

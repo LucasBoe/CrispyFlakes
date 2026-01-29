@@ -6,6 +6,10 @@ extends Control
 
 
 func _process(delta):
+	
 	count_label.text = str(Global.NPCSpawner.guests.size())
-	progression_bar.value = Global.NPCSpawner.next_guest_progression
-	progression_label.text = str(Global.NPCSpawner.guests_per_day_rate,"/D")
+	if Global.should_auto_spawn_guests:
+		progression_bar.value = Global.NPCSpawner.next_guest_progression
+		progression_label.text = str(Global.NPCSpawner.guests_per_day_rate,"/D")
+	else:
+		progression_label.text = ""

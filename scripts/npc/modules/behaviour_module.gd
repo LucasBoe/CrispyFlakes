@@ -20,6 +20,8 @@ func set_behaviour_from_job(job : Enum.Jobs):
 	
 func set_behaviour(behaviour):	
 	clear_behaviour()
+	
+	print_debug("set behaviour: ", behaviour)
 			
 	behaviourHost.set_script(behaviour)
 	
@@ -30,6 +32,8 @@ func set_behaviour(behaviour):
 	has_behaviour = true
 	
 func clear_behaviour():
+	
+	print_debug("clear behaviour")
 	
 	if behaviour_instance != null:
 		behaviour_instance.stop_loop()

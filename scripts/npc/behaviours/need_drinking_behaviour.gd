@@ -30,7 +30,7 @@ func loop():
 		if table:
 			await move(table.get_random_floor_position())
 		else:
-			await move(Global.Building.floors.values().pick_random().pick_random().get_random_floor_position())
+			await move(Global.Building.floors.values().pick_random().values().pick_random().get_random_floor_position())
 		
 		await pause(8)
 		npc.Item.DropCurrent().Destroy()

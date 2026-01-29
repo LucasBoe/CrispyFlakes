@@ -13,9 +13,7 @@ const room_stairs: PackedScene = preload("res://scenes/rooms/room_stairs.tscn")
 const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn")
 const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
 const room_bath: PackedScene = preload("res://scenes/rooms/room_bath.tscn")
-const room_bar_water: PackedScene = preload("res://scenes/rooms/room_bar_water.tscn")
-const room_bar_beer: PackedScene = preload("res://scenes/rooms/room_bar_beer.tscn")
-const room_bar_wiskey: PackedScene = preload("res://scenes/rooms/room_bar_wiskey.tscn")
+const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
 const room_table: PackedScene = preload("res://scenes/rooms/room_table.tscn")
 const room_well: PackedScene = preload("res://scenes/rooms/room_well.tscn")
 
@@ -47,7 +45,7 @@ func _ready():
 	Global.Building = self
 	
 	set_room(room_empty, -2,0, false)
-	set_room(room_bar_water, -1,0, false)
+	set_room(room_bar, -1,0, false)
 	set_room(room_stairs, 0,0, false)
 	set_room(room_well, 4,0, false)
 	set_room(room_stairs, 0,-1, false)

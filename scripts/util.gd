@@ -18,3 +18,9 @@ static func get_random_element(collection):
 	else:
 		push_error("Unsupported collection type. Must be Array or Dictionary.")
 		return null
+
+static func world_to_ui_position(world_position, ui, camera):
+	var rect = camera.get_camera_world_rect() as Rect2	
+	var relative_pos = (world_position - rect.position)/rect.size	
+	var ui_space_size = ui.get_viewport().get_visible_rect().size
+	return relative_pos * ui_space_size

@@ -9,7 +9,6 @@ extends MenuUITab
 
 func _ready():
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
-	hire_button.pressed.connect(%UIHire.show)
 	
 	for key in Enum.Jobs.keys():
 		var instance = worker_ui_add_remove_dummy.duplicate()
@@ -17,6 +16,10 @@ func _ready():
 		instance.init(key)
 		
 	worker_ui_add_remove_dummy.hide()
+	
+	await get_tree().process_frame
+	
+	hire_button.pressed.connect(Global.UI.hire.show)
 		
 
 func _on_jobs_changed():

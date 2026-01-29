@@ -1,6 +1,8 @@
 extends NPC
 class_name NPCGuest
 
+var manual_behaviour = false
+
 var Needs : NeedsModule
 var is_dirty = true
 
@@ -21,7 +23,11 @@ func _process(delta):
 	if Behaviour.has_behaviour:
 		return
 		
-	var newBehaviour = Needs.get_behaviour_from_needs()
+	var newBehaviour = IdleBehaviour
+		
+	if not manual_behaviour:
+		newBehaviour = Needs.get_behaviour_from_needs()
+		
 	print_debug("set behaviour to ", newBehaviour.get_global_name())
 	Behaviour.set_behaviour(newBehaviour)
 	

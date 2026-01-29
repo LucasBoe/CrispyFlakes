@@ -6,6 +6,7 @@ var y
 var isBasement
 var associatedJob = null
 var isOutsideRoom = false
+var has_upgrades = false
 
 @onready var backWallSprite2D = $"Back-wall"
 

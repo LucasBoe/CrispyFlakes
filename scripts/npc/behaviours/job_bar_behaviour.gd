@@ -15,10 +15,11 @@ func loop():
 		return
 	
 	ocupied_bars.append(bar)
-	var drink = bar.drink_type
 	
 	while is_running:
 		
+		var drink = bar.drink_type
+	
 		await move(bar.get_random_floor_position())
 		
 		if drinks_available < .1:
@@ -65,7 +66,7 @@ func loop():
 			if bar.drinkRequests.size() > 0:
 				await progress(2, bar.progressBar)
 				bar.fullfill_next_request()
-				drinks_available -= .3
+				drinks_available -= .2
 				
 				var payment = 1
 				if drink == Enum.Items.BEER_BARREL:

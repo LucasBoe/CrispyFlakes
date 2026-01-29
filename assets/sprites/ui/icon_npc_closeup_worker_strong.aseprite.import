@@ -1,0 +1,16 @@
+[remap]
+
+importer="aseprite_wizard.plugin.static-texture"
+type="PortableCompressedTexture2D"
+uid="uid://cwhht6hanhbgd"
+path="res://.godot/imported/icon_npc_closeup_worker_strong.aseprite-16f55848b26b35bdf840919157b99cad.res"
+
+[deps]
+
+source_file="res://assets/sprites/ui/icon_npc_closeup_worker_strong.aseprite"
+dest_files=["res://.godot/imported/icon_npc_closeup_worker_strong.aseprite-16f55848b26b35bdf840919157b99cad.res"]
+
+[params]
+
+layer/exclude_layers_pattern=""
+layer/only_visible_layers=false

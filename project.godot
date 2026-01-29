@@ -34,6 +34,7 @@ SoundPlayer="*res://scenes/autoloads/sound_player.tscn"
 JobHandler="*res://scripts/autoloads/job_handler.gd"
 DirtHandler="*res://scripts/autoloads/dirt_handler.gd"
 HoverHandler="*res://scripts/autoloads/hover_handler.gd"
+TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 
 [display]
 

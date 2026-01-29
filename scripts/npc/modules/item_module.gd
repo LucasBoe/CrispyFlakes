@@ -29,6 +29,10 @@ func TryPutTo(storage) -> bool:
 		return false
 	
 func DropCurrent() -> Item:
+	
+	if not currentItem:
+		return null
+	
 	var item = currentItem
 	currentItem.reparent(Global.ItemSpawner)
 	currentItem.global_position = npc.global_position

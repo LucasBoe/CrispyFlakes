@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=77 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -20,12 +20,15 @@
 [ext_resource type="Script" uid="uid://xkxhcq7c1mxa" path="res://scripts/npc_spawner.gd" id="10_0o2or"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="14_rnjso"]
+[ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Script" uid="uid://bulscv1cynjq2" path="res://scripts/ui/ui_room_selected.gd" id="15_v27vk"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
+[ext_resource type="Script" uid="uid://bpm87gr3dy543" path="res://scripts/ui_tutorial_item.gd" id="19_duoqm"]
+[ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="19_mwcfc"]
 [ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="19_v28my"]
 [ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
 [ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/ui/menu_ui_handler.gd" id="20_wvm38"]
@@ -33,15 +36,21 @@
 [ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
+[ext_resource type="Texture2D" uid="uid://boca2hk30ecvv" path="res://assets/sprites/ui/speechbubble.aseprite" id="25_pklhh"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
 [ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
+[ext_resource type="FontFile" uid="uid://lqh04fcpwlab" path="res://assets/fonts/Cubix_Mystical.ttf" id="26_lbk5b"]
+[ext_resource type="Texture2D" uid="uid://ckpjxsbbfx781" path="res://assets/sprites/ui/icon_dialogue_skip.png" id="27_8145v"]
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
+[ext_resource type="Texture2D" uid="uid://ceaqnkct2m7dc" path="res://assets/sprites/ui/icon_npc_closeup_cowboy.png" id="29_8st1d"]
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
+[ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -276,6 +285,80 @@ position = Vector2(-320, -12)
 texture = ExtResource("14_rnjso")
 
 [node name="UI" type="CanvasLayer" parent="."]
+script = ExtResource("15_3fppy")
+
+[node name="UITutorial" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("33_h367x")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial"]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 36
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UITutorial/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/margin_top = -8
+theme_override_constants/margin_bottom = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="TextureRect" type="ColorRect" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "ToDo"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UITutorial/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+script = ExtResource("19_duoqm")
+
+[node name="Label" type="Label" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "- Assign a worker to the bar"
+
+[node name="TextureRect" type="TextureRect" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("19_mwcfc")
 
 [node name="UIRoom" type="Control" parent="UI"]
 layout_mode = 3
@@ -337,16 +420,16 @@ theme = ExtResource("22_hpv7r")
 icon = ExtResource("19_3ocru")
 icon_alignment = 1
 
-[node name="ProductSelection" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
-visible = false
+[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Dummy" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection"]
+[node name="Dummy" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection"]
 custom_minimum_size = Vector2(38, 52)
 layout_mode = 2
+size_flags_horizontal = 4
 theme = ExtResource("22_hpv7r")
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -359,11 +442,11 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -371,7 +454,7 @@ text = "Product"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="TextureRect" type="TextureRect" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -379,7 +462,7 @@ mouse_filter = 2
 texture = ExtResource("19_v28my")
 stretch_mode = 3
 
-[node name="Label2" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/ProductSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="Label2" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -487,6 +570,73 @@ theme = ExtResource("22_hpv7r")
 text = "+12/D"
 horizontal_alignment = 1
 vertical_alignment = 2
+
+[node name="UIDialogue" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("25_8st1d")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIDialogue"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -69.0
+offset_top = -30.5
+offset_right = 69.0
+offset_bottom = 30.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIDialogue/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 23
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("25_pklhh")
+patch_margin_left = 10
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 9
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 9
+
+[node name="Label" type="RichTextLabel" parent="UI/UIDialogue/MarginContainer/MarginContainer/MarginContainer"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/normal_font = ExtResource("26_lbk5b")
+theme_override_font_sizes/normal_font_size = 11
+text = "I should stop talking shit like this..."
+fit_content = true
+
+[node name="Button" type="Button" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("27_8145v")
+
+[node name="MarginContainer2" type="MarginContainer" parent="UI/UIDialogue/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/margin_left = 8
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIDialogue/MarginContainer/MarginContainer2"]
+layout_mode = 2
+texture = ExtResource("29_8st1d")
+stretch_mode = 4
 
 [node name="UITime" type="Control" parent="UI"]
 texture_filter = 1
@@ -815,7 +965,6 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="UIHire" type="PanelContainer" parent="UI/UIFullscreen"]
-unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

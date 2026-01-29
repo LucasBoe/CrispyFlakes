@@ -10,7 +10,9 @@ var targetFinal
 var has_target = false
 var is_moving = false
 
-const MOVE_SPEED = 24
+const MOVE_SPEED = 32
+
+signal target_reached_signal
 
 func _ready():
 	npc = get_parent() as NPC
@@ -38,6 +40,7 @@ func _process(delta):
 		targetPath.remove_at(0)
 		if targetPath.is_empty():
 			stop_navigation()
+			target_reached_signal.emit()
 			return
 	
 	if len(targetPath) == 0:

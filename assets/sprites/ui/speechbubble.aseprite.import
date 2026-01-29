@@ -1,0 +1,16 @@
+[remap]
+
+importer="aseprite_wizard.plugin.static-texture"
+type="PortableCompressedTexture2D"
+uid="uid://boca2hk30ecvv"
+path="res://.godot/imported/speechbubble.aseprite-f062ab1fd9387100e83504582d3d4ade.res"
+
+[deps]
+
+source_file="res://assets/sprites/ui/speechbubble.aseprite"
+dest_files=["res://.godot/imported/speechbubble.aseprite-f062ab1fd9387100e83504582d3d4ade.res"]
+
+[params]
+
+layer/exclude_layers_pattern=""
+layer/only_visible_layers=false
