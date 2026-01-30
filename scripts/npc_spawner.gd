@@ -32,6 +32,7 @@ func SpawnNewWorker(opt_spawn_position = Vector2(-320,0)):
 	add_child(worker)
 	
 	workers.append(worker)
+	return worker
 	
 func SpawnNewGuest():
 	var guest = guestScene.instantiate()

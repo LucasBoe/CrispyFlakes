@@ -6,12 +6,45 @@ func start_tutorial():
 	Global.UI.resources.hide()
 	ResourceHandler.change_resource(Enum.Resources.MONEY, 100000)
 	Global.UI.menu.hide()
+	var tutorial_worker = Global.NPCSpawner.SpawnNewWorker(Vector2(-72,0)) as NPCWorker
+	await get_tree().create_timer(2).timeout
+	await Global.UI.dialogue.print_dialogue("Oh boi, what a mess uncle jack left here.", tutorial_worker)
+	
+	var total_rooms = Global.Building.get_all_rooms_of_type(RoomJunk).size()
+	
+	var asign_junk = Global.UI.tutorial.add_task("Use drag and drop to asign workers to rooms")
+	var clean_text = "Clean out all rooms full of junk"
+	var clean_junk = Global.UI.tutorial.add_task(junk_text(clean_text, 0, total_rooms))
+	
+	while tutorial_worker.Behaviour.behaviour_instance is not JobJunkBehaviour:
+		await end_of_frame()
+		
+	asign_junk.set_done()
+	
+	var missing_rooms = total_rooms
+	
+	while missing_rooms > 0:
+		missing_rooms = Global.Building.get_all_rooms_of_type(RoomJunk).size()
+		clean_junk.set_text(junk_text(clean_text, total_rooms - missing_rooms, total_rooms))
+		await end_of_frame()
+	
+	clean_junk.set_done()
+	
+	await Global.UI.dialogue.print_dialogue("That was easier that I thought. Now I'm ready... to wait for guests.", tutorial_worker)
+	
+	Global.UI.tutorial.clear_tasks()
+	
+	var wait_for_guests = Global.UI.tutorial.add_task("Wait for guests")
+	
 	var tutorial_guest = Global.NPCSpawner.SpawnNewGuest() as NPCGuest
 	tutorial_guest.manual_behaviour = true
 	await get_tree().process_frame
 	tutorial_guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
 	await tutorial_guest.Navigation.target_reached_signal
+	
+	wait_for_guests.set_done()
 	await Global.UI.dialogue.print_dialogue("Howdy, partner. I'm parched. Get over here and pour me somethin', would ya?", tutorial_guest)
+	Global.UI.tutorial.clear_tasks()
 	var asign_worker = Global.UI.tutorial.add_task("Assign a worker to the bar")
 	
 	var bar =  Global.Building.get_all_rooms_of_type(RoomBar)[0]
@@ -108,6 +141,9 @@ func start_tutorial():
 		await sold_beer
 		
 	sell_beer.set_done()
+	
+func junk_text(text, amount_done, amount_needed):
+	return str(text, " (", amount_done, "/",amount_needed,")")
 	
 func try_notify_sold_beer():
 	sold_beer.emit()

@@ -3,17 +3,17 @@ class_name JobBathBehaviour
 
 var bath : RoomBath
 
-static var occupied_baths = []
+static var occupied_rooms = []
 
 func loop():
 	
-	bath = Global.Building.get_closest_room_of_type(RoomBath, npc.global_position, occupied_baths)
+	bath = Global.Building.get_closest_room_of_type(RoomBath, npc.global_position, occupied_rooms)
 	
 	if bath == null:
 		npc.change_job(Enum.Jobs.IDLE)
 		return
 		
-	occupied_baths.append(bath)
+	occupied_rooms.append(bath)
 	await move(bath.get_random_floor_position())
 	
 	while is_running:
@@ -66,4 +66,4 @@ func custom_array_sort(a, b):
 		return a[1] < b[1]
 
 func stop_loop():
-	occupied_baths.erase(bath)
+	occupied_rooms.erase(bath)

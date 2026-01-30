@@ -12,7 +12,7 @@ func _ready():
 func add_task(text):
 	var item_instance = item_dummy.duplicate() as TutorialUIItem
 	item_dummy.get_parent().add_child(item_instance)
-	item_instance.text_label.text = text
+	item_instance.set_text(text)
 	item_instance.show()
 	instances.append(item_instance)
 	show()

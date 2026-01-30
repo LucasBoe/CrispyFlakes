@@ -63,7 +63,15 @@ func set_target(target):
 
 func get_random_target():
 	var floor = Util.get_random_element(Global.Building.floors)
-	return Util.get_random_element(floor)
+	
+	var rooms = []
+	
+	for room : RoomBase in floor.values():
+		if room.isOutsideRoom:
+			continue
+		rooms.append(room)
+	
+	return rooms.pick_random()
 	
 func refresh_target_path():
 	
