@@ -67,14 +67,8 @@ func loop():
 				await progress(2, bar.progressBar)
 				bar.fullfill_next_request()
 				drinks_available -= .2
-				
-				var payment = 1
-				if drink == Enum.Items.BEER_BARREL:
-					payment = 3
-				elif drink == Enum.Items.WISKEY_BOX:
-					payment = 5
 					
-				ResourceHandler.add_animated(Enum.Resources.MONEY, payment, bar.get_center_position())
+				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.price, bar.get_center_position())
 			
 func stop_loop():
 	ocupied_bars.erase(bar)

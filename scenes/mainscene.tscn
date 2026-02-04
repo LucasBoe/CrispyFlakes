@@ -1,4 +1,4 @@
-[gd_scene load_steps=77 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=78 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -51,6 +51,7 @@
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
+[ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -403,6 +404,7 @@ theme_override_constants/margin_bottom = 6
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(96, 0)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
@@ -410,26 +412,40 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_fonts/font = ExtResource("29_1f2rr")
 theme_override_font_sizes/font_size = 16
-text = "Room Name"
+text = "Name"
 horizontal_alignment = 1
 
-[node name="Button" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(20, 20)
+[node name="LabelDescribtion" type="RichTextLabel" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+modulate = Color(0.77254903, 0.77254903, 0.77254903, 1)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-icon = ExtResource("19_3ocru")
-icon_alignment = 1
+theme_override_fonts/normal_font = ExtResource("25_q3hll")
+theme_override_font_sizes/normal_font_size = 11
+text = "This room does things. And even more things on the next lines."
+fit_content = true
 
-[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Dummy" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection"]
-custom_minimum_size = Vector2(38, 52)
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "- Upgrades -"
+horizontal_alignment = 1
+
+[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Dummy" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection"]
+custom_minimum_size = Vector2(38, 60)
 layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("22_hpv7r")
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -442,11 +458,12 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
+theme_override_constants/separation = -3
 
-[node name="Label" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="LabelName" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -454,7 +471,14 @@ text = "Product"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="TextureRect" type="TextureRect" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="LabelPrice" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "1$"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -462,12 +486,20 @@ mouse_filter = 2
 texture = ExtResource("19_v28my")
 stretch_mode = 3
 
-[node name="Label2" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="LabelCost" type="Label" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
-text = "999$"
+text = "-999$"
 horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Button" type="Button" parent="UI/UIRoom/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("19_3ocru")
+icon_alignment = 1
 
 [node name="UIResources" type="Control" parent="UI"]
 layout_mode = 3
@@ -814,7 +846,7 @@ text = "-"
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
-text = "0"
+text = "0 / 0"
 
 [node name="Button2" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
 custom_minimum_size = Vector2(16, 16)
@@ -980,6 +1012,7 @@ grow_vertical = 2
 script = ExtResource("28_1f2rr")
 
 [node name="ButtonDrag" type="Button" parent="UI/UIFullscreen/UIHire"]
+visible = false
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
@@ -1071,6 +1104,89 @@ alignment = 1
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Back"
+
+[node name="UIConfirm" type="PanelContainer" parent="UI/UIFullscreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -72.0
+offset_top = -30.5
+offset_right = 72.0
+offset_bottom = 30.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("50_n6nxc")
+
+[node name="ButtonDrag" type="Button" parent="UI/UIFullscreen/UIConfirm"]
+visible = false
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIFullscreen/UIConfirm"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIFullscreen/UIConfirm/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("28_3ou18")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIFullscreen/UIConfirm/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("29_1f2rr")
+text = "Are you sure?"
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "You are about to do something... This is your chance to not do it."
+fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="ButtonYes" type="Button" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Continue"
+
+[node name="ButtonNo" type="Button" parent="UI/UIFullscreen/UIConfirm/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Abort"
 
 [node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
 visible = false

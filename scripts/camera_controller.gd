@@ -1,6 +1,9 @@
 extends Camera2D
 
 @export var zoomSpeed : float = 10;
+@export var minZoom: float = 0.5
+@export var maxZoom: float = 3.0
+@export var panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
 
 
 var zoomTarget : float = 1
@@ -18,6 +21,7 @@ func _process(delta):
 	handle_zoom(delta)
 	SimplePan(delta)
 	ClickAndDrag()
+	clamp_pan_to_bounds()
 	
 func handle_zoom(delta):
 	if Input.is_action_just_pressed("zoom_in"):
@@ -65,6 +69,41 @@ func SimplePan(delta):
 	moveAmount = moveAmount.normalized()
 	position += moveAmount * delta * 100 * (1/zoomFactor)
 	
+func clamp_pan_to_bounds() -> void:
+	if panBounds.size == Vector2.ZERO:
+		return
+
+	var view := get_camera_world_rect()
+	var bounds_end := panBounds.position + panBounds.size
+	var view_end := view.position + view.size
+
+	var shift := Vector2.ZERO
+
+	# X
+	if panBounds.size.x <= view.size.x:
+		shift.x = (panBounds.position.x + panBounds.size.x * 0.5) - (view.position.x + view.size.x * 0.5)
+	else:
+		if view.position.x < panBounds.position.x:
+			shift.x = panBounds.position.x - view.position.x
+		elif view_end.x > bounds_end.x:
+			shift.x = bounds_end.x - view_end.x
+
+	# Y
+	if panBounds.size.y <= view.size.y:
+		shift.y = (panBounds.position.y + panBounds.size.y * 0.5) - (view.position.y + view.size.y * 0.5)
+	else:
+		if view.position.y < panBounds.position.y:
+			shift.y = panBounds.position.y - view.position.y
+		elif view_end.y > bounds_end.y:
+			shift.y = bounds_end.y - view_end.y
+
+	if shift != Vector2.ZERO:
+		if isDragging:
+			offset += shift
+			dragStartCameraPos += shift
+		else:
+			global_position += shift
+	
 func ClickAndDrag():
 	if !isDragging and Input.is_action_just_pressed("camera_pan"):
 		dragStartMousePos = get_viewport().get_mouse_position()
@@ -79,6 +118,7 @@ func ClickAndDrag():
 		offset = dragStartCameraPos - moveVector * 1/zoomFactor	
 		
 func zoom_in_out():
+	zoomTarget = clampf(zoomTarget, minZoom, maxZoom)
 	var mousePositionBefore = get_global_mouse_position()
 	var cameraCenter = self.global_position;
 	
@@ -88,6 +128,8 @@ func zoom_in_out():
 	offset += diff
 	
 	#print(diff)
+	
+	
 
 func get_camera_world_rect() -> Rect2:
 	var viewport := get_viewport_rect() # size in pixels

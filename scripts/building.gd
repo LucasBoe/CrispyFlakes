@@ -44,10 +44,10 @@ enum roofIndexMap {
 func _ready():
 	Global.Building = self
 	
-	set_room(room_empty, -2,0, false)
+	set_room(room_table, -2,0, false)
 	set_room(room_bar, -1,0, false)
 	set_room(room_stairs, 0,0, false)
-	set_room(room_well, 4,0, false)
+	set_room(room_well, 3,0, false)
 	set_room(room_stairs, 0,-1, false)
 	set_room(room_junk, -1,-1, false)
 	
@@ -265,7 +265,7 @@ func get_closest_room_of_type_on_floor(type, global_pos : Vector2, y):
 	
 	return closestRoom
 		
-func get_closest_room_of_type(type, global_pos : Vector2, blacklist = null):
+func get_closest_room_of_type(type, global_pos : Vector2, blacklist = null, offset = Vector2(0,0)):
 	var closestRoom
 	var shortest_distance: float = INF
 
@@ -285,7 +285,7 @@ func get_closest_room_of_type(type, global_pos : Vector2, blacklist = null):
 			if blacklist != null and blacklist.has(room):
 				continue
 				
-			var distance = room.global_position.distance_to(global_pos - Vector2(24,0))
+			var distance = room.global_position.distance_to(global_pos + offset)
 			if distance < shortest_distance:
 				shortest_distance = distance	
 				closestRoom = room

@@ -198,7 +198,7 @@ func _input(event):
 		
 	var targetPos = null
 	
-	var room : RoomBase = Global.Building.get_closest_room_of_type(RoomBase, global_position)
+	var room : RoomBase = Global.Building.get_closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
 	if room:
 		targetPos = room.global_position + Vector2(24,0)
 
@@ -206,13 +206,18 @@ func _input(event):
 	#	assignmentIndicator.visible = true
 	
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
-		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,1,0.5))
+		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,0,1,0.5))
 		
+	print(room.associatedJob)
+	
 	if not new_room_highlight && room:
 		new_room_highlight = RoomHighlighter.request_rect(room)
 		
 	if targetPos && new_room_highlight:
 		new_room_highlight.global_position = room.get_center_position()
+		
+	if room and new_room_highlight and current_job_room != room:
+		new_room_highlight.modulate = Color.GREEN if room.associatedJob else Color.WHITE
 		
 	if room && room.associatedJob:
 		if not new_job_room_highlight:

@@ -8,6 +8,7 @@
 [node name="Room_Junk" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_7fgr5")
+describtion = "This room needs a worker to get cleaned up and free."
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200

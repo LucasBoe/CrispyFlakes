@@ -9,6 +9,7 @@
 texture_filter = 1
 script = ExtResource("1_ig3mw")
 drink_type = 3
+describtion = "Asign a worker to serve different types of drinks to your guests."
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200

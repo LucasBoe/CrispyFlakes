@@ -35,10 +35,15 @@ func _on_jobs_changed():
 	
 func refresh_amount():
 	var amount = JobHandler.count_workers_in(associated_job)
-	worker_amount_label.text = str(amount)
+	var max_amount = JobHandler.count_rooms_for(associated_job)
+	worker_amount_label.text = str(amount, " / ", max_amount)
+	worker_amount_label.modulate = Color.WHITE if max_amount > 0 else Color.LIGHT_SLATE_GRAY
 	
 	if associated_job == Enum.Jobs.IDLE:
 		return
 	
-	add_button.disabled = JobHandler.count_workers_in(Enum.Jobs.IDLE) <= 0
+	var no_idles = JobHandler.count_workers_in(Enum.Jobs.IDLE) <= 0
+	var no_free_workplaces_in_job = amount >= max_amount
+	
+	add_button.disabled = no_idles or no_free_workplaces_in_job
 	remove_button.disabled = amount <= 0

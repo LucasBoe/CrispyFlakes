@@ -9,6 +9,7 @@ class_name UIHolder
 @onready var menu: MenuUIHandler = $UIMenu
 #@onready var fullscreen: UIFullscreen = $UIFullscreen
 @onready var hire : UIHire = $UIFullscreen/UIHire
+@onready var confirm : UIConfirm = $UIFullscreen/UIConfirm
 #@onready var pause: UIPause = $UIPause
 
 func _ready():

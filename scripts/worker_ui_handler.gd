@@ -33,7 +33,7 @@ func _on_jobs_changed():
 			str += str(name, " - ", job , " - ", cost, "$\n")
 	
 	container_label.text = str;
-	payment_height_label.text = str(JobHandler.payment_total, "$ / D")
+	payment_height_label.text = str("-", JobHandler.payment_total, "$ / D")
 
 func _process(delta):
 	payment_progress_bar.value = JobHandler.payment_cycle_progression

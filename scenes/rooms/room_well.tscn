@@ -1,12 +1,13 @@
 [gd_scene load_steps=4 format=3 uid="uid://ds54o420pb2t7"]
 
-[ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scenes/rooms/room_well.gd" id="1_bkap1"]
+[ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scripts/room_well.gd" id="1_bkap1"]
 [ext_resource type="Texture2D" uid="uid://dkygfkyxds8yp" path="res://assets/sprites/well.png" id="2_d5ivy"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="3_bkap1"]
 
 [node name="Room_Well" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_bkap1")
+describtion = "People can fetch water here."
 
 [node name="Well" type="Sprite2D" parent="."]
 z_index = -200

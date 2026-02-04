@@ -8,6 +8,8 @@ var associatedJob = null
 var isOutsideRoom = false
 var has_upgrades = false
 
+@export var describtion = ""
+
 @onready var backWallSprite2D = $"Back-wall"
 
 const backwallDefault = preload("res://assets/sprites/back-wall.png");

@@ -15,7 +15,7 @@ func TryReceive(item : Item) -> bool:
 	
 	if freeSlotIndex >= 0:
 		item.reparent(self, false)
-		item.global_position = index_to_xy(freeSlotIndex)
+		item.position = index_to_xy(freeSlotIndex)
 		item.global_rotation = 0
 		item.scale = Vector2.ONE
 		item.z_index = -(maxX * maxY) + freeSlotIndex

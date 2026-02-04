@@ -56,6 +56,15 @@ func count_workers_in(job):
 		return 0
 		
 	return workers[job].size()
+	
+func count_rooms_for(job):
+	var count = 0
+	for floor in Global.Building.floors.values():
+		for room : RoomBase in floor.values():
+			if room.associatedJob == job:
+				count+=1
+	
+	return count
 
 # find idle person and change their job to new job
 func add_more_people_to_job(job):

@@ -4,8 +4,9 @@ extends Control
 @onready var root = $MarginContainer
 
 @onready var room_name_label = $MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/Label
-@onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/Button
-@onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/UpgradeSelection
+@onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
+@onready var room_describtion_label = $MarginContainer/MarginContainer/VBoxContainer/LabelDescribtion
+@onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer/VBoxContainer/UpgradeSelection
 
 var room : RoomBase = null
 
@@ -25,17 +26,24 @@ func _on_clicked_room(clicked_room : RoomBase):
 	if not valid_room:
 		return
 	
-	var world_position = clicked_room.get_top_center_position()
-	var ui_position = Util.world_to_ui_position(world_position, self, camera)
-	root.global_position = ui_position - Vector2(root.size.x / 2, root.size.y)
+	room_name_label.text = clicked_room.get_script().get_global_name().trim_prefix("Room")
+	room_delete_button.visible = room is not RoomJunk
 	
-	room_name_label.text = clicked_room.name
+	var describtion = room.describtion
+	room_describtion_label.visible = describtion != ""
+	if describtion != "":
+		room_describtion_label.text = describtion
+		
 	
-	room_upgrade_hbox.visible = room.has_upgrades
+	room_upgrade_hbox.get_parent().visible = room.has_upgrades
 	if room.has_upgrades:
+		
 		# keep index 0 as template, delete the rest
-		for i in range(room_upgrade_hbox.get_child_count() - 1, 0, -1):
-			room_upgrade_hbox.get_child(i).queue_free()
+		var amount = room_upgrade_hbox.get_child_count()
+		for i in range(amount - 1, 0, -1):
+			room_upgrade_hbox.get_child(i).free()
+			
+		print(room_upgrade_hbox.get_child_count())
 
 		var template = room_upgrade_hbox.get_child(0)
 		template.visible = false
@@ -46,14 +54,29 @@ func _on_clicked_room(clicked_room : RoomBase):
 			room_upgrade_hbox.add_child(clone)
 			var content_root = clone.get_child(0).get_child(0)
 			content_root.get_child(0).text = upgrade.name
-			content_root.get_child(1).texture = upgrade.icon
-			content_root.get_child(2).text = str(upgrade.cost, " $")
+			content_root.get_child(1).text = str("+", upgrade.price, " $")
+			content_root.get_child(2).texture = upgrade.icon
+			content_root.get_child(3).text = str("-", upgrade.cost, " $")
 			clone.pressed.connect(room.try_set_upgrade.bind(upgrade))
-			clone.modulate = Color.WHITE if upgrade == room.current_upgrade else Color.WEB_GRAY
+			clone.pressed.connect(refresh_upgrades)
 			clone.show()
+		
+		refresh_upgrades()
+			
+	root.size = root.get_combined_minimum_size()
+	
+	var world_position = clicked_room.get_top_center_position()
+	var ui_position = Util.world_to_ui_position(world_position, self, camera)
+	root.global_position = ui_position - Vector2(root.size.x / 2, root.size.y) - Vector2(0,4)
+
+func refresh_upgrades():
+	for child in room_upgrade_hbox.get_children():
+		var name = child.get_child(0).get_child(0).get_child(0).text
+		child.modulate = Color.WHITE if name == room.current_upgrade.name else Color.WEB_GRAY
 
 func _on_delete_room_clicked():
 	if room == null:
 		return
 		
-	Global.Building.delete_room(room)
+	Global.UI.confirm.show_dialogue("You are about to delete this room. You will not get any money back but can place a different room here. Are you sure?", Global.Building.delete_room.bind(room))
+	root.hide()

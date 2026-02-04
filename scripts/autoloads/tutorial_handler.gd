@@ -6,6 +6,9 @@ func start_tutorial():
 	Global.UI.resources.hide()
 	ResourceHandler.change_resource(Enum.Resources.MONEY, 100000)
 	Global.UI.menu.hide()
+	for button : Button in Global.UI.menu.build_tab.all_buttons:
+		button.disabled = true
+	
 	var tutorial_worker = Global.NPCSpawner.SpawnNewWorker(Vector2(-72,0)) as NPCWorker
 	await get_tree().create_timer(2).timeout
 	await Global.UI.dialogue.print_dialogue("Oh boi, what a mess uncle jack left here.", tutorial_worker)
@@ -76,6 +79,8 @@ func start_tutorial():
 	tutorial_guest.set_process(false)
 	#tutorial_guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
 	
+	Global.UI.menu.build_tab.buttery_button.disabled = false
+	Global.UI.menu.build_tab.brewery_button.disabled = false
 	Global.UI.menu.show()
 	
 	var brewery_todo = Global.UI.tutorial.add_task("Build a Brewery")
@@ -132,6 +137,9 @@ func start_tutorial():
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true
 	tutorial_guest.manual_behaviour = false
+	
+	for button : Button in Global.UI.menu.build_tab.all_buttons:
+		button.disabled = false
 	
 	var sell_beer
 	

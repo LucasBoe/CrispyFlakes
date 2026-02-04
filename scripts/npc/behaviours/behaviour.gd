@@ -24,8 +24,8 @@ func stop_loop():
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
 	
-func move(target):
-	npc.Navigation.set_target(target)
+func move(target, custom_speed = -1):
+	npc.Navigation.set_target(target, custom_speed)
 	while npc.Navigation.is_moving:	
 		await endOfFrame()
 	

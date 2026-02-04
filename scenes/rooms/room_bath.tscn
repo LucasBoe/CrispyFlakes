@@ -8,6 +8,7 @@
 [node name="Room_Bath" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_hw732")
+describtion = "Dirty cowboys will come here to get cleaned by your workers."
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200

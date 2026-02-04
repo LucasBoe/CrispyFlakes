@@ -115,3 +115,6 @@ Label/font_sizes/font_size = 11
 Label/fonts/font = ExtResource("3_ytpqb")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_ytpqb")
 ProgressBar/styles/fill = SubResource("StyleBoxLine_trfhs")
+RichTextLabel/constants/line_separation = -4
+RichTextLabel/font_sizes/normal_font_size = 11
+RichTextLabel/fonts/normal_font = ExtResource("3_ytpqb")

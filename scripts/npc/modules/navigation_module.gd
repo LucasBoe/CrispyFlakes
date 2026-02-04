@@ -10,7 +10,8 @@ var targetFinal
 var has_target = false
 var is_moving = false
 
-const MOVE_SPEED = 32
+const DEFAULT_MOVE_SPEED = 32
+var move_speed = DEFAULT_MOVE_SPEED
 
 signal target_reached_signal
 
@@ -21,19 +22,17 @@ func _ready():
 		
 	npc.Navigation = self
 	
-func _process(delta):
-	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0,-1))
-	
+func _process(delta):	
 	if not has_target:
 		return
 	
 	npc.Animator.direction = Vector2.ZERO
 	
 	#debug draw nav path
-	var previous = global_position;
-	for p in targetPath:
-		DebugDraw2D.line(previous, p)
-		previous = p
+	#var previous = global_position;
+	#for p in targetPath:
+		#DebugDraw2D.line(previous, p)
+		#previous = p
 	
 	#check reached target
 	if global_position.distance_to(targetPath[0]) < 1:
@@ -48,18 +47,20 @@ func _process(delta):
 	
 	#move towards next target position
 	npc.Animator.direction = targetPath[0] - npc.global_position
-	npc.global_position = npc.global_position.move_toward(targetPath[0], delta * MOVE_SPEED)
+	npc.global_position = npc.global_position.move_toward(targetPath[0], delta * move_speed)
 
 func stop_navigation():
 	targetFinal = null
 	has_target = false
 	is_moving = false
 
-func set_target(target):
+func set_target(target, custom_speed):
 	targetFinal = target
 	refresh_target_path()
 	is_moving = true
 	has_target = true
+	
+	move_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
 
 func get_random_target():
 	var floor = Util.get_random_element(Global.Building.floors)
@@ -80,6 +81,7 @@ func refresh_target_path():
 	if targetFinal is Node2D:
 		targetFinal = targetFinal.global_position + Vector2(24,0)
 	
+	refresh_room_index()
 	var targetRoomIndex = Global.Building.round_room_index_from_global_position(targetFinal)
 	var last_position = global_position
 	var currentY = currentRoomIndex.y
@@ -100,3 +102,13 @@ func refresh_target_path():
 				
 	#move to target location
 	targetPath.append(targetFinal);
+
+func refresh_room_index():
+	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0,-1))
+	#
+	#print(currentRoomIndex)
+	#
+	#var r = (Global.Building.floors[currentRoomIndex.y][currentRoomIndex.x] as RoomBase)
+	#if r:
+		#var p2 = r.get_center_position()
+		#DebugDraw2D.line(global_position, p2)
