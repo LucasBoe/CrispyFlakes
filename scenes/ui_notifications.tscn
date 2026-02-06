@@ -1,19 +1,36 @@
-[gd_scene load_steps=6 format=3 uid="uid://cbiagv3wch5jo"]
+[gd_scene load_steps=10 format=3 uid="uid://cbiagv3wch5jo"]
 
 [ext_resource type="Script" uid="uid://dqi0cet2rinmj" path="res://scripts/ui_notification_handler.gd" id="1_q2bjm"]
 [ext_resource type="Theme" uid="uid://c4484uuc0plfm" path="res://assets/notification.tres" id="2_rbolc"]
 [ext_resource type="Texture2D" uid="uid://ct75bphreujht" path="res://assets/sprites/ui/icon_exclaimation.png" id="3_rbolc"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="4_ts1og"]
+[ext_resource type="Texture2D" uid="uid://co2jbipk7jsog" path="res://assets/sprites/ui/icon_energy.png" id="5_bd4f5"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="6_nu268"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_nu268"]
 line_spacing = 0.0
 font = ExtResource("4_ts1og")
 font_size = 11
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3mn1n"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0076186024, 0.0076186024, 0.0076186024, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2j60r"]
+bg_color = Color(0.9607843, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0, 0, 0, 1)
+
 [node name="UINotifications" type="Node2D"]
 script = ExtResource("1_q2bjm")
 
-[node name="Dummy" type="PanelContainer" parent="."]
+[node name="SpeechbubbleDummy" type="PanelContainer" parent="."]
 z_index = 4000
 anchors_preset = 2
 anchor_top = 1.0
@@ -26,7 +43,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 4
 theme = ExtResource("2_rbolc")
 
-[node name="MarginContainer" type="MarginContainer" parent="Dummy"]
+[node name="MarginContainer" type="MarginContainer" parent="SpeechbubbleDummy"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/margin_left = 1
@@ -34,24 +51,66 @@ theme_override_constants/margin_top = -3
 theme_override_constants/margin_right = 1
 theme_override_constants/margin_bottom = -6
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Dummy/MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="SpeechbubbleDummy/MarginContainer"]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Dummy/MarginContainer/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="SpeechbubbleDummy/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = -1
 theme_override_constants/margin_bottom = 1
 
-[node name="TextureRect" type="TextureRect" parent="Dummy/MarginContainer/HBoxContainer/MarginContainer"]
+[node name="TextureRect" type="TextureRect" parent="SpeechbubbleDummy/MarginContainer/HBoxContainer/MarginContainer"]
 visible = false
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("3_rbolc")
 stretch_mode = 5
 
-[node name="Label" type="Label" parent="Dummy/MarginContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="SpeechbubbleDummy/MarginContainer/HBoxContainer"]
 layout_mode = 2
-text = "#"
+text = "?"
 label_settings = SubResource("LabelSettings_nu268")
+
+[node name="NeedBarDummy" type="Control" parent="."]
+z_index = 3900
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -20.0
+offset_right = 8.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="IconTextureRect" type="TextureRect" parent="NeedBarDummy"]
+modulate = Color(1, 0, 0, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_bd4f5")
+stretch_mode = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="NeedBarDummy"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -3.0
+grow_horizontal = 2
+grow_vertical = 0
+theme = ExtResource("6_nu268")
+theme_override_styles/background = SubResource("StyleBoxFlat_3mn1n")
+theme_override_styles/fill = SubResource("StyleBoxFlat_2j60r")
+max_value = 1.0
+value = 0.5
+show_percentage = false

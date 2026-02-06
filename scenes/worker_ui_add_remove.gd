@@ -1,4 +1,5 @@
 extends HBoxContainer
+class_name WorkerUIAddRemove
 
 @onready var job_name_label = $Label
 @onready var worker_amount_label = $Label2
@@ -36,8 +37,8 @@ func _on_jobs_changed():
 func refresh_amount():
 	var amount = JobHandler.count_workers_in(associated_job)
 	var max_amount = JobHandler.count_rooms_for(associated_job)
-	worker_amount_label.text = str(amount, " / ", max_amount)
-	worker_amount_label.modulate = Color.WHITE if max_amount > 0 else Color.LIGHT_SLATE_GRAY
+	worker_amount_label.text = str(amount, "     ") if associated_job == Enum.Jobs.IDLE else str(amount, " / ", max_amount)
+	worker_amount_label.modulate = Color.WHITE if max_amount > 0 or amount > 0 else Color.LIGHT_SLATE_GRAY
 	
 	if associated_job == Enum.Jobs.IDLE:
 		return

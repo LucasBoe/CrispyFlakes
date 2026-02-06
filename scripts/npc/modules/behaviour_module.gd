@@ -28,6 +28,9 @@ func set_behaviour(behaviour):
 	behaviour_instance = (behaviourHost as Behaviour)
 	behaviour_instance.npc = npc
 	
+	if behaviour_instance is NeedDrinkingBehaviour:
+		UiNotifications.create_notification_need(Enum.Need.DRINK, .1, npc)
+	
 	behaviourHost.set_process(true)
 	has_behaviour = true
 	

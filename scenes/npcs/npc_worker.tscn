@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://dexn3jgkl81oo"]
+[gd_scene load_steps=10 format=3 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
 [ext_resource type="Texture2D" uid="uid://m83v8bxndfmq" path="res://assets/sprites/worker.png" id="2_d0f16"]
+[ext_resource type="Shader" uid="uid://qjtxc3ptfctc" path="res://assets/shaders/outline.gdshader" id="2_ivbhr"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_escwn"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_dc1yn"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
@@ -11,6 +12,11 @@
 radius = 7.0
 height = 24.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_escwn"]
+shader = ExtResource("2_ivbhr")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+
 [node name="NPCWorker" type="Area2D"]
 script = ExtResource("1_d0f16")
 
@@ -19,9 +25,29 @@ position = Vector2(0, -11)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_escwn")
 texture = ExtResource("2_d0f16")
 offset = Vector2(0, -12)
 script = ExtResource("3_escwn")
+metadata/_aseprite_wizard_interface_config_ = {
+"animation_section": false,
+"layer_section": false,
+"output_section": false,
+"pending_changes": {
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"slice": "",
+"source": ""
+},
+"slice_section": false
+}
 
 [node name="ItemModule" type="Node2D" parent="AnimationModule"]
 position = Vector2(0, -3)

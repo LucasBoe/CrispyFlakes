@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bequo7bfenqop"]
+[gd_scene load_steps=4 format=3 uid="uid://bequo7bfenqop"]
 
 [ext_resource type="Script" uid="uid://bsxq5bjs7pb2w" path="res://scripts/room_empty.gd" id="1_ps7y8"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_xb5b7"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_xb5b7"]
 
 [node name="Room_Empty" type="Node2D"]
 texture_filter = 1
@@ -11,3 +12,9 @@ script = ExtResource("1_ps7y8")
 z_index = -200
 position = Vector2(24, -23)
 texture = ExtResource("2_xb5b7")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_xb5b7")

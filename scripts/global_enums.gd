@@ -1,5 +1,11 @@
 extends Node
 
+@onready var need_icon_drink = preload("res://assets/sprites/ui/icon_drink.png")
+@onready var need_icon_energy = preload("res://assets/sprites/ui/icon_energy.png")
+@onready var need_icon_hygene = preload("res://assets/sprites/ui/icon_hygene.png")
+@onready var need_icon_mood = preload("res://assets/sprites/ui/icon_mood.png")
+@onready var need_icon_drunk = preload("res://assets/sprites/ui/icon_drunk.png")
+
 enum Items {
 	BEER_BARREL,
 	WISKEY_BOX,
@@ -21,12 +27,6 @@ enum Jobs {
 	JUNK
 }
 
-enum RequestStatus {
-	OPEN,
-	TIMEOUT,
-	FULFILLED
-}
-
 static func job_to_behaviour(job : Jobs):
 	match job:
 		Enum.Jobs.IDLE:
@@ -46,3 +46,34 @@ static func job_to_behaviour(job : Jobs):
 			
 		Enum.Jobs.JUNK:
 			return JobJunkBehaviour
+
+enum RequestStatus {
+	OPEN,
+	TIMEOUT,
+	FULFILLED
+}
+
+enum Need {
+	MONEY,
+	DRINK,
+	ENERGY,
+	HYGENE,
+	HAPPY,
+	DRUNK
+}
+static func need_to_icon(need : Enum.Need) -> Texture:
+	match need:
+		
+		Enum.Need.DRINK:
+			return Enum.need_icon_drink
+			
+		Enum.Need.ENERGY:
+			return Enum.need_icon_energy
+			
+		Enum.Need.HYGENE:
+			return Enum.need_icon_hygene
+			
+		Enum.Need.DRUNK:
+			return Enum.need_icon_drunk
+			
+	return Enum.need_icon_mood

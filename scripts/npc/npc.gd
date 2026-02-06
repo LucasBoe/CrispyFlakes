@@ -11,13 +11,17 @@ var spawn_time
 
 func _ready():
 	spawn_time = Time.get_ticks_usec()
-
-func _input_event(viewport, event, shape_idx):
-	if event.is_action_pressed("click"):	
-		click_on_self();
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
+		
+func _on_mouse_entered():
+	HoverHandler.notify_hover_enter(self)
+	
+func _on_mouse_exited():
+	HoverHandler.notify_hover_exit(self)
 		
 func get_age():
 	return Time.get_ticks_usec() - spawn_time
 		
-func click_on_self():
+func click_on():
 	print("npc click")

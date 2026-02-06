@@ -83,3 +83,11 @@ func remove_people_from_job(job):
 	
 	var worker = workers[job].pick_random()
 	worker.change_job(Enum.Jobs.IDLE)
+
+func fire_worker(worker):
+	worker.change_job(Enum.Jobs.IDLE)
+	for j : Array in workers.values():
+		if j.has(worker):
+			j.erase(worker)
+			
+	worker.queue_free()

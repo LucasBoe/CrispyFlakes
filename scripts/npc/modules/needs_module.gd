@@ -6,18 +6,20 @@ var Mood : Need
 var Drunkenness : Need
 var Energy : Need
 
+var needs = []
+
 var npc
 
 func _ready():
-	Money = new_need()
-	Mood = new_need()
-	Drunkenness = new_need()
-	Energy = new_need()
+	Money = new_need(Enum.Need.MONEY)
+	Mood = new_need(Enum.Need.HAPPY)
+	Drunkenness = new_need(Enum.Need.DRUNK)
+	Energy = new_need(Enum.Need.ENERGY)
 	
-	Money.Strength = randf_range(0.2, 1.0)
-	Mood.Strength = randf_range(0.3, 1.0)
-	Drunkenness.Strength = randf_range(0.0, 0.2)
-	Energy.Strength = randf_range(0.5, 1.0)
+	Money.strength = randf_range(0.2, 1.0)
+	Mood.strength = randf_range(0.3, 1.0)
+	Drunkenness.strength = randf_range(0.0, 0.2)
+	Energy.strength = randf_range(0.5, 1.0)
 	
 	npc = get_parent() as NPCGuest
 	if npc:
@@ -25,8 +27,10 @@ func _ready():
 		
 	npc.Needs = self
 	
-func new_need():
+func new_need(type):
 	var instance = Need.new()
+	instance.type = type
+	needs.append(instance)
 	add_child(instance)
 	return instance
 

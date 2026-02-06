@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=13 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
+[ext_resource type="Shader" uid="uid://qjtxc3ptfctc" path="res://assets/shaders/outline.gdshader" id="2_n6wgk"]
 [ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="2_prewa"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_p1iho"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_n6wgk"]
@@ -12,6 +13,11 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 radius = 7.0
 height = 24.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_482k3"]
+shader = ExtResource("2_n6wgk")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_p1iho"]
 particle_flag_disable_z = true
@@ -34,6 +40,7 @@ position = Vector2(0, -11)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_482k3")
 texture = ExtResource("2_prewa")
 offset = Vector2(0, -12)
 script = ExtResource("3_p1iho")

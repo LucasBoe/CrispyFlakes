@@ -12,6 +12,8 @@ const WALK_ANIMATION_SPEED = 15.0
 const WALK_ROTATION_STRENGTH = .15
 
 func _ready():
+	material = material.duplicate(true)
+	
 	var npc = get_parent() as NPC
 	if npc:
 		pass

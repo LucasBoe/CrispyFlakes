@@ -2,7 +2,7 @@ extends NeedBehaviour
 class_name IdleBehaviour
 
 static func get_probability_by_needs(needs):
-	return needs.Energy.Strength * .5 * (1.0 - needs.Money.Strength)
+	return needs.Energy.strength * .5 * (1.0 - needs.Money.strength)
 
 func loop():
 	await pause(3)

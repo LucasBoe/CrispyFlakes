@@ -1,5 +1,5 @@
 extends Node
-
 class_name Need
 
-var Strength : float # 0 - 1
+var type : Enum.Need
+var strength : float # 0 - 1

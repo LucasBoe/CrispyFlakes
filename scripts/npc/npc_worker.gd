@@ -180,7 +180,7 @@ func change_job(new):
 	JobHandler.on_job_changed(self, current_job)
 	print(str("change job to ", Enum.Jobs.keys()[current_job]))
 
-func click_on_self():
+func click_on():
 	
 	if picked_up_npc != null:
 		return;		

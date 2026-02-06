@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=83 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -36,9 +36,13 @@
 [ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Script" uid="uid://nvdw1p4kha3c" path="res://scripts/ui_npc_selected.gd" id="22_s200y"]
+[ext_resource type="Texture2D" uid="uid://cel32774pgclg" path="res://assets/sprites/ui/icon_drink.png" id="23_42hm2"]
+[ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="24_xsu8o"]
 [ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
 [ext_resource type="Texture2D" uid="uid://boca2hk30ecvv" path="res://assets/sprites/ui/speechbubble.aseprite" id="25_pklhh"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
+[ext_resource type="Script" uid="uid://cj1w0puuageyu" path="res://scripts/ui_need_info.gd" id="25_rbvcb"]
 [ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
 [ext_resource type="FontFile" uid="uid://lqh04fcpwlab" path="res://assets/fonts/Cubix_Mystical.ttf" id="26_lbk5b"]
@@ -51,6 +55,7 @@
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
+[ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
@@ -132,6 +137,8 @@ texture_region_size = Vector2i(48, 48)
 tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v28my"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3ocru"]
@@ -163,8 +170,6 @@ modulate_color = Color(18.892157, 18.892157, 18.892157, 0.3764706)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_w0i17"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rt53s"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 
 [node name="MainScene" type="Node"]
 
@@ -361,7 +366,209 @@ text = "- Assign a worker to the bar"
 layout_mode = 2
 texture = ExtResource("19_mwcfc")
 
+[node name="UINPC_(Wrapper)" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="UINPC" type="MarginContainer" parent="UI/UINPC_(Wrapper)"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -80.0
+offset_right = -81.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("22_s200y")
+
+[node name="LineAnchor" type="Control" parent="UI/UINPC_(Wrapper)/UINPC"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="Line2D" type="Line2D" parent="UI/UINPC_(Wrapper)/UINPC/LineAnchor"]
+visible = false
+points = PackedVector2Array(0, 0, 12, 12)
+width = 1.0
+sharp_limit = 1.0
+round_precision = 1
+
+[node name="Line" type="Node2D" parent="UI/UINPC_(Wrapper)/UINPC/LineAnchor"]
+script = ExtResource("24_xsu8o")
+pixel_size = null
+line_color = null
+snap_to_grid = null
+
+[node name="ButtonDrag" type="Button" parent="UI/UINPC_(Wrapper)/UINPC"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("28_3ou18")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("29_1f2rr")
+text = "NPC"
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="DescribtionLabel" type="RichTextLabel" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("22_hpv7r")
+text = "Describtion label"
+fit_content = true
+
+[node name="NeedDummy" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+alignment = 1
+script = ExtResource("25_rbvcb")
+
+[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("23_42hm2")
+stretch_mode = 3
+
+[node name="ProgressBar" type="ProgressBar" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+value = 0.5
+show_percentage = false
+
+[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "drink"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "- Upgrades -"
+horizontal_alignment = 1
+
+[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Dummy" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection"]
+custom_minimum_size = Vector2(38, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("22_hpv7r")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = -3
+
+[node name="LabelName" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "Product"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="LabelPrice" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "1$"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+mouse_filter = 2
+texture = ExtResource("19_v28my")
+stretch_mode = 3
+
+[node name="LabelCost" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "-999$"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Button" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("19_3ocru")
+icon_alignment = 1
+
 [node name="UIRoom" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -816,13 +1023,26 @@ theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
 text = "69 $"
 
-[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(106.9, 0)
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer"]
+layout_direction = 2
+layout_mode = 2
+script = ExtResource("41_pyam4")
+
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "No Jobs to see here...
-line"
-horizontal_alignment = 2
+text = "name"
+
+[node name="ButtonFire" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("19_3ocru")
+icon_alignment = 1
+vertical_icon_alignment = 0
 
 [node name="WorkerUIAddRemove" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2

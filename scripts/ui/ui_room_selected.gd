@@ -11,7 +11,7 @@ extends Control
 var room : RoomBase = null
 
 func _ready():
-	HoverHandler.click_room_signal.connect(_on_clicked_room)
+	HoverHandler.click_hovered_node_signal.connect(_on_clicked_room)
 	room_delete_button.pressed.connect(_on_delete_room_clicked)
 	root.hide()
 	
@@ -37,13 +37,9 @@ func _on_clicked_room(clicked_room : RoomBase):
 	
 	room_upgrade_hbox.get_parent().visible = room.has_upgrades
 	if room.has_upgrades:
-		
-		# keep index 0 as template, delete the rest
-		var amount = room_upgrade_hbox.get_child_count()
-		for i in range(amount - 1, 0, -1):
-			room_upgrade_hbox.get_child(i).free()
 			
-		print(room_upgrade_hbox.get_child_count())
+		# keep index 0 as template, delete the rest
+		Util.delete_all_children_execept_index_0(room_upgrade_hbox)
 
 		var template = room_upgrade_hbox.get_child(0)
 		template.visible = false
@@ -58,22 +54,14 @@ func _on_clicked_room(clicked_room : RoomBase):
 			content_root.get_child(2).texture = upgrade.icon
 			content_root.get_child(3).text = str("-", upgrade.cost, " $")
 			clone.pressed.connect(room.try_set_upgrade.bind(upgrade))
-			clone.pressed.connect(refresh_upgrades)
 			clone.show()
-		
-		refresh_upgrades()
 			
-	root.size = root.get_combined_minimum_size()
+	root.size = Vector2(root.size.x, root.get_combined_minimum_size().y)
 	
 	var world_position = clicked_room.get_top_center_position()
 	var ui_position = Util.world_to_ui_position(world_position, self, camera)
 	root.global_position = ui_position - Vector2(root.size.x / 2, root.size.y) - Vector2(0,4)
-
-func refresh_upgrades():
-	for child in room_upgrade_hbox.get_children():
-		var name = child.get_child(0).get_child(0).get_child(0).text
-		child.modulate = Color.WHITE if name == room.current_upgrade.name else Color.WEB_GRAY
-
+	
 func _on_delete_room_clicked():
 	if room == null:
 		return

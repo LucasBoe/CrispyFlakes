@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dyxbds1h886uy"]
+[gd_scene load_steps=6 format=3 uid="uid://dyxbds1h886uy"]
 
 [ext_resource type="Script" uid="uid://bpqpa16mn42r1" path="res://scripts/room_junk.gd" id="1_7fgr5"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_vpolm"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_bl3ys"]
 [ext_resource type="Texture2D" uid="uid://dfwyooj7vyi8t" path="res://assets/sprites/basement_junk.png" id="3_j18j6"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_vpolm"]
 
@@ -14,6 +15,12 @@ describtion = "This room needs a worker to get cleaned up and free."
 z_index = -200
 position = Vector2(24, -23)
 texture = ExtResource("2_vpolm")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_bl3ys")
 
 [node name="Shelf" type="Sprite2D" parent="."]
 z_index = -100

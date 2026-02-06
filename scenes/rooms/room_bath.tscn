@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://b33xy3nsqtm0h"]
+[gd_scene load_steps=6 format=3 uid="uid://b33xy3nsqtm0h"]
 
 [ext_resource type="Script" uid="uid://b0c6oncaajpg" path="res://scripts/room_bath.gd" id="1_hw732"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_uagmf"]
 [ext_resource type="Texture2D" uid="uid://5nessqnhc72x" path="res://assets/sprites/room_bath.png" id="3_hw732"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_uagmf"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_puq7e"]
 
 [node name="Room_Bath" type="Node2D"]
@@ -15,9 +16,15 @@ z_index = -200
 position = Vector2(24, -23)
 texture = ExtResource("2_uagmf")
 
-[node name="Brewery" type="Sprite2D" parent="."]
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_uagmf")
+
+[node name="Bath" type="Sprite2D" parent="."]
 z_index = -100
-position = Vector2(27, -19)
+position = Vector2(27, -20)
 texture = ExtResource("3_hw732")
 region_rect = Rect2(0, 48, 48, 48)
 

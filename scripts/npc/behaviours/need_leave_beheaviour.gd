@@ -7,7 +7,7 @@ static func get_probability_by_needs(needs : NeedsModule):
 	if needs.npc.get_age() < 10.0:
 		return 0.0
 	
-	return (1.0 - needs.Money.Strength) * (1.0 - needs.Mood.Strength)
+	return (1.0 - needs.Money.strength) * (1.0 - needs.Mood.strength)
 	
 func loop():
 	if npc is NPCGuest:

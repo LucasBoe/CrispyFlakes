@@ -5,7 +5,7 @@ var bar : RoomBar;
 var table : RoomTable;
 
 static func get_probability_by_needs(needs : NeedsModule):
-	return (needs.Money.Strength) * (needs.Mood.Strength)
+	return (needs.Money.strength) * (needs.Mood.strength)
 	
 func loop():
 	
