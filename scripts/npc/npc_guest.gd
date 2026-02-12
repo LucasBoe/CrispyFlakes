@@ -26,10 +26,17 @@ func _process(delta):
 	var newBehaviour = IdleBehaviour
 		
 	if not manual_behaviour:
-		newBehaviour = Needs.get_behaviour_from_needs()
+		newBehaviour = get_next_behaviour()
 		
 	print_debug("set behaviour to ", newBehaviour.get_global_name())
 	Behaviour.set_behaviour(newBehaviour)
+	
+func get_next_behaviour():
+	
+	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 3.0:
+		return NeedLeaveBehaviour
+	
+	return Behaviour.get_behaviour_from_available_rooms(Global.Building.get_all_rooms_of_type(RoomBase))
 	
 func try_drop_dirt():
 	if not dirt.get_child(0).visible:
@@ -43,3 +50,4 @@ func try_drop_dirt():
 func clean():
 	is_dirty = false
 	sprite.modulate = Color.WHITE
+	Needs.satisfaction.strength += 0.3

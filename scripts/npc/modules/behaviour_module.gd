@@ -28,8 +28,8 @@ func set_behaviour(behaviour):
 	behaviour_instance = (behaviourHost as Behaviour)
 	behaviour_instance.npc = npc
 	
-	if behaviour_instance is NeedDrinkingBehaviour:
-		UiNotifications.create_notification_need(Enum.Need.DRINK, .1, npc)
+	#if behaviour_instance is NeedDrinkingBehaviour:
+		#UiNotifications.create_notification_need(Enum.Need.DRINK, .1, npc)
 	
 	behaviourHost.set_process(true)
 	has_behaviour = true
@@ -46,3 +46,16 @@ func clear_behaviour():
 	behaviourHost.set_script(null)
 	behaviour_instance = null
 	has_behaviour = false
+
+func get_behaviour_from_available_rooms(all_rooms):
+	var all = []
+	for room in all_rooms:
+		
+		if room is RoomBar:
+			all.append(NeedDrinkingBehaviour)
+			
+		if room is RoomBath:
+			all.append(NeedCleaningBehaviour)
+			
+	var pick = all.pick_random();
+	return pick;

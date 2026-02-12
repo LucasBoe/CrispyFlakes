@@ -37,11 +37,15 @@ func _on_click_hovered_node_signal(node):
 		needs = target.Needs
 		
 		for need : Need in needs.needs:
+			#if need.type is not Enum.Need.SATISFACTION or need.type is not Enum.Need.DRUNKENNESS:
+				#continue
+			#
 			var instance = need_ui_dummy.duplicate() as UINeedInfo
 			need_ui_dummy.get_parent().add_child(instance)
 			need_ui_instances.append(instance)
 			instance.bind_instance(need)
 			instance.show()
+			
 	else:
 		needs = null
 		

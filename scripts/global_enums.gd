@@ -54,26 +54,15 @@ enum RequestStatus {
 }
 
 enum Need {
-	MONEY,
-	DRINK,
-	ENERGY,
-	HYGENE,
-	HAPPY,
-	DRUNK
+	SATISFACTION,
+	STAY_DURATION,
+	PASSIVE_SATISFACTION_LOSS,
+	DRUNKENNESS,
 }
 static func need_to_icon(need : Enum.Need) -> Texture:
 	match need:
-		
-		Enum.Need.DRINK:
-			return Enum.need_icon_drink
 			
-		Enum.Need.ENERGY:
-			return Enum.need_icon_energy
-			
-		Enum.Need.HYGENE:
-			return Enum.need_icon_hygene
-			
-		Enum.Need.DRUNK:
+		Enum.Need.DRUNKENNESS:
 			return Enum.need_icon_drunk
 			
 	return Enum.need_icon_mood
