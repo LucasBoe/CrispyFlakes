@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=89 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -55,8 +55,14 @@
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
+[ext_resource type="Texture2D" uid="uid://bl2f4bqvktgp1" path="res://assets/sprites/ui/icon_locked_1.png" id="35_em0su"]
 [ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
+[ext_resource type="Texture2D" uid="uid://boj3ubhrup0n1" path="res://assets/sprites/ui/icon_structure.png" id="48_mejnj"]
+[ext_resource type="Texture2D" uid="uid://c13whab821fwk" path="res://assets/sprites/ui/icon_drinking.png" id="49_3ukob"]
+[ext_resource type="Texture2D" uid="uid://bar5420knrv4c" path="res://assets/sprites/ui/icon_comfort.png" id="50_em0su"]
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
+[ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
+[ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -308,7 +314,7 @@ layout_mode = 1
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 36
+theme_override_constants/margin_top = 96
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UI/UITutorial/MarginContainer"]
 layout_mode = 2
@@ -810,7 +816,30 @@ text = "+12/D"
 horizontal_alignment = 1
 vertical_alignment = 2
 
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
+layout_mode = 0
+offset_top = 20.0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("35_em0su")
+
+[node name="Label" type="Label" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Rooms (0 Guests)"
+
+[node name="TextureRect2" type="TextureRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("19_mwcfc")
+
 [node name="UIDialogue" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 mouse_filter = 2
@@ -972,6 +1001,7 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
 [node name="UIWorkers" type="Control" parent="UI/UIMenu/MarginContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("19_6ravm")
@@ -1080,16 +1110,39 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
-visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("9_60k3h")
+
+[node name="TabBar" type="TabBar" parent="UI/UIMenu/MarginContainer/UIBuild"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -140.0
+offset_top = -6.0
+offset_right = 1.0
+offset_bottom = 18.0
+grow_horizontal = 0
+theme = ExtResource("22_hpv7r")
+current_tab = 0
+tab_count = 4
+tab_0/tooltip = "Construction"
+tab_0/icon = ExtResource("48_mejnj")
+tab_1/tooltip = "Drinks"
+tab_1/icon = ExtResource("49_3ukob")
+tab_2/tooltip = "Comfort"
+tab_2/icon = ExtResource("50_em0su")
+tab_3/tooltip = "Night"
+tab_3/icon = ExtResource("51_kjajm")
 
 [node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 23.0
+offset_right = -1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -1101,7 +1154,10 @@ size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
 theme_override_fonts/font = ExtResource("25_q3hll")
 theme_override_font_sizes/font_size = 11
-text = "toast"
+disabled = true
+text = "toast (20 Guests)"
+icon = ExtResource("52_3ukob")
+icon_alignment = 2
 
 [node name="UISettings" type="Control" parent="UI/UIMenu/MarginContainer"]
 visible = false

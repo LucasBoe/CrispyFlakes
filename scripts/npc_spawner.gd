@@ -11,6 +11,8 @@ var workers = []
 var guests_per_day_rate = 3.0
 var next_guest_progression = 0.0
 
+signal spawned_guest_signal
+
 func _ready():
 	Global.NPCSpawner = self
 
@@ -41,6 +43,7 @@ func SpawnNewGuest():
 	
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
+	spawned_guest_signal.emit(guests.size())
 	return guest
 
 func on_guest_destroy(guest):
