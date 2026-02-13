@@ -57,5 +57,8 @@ func get_behaviour_from_available_rooms(all_rooms):
 		if room is RoomBath:
 			all.append(NeedCleaningBehaviour)
 			
+		if room is RoomOuthouse:
+			all.append(UseOuthouseBehaviour)
+			
 	var pick = all.pick_random();
 	return pick;

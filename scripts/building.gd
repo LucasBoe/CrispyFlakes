@@ -16,6 +16,7 @@ const room_bath: PackedScene = preload("res://scenes/rooms/room_bath.tscn")
 const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
 const room_table: PackedScene = preload("res://scenes/rooms/room_table.tscn")
 const room_well: PackedScene = preload("res://scenes/rooms/room_well.tscn")
+const room_outhouse: PackedScene = preload("res://scenes/rooms/room_outhouse.tscn")
 
 enum levelDifference {
 	SAME,

@@ -16,6 +16,7 @@ func _ready():
 	brewery_button = create_button("Brewery", Global.Building.room_brewery, 30)
 	create_button("Bath", Global.Building.room_bath, 30)
 	#create_button("Well", Global.Building.room_well, 25, RoomWell.custom_placement_check)
+	create_button("Outhouse", Global.Building.room_outhouse, 10, RoomOuthouse.custom_placement_check)
 	buttonDummy.hide()
 	
 func create_button(name, packedScene : PackedScene, cost : int, custom_placement_check = null):

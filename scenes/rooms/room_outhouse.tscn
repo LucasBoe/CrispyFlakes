@@ -1,13 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://daoj6jerohhg2"]
+[gd_scene load_steps=5 format=3 uid="uid://dtr2utu3u6oo2"]
 
 [ext_resource type="Texture2D" uid="uid://dc8r04ou7ufdb" path="res://assets/sprites/outhouse.png" id="1_e2ofu"]
+[ext_resource type="Script" uid="uid://b1ivckdqe5b31" path="res://scripts/room_outhouse.gd" id="1_h1euw"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7sxp2"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_ysmtu"]
 
-[node name="Room_Well" type="Node2D"]
+[node name="Room_Outhouse" type="Node2D"]
 texture_filter = 1
+script = ExtResource("1_h1euw")
 
-[node name="Well" type="Sprite2D" parent="."]
+[node name="Outhouse" type="Sprite2D" parent="."]
 z_index = -200
 position = Vector2(24, -1)
 texture = ExtResource("1_e2ofu")
