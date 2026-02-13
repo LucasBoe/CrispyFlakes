@@ -13,6 +13,12 @@ func _ready():
 	
 	set_selected_button(buttons[1])
 	
+func _unhandled_input(event):
+	if event.is_action_released("toggle_pause"):
+		var pause = Engine.time_scale > 0
+		set_time(0 if pause else 1)
+		set_selected_button(buttons[0 if pause else 1])
+	
 func create_button(speed, path):
 	var instance : TimeButton = dummy.duplicate()
 	dummy.get_parent().add_child(instance)
