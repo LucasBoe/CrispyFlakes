@@ -1,4 +1,4 @@
-[gd_scene load_steps=89 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=90 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Script" uid="uid://bulscv1cynjq2" path="res://scripts/ui/ui_room_selected.gd" id="15_v27vk"]
 [ext_resource type="Script" uid="uid://c613an0dreii1" path="res://scripts/item_spawner.gd" id="16_4amiu"]
+[ext_resource type="Script" uid="uid://bl4pb0o8i1jn7" path="res://scripts/ui/ui_close_handler.gd" id="16_kjajm"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
@@ -298,6 +299,16 @@ texture = ExtResource("14_rnjso")
 
 [node name="UI" type="CanvasLayer" parent="."]
 script = ExtResource("15_3fppy")
+
+[node name="UICloseHandler" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("16_kjajm")
 
 [node name="UITutorial" type="Control" parent="UI"]
 layout_mode = 3
