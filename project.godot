@@ -36,6 +36,7 @@ DirtHandler="*res://scripts/autoloads/dirt_handler.gd"
 HoverHandler="*res://scripts/autoloads/hover_handler.gd"
 TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 TierHandler="*res://scripts/autoloads/tier_handler.gd"
+LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
 
 [display]
 

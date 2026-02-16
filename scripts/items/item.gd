@@ -9,7 +9,7 @@ func init(itemType : Enum.Items) -> Item:
 	self.itemType = itemType
 	var info = get_info(itemType)
 	apply_texture(info.Tex, info.Offset.x, info.Offset.y)
-	return self
+	return self	
 	
 func apply_texture(tex, offset_x = 0, offset_y = 0):
 	texture = tex
@@ -39,6 +39,8 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 	return info
 	
 func Destroy():
+	# preventive
+	LooseItemHandler.unregister_loose_item_instance(self)
 	queue_free()
 	
 class TextureInfo:

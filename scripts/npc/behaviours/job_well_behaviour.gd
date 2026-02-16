@@ -25,11 +25,7 @@ func loop():
 		var itemSpawnPos = well.get_random_floor_position()
 		var item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, itemSpawnPos)
 		npc.Item.PickUp(item)
-		var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, npc.global_position)
-		await move(closestButtery)
-		if not npc.Item.TryPutTo(closestButtery):
-			await move(closestButtery.get_random_floor_position())
-			npc.Item.DropCurrent()
+		await store_item(item)
 		await move(well)
 
 func stop_loop():
