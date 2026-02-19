@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://bxqb87t81l8ka"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_2fsif"]
+[ext_resource type="PackedScene" uid="uid://b33xy3nsqtm0h" path="res://scenes/rooms/room_bath.tscn" id="1_ydaxc"]
+
+[resource]
+script = ExtResource("1_2fsif")
+packed_scene = ExtResource("1_ydaxc")
+room_name = "Bath"
+room_desc = "Dirty cowboys will come here to get cleaned by your workers."
+construction_price = 30
+tier = 2
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

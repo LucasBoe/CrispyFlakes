@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4ga7js8bx21a"
-path="res://.godot/imported/button-sheet.png-9828cddf15ba256fc6c4f26a9dbff67a.ctex"
+uid="uid://b2moghnyvvn1k"
+path="res://.godot/imported/room_table_preview.png-84b3cdba0a23bc32b0066116fcd8fa97.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/button-sheet.png"
-dest_files=["res://.godot/imported/button-sheet.png-9828cddf15ba256fc6c4f26a9dbff67a.ctex"]
+source_file="res://assets/sprites/ui/room_table_preview.png"
+dest_files=["res://.godot/imported/room_table_preview.png-84b3cdba0a23bc32b0066116fcd8fa97.ctex"]
 
 [params]
 

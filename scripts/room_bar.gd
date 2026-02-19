@@ -9,7 +9,7 @@ class_name RoomBar
 var drinkRequests = []
 
 var current_upgrade = null
-@onready var upgrades = [preload("res://assets/resources/bar_water.tres"), preload("res://assets/resources/bar_beer.tres"), preload("res://assets/resources/bar_wiskey.tres")]
+@onready var upgrades = [preload("res://assets/resources/room_bar_water.tres"), preload("res://assets/resources/room_bar_beer.tres"), preload("res://assets/resources/room_bar_wiskey.tres")]
 @export var drink_type : Enum.Items
 
 const TIMEOUT_DURATION_IN_MSEC = 5000

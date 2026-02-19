@@ -2,18 +2,16 @@ extends Node2D
 
 var is_placing = false
 var has_valid_target = false
-var building
-var cost
+var building_data : RoomData
 var location
 var highlight : Sprite2D = null
 var custom_placement_check = null
 
 var previous_notification = null
 
-func start_building(building : PackedScene, cost : int, custom_placement_check):
-	self.building = building
+func start_building(data : RoomData, custom_placement_check):
+	self.building_data = data
 	self.custom_placement_check = custom_placement_check
-	self.cost = cost
 	is_placing = true
 	
 	if not highlight:
@@ -33,7 +31,7 @@ func _process(delta):
 	location = Global.Building.round_room_index_from_global_position(mouse + Vector2(24,0))
 	var room_at_location =  Global.Building.get_room_from_index(location)
 	has_valid_target = room_at_location == null or room_at_location is RoomEmpty
-	var has_money = ResourceHandler.has_money(cost)
+	var has_money = ResourceHandler.has_money(building_data.construction_price)
 	
 	# check adjacent_rooms
 	var has_adjacent_room_or_is_ground_floor = false
@@ -65,10 +63,10 @@ func _process(delta):
 			SoundPlayer.construction_placed.play()
 			if room_at_location != null:
 				room_at_location.queue_free()
-			Global.Building.set_room(building, location.x, location.y)
+			Global.Building.set_room(building_data, location.x, location.y)
 			Global.Building.update_foreground_tiles()
 			stop_building()
-			ResourceHandler.change_resource(Enum.Resources.MONEY, -cost)
+			ResourceHandler.change_resource(Enum.Resources.MONEY, -building_data.construction_price)
 			return
 		else:
 			if not has_valid_target:

@@ -7,16 +7,17 @@ class_name Building
 
 var floors = {}
 
-const room_empty: PackedScene = preload("res://scenes/rooms/room_empty.tscn")
-const room_junk: PackedScene = preload("res://scenes/rooms/room_junk.tscn")
-const room_stairs: PackedScene = preload("res://scenes/rooms/room_stairs.tscn")
-const room_brewery: PackedScene = preload("res://scenes/rooms/room_brewery.tscn")
-const room_buttery: PackedScene = preload("res://scenes/rooms/room_buttery.tscn")
-const room_bath: PackedScene = preload("res://scenes/rooms/room_bath.tscn")
-const room_bar: PackedScene = preload("res://scenes/rooms/room_bar.tscn")
-const room_table: PackedScene = preload("res://scenes/rooms/room_table.tscn")
-const room_well: PackedScene = preload("res://scenes/rooms/room_well.tscn")
-const room_outhouse: PackedScene = preload("res://scenes/rooms/room_outhouse.tscn")
+# RoomData resources
+const room_data_empty := preload("res://assets/resources/room_empty.tres")
+const room_data_junk := preload("res://assets/resources/room_junk.tres")
+const room_data_stairs := preload("res://assets/resources/room_stairs.tres")
+const room_data_brewery := preload("res://assets/resources/room_brewery.tres")
+const room_data_buttery := preload("res://assets/resources/room_buttery.tres")
+const room_data_bath := preload("res://assets/resources/room_bath.tres")
+const room_data_bar := preload("res://assets/resources/room_bar.tres")
+const room_data_table := preload("res://assets/resources/room_table.tres")
+const room_data_well := preload("res://assets/resources/room_well.tres")
+const room_data_outhouse := preload("res://assets/resources/room_outhouse.tres")
 
 enum levelDifference {
 	SAME,
@@ -45,17 +46,18 @@ enum roofIndexMap {
 func _ready():
 	Global.Building = self
 	
-	set_room(room_table, -2,0, false)
-	set_room(room_bar, -1,0, false)
-	set_room(room_stairs, 0,0, false)
-	set_room(room_well, 3,0, false)
-	set_room(room_stairs, 0,-1, false)
-	set_room(room_junk, -1,-1, false)
+	set_room(room_data_table, -2,0, false)
+	set_room(room_data_bar, -1,0, false)
+	set_room(room_data_stairs, 0,0, false)
+	set_room(room_data_well, 3,0, false)
+	set_room(room_data_stairs, 0,-1, false)
+	set_room(room_data_junk, -1,-1, false)
 	
 	InitalizeAllRooms()
 	update_foreground_tiles()
 
-func set_room(scene : PackedScene, x : int, y : int, autoInitialize = true):
+func set_room(data : RoomData, x : int, y : int, autoInitialize = true):
+	var scene = data.packed_scene
 	var instance = scene.instantiate();
 	#instance.name = str("room_", x, "_", y)
 	add_child(instance)
@@ -77,7 +79,7 @@ func InitalizeAllRooms():
 			floors[y][x].InitRoom(x,y)
 			
 func delete_room(room : RoomBase):
-	set_room(room_empty, room.x, room.y)
+	set_room(room_data_empty, room.x, room.y)
 	RoomHighlighter.end_request(room)
 	room.queue_free()
 	

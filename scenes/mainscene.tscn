@@ -1,4 +1,4 @@
-[gd_scene load_steps=90 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=92 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -64,6 +64,8 @@
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
 [ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
+[ext_resource type="Texture2D" uid="uid://cpm3j0j8jebt6" path="res://assets/sprites/ui/room_table_icon.png" id="54_k504d"]
+[ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -1007,9 +1009,9 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 40
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_bottom = 40
 
 [node name="UIWorkers" type="Control" parent="UI/UIMenu/MarginContainer"]
 visible = false
@@ -1120,21 +1122,37 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Hire"
 
-[node name="UIBuild" type="Control" parent="UI/UIMenu/MarginContainer"]
+[node name="UIBuild" type="MarginContainer" parent="UI/UIMenu/MarginContainer"]
+custom_minimum_size = Vector2(144, 0)
 layout_mode = 2
+size_flags_horizontal = 8
 mouse_filter = 2
 script = ExtResource("9_60k3h")
 
-[node name="TabBar" type="TabBar" parent="UI/UIMenu/MarginContainer/UIBuild"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -140.0
-offset_top = -6.0
-offset_right = 1.0
-offset_bottom = 18.0
-grow_horizontal = 0
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIBuild"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild"]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = 1
+
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TabBar" type="TabBar" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
 theme = ExtResource("22_hpv7r")
 current_tab = 0
 tab_count = 4
@@ -1147,28 +1165,179 @@ tab_2/icon = ExtResource("50_em0su")
 tab_3/tooltip = "Night"
 tab_3/icon = ExtResource("51_kjajm")
 
-[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 23.0
-offset_right = -1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="CenterContainer" type="CenterContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer"]
+layout_mode = 2
 
-[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIBuild/GridContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 3
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="BuildingTypeNameLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Rooms"
+
+[node name="RoomTierDummy" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="GridContainer" type="GridContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer"]
+layout_mode = 2
+columns = 4
+
+[node name="ButtonDummy" type="Button" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer"]
 custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
-theme_override_fonts/font = ExtResource("25_q3hll")
-theme_override_font_sizes/font_size = 11
-disabled = true
-text = "toast (20 Guests)"
-icon = ExtResource("52_3ukob")
-icon_alignment = 2
+icon = ExtResource("54_k504d")
+icon_alignment = 1
+
+[node name="LockedOverlay" type="Control" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="CenterContainer" type="CenterContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="TextureRect" type="TextureRect" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("52_3ukob")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "23 Guests"
+
+[node name="UIRoomHoverInfo" type="Control" parent="UI/UIMenu/MarginContainer/UIBuild"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/margin_right = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="RoomBuildHoverInfoNameLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Room Name"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "This room is cool!"
+fit_content = true
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = 1
+
+[node name="RoomBuildHoverInfoRoomPreviewTextureRect" type="TextureRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("55_nmmsk")
+
+[node name="PixelLine" type="Node2D" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo"]
+visible = false
+script = ExtResource("24_xsu8o")
+metadata/_custom_type_script = "uid://4nwd5trg5nce"
 
 [node name="UISettings" type="Control" parent="UI/UIMenu/MarginContainer"]
 visible = false
@@ -1244,14 +1413,17 @@ value = 1.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu"]
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 3
 anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
-offset_left = -57.0
-offset_top = 8.0
-offset_right = -5.0
-offset_bottom = 32.0
+anchor_bottom = 1.0
+offset_left = -91.0
+offset_top = -33.0
+offset_right = -11.0
+offset_bottom = -9.0
 grow_horizontal = 0
+grow_vertical = 0
 
 [node name="Button_Workers" type="Button" parent="UI/UIMenu/HBoxContainer"]
 custom_minimum_size = Vector2(24, 24)
@@ -1275,6 +1447,7 @@ icon = ExtResource("31_pj0ys")
 icon_alignment = 1
 
 [node name="UIFullscreen" type="Control" parent="UI"]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

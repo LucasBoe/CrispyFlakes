@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://byh5flk3v7uxk"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_0mqtw"]
+[ext_resource type="PackedScene" uid="uid://cpgc0apf65bdm" path="res://scenes/rooms/room_buttery.tscn" id="1_ncpyh"]
+
+[resource]
+script = ExtResource("1_0mqtw")
+packed_scene = ExtResource("1_ncpyh")
+room_name = "Buttery"
+room_desc = "This room stores all kinds of items."
+construction_price = 20
+tier = 1
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

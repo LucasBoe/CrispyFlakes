@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://cq2uf15slgvuo"]
+
+[ext_resource type="PackedScene" uid="uid://bgseiy10238sx" path="res://scenes/rooms/room_table.tscn" id="1_l6s8m"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_tk6pn"]
+[ext_resource type="Texture2D" uid="uid://cpm3j0j8jebt6" path="res://assets/sprites/ui/room_table_icon.png" id="2_fhs30"]
+[ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="3_gmxco"]
+
+[resource]
+script = ExtResource("1_tk6pn")
+packed_scene = ExtResource("1_l6s8m")
+room_name = "Tables"
+room_desc = "Guests that were served will sit down here."
+room_icon = ExtResource("2_fhs30")
+room_preview = ExtResource("3_gmxco")
+construction_price = 20
+metadata/_custom_type_script = "uid://cxphvsfo6076a"
