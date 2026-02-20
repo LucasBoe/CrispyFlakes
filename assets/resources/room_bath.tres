@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://bxqb87t81l8ka"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://bxqb87t81l8ka"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_2fsif"]
 [ext_resource type="PackedScene" uid="uid://b33xy3nsqtm0h" path="res://scenes/rooms/room_bath.tscn" id="1_ydaxc"]
+[ext_resource type="Texture2D" uid="uid://c0r6h4oml5x1q" path="res://assets/sprites/ui/room_bath_icon.png" id="2_klhs8"]
+[ext_resource type="Texture2D" uid="uid://b3oavemt3u6jy" path="res://assets/sprites/ui/room_bath_preview.png" id="3_07h6i"]
 
 [resource]
 script = ExtResource("1_2fsif")
 packed_scene = ExtResource("1_ydaxc")
 room_name = "Bath"
 room_desc = "Dirty cowboys will come here to get cleaned by your workers."
+room_icon = ExtResource("2_klhs8")
+room_preview = ExtResource("3_07h6i")
 construction_price = 30
 tier = 2
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

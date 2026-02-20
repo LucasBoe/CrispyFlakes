@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://bnkjwrvx7v6ic"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://bnkjwrvx7v6ic"]
 
 [ext_resource type="PackedScene" uid="uid://y7ent6yu2agy" path="res://scenes/rooms/room_brewery.tscn" id="1_cut2x"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_gyx31"]
+[ext_resource type="Texture2D" uid="uid://e5g27x23unnd" path="res://assets/sprites/ui/room_brewery_icon.png" id="2_2h4rn"]
+[ext_resource type="Texture2D" uid="uid://3ihv3hf5867w" path="res://assets/sprites/ui/room_brewery_preview.png" id="3_yg3vf"]
 
 [resource]
 script = ExtResource("1_gyx31")
 packed_scene = ExtResource("1_cut2x")
 room_name = "Brewery"
 room_desc = "Asigned workers will take water to make beer here, that can be sold at the bar."
+room_icon = ExtResource("2_2h4rn")
+room_preview = ExtResource("3_yg3vf")
 construction_price = 30
 tier = 1
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

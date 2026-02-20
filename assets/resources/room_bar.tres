@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=6 format=3 uid="uid://ludsn8pgd8c3"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=8 format=3 uid="uid://ludsn8pgd8c3"]
 
 [ext_resource type="PackedScene" uid="uid://dvvvnn4s5rhak" path="res://scenes/rooms/room_bar.tscn" id="1_hgofh"]
+[ext_resource type="Texture2D" uid="uid://cuo44xrownjje" path="res://assets/sprites/ui/room_bar_icon.png" id="2_r7qge"]
 [ext_resource type="Resource" uid="uid://coxpf054puo5g" path="res://assets/resources/room_bar_water.tres" id="2_r8oam"]
+[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="3_o33vy"]
 [ext_resource type="Resource" uid="uid://b6jcsxehoredw" path="res://assets/resources/room_bar_beer.tres" id="3_yi57w"]
 [ext_resource type="Resource" uid="uid://vrl3vhqrhuj0" path="res://assets/resources/room_bar_wiskey.tres" id="4_o33vy"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_r7qge"]
@@ -12,5 +14,7 @@ packed_scene = ExtResource("1_hgofh")
 room_name = "Bar"
 room_desc = "Asign a worker to serve different types of drinks to your guests."
 room_upgrades = [ExtResource("2_r8oam"), ExtResource("3_yi57w"), ExtResource("4_o33vy")]
+room_icon = ExtResource("2_r7qge")
+room_preview = ExtResource("3_o33vy")
 construction_price = 40
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

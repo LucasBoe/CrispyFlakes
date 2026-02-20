@@ -17,6 +17,8 @@ var button_dummies = []
 var buttery_button;
 var brewery_button;
 
+var last_hover = null
+
 func _ready():
 	tab_cointainer.tab_changed.connect(_on_tab_changed)
 	
@@ -33,6 +35,7 @@ func _ready():
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
+	hover_info_room_box_root.hide()
 	
 func create_button(group : room_group, data : RoomData, custom_placement_check = null):	
 	
@@ -63,9 +66,14 @@ func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_name_label.text = data.room_name
 	hover_info_room_desc_label.text = data.room_desc
 	hover_info_room_preview_texture_rect.texture = data.room_preview
+	last_hover = data
+	hover_info_room_box_root.show()
 	return
 
 func _on_hover_exit(button : Button, data : RoomData):
+	if last_hover == data:
+		last_hover = null
+		hover_info_room_box_root.hide()
 	return
 
 func _on_tab_changed(tab):

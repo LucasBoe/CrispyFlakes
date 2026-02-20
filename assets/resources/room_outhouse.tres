@@ -1,12 +1,16 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://6k6avv5y1h0r"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://6k6avv5y1h0r"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_uavkw"]
 [ext_resource type="PackedScene" uid="uid://dtr2utu3u6oo2" path="res://scenes/rooms/room_outhouse.tscn" id="1_yl5fg"]
+[ext_resource type="Texture2D" uid="uid://drema2o1lx6tj" path="res://assets/sprites/ui/room_outhouse_icon.png" id="2_3tmfp"]
+[ext_resource type="Texture2D" uid="uid://d1wd7dbyncgki" path="res://assets/sprites/ui/room_outhouse_preview.png" id="2_ayx33"]
 
 [resource]
 script = ExtResource("1_uavkw")
 packed_scene = ExtResource("1_yl5fg")
 room_name = "Outhouse"
 room_desc = "Cowboys do Nr1 and Nr2 here."
+room_icon = ExtResource("2_3tmfp")
+room_preview = ExtResource("2_ayx33")
 construction_price = 10
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

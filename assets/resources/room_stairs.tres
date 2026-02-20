@@ -1,12 +1,16 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://b57ga2blxbg4m"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://b57ga2blxbg4m"]
 
 [ext_resource type="PackedScene" uid="uid://corp6dv3xay0u" path="res://scenes/rooms/room_stairs.tscn" id="1_00vvr"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_ad3do"]
+[ext_resource type="Texture2D" uid="uid://byc8yljqbcmo4" path="res://assets/sprites/ui/room_stairs_icon.png" id="2_vfoni"]
+[ext_resource type="Texture2D" uid="uid://ufk2edjoob08" path="res://assets/sprites/ui/room_stairs_preview.png" id="3_s7fj4"]
 
 [resource]
 script = ExtResource("1_ad3do")
 packed_scene = ExtResource("1_00vvr")
 room_name = "Stairs"
 room_desc = "Allows people to reach this floor from stairs above / below."
+room_icon = ExtResource("2_vfoni")
+room_preview = ExtResource("3_s7fj4")
 construction_price = 15
 metadata/_custom_type_script = "uid://cxphvsfo6076a"
