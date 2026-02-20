@@ -87,6 +87,7 @@ func delete_room(room : RoomBase):
 func update_foreground_tiles():
 	
 	tilesWalls.clear()
+	tilesRoof.clear()
 	
 	var listOfXPositions = []
 	var listOfRoomIndexesOnFloor = {}

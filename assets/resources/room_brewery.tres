@@ -9,4 +9,5 @@ packed_scene = ExtResource("1_cut2x")
 room_name = "Brewery"
 room_desc = "Asigned workers will take water to make beer here, that can be sold at the bar."
 construction_price = 30
+tier = 1
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

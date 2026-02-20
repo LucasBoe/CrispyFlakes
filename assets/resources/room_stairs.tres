@@ -9,5 +9,4 @@ packed_scene = ExtResource("1_00vvr")
 room_name = "Stairs"
 room_desc = "Allows people to reach this floor from stairs above / below."
 construction_price = 15
-tier = 1
 metadata/_custom_type_script = "uid://cxphvsfo6076a"
