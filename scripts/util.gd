@@ -19,11 +19,17 @@ static func get_random_element(collection):
 		push_error("Unsupported collection type. Must be Array or Dictionary.")
 		return null
 
-static func world_to_ui_position(world_position, ui, camera):
+static func world_to_ui_position(world_position : Vector2, ui : CanvasItem, camera: Camera2D):
 	var rect = camera.get_camera_world_rect() as Rect2	
 	var relative_pos = (world_position - rect.position)/rect.size	
 	var ui_space_size = ui.get_viewport().get_visible_rect().size
 	return relative_pos * ui_space_size
+
+static func ui_to_world_position(ui_position: Vector2, ui: CanvasItem, camera: Camera2D) -> Vector2:
+	var rect = camera.get_camera_world_rect() as Rect2
+	var ui_space_size: Vector2 = ui.get_viewport().get_visible_rect().size
+	var relative_pos: Vector2 = ui_position / ui_space_size
+	return rect.position + relative_pos * rect.size
 
 static func delete_all_children_execept_index_0(parent):
 	var amount = parent.get_child_count()

@@ -5,7 +5,7 @@ signal sold_beer
 func start_tutorial():
 	Global.should_auto_spawn_guests = true
 	#Global.UI.resources.hide()
-	ResourceHandler.change_resource(Enum.Resources.MONEY, 100000)
+	#ResourceHandler.change_resource(Enum.Resources.MONEY, 100)
 	#Global.UI.menu.hide()
 	#for button : Button in Global.UI.menu.build_tab.all_buttons:
 		#button.disabled = true
@@ -134,7 +134,7 @@ func start_tutorial():
 	#
 	#await Global.UI.dialogue.print_dialogue("Much obliged. I'll spread the word to my cowpoke pals and this place'll be hummin' in no time. Now show me how to run this place, yeah?", tutorial_guest)
 #
-	ResourceHandler.change_resource(Enum.Resources.MONEY, -(ResourceHandler.resources[Enum.Resources.MONEY] - 100))
+	#ResourceHandler.change_resource(Enum.Resources.MONEY, -(ResourceHandler.resources[Enum.Resources.MONEY] - 100))
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true
 	#tutorial_guest.manual_behaviour = false

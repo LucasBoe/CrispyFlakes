@@ -6,11 +6,11 @@ const labelScene : PackedScene = preload("res://scenes/ui/ui_resource_label.tscn
 var labelResourceDict : Dictionary = {}
 
 func _ready():
-	for resourceType in [Enum.Resources.MONEY]:
-		var instance = labelScene.instantiate()
-		($HBoxContainer).add_child(instance)
-		instance.Init(resourceType);
-		labelResourceDict[resourceType] = instance
+	#for resourceType in [Enum.Resources.MONEY]:
+		#var instance = labelScene.instantiate()
+		#($HBoxContainer).add_child(instance)
+		#instance.Init(resourceType);
+		#labelResourceDict[resourceType] = instance
 		
 	ResourceHandler.on_resource_changed.connect(on_resource_changed)
 	print(get_rect().size)

@@ -4,6 +4,7 @@ class_name UIHolder
 @onready var tutorial: UITutorial = $UITutorial
 #@onready var room: UIRoom = $UIRoom
 @onready var resources: UIRessourceHandler = $UIResources
+@onready var money : UIMoney = $UIMoney
 @onready var dialogue: UIDialogueHandler = $UIDialogue
 #@onready var time: UITime = $UITime
 @onready var menu: MenuUIHandler = $UIMenu
@@ -12,6 +13,7 @@ class_name UIHolder
 @onready var confirm : UIConfirm = $UIFullscreen/UIConfirm
 @onready var close_handler : UICloseHandler = $UICloseHandler
 #@onready var pause: UIPause = $UIPause
+
 
 func _ready():
 	Global.UI = self

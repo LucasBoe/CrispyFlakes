@@ -3,10 +3,13 @@ extends Node2D
 var resources : Dictionary = {}
 signal on_resource_changed
 signal on_animate_resource_add
+signal on_money_changed
+
+var money_transaction_history = {}
 
 func _ready():
 	for r in Enum.Resources.values():
-		resources[r] = 0
+		resources[r] = 0 if r != Enum.Resources.MONEY else 100
 		print("init resource", r)
 	
 func change_resource(resource, change):
@@ -19,6 +22,21 @@ func change_resource(resource, change):
 		#for c in clamp(change, 1, 5):
 			#SoundPlayer.coin.play_random_pitch()
 			#await get_tree().create_timer(.05).timeout
+			
+	if not resource == Enum.Resources.MONEY:
+		return
+		
+	var now = Time.get_ticks_msec() # ms since startup
+	var day_duration_in_seconds: float = Global.DAY_DURATION
+
+	money_transaction_history[now] = change
+
+	var cutoff = now - int(day_duration_in_seconds * 1000.0) # convert seconds to ms
+	for t in money_transaction_history.keys():
+		if int(t) < cutoff:
+			money_transaction_history.erase(t)
+	
+	on_money_changed.emit()
 
 func change_money(change):
 	change_resource(Enum.Resources.MONEY, change)
