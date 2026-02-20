@@ -179,6 +179,11 @@ func change_job(new):
 	Behaviour.set_behaviour_from_job(current_job);
 	JobHandler.on_job_changed(self, current_job)
 	print(str("change job to ", Enum.Jobs.keys()[current_job]))
+	
+	if new == 0:
+		return
+		
+	UiNotifications.create_notification_dynamic(str("New Job: ", Enum.Jobs.keys()[new]), self, Vector2(0,-32))	
 
 func click_on():
 	

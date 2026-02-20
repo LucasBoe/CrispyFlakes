@@ -53,7 +53,7 @@ func _on_click_hovered_node_signal(node):
 		header_label.text = target.get_script().get_global_name().trim_prefix("Room")
 		room_delete_button.visible = target is not RoomJunk
 	
-		var describtion = target.describtion
+		var describtion = target.data.room_desc if target.data != null else ""
 		describtion_label.visible = describtion != ""
 		if describtion != "":
 			describtion_label.text = describtion

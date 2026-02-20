@@ -32,6 +32,7 @@ func _ready():
 	create_button(group, Global.Building.room_data_bath)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
+	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
 	
 func create_button(group : room_group, data : RoomData, custom_placement_check = null):	
 	
@@ -85,6 +86,10 @@ func _on_tab_changed(tab):
 			
 		group.overlays[tier].visible = tier > TierHandler.current_tier
 			
+func _on_tier_unlocked(tier):
+	for g in groups.values():
+		for i in g.overlays.size():
+			g.overlays[i].visible = i > TierHandler.current_tier
 
 class room_group:
 	var group_name : String

@@ -57,7 +57,6 @@ func _process(delta):
 	
 	for request in drinkRequests:
 		var dif = t - request.time
-		print(dif)
 		if dif > TIMEOUT_DURATION_IN_MSEC:
 			done.append(request)
 			

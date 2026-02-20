@@ -29,10 +29,10 @@ func _on_clicked_room(clicked_room : RoomBase):
 	room_name_label.text = clicked_room.get_script().get_global_name().trim_prefix("Room")
 	room_delete_button.visible = room is not RoomJunk
 	
-	var describtion = room.describtion
-	room_describtion_label.visible = describtion != ""
-	if describtion != "":
-		room_describtion_label.text = describtion
+	#var describtion = room.describtion
+	#room_describtion_label.visible = describtion != ""
+	#if describtion != "":
+		#room_describtion_label.text = describtion
 		
 	
 	room_upgrade_hbox.get_parent().visible = room.has_upgrades

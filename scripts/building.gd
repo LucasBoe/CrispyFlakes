@@ -58,8 +58,9 @@ func _ready():
 
 func set_room(data : RoomData, x : int, y : int, autoInitialize = true):
 	var scene = data.packed_scene
-	var instance = scene.instantiate();
+	var instance = scene.instantiate() as RoomBase
 	#instance.name = str("room_", x, "_", y)
+	instance.data = data
 	add_child(instance)
 	instance.position = Vector2(x * 48, y * -48)
 	

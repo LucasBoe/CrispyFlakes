@@ -35,7 +35,7 @@ func pause(duration):
 func fetch_item(item : Enum.Items):
 	var source_item = null
 	
-	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position)
+	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position, item)
 			
 	#fetch source item from buttery
 	var butteries = Global.Building.get_all_rooms_of_type(RoomButtery)

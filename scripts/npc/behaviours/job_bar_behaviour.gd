@@ -38,7 +38,7 @@ func loop():
 			if bar.drinkRequests.size() > 0:
 				await progress(2, bar.progressBar)
 				bar.fullfill_next_request()
-				drinks_available -= .2
+				drinks_available -= .25
 					
 				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.price, bar.get_center_position())
 			

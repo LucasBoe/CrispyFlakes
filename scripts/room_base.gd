@@ -4,11 +4,11 @@ class_name RoomBase
 var x
 var y
 var isBasement
+var data : RoomData
 var associatedJob = null
 var isOutsideRoom = false
 var has_upgrades = false
 
-@export var describtion = ""
 
 @onready var backWallSprite2D = $"Back-wall"
 

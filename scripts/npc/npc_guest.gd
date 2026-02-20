@@ -28,7 +28,6 @@ func _process(delta):
 	if not manual_behaviour:
 		newBehaviour = get_next_behaviour()
 		
-	print_debug("set behaviour to ", newBehaviour.get_global_name())
 	Behaviour.set_behaviour(newBehaviour)
 	
 func get_next_behaviour():

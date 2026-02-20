@@ -9,8 +9,8 @@
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
-radius = 7.0
-height = 24.0
+radius = 11.0
+height = 32.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_escwn"]
 shader = ExtResource("2_ivbhr")

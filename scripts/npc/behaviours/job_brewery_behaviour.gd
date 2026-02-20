@@ -25,7 +25,7 @@ func loop():
 			var i = npc.Item.DropCurrent()
 			i.Destroy()
 			
-			await progress(6, brewery.progressBar)
+			await progress(12, brewery.progressBar)
 			var itemSpawnPos = brewery.get_random_floor_position()
 			var item = Global.ItemSpawner.Create(Enum.Items.BEER_BARREL, itemSpawnPos)
 			npc.Item.PickUp(item)
