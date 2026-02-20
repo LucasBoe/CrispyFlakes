@@ -14,8 +14,6 @@ func loop():
 	if not bar:
 		await pause(3)
 		return
-		
-	table = Global.Building.get_closest_room_of_type(RoomTable, bar.global_position)
 	
 	await move(bar.get_random_floor_position())
 	var request = bar.request_drink(self)
@@ -29,8 +27,15 @@ func loop():
 		
 		var item = Global.ItemSpawner.Create(Enum.Items.DRINK, bar.get_random_floor_position())
 		npc.Item.PickUp(item)
+		
+		var tables = Global.Building.get_rooms_of_type_ordered_by_distance(RoomTable, npc.global_position)
+		for t : RoomTable in tables:
+			if t.is_free():
+				table = t
+				break
+		
 		if table:
-			await move(table.get_random_floor_position())
+			await move(table.sit(npc))
 		else:
 			await move(Global.Building.floors.values().pick_random().values().pick_random().get_random_floor_position())
 		
@@ -44,11 +49,17 @@ func loop():
 		elif drink_type == Enum.Items.WISKEY_BOX:
 			drunkenenes_increase = .4
 			satisfaction_increase = .3
+			
+		if not table:
+			satisfaction_increase /= 2.0
 		
 		for i in 8:
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / 8.0
 			npc.Needs.satisfaction.strength += satisfaction_increase / 8.0
+			
+		if table:
+			table.stand_up(npc)
 			
 		npc.Item.DropCurrent().Destroy()
 	else:

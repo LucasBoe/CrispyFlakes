@@ -29,7 +29,10 @@ func get_random_floor_position():
 	return global_position + offset
 
 func get_center_position():
-	return global_position + Vector2(24,-24)
+	return global_position + Vector2(24, -24)
 	
 func get_top_center_position():
-	return global_position + Vector2(24,-48)
+	return global_position + Vector2(24, -48)
+	
+func get_center_floor_position():
+	return global_position + Vector2(24, 0)

@@ -19,8 +19,11 @@ func loop():
 	while outhouse.is_used_by_other_then(npc):
 		await endOfFrame()
 		
+	await  move(outhouse.get_center_floor_position())
+	npc.Animator.hide()
 	outhouse.user = npc;
 	await progress(3, outhouse.progressBar)
+	npc.Animator.show()
 	outhouse.user = null
 		
 	npc.Needs.satisfaction.strength += .3

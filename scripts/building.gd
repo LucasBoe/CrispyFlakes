@@ -314,3 +314,31 @@ func get_all_rooms_of_type(type):
 			rooms.append(room)
 		
 	return rooms
+
+func get_rooms_of_type_ordered_by_distance(type, global_pos: Vector2, blacklist = null) -> Array:
+	var result = []
+
+	for y in floors:
+		for x in floors[y]:
+			var room = floors[y][x]
+
+			if room == null:
+				continue
+			if room is not RoomBase:
+				continue
+			if not is_instance_of(room, type):
+				continue
+			if blacklist != null and blacklist.has(room):
+				continue
+
+			var d = room.global_position.distance_to(global_pos)
+			result.append({ "room": room, "dist": d })
+
+	result.sort_custom(func(a, b): return a["dist"] < b["dist"])
+
+	var ordered: Array = []
+	ordered.resize(result.size())
+	for i in result.size():
+		ordered[i] = result[i]["room"]
+
+	return ordered
