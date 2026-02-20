@@ -14,6 +14,7 @@ func loop():
 		return
 		
 	occupied_breweries.append(brewery)
+	brewery.worker = npc
 	await move(brewery.get_random_floor_position())
 	
 	while is_running:
@@ -35,4 +36,5 @@ func custom_array_sort(a, b):
 		return a[1] < b[1]
 
 func stop_loop():
+	brewery.worker = null
 	occupied_breweries.erase(brewery)

@@ -3,16 +3,27 @@ extends Node2D
 @onready var rectDummy = $Rect;
 @onready var arrowDummy = $Arrow;
 
+@onready var rect_texture_2px = preload("res://assets/sprites/room_highlight.png")
+@onready var rect_texture_1px = preload("res://assets/sprites/room_highlight_slim.png")
+
+
 var active : Dictionary[RoomBase, Array] = {}
 
 func _ready():
 	rectDummy.visible = false
 	arrowDummy.visible = false
 
-func request_rect(room, color = Color.WHITE):
+func request_rect(room, color = Color.WHITE, size = 2):
 	var inst = create(rectDummy, room)
 	inst.modulate = color
+	inst.texture = texture_from_size(size)
 	return inst
+	
+func texture_from_size(size):
+	if size == 2:
+		return rect_texture_2px
+	
+	return rect_texture_1px
 	
 func request_arrow(room):
 	var inst = create(arrowDummy, room)

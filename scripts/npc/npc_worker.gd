@@ -4,6 +4,7 @@ class_name NPCWorker
 var current_job = Enum.Jobs.IDLE
 var current_job_room = null
 var pickUpOrigin
+var available_rooms_highlights = []
  
 var current_job_room_highlight = null
 var new_job_room_highlight = null
@@ -193,6 +194,17 @@ func click_on():
 	picked_up_npc = self
 	Navigation.set_process(false)
 	pickUpOrigin = global_position
+	
+	available_rooms_highlights.clear()
+	for room : RoomBase in Global.Building.get_all_rooms_of_type(RoomBase):
+		if room.associatedJob == null:
+			continue
+			
+		if room.worker != null:
+			continue
+			
+		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1)
+		available_rooms_highlights.append(highlight)
 
 func _input(event):
 	
@@ -211,7 +223,7 @@ func _input(event):
 	#	assignmentIndicator.visible = true
 	
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
-		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,0,1,0.5))
+		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5))
 		
 	print(room.associatedJob)
 	
@@ -250,6 +262,9 @@ func _input(event):
 		
 		RoomHighlighter.dispose(new_room_highlight)
 		new_room_highlight = null		
+		
+		for h in available_rooms_highlights:
+			RoomHighlighter.dispose(h)
 		
 		Navigation.set_process(true)
 		print("released")

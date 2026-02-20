@@ -14,6 +14,7 @@ func loop():
 		return
 		
 	occupied_rooms.append(room)
+	room.worker = npc
 	await move(room.get_random_floor_position())
 	await progress(6, room.progressBar)
 	
@@ -24,4 +25,5 @@ func custom_array_sort(a, b):
 		return a[1] < b[1]
 
 func stop_loop():
+	room.worker = null
 	occupied_rooms.erase(room)

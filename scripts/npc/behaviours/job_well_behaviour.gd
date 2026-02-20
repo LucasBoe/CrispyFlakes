@@ -12,6 +12,7 @@ func loop():
 		npc.change_job(Enum.Jobs.IDLE)
 		return
 	
+	well.worker = npc
 	occupied_wells.append(well)
 	
 	await move(well)
@@ -29,4 +30,5 @@ func loop():
 		await move(well)
 
 func stop_loop():
+	well.worker = null
 	occupied_wells.erase(well)

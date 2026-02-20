@@ -15,6 +15,7 @@ func loop():
 		return
 	
 	ocupied_bars.append(bar)
+	bar.worker = npc
 	
 	while is_running:
 		
@@ -44,3 +45,4 @@ func loop():
 			
 func stop_loop():
 	ocupied_bars.erase(bar)
+	bar.worker = null
