@@ -32,7 +32,7 @@ func _process(delta):
 	
 func get_next_behaviour():
 	
-	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 3.0:
+	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 7.0:
 		return NeedLeaveBehaviour
 	
 	return Behaviour.get_behaviour_from_available_rooms(Global.Building.get_all_rooms_of_type(RoomBase))

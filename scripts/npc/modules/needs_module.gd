@@ -51,5 +51,5 @@ func new_need(type, strength):
 func _process(delta):
 	var delta_minute = delta / 60
 	stay_duration.strength += delta_minute
-	passive_satisfaction_loss.strength += delta_minute / 2
+	passive_satisfaction_loss.strength += delta_minute / 1.5
 	satisfaction.strength -= passive_satisfaction_loss.strength * delta_minute

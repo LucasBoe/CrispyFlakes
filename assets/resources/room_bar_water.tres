@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("2_pjx1b")
 name = "Water"
-price = 2
+price = 1
 icon = ExtResource("1_mdy84")
 opt_associated_item = 3
 metadata/_custom_type_script = "uid://c2eta6ma87pwg"

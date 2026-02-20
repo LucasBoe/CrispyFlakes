@@ -40,18 +40,18 @@ func loop():
 			await move(Global.Building.floors.values().pick_random().values().pick_random().get_random_floor_position())
 		
 		var drunkenenes_increase = 0.0
-		var satisfaction_increase = 0.1
+		var satisfaction_increase = 0.15
 		
 		if drink_type == Enum.Items.BEER_BARREL:
-			drunkenenes_increase = .2
-			satisfaction_increase = .2
+			drunkenenes_increase = .3
+			satisfaction_increase = .5
 			
 		elif drink_type == Enum.Items.WISKEY_BOX:
-			drunkenenes_increase = .4
-			satisfaction_increase = .3
+			drunkenenes_increase = .6
+			satisfaction_increase = .7
 			
 		if not table:
-			satisfaction_increase /= 2.0
+			satisfaction_increase /= 3
 		
 		for i in 8:
 			await pause(i)
@@ -63,4 +63,5 @@ func loop():
 			
 		npc.Item.DropCurrent().Destroy()
 	else:
+		UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
 		npc.Needs.satisfaction.strength -= .1
