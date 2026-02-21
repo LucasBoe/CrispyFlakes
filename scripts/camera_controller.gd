@@ -109,13 +109,13 @@ func ClickAndDrag():
 		dragStartMousePos = get_viewport().get_mouse_position()
 		dragStartCameraPos = global_position
 		isDragging = true
-		
+
 	if isDragging and Input.is_action_just_released("camera_pan"):
-		isDragging  = false
-		
+		isDragging = false
+
 	if isDragging:
 		var moveVector = get_viewport().get_mouse_position() - dragStartMousePos
-		offset = dragStartCameraPos - moveVector * 1/zoomFactor	
+		global_position = dragStartCameraPos - moveVector * (1.0 / zoomFactor)
 		
 func zoom_in_out():
 	zoomTarget = clampf(zoomTarget, minZoom, maxZoom)
