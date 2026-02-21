@@ -85,6 +85,10 @@ func remove_people_from_job(job):
 	worker.change_job(Enum.Jobs.IDLE)
 
 func fire_worker(worker):
+	
+	if not is_instance_valid(worker):
+		return
+	
 	worker.change_job(Enum.Jobs.IDLE)
 	for j : Array in workers.values():
 		if j.has(worker):

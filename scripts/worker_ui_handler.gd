@@ -20,7 +20,7 @@ func _ready():
 	
 	await get_tree().process_frame
 	
-	hire_button.pressed.connect(Global.UI.hire.show)
+	hire_button.pressed.connect(	Global.NPCSpawner.SpawnNewWorker)
 	visibility_changed.connect(_on_visibility_changed)
 		
 func _on_visibility_changed():
@@ -39,7 +39,7 @@ func _on_jobs_changed():
 			var clone = worker_info_dummy.duplicate()
 			p.add_child(clone)
 			clone.name_label.text = str(job, " - ", name, " - ", cost)
-			clone.button_fire.pressed.connect(JobHandler.fire_worker.bind(worker))
+			clone.button_fire.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to fire a Worker.", JobHandler.fire_worker.bind(worker)))
 			clone.show()
 	
 	payment_height_label.text = str("-", JobHandler.payment_total, "$ / D")

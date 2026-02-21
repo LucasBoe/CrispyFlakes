@@ -31,15 +31,24 @@ func _on_click_hovered_node_signal(node):
 		
 	target = node
 	
+	if target is NPCWorker:
+		header_label.text = "Worker"
+		describtion_label.text = "This worker can be dragged onto rooms in order to work there."
+		describtion_label.show()
+		room_delete_button.hide()
+	
 	if target is NPCGuest:
 		header_label.text = "Guest"
+		describtion_label.text = "This guest will stay around as long as he is satisfied with your saloons services."
+		describtion_label.show()
+		room_delete_button.hide()
 		
 		needs = target.Needs
 		
 		for need : Need in needs.needs:
-			#if need.type is not Enum.Need.SATISFACTION or need.type is not Enum.Need.DRUNKENNESS:
-				#continue
-			#
+			if need.type != Enum.Need.SATISFACTION and need.type != Enum.Need.DRUNKENNESS:
+				continue
+			
 			var instance = need_ui_dummy.duplicate() as UINeedInfo
 			need_ui_dummy.get_parent().add_child(instance)
 			need_ui_instances.append(instance)
@@ -52,6 +61,7 @@ func _on_click_hovered_node_signal(node):
 	if target is RoomBase:
 		header_label.text = target.get_script().get_global_name().trim_prefix("Room")
 		room_delete_button.visible = target is not RoomJunk
+		room_delete_button.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to delete a room and won't get the money back.", Global.Building.delete_room.bind(target)))
 	
 		var describtion = target.data.room_desc if target.data != null else ""
 		describtion_label.visible = describtion != ""
@@ -86,6 +96,8 @@ func _on_click_hovered_node_signal(node):
 		room_upgrade_hbox.get_parent().hide()
 	
 	#self.size = self.get_combined_minimum_size()
+	var parent = room_delete_button.get_parent()
+	parent.move_child(room_delete_button, parent.get_child_count())
 	show()
 	
 func refresh_upgrades():
