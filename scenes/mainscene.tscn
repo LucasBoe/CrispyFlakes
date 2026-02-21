@@ -1378,7 +1378,7 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -114.0
-offset_bottom = 80.0
+offset_bottom = 70.0
 grow_horizontal = 0
 theme_override_constants/margin_right = 4
 
@@ -1413,13 +1413,25 @@ text = "Room Name"
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 0)
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "This room is cool! you can read a lot more about it in this amazing text."
+text = "This room is cool! "
 fit_content = true
+
+[node name="RoomBuildHoverInfoPriceLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+text = "300$"
+vertical_alignment = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2

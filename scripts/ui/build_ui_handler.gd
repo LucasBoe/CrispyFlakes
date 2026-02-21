@@ -7,6 +7,7 @@ class_name BuildMenuUITab
 @onready var hover_info_room_box_root = $UIRoomHoverInfo
 @onready var hover_info_room_name_label : Label = %RoomBuildHoverInfoNameLabel
 @onready var hover_info_room_desc_label : RichTextLabel = %RoomBuildHoverInfoDescLabel
+@onready var hover_info_room_price_label : Label = %RoomBuildHoverInfoPriceLabel
 @onready var hover_info_room_preview_texture_rect : TextureRect = %RoomBuildHoverInfoRoomPreviewTextureRect
 
 var groups = {}
@@ -65,6 +66,7 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_name_label.text = data.room_name
 	hover_info_room_desc_label.text = data.room_desc
+	hover_info_room_price_label.text = str(data.construction_price, "$")
 	hover_info_room_preview_texture_rect.texture = data.room_preview
 	last_hover = data
 	hover_info_room_box_root.show()
