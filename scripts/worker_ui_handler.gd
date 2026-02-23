@@ -9,6 +9,7 @@ extends MenuUITab
 
 func _ready():
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
+	NPCEventHandler.on_destroy_npc_signal.connect(_on_destroy_npc_signal)
 	
 	for key in Enum.Jobs.keys():
 		var instance = worker_ui_add_remove_dummy.duplicate()
@@ -26,6 +27,12 @@ func _ready():
 func _on_visibility_changed():
 	if not visible:
 		return
+
+func _on_destroy_npc_signal(npc):
+	if npc is not NPCWorker:
+		return
+		
+	_on_jobs_changed()
 
 func _on_jobs_changed():
 	var p = worker_info_dummy.get_parent()

@@ -10,10 +10,13 @@ config_version=5
 
 [application]
 
-config/name="CrispyFlakes"
+config/name="Saloon Tycoon"
+config/version="0.0.1"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="uid://dxau8vfqtewbb"
+config/macos_native_icon="uid://dxau8vfqtewbb"
+config/windows_native_icon="uid://dxau8vfqtewbb"
 
 [aseprite]
 
@@ -37,6 +40,7 @@ HoverHandler="*res://scripts/autoloads/hover_handler.gd"
 TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 TierHandler="*res://scripts/autoloads/tier_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
+NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
 
 [display]
 
@@ -86,3 +90,4 @@ toggle_pause={
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true

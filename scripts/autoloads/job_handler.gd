@@ -94,4 +94,4 @@ func fire_worker(worker):
 		if j.has(worker):
 			j.erase(worker)
 			
-	worker.queue_free()
+	worker.destroy()

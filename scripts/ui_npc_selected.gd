@@ -15,6 +15,9 @@ var need_ui_instances = []
 func _ready():
 	super._ready()
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
+	Global.Building.on_room_deleted_signal.connect(_on_potential_target_deleted)
+	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
+	
 	hide()
 	need_ui_dummy.hide()
 	
@@ -61,8 +64,15 @@ func _on_click_hovered_node_signal(node):
 	if target is RoomBase:
 		header_label.text = target.get_script().get_global_name().trim_prefix("Room")
 		room_delete_button.visible = target is not RoomJunk
-		room_delete_button.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to delete a room and won't get the money back.", Global.Building.delete_room.bind(target)))
-	
+		Util.disconnect_all_pressed(room_delete_button)
+		room_delete_button.pressed.connect(func():
+			Global.UI.confirm.show_dialogue(
+				"You are about to delete a room and won't get the money back.",
+				func():
+					if is_instance_valid(target):
+						Global.Building.delete_room(target)
+			)
+		)
 		var describtion = target.data.room_desc if target.data != null else ""
 		describtion_label.visible = describtion != ""
 		if describtion != "":
@@ -120,6 +130,10 @@ func refresh_upgrades():
 		child.modulate = Color.WHITE if not is_current else Color.WEB_GRAY
 		price_label.visible = not is_current
 		current_label.visible = is_current
+		
+func _on_potential_target_deleted(room):
+	if target == room:
+		hide()
 	
 func _process(delta):
 	super._process(delta)

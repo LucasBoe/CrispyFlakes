@@ -35,3 +35,7 @@ static func delete_all_children_execept_index_0(parent):
 	var amount = parent.get_child_count()
 	for i in range(amount - 1, 0, -1):
 		parent.get_child(i).free()
+
+static func disconnect_all_pressed(btn: BaseButton) -> void:
+	for c in btn.pressed.get_connections():
+		btn.pressed.disconnect(c.callable)

@@ -45,6 +45,8 @@ enum roofIndexMap {
 	DOUBLE_END_HIGHER = 6,
 }
 
+signal on_room_deleted_signal
+
 func _ready():
 	Global.Building = self
 	
@@ -82,6 +84,7 @@ func InitalizeAllRooms():
 			floors[y][x].InitRoom(x,y)
 			
 func delete_room(room : RoomBase):
+	on_room_deleted_signal.emit(room)
 	set_room(room_data_empty, room.x, room.y)
 	RoomHighlighter.end_request(room)
 	room.queue_free()
