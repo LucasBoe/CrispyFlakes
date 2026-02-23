@@ -18,6 +18,8 @@ const room_data_bar := preload("res://assets/resources/room_bar.tres")
 const room_data_table := preload("res://assets/resources/room_table.tres")
 const room_data_well := preload("res://assets/resources/room_well.tres")
 const room_data_outhouse := preload("res://assets/resources/room_outhouse.tres")
+const room_data_destillery := preload("res://assets/resources/room_destillery.tres")
+const room_data_aging_cellar := preload("res://assets/resources/room_aging_cellar.tres")
 
 enum levelDifference {
 	SAME,

@@ -10,7 +10,8 @@ enum Items {
 	BEER_BARREL,
 	WISKEY_BOX,
 	DRINK,
-	WATER_BUCKET
+	WATER_BUCKET,
+	WISKEY_BOX_RAW
 }
 
 enum Resources {
@@ -24,7 +25,8 @@ enum Jobs {
 	BAR,
 	WELL,
 	BATH,
-	JUNK
+	JUNK,
+	DESTILLERY,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -46,6 +48,9 @@ static func job_to_behaviour(job : Jobs):
 			
 		Enum.Jobs.JUNK:
 			return JobJunkBehaviour
+			
+		Enum.Jobs.DESTILLERY:
+			return JobDestilleryBehaviour
 
 enum RequestStatus {
 	OPEN,

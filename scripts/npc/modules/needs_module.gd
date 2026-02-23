@@ -49,7 +49,14 @@ func new_need(type, strength):
 		#all.append(type)
 
 func _process(delta):
-	var delta_minute = delta / 60
+	var delta_minute = delta / 60.0
+
 	stay_duration.strength += delta_minute
-	passive_satisfaction_loss.strength += delta_minute / 1.5
+
+	var max_loss := 2.0        # cap (per minute)
+	var ramp := 0.25        # how fast it approaches the cap
+
+	# diminishing returns: grows fast at first, then slows as it gets higher
+	passive_satisfaction_loss.strength += (max_loss - passive_satisfaction_loss.strength) * ramp * delta_minute
+
 	satisfaction.strength -= passive_satisfaction_loss.strength * delta_minute

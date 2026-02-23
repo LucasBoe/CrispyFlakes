@@ -7,9 +7,12 @@ var itemType : Enum.Items
 
 func init(itemType : Enum.Items) -> Item:
 	self.itemType = itemType
+	refresh_texture()
+	return self	
+
+func refresh_texture():
 	var info = get_info(itemType)
 	apply_texture(info.Tex, info.Offset.x, info.Offset.y)
-	return self	
 	
 func apply_texture(tex, offset_x = 0, offset_y = 0):
 	texture = tex
@@ -25,6 +28,9 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			
 		Enum.Items.WISKEY_BOX:
 			tex = load("res://assets/sprites/item_wiskey_crate.png")
+			
+		Enum.Items.WISKEY_BOX_RAW:
+			tex = load("res://assets/sprites/item_wiskey_crate_raw.png")
 			
 		Enum.Items.DRINK:
 			tex = load("res://assets/sprites/item_drink.png")

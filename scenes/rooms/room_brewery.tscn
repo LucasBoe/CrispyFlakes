@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://bo5d5mtcgiq1p" path="res://scripts/room_brewery.gd" id="1_i7va0"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_7sj4r"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7sj4r"]
-[ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/brewery.png" id="3_o8qhr"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_4elfk"]
+[ext_resource type="Texture2D" uid="uid://d4akkgimciem6" path="res://assets/sprites/beer_brewery.png" id="4_7sj4r"]
 
 [node name="Room_Brewery" type="Node2D"]
 texture_filter = 1
@@ -23,8 +23,8 @@ texture = ExtResource("3_7sj4r")
 
 [node name="Brewery" type="Sprite2D" parent="."]
 z_index = -100
-position = Vector2(21, -19)
-texture = ExtResource("3_o8qhr")
+position = Vector2(23, -18)
+texture = ExtResource("4_7sj4r")
 region_rect = Rect2(0, 48, 48, 48)
 
 [node name="ProgressBar" parent="." instance=ExtResource("4_4elfk")]

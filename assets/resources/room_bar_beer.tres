@@ -10,6 +10,6 @@ upgrade_name = "Barrel Holder"
 upgrade_price = 15
 upgrade_preview = ExtResource("3_u5443")
 item_name = "Beer"
-item_cost = 6
+item_cost = 4
 item_icon = ExtResource("1_q3ji6")
 metadata/_custom_type_script = "uid://c2eta6ma87pwg"

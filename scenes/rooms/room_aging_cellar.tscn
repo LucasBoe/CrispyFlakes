@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://txgsroajte5l"]
+
+[ext_resource type="Script" uid="uid://byerunuhff8ot" path="res://scripts/room_aging_cellar.gd" id="1_vtr20"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_m1r5e"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7hckd"]
+[ext_resource type="Texture2D" uid="uid://dm12c7rew7fhd" path="res://assets/sprites/shelf_aging_cellar.png" id="4_vtr20"]
+
+[node name="Room_AgingCellar" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_vtr20")
+offsetX = 12
+maxX = 3
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_m1r5e")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_7hckd")
+
+[node name="Shelf" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -18)
+texture = ExtResource("4_vtr20")

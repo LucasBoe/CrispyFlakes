@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3 uid="uid://csfct040ranu"]
+
+[ext_resource type="Script" uid="uid://c2hbo8h51lq42" path="res://scripts/room_destillery.gd" id="1_41dyw"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_axy2o"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_ulrm7"]
+[ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/destillery.png" id="4_41dyw"]
+[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="5_52j7x"]
+
+[node name="Room_Destillery" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_41dyw")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_axy2o")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_ulrm7")
+
+[node name="Brewery" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(21, -19.5)
+texture = ExtResource("4_41dyw")
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="ProgressBar" parent="." instance=ExtResource("5_52j7x")]
+visible = false
+z_index = 4096
+offset_bottom = -35.0
+pivot_offset = Vector2(14, 2)

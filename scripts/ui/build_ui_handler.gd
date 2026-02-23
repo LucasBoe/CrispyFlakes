@@ -33,6 +33,8 @@ func _ready():
 	buttery_button = create_button(group, Global.Building.room_data_buttery)
 	create_button(group, Global.Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
 	create_button(group, Global.Building.room_data_bath)
+	create_button(group, Global.Building.room_data_destillery)
+	create_button(group, Global.Building.room_data_aging_cellar)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)

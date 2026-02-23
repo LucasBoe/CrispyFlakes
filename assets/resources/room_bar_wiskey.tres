@@ -7,10 +7,10 @@
 [resource]
 script = ExtResource("2_h0qxu")
 upgrade_name = "Bottle Shelf"
-upgrade_price = 30
+upgrade_price = 50
 upgrade_preview = ExtResource("2_u1h78")
 item_name = "Wiskey"
-item_cost = 9
+item_cost = 7
 item_icon = ExtResource("1_t0rkc")
 opt_associated_item = 1
 metadata/_custom_type_script = "uid://c2eta6ma87pwg"

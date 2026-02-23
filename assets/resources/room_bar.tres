@@ -17,4 +17,5 @@ room_upgrades = [ExtResource("2_r8oam"), ExtResource("3_yi57w"), ExtResource("4_
 room_icon = ExtResource("2_r7qge")
 room_preview = ExtResource("3_o33vy")
 construction_price = 40
+tier = 1
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

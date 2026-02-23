@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwvj1xrv3q2c6"
-path="res://.godot/imported/room_brewery_icon.png-88153d1d5c0342d0a71b5a527034b986.ctex"
+uid="uid://d4akkgimciem6"
+path="res://.godot/imported/beer_brewery.png-17f11e443672c8d898505a92c8ac8bc1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/room_brewery_icon.png"
-dest_files=["res://.godot/imported/room_brewery_icon.png-88153d1d5c0342d0a71b5a527034b986.ctex"]
+source_file="res://assets/sprites/beer_brewery.png"
+dest_files=["res://.godot/imported/beer_brewery.png-17f11e443672c8d898505a92c8ac8bc1.ctex"]
 
 [params]
 

@@ -56,6 +56,21 @@ func fetch_item(item : Enum.Items):
 	if source_item == null and closest_loose_item != null:
 		await move(closest_loose_item)
 		source_item = closest_loose_item
+			
+	#if wiskey
+	if source_item == null and item == Enum.Items.WISKEY_BOX:
+		var cellars = Global.Building.get_all_rooms_of_type(RoomAgingCellar)
+		var valid_cellars = []
+		for c in cellars:
+			if (c as RoomAgingCellar).has(item):
+				var distance_to_npc = npc.global_position.direction_to(c.get_center_position())
+				valid_cellars.append([c,distance_to_npc])
+				
+		if valid_cellars.size() > 0:
+			valid_cellars.sort_custom(Callable(self, "custom_array_sort"))
+			var cellar : RoomAgingCellar = valid_cellars[0][0]
+			await move(cellar)
+			source_item = cellar.Take(item)
 				
 	#if water, fetch from well
 	if source_item == null and item == Enum.Items.WATER_BUCKET:
@@ -76,15 +91,25 @@ func fetch_item(item : Enum.Items):
 		var icon = Item.get_info(item).Tex
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), icon)
 		
-func store_item(item):
-	var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, npc.global_position)
-	if closestButtery != null:
+func store_item(item : Item):
+	var pos = npc.global_position
+	
+	var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, pos)
+	if item.itemType == Enum.Items.WISKEY_BOX_RAW:
+		var closestAgingCellar = Global.Building.get_closest_room_of_type(RoomAgingCellar, pos)
+		if closestAgingCellar != null:
+			await move(closestAgingCellar)
+			if not npc.Item.TryPutTo(closestAgingCellar):
+				await move(closestAgingCellar.get_random_floor_position())
+				npc.Item.DropCurrent()
+			
+	elif closestButtery != null:
 		await move(closestButtery)
 		if not npc.Item.TryPutTo(closestButtery):
 			await move(closestButtery.get_random_floor_position())
 			npc.Item.DropCurrent()
 	else:
-		await move((Global.Building.get_current_room_from_global_position(npc.global_position) as RoomBase).get_random_floor_position())
+		await move((Global.Building.get_current_room_from_global_position(pos) as RoomBase).get_random_floor_position())
 		npc.Item.DropCurrent()
 				
 func progress(duration, bar : TextureProgressBar):

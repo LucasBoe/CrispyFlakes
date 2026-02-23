@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwvj1xrv3q2c6"
-path="res://.godot/imported/room_brewery_icon.png-88153d1d5c0342d0a71b5a527034b986.ctex"
+uid="uid://dm12c7rew7fhd"
+path="res://.godot/imported/shelf_aging_cellar.png-55fd9081cc0e33368e7a771805263ae7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/room_brewery_icon.png"
-dest_files=["res://.godot/imported/room_brewery_icon.png-88153d1d5c0342d0a71b5a527034b986.ctex"]
+source_file="res://assets/sprites/shelf_aging_cellar.png"
+dest_files=["res://.godot/imported/shelf_aging_cellar.png-55fd9081cc0e33368e7a771805263ae7.ctex"]
 
 [params]
 

@@ -34,14 +34,16 @@ func loop():
 				drinks_available = 1.0
 				
 		else:		
-			await move(bar.get_random_floor_position())
 			
+			await move(bar.get_center_floor_position())
 			if bar.drinkRequests.size() > 0:
-				await progress(2, bar.progressBar)
+				await progress(.5, bar.progressBar)
 				bar.fullfill_next_request()
 				drinks_available -= .25
 					
 				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.item_cost, bar.get_center_position())
+			else:
+				await move(bar.get_random_floor_position())
 			
 func stop_loop():
 	ocupied_bars.erase(bar)
