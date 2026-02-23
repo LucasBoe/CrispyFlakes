@@ -26,14 +26,14 @@ func change_resource(resource, change):
 	if not resource == Enum.Resources.MONEY:
 		return
 		
-	var now = Time.get_ticks_msec() # ms since startup
-	var day_duration_in_seconds: float = Global.DAY_DURATION
+	var now : float = Global.time_now
+	var day_duration : float = Global.DAY_DURATION
 
 	money_transaction_history[now] = change
 
-	var cutoff = now - int(day_duration_in_seconds * 1000.0) # convert seconds to ms
 	for t in money_transaction_history.keys():
-		if int(t) < cutoff:
+		print(now, " - ", t, " > ", day_duration, (now - t) > day_duration)
+		if (now - t) > day_duration:
 			money_transaction_history.erase(t)
 	
 	on_money_changed.emit()

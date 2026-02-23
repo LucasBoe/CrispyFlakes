@@ -25,24 +25,24 @@ func _process(delta):
 	
 func handle_zoom(delta):
 	if Input.is_action_just_pressed("zoom_in"):
-		zoomTarget *= 1.1
+		zoomTarget *= 0.9
 		zoom_in_out();
 		
 	if Input.is_action_just_pressed("zoom_out"):
-		zoomTarget *= 0.9
-		zoom_in_out();
+		zoomTarget *= 1.1
+		zoom_in_out();		
 	
 func _input(event):
 	
 	var delta = get_process_delta_time() 
 	
-	if event is InputEventMouseButton and event.is_pressed() and not event.is_echo():
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			zoomTarget *= 1.1
-			zoom_in_out();
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			zoomTarget *= 0.9
-			zoom_in_out();
+	#if event is InputEventMouseButton and event.is_pressed() and not event.is_echo():
+		#if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			#zoomTarget *= 1.1
+			#zoom_in_out();
+		#elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			#zoomTarget *= 0.9
+			#zoom_in_out();
 		
 	if event is InputEventPanGesture:
 		if event.delta.y < 0:
