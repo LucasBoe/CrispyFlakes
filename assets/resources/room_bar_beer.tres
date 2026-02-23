@@ -1,12 +1,15 @@
-[gd_resource type="Resource" script_class="RoomUpgrade" load_steps=3 format=3 uid="uid://b6jcsxehoredw"]
+[gd_resource type="Resource" script_class="RoomUpgrade" load_steps=4 format=3 uid="uid://b6jcsxehoredw"]
 
 [ext_resource type="Script" uid="uid://c2eta6ma87pwg" path="res://scripts/room_upgrade.gd" id="1_0gnlj"]
 [ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="1_q3ji6"]
+[ext_resource type="Texture2D" uid="uid://cim07ui8dh1tq" path="res://assets/sprites/bar_beer.png" id="3_u5443"]
 
 [resource]
 script = ExtResource("1_0gnlj")
-name = "Beer"
-price = 5
-cost = 20
-icon = ExtResource("1_q3ji6")
+upgrade_name = "Barrel Holder"
+upgrade_price = 15
+upgrade_preview = ExtResource("3_u5443")
+item_name = "Beer"
+item_cost = 6
+item_icon = ExtResource("1_q3ji6")
 metadata/_custom_type_script = "uid://c2eta6ma87pwg"

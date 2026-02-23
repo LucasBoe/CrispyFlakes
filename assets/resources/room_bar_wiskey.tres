@@ -1,13 +1,16 @@
-[gd_resource type="Resource" script_class="RoomUpgrade" load_steps=3 format=3 uid="uid://vrl3vhqrhuj0"]
+[gd_resource type="Resource" script_class="RoomUpgrade" load_steps=4 format=3 uid="uid://vrl3vhqrhuj0"]
 
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="1_t0rkc"]
 [ext_resource type="Script" uid="uid://c2eta6ma87pwg" path="res://scripts/room_upgrade.gd" id="2_h0qxu"]
+[ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="2_u1h78"]
 
 [resource]
 script = ExtResource("2_h0qxu")
-name = "Wiskey"
-price = 8
-cost = 30
-icon = ExtResource("1_t0rkc")
+upgrade_name = "Bottle Shelf"
+upgrade_price = 30
+upgrade_preview = ExtResource("2_u1h78")
+item_name = "Wiskey"
+item_cost = 9
+item_icon = ExtResource("1_t0rkc")
 opt_associated_item = 1
 metadata/_custom_type_script = "uid://c2eta6ma87pwg"

@@ -33,7 +33,7 @@ func _on_click_hovered_node_signal(node):
 	
 	if target is NPCWorker:
 		header_label.text = "Worker"
-		describtion_label.text = "This worker can be dragged onto rooms in order to work there."
+		describtion_label.text = str((target as NPCWorker).character_name,"\nThis worker can be dragged onto rooms in order to work there.")
 		describtion_label.show()
 		room_delete_button.hide()
 	
@@ -76,16 +76,27 @@ func _on_click_hovered_node_signal(node):
 
 			var template = room_upgrade_hbox.get_child(0)
 			template.visible = false
+			
+			var i = 0
 
 			# clone template for each upgrade
 			for upgrade : RoomUpgrade in target.upgrades:
+				i+=1
 				var clone := template.duplicate()
 				room_upgrade_hbox.add_child(clone)
 				var content_root = clone.get_child(0).get_child(0)
-				content_root.get_child(0).text = upgrade.name
-				content_root.get_child(1).text = str("+", upgrade.price, " $")
-				content_root.get_child(2).texture = upgrade.icon
-				content_root.get_child(3).text = str("-", upgrade.cost, " $")
+				
+				var upgrade_root = content_root.get_child(0)
+				upgrade_root.get_child(0).text = str(i,".")
+				upgrade_root.get_child(1).text = upgrade.upgrade_name
+				upgrade_root.get_child(2).text = str("Cost: ", upgrade.upgrade_price, " $")
+				upgrade_root.get_child(4).texture = upgrade.upgrade_preview
+				
+				var item_root = content_root.get_child(1)
+				item_root.get_child(0).text = str("Sells: ", upgrade.item_name)
+				item_root.get_child(1).get_child(0).texture = upgrade.item_icon
+				item_root.get_child(1).get_child(1).text = str(upgrade.item_cost, "$")
+				
 				clone.pressed.connect(target.try_set_upgrade.bind(upgrade))
 				clone.pressed.connect(refresh_upgrades)
 				clone.show()
@@ -102,9 +113,13 @@ func _on_click_hovered_node_signal(node):
 	
 func refresh_upgrades():
 	for child in room_upgrade_hbox.get_children():
-		var name = child.get_child(0).get_child(0).get_child(0).text
-		child.modulate = Color.WHITE if name == target.current_upgrade.name else Color.WEB_GRAY
-
+		var name = child.get_child(0).get_child(0).get_child(0).get_child(1).text
+		var price_label = child.get_child(0).get_child(0).get_child(0).get_child(2) as Label
+		var current_label = child.get_child(0).get_child(0).get_child(0).get_child(3) as Label
+		var is_current = name == target.current_upgrade.upgrade_name
+		child.modulate = Color.WHITE if not is_current else Color.WEB_GRAY
+		price_label.visible = not is_current
+		current_label.visible = is_current
 	
 func _process(delta):
 	super._process(delta)

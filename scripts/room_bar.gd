@@ -69,10 +69,10 @@ func try_set_upgrade(upgrade : RoomUpgrade):
 	if upgrade == current_upgrade:
 		return
 	
-	if not ResourceHandler.has_money(upgrade.cost):
+	if not ResourceHandler.has_money(upgrade.upgrade_price):
 		return
 	
-	ResourceHandler.change_money(-upgrade.cost)
+	ResourceHandler.change_money(-upgrade.upgrade_price)
 	current_upgrade = upgrade
 	drink_type = upgrade.opt_associated_item
 	

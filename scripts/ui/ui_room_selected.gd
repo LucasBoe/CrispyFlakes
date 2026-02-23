@@ -45,16 +45,16 @@ func _on_clicked_room(clicked_room : RoomBase):
 		template.visible = false
 
 		# clone template for each upgrade
-		for upgrade : RoomUpgrade in room.upgrades:
-			var clone := template.duplicate()
-			room_upgrade_hbox.add_child(clone)
-			var content_root = clone.get_child(0).get_child(0)
-			content_root.get_child(0).text = upgrade.name
-			content_root.get_child(1).text = str("+", upgrade.price, " $")
-			content_root.get_child(2).texture = upgrade.icon
-			content_root.get_child(3).text = str("-", upgrade.cost, " $")
-			clone.pressed.connect(room.try_set_upgrade.bind(upgrade))
-			clone.show()
+		#for upgrade : RoomUpgrade in room.upgrades:
+			#var clone := template.duplicate()
+			#room_upgrade_hbox.add_child(clone)
+			#var content_root = clone.get_child(0).get_child(0)
+			#content_root.get_child(0).text = upgrade.name
+			#content_root.get_child(1).text = str("+", upgrade.price, " $")
+			#content_root.get_child(2).texture = upgrade.icon
+			#content_root.get_child(3).text = str("-", upgrade.cost, " $")
+			#clone.pressed.connect(room.try_set_upgrade.bind(upgrade))
+			#clone.show()
 			
 	root.size = Vector2(root.size.x, root.get_combined_minimum_size().y)
 	

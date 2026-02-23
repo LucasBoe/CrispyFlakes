@@ -41,7 +41,7 @@ func loop():
 				bar.fullfill_next_request()
 				drinks_available -= .25
 					
-				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.price, bar.get_center_position())
+				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.item_cost, bar.get_center_position())
 			
 func stop_loop():
 	ocupied_bars.erase(bar)

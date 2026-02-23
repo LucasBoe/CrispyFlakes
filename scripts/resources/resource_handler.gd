@@ -32,7 +32,7 @@ func change_resource(resource, change):
 	money_transaction_history[now] = change
 
 	for t in money_transaction_history.keys():
-		print(now, " - ", t, " > ", day_duration, (now - t) > day_duration)
+		#print(now, " - ", t, " > ", day_duration, (now - t) > day_duration)
 		if (now - t) > day_duration:
 			money_transaction_history.erase(t)
 	

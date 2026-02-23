@@ -1,4 +1,4 @@
-[gd_scene load_steps=94 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=96 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -51,8 +51,10 @@
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
+[ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="28_b52we"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://ceaqnkct2m7dc" path="res://assets/sprites/ui/icon_npc_closeup_cowboy.png" id="29_8st1d"]
+[ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="29_x63bv"]
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
@@ -527,7 +529,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="Dummy" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection"]
-custom_minimum_size = Vector2(38, 60)
+custom_minimum_size = Vector2(60, 114)
 layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("22_hpv7r")
@@ -548,36 +550,81 @@ theme_override_constants/margin_bottom = 4
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = -3
+theme_override_constants/separation = 6
 
-[node name="LabelName" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LabelNumber" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
-text = "Product"
+text = "1."
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="LabelPrice" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="LabelName" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
-text = "1$"
+text = "Service Table"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="LabelPrice" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+modulate = Color(1, 0.89411765, 0.19607843, 1)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "128 $"
 horizontal_alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="LabelCurrent" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+modulate = Color(1, 0.89411765, 0.19607843, 1)
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "(Current)"
+horizontal_alignment = 1
+
+[node name="TextureRectPreview" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
 mouse_filter = 2
-texture = ExtResource("19_v28my")
+texture = ExtResource("28_b52we")
 stretch_mode = 3
 
-[node name="LabelCost" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="LabelSells" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
-text = "-999$"
+text = "Sells:"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
+layout_mode = 2
+alignment = 1
+
+[node name="TextureRectIcon" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+mouse_filter = 2
+texture = ExtResource("29_x63bv")
+stretch_mode = 3
+
+[node name="LabelCost" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+text = "6$"
 horizontal_alignment = 1
 vertical_alignment = 2
 
