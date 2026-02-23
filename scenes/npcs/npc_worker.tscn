@@ -18,6 +18,7 @@ shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
 
 [node name="NPCWorker" type="Area2D"]
+z_index = 1
 script = ExtResource("1_d0f16")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

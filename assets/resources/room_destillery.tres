@@ -14,4 +14,6 @@ room_icon = ExtResource("2_hax0f")
 room_preview = ExtResource("3_fjh5f")
 construction_price = 70
 tier = 2
+produced_item_type = 4
+produced_item_name = "Fresh Wiskey"
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

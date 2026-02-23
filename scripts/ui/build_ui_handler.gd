@@ -9,6 +9,8 @@ class_name BuildMenuUITab
 @onready var hover_info_room_desc_label : RichTextLabel = %RoomBuildHoverInfoDescLabel
 @onready var hover_info_room_price_label : Label = %RoomBuildHoverInfoPriceLabel
 @onready var hover_info_room_preview_texture_rect : TextureRect = %RoomBuildHoverInfoRoomPreviewTextureRect
+@onready var hover_info_room_item_name_label : Label = %RoomBuildHoverInfoItemNameLabel
+@onready var hover_info_room_item_texture_rect : TextureRect = %RoomBuildHoverInfoItemTextureRect
 
 var groups = {}
 
@@ -70,6 +72,12 @@ func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_desc_label.text = data.room_desc
 	hover_info_room_price_label.text = str(data.construction_price, "$")
 	hover_info_room_preview_texture_rect.texture = data.room_preview
+	
+	var item_root = hover_info_room_item_name_label.get_parent()
+	item_root.visible = data.produces_item
+	hover_info_room_item_name_label.text = data.produced_item_name
+	hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
+	
 	last_hover = data
 	hover_info_room_box_root.show()
 	return

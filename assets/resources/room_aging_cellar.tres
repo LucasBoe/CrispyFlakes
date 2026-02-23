@@ -14,4 +14,7 @@ room_icon = ExtResource("2_dvik4")
 room_preview = ExtResource("3_2t72g")
 construction_price = 30
 tier = 2
+produces_item = true
+produced_item_type = 1
+produced_item_name = "Aged Wiskey"
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

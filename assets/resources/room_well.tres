@@ -14,4 +14,7 @@ room_icon = ExtResource("2_60cnm")
 room_preview = ExtResource("3_60cnm")
 construction_price = 25
 tier = 2
+produces_item = true
+produced_item_type = 3
+produced_item_name = "Water"
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

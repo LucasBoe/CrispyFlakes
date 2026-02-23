@@ -529,7 +529,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="Dummy" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection"]
-custom_minimum_size = Vector2(60, 114)
+custom_minimum_size = Vector2(60, 128)
 layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("22_hpv7r")
@@ -625,6 +625,15 @@ layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
 text = "6$"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="LabelRequirements" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 5
+size_flags_vertical = 7
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+text = "needs\\nBrewery"
 horizontal_alignment = 1
 vertical_alignment = 2
 
@@ -1462,6 +1471,7 @@ layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 2
 
 [node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -1470,6 +1480,23 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "This room is cool! "
 fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RoomBuildHoverInfoItemNameLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+text = "+ Beer Barrels"
+vertical_alignment = 2
+
+[node name="RoomBuildHoverInfoItemTextureRect" type="TextureRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("19_v28my")
 
 [node name="RoomBuildHoverInfoPriceLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true

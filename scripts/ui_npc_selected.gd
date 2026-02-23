@@ -107,6 +107,13 @@ func _on_click_hovered_node_signal(node):
 				item_root.get_child(1).get_child(0).texture = upgrade.item_icon
 				item_root.get_child(1).get_child(1).text = str(upgrade.item_cost, "$")
 				
+				var required_label = item_root.get_child(2)
+				if upgrade.room_required != null:
+					required_label.text = str("needs\n", upgrade.room_required.room_name)
+					required_label.show()
+				else:
+					required_label.hide()
+				
 				clone.pressed.connect(target.try_set_upgrade.bind(upgrade))
 				clone.pressed.connect(refresh_upgrades)
 				clone.show()
