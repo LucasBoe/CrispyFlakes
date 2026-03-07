@@ -92,13 +92,20 @@ func refresh_target_path():
 		var goDownwards = targetRoomIndex.y < currentRoomIndex.y
 		var multiplier = 1 if goDownwards else -1
 		
+		
 		for i in range(currentRoomIndex.y, targetRoomIndex.y, -1 * multiplier):
-			var stairs = Global.Building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i) as RoomStairs
-			targetPath.append(stairs.global_position + Vector2(8  if goDownwards else 36, 0 * multiplier))
-			targetPath.append(stairs.global_position + Vector2(28 if goDownwards else 36, 24 * multiplier))
-			targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 28, 24 * multiplier))
-			targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 8 , 48 * multiplier))
-			last_position = stairs.global_position
+			var stairs = Global.Building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i if goDownwards else i + 1) as RoomStairs
+			if stairs == null:
+				UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), Global.Building.room_data_stairs.room_icon)
+				targetPath.clear()
+				targetPath.append((Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase).get_random_floor_position())
+				return
+			else:
+				targetPath.append(stairs.global_position + Vector2(8  if goDownwards else 36, (0 if goDownwards else 48) + 0 * multiplier))
+				targetPath.append(stairs.global_position + Vector2(28 if goDownwards else 36, (0 if goDownwards else 48) + 24 * multiplier))
+				targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 28, (0 if goDownwards else 48) + 24 * multiplier))
+				targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 8 , (0 if goDownwards else 48) + 48 * multiplier))
+				last_position = stairs.global_position
 				
 	#move to target location
 	targetPath.append(targetFinal);
