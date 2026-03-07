@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://ctdvt5rdmtfqn"]
+
+[ext_resource type="PackedScene" uid="uid://b6i56knhhvrqy" path="res://scenes/rooms/room_prison.tscn" id="1_cmppg"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="2_38wrn"]
+[ext_resource type="Texture2D" uid="uid://d31cvnavwfgfp" path="res://assets/sprites/ui/room_prison_icon.png" id="2_68ty7"]
+[ext_resource type="Texture2D" uid="uid://crrb5q8vvvofb" path="res://assets/sprites/ui/room_prison_preview.png" id="3_qm158"]
+
+[resource]
+script = ExtResource("2_38wrn")
+packed_scene = ExtResource("1_cmppg")
+room_name = "Prison"
+room_desc = "Arested people can be put here."
+room_icon = ExtResource("2_68ty7")
+room_preview = ExtResource("3_qm158")
+construction_price = 40
+tier = 3
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

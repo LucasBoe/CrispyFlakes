@@ -1,0 +1,2 @@
+extends RoomBase
+class_name RoomPrison
