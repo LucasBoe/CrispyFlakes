@@ -41,6 +41,7 @@ TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 TierHandler="*res://scripts/autoloads/tier_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
 NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
+Console="*res://addons/console/console.gd"
 
 [display]
 

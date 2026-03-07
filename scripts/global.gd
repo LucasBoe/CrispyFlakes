@@ -13,3 +13,7 @@ var time_now: float = 0.0
 
 func _physics_process(delta: float) -> void:
 	time_now += delta
+
+func _input(event):
+	if event.is_action_released("toggle_dev_console"):
+		Console.toggle_console()

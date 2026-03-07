@@ -22,6 +22,12 @@ var tier_visitors_needed = [
 func _ready():
 	await get_tree().process_frame
 	Global.NPCSpawner.spawned_guest_signal.connect(_on_spawned_guest)
+	Console.add_command("tiers", console_unlock_all_tiers)
+
+func console_unlock_all_tiers():
+	for i in max_tier:
+		_on_spawned_guest(1000)
+	Console.print_line("unlocked all tiers")
 	
 func _on_spawned_guest(guest_count):
 	if current_tier >= max_tier:
