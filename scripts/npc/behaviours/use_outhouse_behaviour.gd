@@ -17,7 +17,7 @@ func loop():
 	await move(outhouse.get_random_floor_position())
 	
 	while outhouse.is_used_by_other_then(npc):
-		await endOfFrame()
+		await end_of_frame()
 		
 	await  move(outhouse.get_center_floor_position())
 	npc.Animator.hide()

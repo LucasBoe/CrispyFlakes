@@ -29,7 +29,7 @@ func change_hover(new_hover):
 		_set_outline(previously_hovered, Color.BLACK)
 			
 	if currently_hovered:
-		_set_outline(currently_hovered, Color.WHITE)
+		_set_outline(currently_hovered, Color.LIGHT_GRAY if currently_hovered is NPCGuest else Color.WHITE)
 
 func _set_outline(node, color: Color) -> void:
 	

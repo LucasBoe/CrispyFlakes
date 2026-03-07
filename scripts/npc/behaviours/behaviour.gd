@@ -9,25 +9,25 @@ func _init():
 	
 func start_loop():	
 	while not npc:
-		await endOfFrame()	
+		await end_of_frame()	
 		
 	await loop()
 	
 	if is_instance_valid(npc):
 		npc.Behaviour.clear_behaviour()
-
-#optional override
-func stop_loop():
-	return
 	
 #mandatory override
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
 	
+#optional override
+func stop_loop():
+	return
+	
 func move(target, custom_speed = -1):
 	npc.Navigation.set_target(target, custom_speed)
 	while npc.Navigation.is_moving:	
-		await endOfFrame()
+		await end_of_frame()
 	
 func pause(duration):
 	return get_tree().create_timer(duration).timeout
@@ -78,7 +78,7 @@ func fetch_item(item : Enum.Items):
 		await move(well)
 		well.register(npc)
 		while well.current_user != npc:
-			await endOfFrame()
+			await end_of_frame()
 		
 		await progress(1, well.progressBar)
 		source_item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, well.get_center_position())
@@ -118,11 +118,11 @@ func progress(duration, bar : TextureProgressBar):
 	while t > 0:
 		t -= get_process_delta_time()
 		bar.value = (1.0 - (t / duration)) * 100
-		await endOfFrame()
+		await end_of_frame()
 		
 	bar.visible = false
 	
-func endOfFrame():
+func end_of_frame():
 	return get_tree().process_frame
 
 func custom_array_sort(a, b):

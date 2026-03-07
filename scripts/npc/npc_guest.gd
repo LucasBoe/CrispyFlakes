@@ -11,7 +11,7 @@ var is_dirty = true
 
 func _ready():
 	super._ready()
-	sprite.modulate = Color.GRAY
+	sprite.modulate = Color.LIGHT_GRAY
 	while is_dirty:
 		try_drop_dirt()
 		await get_tree().create_timer(1).timeout
@@ -34,6 +34,14 @@ func get_next_behaviour():
 	
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
 		return NeedLeaveBehaviour
+		
+	var f = randf()
+	var s = Needs.drunkenness.strength
+	
+	print(s, " > ", f, " = ", s > f)
+	
+	if s > f:
+		return FightBehaviour
 	
 	return Behaviour.get_behaviour_from_available_rooms(Global.Building.get_all_rooms_of_type(RoomBase))
 	

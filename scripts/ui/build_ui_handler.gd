@@ -37,6 +37,7 @@ func _ready():
 	create_button(group, Global.Building.room_data_bath)
 	create_button(group, Global.Building.room_data_destillery)
 	create_button(group, Global.Building.room_data_aging_cellar)
+	create_button(group, Global.Building.room_data_prison)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)

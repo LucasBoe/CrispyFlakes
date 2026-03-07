@@ -15,7 +15,7 @@ var need_ui_instances = []
 func _ready():
 	super._ready()
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
-	Global.Building.on_room_deleted_signal.connect(_on_potential_target_deleted)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_potential_target_deleted)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
 	
 	hide()

@@ -39,7 +39,7 @@ func loop():
 			await move(well)
 			well.register(npc)
 			while well.current_user != npc:
-				await endOfFrame()
+				await end_of_frame()
 			await progress(1, well.progressBar)
 			water_item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, well.get_center_position())
 			well.unregister(npc)

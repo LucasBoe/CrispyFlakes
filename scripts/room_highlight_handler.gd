@@ -12,6 +12,8 @@ var active : Dictionary[RoomBase, Array] = {}
 func _ready():
 	rectDummy.visible = false
 	arrowDummy.visible = false
+	
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 
 func request_rect(room, color = Color.WHITE, size = 2):
 	var inst = create(rectDummy, room)
@@ -42,7 +44,7 @@ func create(dummy, room : RoomBase):
 	
 	return instance
 	
-func end_request(room):
+func _on_room_deleted(room):
 	
 	if not active.has(room):
 		return
@@ -58,6 +60,12 @@ func dispose(highlight):
 		return
 
 	for key in active.keys():
+		
+		#TODO find reason why null rooms remain in dict in the first place
+		if key == null:
+			active.erase(key)
+			continue
+		
 		if active[key].has(highlight):
 			active[key].erase(highlight)
 		

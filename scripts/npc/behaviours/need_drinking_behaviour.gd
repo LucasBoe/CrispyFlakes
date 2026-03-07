@@ -20,7 +20,7 @@ func loop():
 	UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)	
 	
 	while request.status == Enum.RequestStatus.OPEN:
-		await endOfFrame()
+		await end_of_frame()
 		
 	if request.status == Enum.RequestStatus.FULFILLED:
 		var drink_type = bar.drink_type

@@ -20,7 +20,7 @@ func loop():
 	while is_running:
 		well.register(npc)
 		while well.current_user != npc:
-			await endOfFrame()
+			await end_of_frame()
 		await progress(1, well.progressBar)
 		well.unregister(npc)
 		var itemSpawnPos = well.get_random_floor_position()

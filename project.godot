@@ -41,7 +41,9 @@ TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 TierHandler="*res://scripts/autoloads/tier_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
 NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
+FightHandler="*res://scripts/autoloads/fight_handler.gd"
 Console="*res://addons/console/console.gd"
+GlobalEventHandler="*res://scripts/autoloads/global_event_handler.gd"
 
 [display]
 
@@ -54,7 +56,7 @@ window/stretch/aspect="keep_height"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/debugdraw2d/plugin.cfg", "res://addons/todo_4/plugin.cfg")
+enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/Todo_Manager/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/debugdraw2d/plugin.cfg")
 
 [input]
 

@@ -46,8 +46,6 @@ enum roofIndexMap {
 	DOUBLE_END_HIGHER = 6,
 }
 
-signal on_room_deleted_signal
-
 func _ready():
 	Global.Building = self
 	
@@ -71,10 +69,10 @@ func set_room(data : RoomData, x : int, y : int, autoInitialize = true):
 	
 	if floors.is_empty():
 		floors = { y : { x : instance }}
-	elif floors.has(y):
-		floors[y][x] = instance;
-	else:
+	elif not floors.has(y):
 		floors[y] = { x : instance }
+	else:
+		floors[y][x] = instance;
 		
 	if autoInitialize:
 		instance.InitRoom(x,y)
@@ -85,9 +83,8 @@ func InitalizeAllRooms():
 			floors[y][x].InitRoom(x,y)
 			
 func delete_room(room : RoomBase):
-	on_room_deleted_signal.emit(room)
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	set_room(room_data_empty, room.x, room.y)
-	RoomHighlighter.end_request(room)
 	room.queue_free()
 	
 func update_foreground_tiles():

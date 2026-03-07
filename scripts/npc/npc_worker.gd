@@ -248,7 +248,8 @@ func _input(event):
 		if targetPos:
 			global_position = targetPos
 			Navigation.stop_navigation()
-			checkJobChange(room)
+			if not try_stop_fight_in_room(room):
+				try_change_job_based_on_room(room)
 			Animator.direction = Vector2.ZERO
 		else:
 			global_position = pickUpOrigin
@@ -269,7 +270,17 @@ func _input(event):
 		Navigation.set_process(true)
 		print("released")
 
-func checkJobChange(room : RoomBase):
+func try_stop_fight_in_room(room : RoomBase):
+	var fight = FightHandler.get_fight_for_room(room)
+	
+	if fight == null:
+		return false
+		
+	var behaviour = force_behaviour(StopFightBehaviour)
+	behaviour.fight = fight
+	return true
+
+func try_change_job_based_on_room(room : RoomBase):
 	var new_job = room.associatedJob
 	current_job_room = room
 	
