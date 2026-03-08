@@ -5,9 +5,10 @@ var brewery
 
 static var occupied_breweries = []
 
+func start_loop(data : BehaviourSaveData):
+	brewery = try_get_room_if_not_occupied(data, RoomBrewery, occupied_breweries)
+
 func loop():
-	
-	brewery = Global.Building.get_closest_room_of_type(RoomBrewery, npc.global_position, occupied_breweries)
 	
 	if brewery == null:
 		npc.change_job(Enum.Jobs.IDLE)
@@ -17,7 +18,7 @@ func loop():
 	brewery.worker = npc
 	await move(brewery.get_random_floor_position())
 	
-	while is_running:
+	while true:
 		
 		await fetch_item(Enum.Items.WATER_BUCKET)
 			
@@ -38,3 +39,7 @@ func custom_array_sort(a, b):
 func stop_loop():
 	brewery.worker = null
 	occupied_breweries.erase(brewery)
+	
+	var save = super.stop_loop()
+	save.room = brewery
+	return save

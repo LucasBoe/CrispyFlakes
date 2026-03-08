@@ -127,10 +127,6 @@ func zoom_in_out():
 	var diff = mousePositionBefore - get_global_mouse_position()
 	offset += diff
 	
-	#print(diff)
-	
-	
-
 func get_camera_world_rect() -> Rect2:
 	var viewport := get_viewport_rect() # size in pixels
 

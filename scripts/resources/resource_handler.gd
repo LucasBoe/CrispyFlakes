@@ -14,7 +14,7 @@ func _ready():
 	
 func change_resource(resource, change):
 	var r = resource as Enum.Resources
-	print("on change resource ", Enum.Resources.keys()[r], " (", change, ")")
+	#print("on change resource ", Enum.Resources.keys()[r], " (", change, ")")
 	resources[r] += change
 	on_resource_changed.emit(r, resources[r], change)
 	

@@ -20,8 +20,8 @@ func _on_mouse_exited():
 func click_on():
 	print("npc click")
 	
-func force_behaviour(new_behaviour): 
-	return Behaviour.set_behaviour(new_behaviour)
+func force_behaviour(new_behaviour, override = false): 
+	return Behaviour.set_behaviour(new_behaviour, override)
 
 func destroy():
 	NPCEventHandler.on_destroy_npc_signal.emit(self)

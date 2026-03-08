@@ -5,10 +5,10 @@ var bath : RoomBath
 
 static var occupied_rooms = []
 
+func start_loop(data : BehaviourSaveData):
+	bath = try_get_room_if_not_occupied(data, RoomBath, occupied_rooms)
+	
 func loop():
-	
-	bath = Global.Building.get_closest_room_of_type(RoomBath, npc.global_position, occupied_rooms)
-	
 	if bath == null:
 		npc.change_job(Enum.Jobs.IDLE)
 		return
@@ -17,7 +17,7 @@ func loop():
 	bath.worker = npc
 	await move(bath.get_random_floor_position())
 	
-	while is_running:
+	while true:
 		var water_item = null
 		
 		#fetch water from buttery
@@ -69,3 +69,7 @@ func custom_array_sort(a, b):
 func stop_loop():
 	bath.worker = null
 	occupied_rooms.erase(bath)
+	
+	var save = super.stop_loop()
+	save.room = bath
+	return save

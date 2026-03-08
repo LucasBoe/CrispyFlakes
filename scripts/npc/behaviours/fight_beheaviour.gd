@@ -14,3 +14,4 @@ func loop():
 
 func stop_loop():
 	npc.Animator.modulate = Color.WHITE
+	return super.stop_loop()

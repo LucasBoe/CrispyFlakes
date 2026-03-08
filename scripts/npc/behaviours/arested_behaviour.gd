@@ -14,3 +14,4 @@ func loop():
 
 func stop_loop():
 	npc.Animator.handcuffs.hide()
+	return super.stop_loop()

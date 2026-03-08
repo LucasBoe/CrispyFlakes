@@ -6,10 +6,10 @@ var drinks_available = 0.0
 
 static var ocupied_bars = []
 
+func start_loop(data : BehaviourSaveData):
+	bar = try_get_room_if_not_occupied(data, RoomBar, ocupied_bars)
+
 func loop():
-	
-	bar = Global.Building.get_closest_room_of_type(RoomBar, npc.global_position, ocupied_bars)
-	
 	if bar == null:
 		npc.change_job(Enum.Jobs.IDLE)
 		return
@@ -17,7 +17,7 @@ func loop():
 	ocupied_bars.append(bar)
 	bar.worker = npc
 	
-	while is_running:
+	while true:
 		
 		var drink = bar.drink_type
 	
@@ -45,6 +45,10 @@ func loop():
 			else:
 				await move(bar.get_random_floor_position())
 			
-func stop_loop():
+func stop_loop() -> BehaviourSaveData:
 	ocupied_bars.erase(bar)
 	bar.worker = null
+	
+	var data = BehaviourSaveData.new(get_script())
+	data.room = bar
+	return data
