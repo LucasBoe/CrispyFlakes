@@ -2,13 +2,22 @@ extends RefCounted
 class_name Behaviour
 
 var npc : NPC
+var data : BehaviourSaveData
+var stopped = false
 
 func _init(_npc, _data : BehaviourSaveData):
 	npc = _npc
-	start_loop(_data)
-	_do_loop()
+	data = _data
 
-func _do_loop():
+func run():
+	
+	start_loop(data)
+	
+	await npc.get_tree().process_frame
+	
+	if stopped:
+		return
+	
 	await loop()
 	
 	if is_instance_valid(npc):
@@ -27,10 +36,20 @@ func stop_loop() -> BehaviourSaveData:
 	return BehaviourSaveData.new(get_script())
 	
 func  try_get_room_if_not_occupied(data, type, ocupied):
-	if data != null and not ocupied.has(data.room):
-		return data.room
+	var room = null
 	
-	return Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied)
+	if data != null and not ocupied.has(data.room):
+		room = data.room
+	else:
+		room = Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied)
+	
+	if room == null:
+		npc.change_job(Enum.Jobs.IDLE)
+		return null
+	
+	ocupied.append(room)
+	room.worker = npc
+	return room
 	
 func move(target, custom_speed = -1):
 	npc.Navigation.set_target(target, custom_speed)

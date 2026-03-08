@@ -9,16 +9,8 @@ static var ocupied_bars = []
 func start_loop(data : BehaviourSaveData):
 	bar = try_get_room_if_not_occupied(data, RoomBar, ocupied_bars)
 
-func loop():
-	if bar == null:
-		npc.change_job(Enum.Jobs.IDLE)
-		return
-	
-	ocupied_bars.append(bar)
-	bar.worker = npc
-	
+func loop():	
 	while true:
-		
 		var drink = bar.drink_type
 	
 		await move(bar.get_random_floor_position())
@@ -47,7 +39,8 @@ func loop():
 			
 func stop_loop() -> BehaviourSaveData:
 	ocupied_bars.erase(bar)
-	bar.worker = null
+	if is_instance_valid(bar):
+		bar.worker = null
 	
 	var data = BehaviourSaveData.new(get_script())
 	data.room = bar

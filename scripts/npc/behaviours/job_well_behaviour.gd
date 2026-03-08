@@ -8,14 +8,6 @@ func start_loop(data : BehaviourSaveData):
 	well = try_get_room_if_not_occupied(data, RoomWell, occupied_wells)
 	
 func loop():
-	
-	if well == null:
-		npc.change_job(Enum.Jobs.IDLE)
-		return
-	
-	well.worker = npc
-	occupied_wells.append(well)
-	
 	await move(well)
 	
 	while true:

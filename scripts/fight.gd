@@ -18,8 +18,9 @@ func end_fight():
 		if p is NPCWorker:
 			was_smoothed = true
 			
-	for p in participants:
-		if p is NPCGuest:
-			p.force_behaviour(ArestedBehaviour)
+	if was_smoothed:
+		for p in participants:
+			if p is NPCGuest:
+				p.force_behaviour(ArestedBehaviour)
 	
 	RoomHighlighter.dispose(highlight)

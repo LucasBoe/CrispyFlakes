@@ -9,13 +9,6 @@ func start_loop(data : BehaviourSaveData):
 	destillery = try_get_room_if_not_occupied(data, RoomBrewery, occupied_destilleries)
 
 func loop():
-	
-	if destillery == null:
-		npc.change_job(Enum.Jobs.IDLE)
-		return
-		
-	occupied_destilleries.append(destillery)
-	destillery.worker = npc
 	await move(destillery.get_random_floor_position())
 	
 	while true:

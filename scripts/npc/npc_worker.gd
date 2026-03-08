@@ -179,7 +179,6 @@ func change_job(new):
 	current_job = new
 	Behaviour.set_behaviour_from_job(current_job);
 	JobHandler.on_job_changed(self, current_job)
-	print(str("change job to ", Enum.Jobs.keys()[current_job]))
 	
 	if new == 0:
 		return
@@ -273,7 +272,7 @@ func try_stop_fight_in_room(room : RoomBase):
 	if fight == null:
 		return false
 		
-	var behaviour = force_behaviour(StopFightBehaviour, true)
+	var behaviour = force_behaviour(StopFightBehaviour)
 	behaviour.fight = fight
 	return true
 

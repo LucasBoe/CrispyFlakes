@@ -9,12 +9,6 @@ func start_loop(data : BehaviourSaveData):
 	bath = try_get_room_if_not_occupied(data, RoomBath, occupied_rooms)
 	
 func loop():
-	if bath == null:
-		npc.change_job(Enum.Jobs.IDLE)
-		return
-		
-	occupied_rooms.append(bath)
-	bath.worker = npc
 	await move(bath.get_random_floor_position())
 	
 	while true:

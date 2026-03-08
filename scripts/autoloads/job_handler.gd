@@ -19,8 +19,8 @@ func on_job_changed(npc : NPCWorker, new_job):
 			if npc == worker:
 				previous_job = job
 		
-	print_debug("npc ", npc.get_script().get_global_name(), " changed job from ",previous_job ," to ", new_job)
-	
+	#print_debug("npc ", npc.get_script().get_global_name(), " changed job from ",previous_job ," to ", new_job)
+	#
 	if previous_job != null:
 		if workers.has(previous_job):
 			workers[previous_job].erase(npc)
