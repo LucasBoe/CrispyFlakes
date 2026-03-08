@@ -17,7 +17,7 @@ func _ready():
 	speechbubbe_dummy.hide()
 	need_bar_dummy.hide()
 	
-func _create_from_dummy(dummy) -> instance_info:
+func _create_from_dummy(dummy, duration) -> instance_info:
 	var instance = dummy.duplicate()
 	dummy.get_parent().add_child(instance)
 
@@ -25,13 +25,13 @@ func _create_from_dummy(dummy) -> instance_info:
 
 	var i := instance_info.new()
 	i.instance = instance
-	i.lifetime_left = DEFAULT_LIFETIME
+	i.lifetime_left = duration
 	instances.append(i)
 	return i
 
 	
-func create(text, icon, color):
-	var i := _create_from_dummy(speechbubbe_dummy)
+func create(text, icon, color, duration):
+	var i := _create_from_dummy(speechbubbe_dummy, duration)
 	var instance: PanelContainer = i.instance
 	
 	var tex : TextureRect = instance.get_node("MarginContainer/HBoxContainer/MarginContainer/TextureRect")
@@ -51,19 +51,19 @@ func create(text, icon, color):
 
 	return i
 
-func create_notification_static(text, target_position, icon = null, color = Color.BLACK):
-	var i = create(text, icon, color)
+func create_notification_static(text, target_position, icon = null, color = Color.BLACK, duration = DEFAULT_LIFETIME):
+	var i = create(text, icon, color, duration)
 	i.instance.position = target_position - i.instance.pivot_offset
 	return i
 
-func create_notification_dynamic(text, target : Node2D = null, offset = Vector2.ZERO, icon = null, color = Color.BLACK):
-	var i = create(text, icon, color)
+func create_notification_dynamic(text, target : Node2D = null, offset = Vector2.ZERO, icon = null, color = Color.BLACK, duration = DEFAULT_LIFETIME):
+	var i = create(text, icon, color, duration)
 	i.target_object = target
 	i.offset = offset
 	return i
 	
 func create_notification_need(need: Enum.Need, value: float, target: Node2D = null, offset := Vector2(-8,-46)):
-	var i := _create_from_dummy(need_bar_dummy)
+	var i := _create_from_dummy(need_bar_dummy, DEFAULT_LIFETIME)
 	var instance = i.instance
 
 	i.target_object = target

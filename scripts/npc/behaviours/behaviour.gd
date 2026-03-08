@@ -64,8 +64,11 @@ func pause(duration):
 	return npc.get_tree().create_timer(duration).timeout #error
 	
 func fetch_item(item : Enum.Items):
-	var source_item = null
+	#already has item
+	if npc.Item.currentItem and npc.Item.currentItem.itemType == item:
+		return
 	
+	var source_item = null
 	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position, item)
 			
 	#fetch source item from buttery

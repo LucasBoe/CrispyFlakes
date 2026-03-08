@@ -14,7 +14,7 @@ var isDragging : bool = false
 var zoomFactor : float = 1
 
 func _ready():
-	offset = Vector2(0,-96)
+	offset = Vector2(-24,-48)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

@@ -6,6 +6,9 @@ var currently_hovered = null
 signal click_hovered_node_signal
 
 func notify_hover_enter(npc):
+	if currently_hovered is NPCWorker and npc is NPCGuest:
+		return
+		
 	change_hover(npc)
 	
 func notify_hover_exit(npc):

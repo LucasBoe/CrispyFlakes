@@ -283,5 +283,4 @@ func try_change_job_based_on_room(room : RoomBase):
 	if new_job == null:
 		new_job = Enum.Jobs.IDLE
 			
-	if current_job != new_job:
-		change_job(new_job)
+	change_job(new_job)

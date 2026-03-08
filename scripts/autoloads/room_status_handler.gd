@@ -2,6 +2,8 @@ extends Node
 
 var rooms = []
 
+const REFRESH_RATE = 1.0
+
 func _init():
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
@@ -35,13 +37,13 @@ func notification_loop():
 			for r : RoomBase in rooms:
 				if not r.worker:
 					notify(r, "no worker", Color.ORANGE)
-					await pause((UiNotifications.DEFAULT_LIFETIME) / rooms.size() - .01)
+					await pause(REFRESH_RATE / rooms.size() - .01)
 				await pause(0)
 				
 func notify(room : RoomBase, text, color, icon = null):
-	UiNotifications.create_notification_static(text, room.get_notification_position(), icon, color)
+	UiNotifications.create_notification_static(text, room.get_notification_position(), icon, color, REFRESH_RATE)
 	var rect = RoomHighlighter.request_rect(room, color)
-	await pause(1)
+	await pause(REFRESH_RATE)
 	RoomHighlighter.dispose(rect)
 		
 func pause(time):

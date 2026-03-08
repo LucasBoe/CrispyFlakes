@@ -23,7 +23,7 @@ func stop_building():
 		RoomHighlighter.dispose(highlight)
 		highlight = null
 	
-func _process(delta):
+func _input(event):
 	if not is_placing:
 		return
 		
@@ -53,12 +53,14 @@ func _process(delta):
 		has_valid_target = has_valid_target && custom_placement_check.call(location)
 	
 	var can_place = has_valid_target && has_money
+	#
+	#if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		#stop_building()
+		#return
 	
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		stop_building()
-		return
-	
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+	if event is InputEventMouseButton \
+	and event.button_index == MOUSE_BUTTON_LEFT \
+	and not event.pressed:
 		if can_place:
 			SoundPlayer.construction_placed.play()
 			if room_at_location != null:
