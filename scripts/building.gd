@@ -348,3 +348,13 @@ func get_rooms_of_type_ordered_by_distance(type, global_pos: Vector2, blacklist 
 		ordered[i] = result[i]["room"]
 
 	return ordered
+
+func count_rooms_by_data(data : RoomData):
+	var count = 0
+	for y in floors:
+		for x in floors[y]:
+			var room = floors[y][x] as RoomBase
+			if room.data == data:
+				count+= 1
+				
+	return count

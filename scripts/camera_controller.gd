@@ -12,9 +12,10 @@ var dragStartMousePos = Vector2.ZERO
 var dragStartCameraPos = Vector2.ZERO
 var isDragging : bool = false
 var zoomFactor : float = 1
+var zoom_tween: Tween
 
 func _ready():
-	offset = Vector2(-24,-48)
+	global_position = Vector2(-24,-48)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -117,15 +118,23 @@ func ClickAndDrag():
 		var moveVector = get_viewport().get_mouse_position() - dragStartMousePos
 		global_position = dragStartCameraPos - moveVector * (1.0 / zoomFactor)
 		
-func zoom_in_out():
+func zoom_in_out(tween := false, duration := 0.15):
 	zoomTarget = clampf(zoomTarget, minZoom, maxZoom)
-	var mousePositionBefore = get_global_mouse_position()
-	var cameraCenter = self.global_position;
-	
-	zoom = Vector2(zoomTarget, zoomTarget);
-	
-	var diff = mousePositionBefore - get_global_mouse_position()
-	offset += diff
+
+	var mouse_position_before := get_global_mouse_position()
+	var target_zoom := Vector2(zoomTarget, zoomTarget)
+
+	if zoom_tween:
+		zoom_tween.kill()
+
+	if not tween:
+		zoom = target_zoom
+		var diff = mouse_position_before - get_global_mouse_position()
+		offset += diff
+		return
+
+	zoom_tween = create_tween().set_parallel(true)
+	zoom_tween.tween_property(self, "zoom", target_zoom, duration)
 	
 func get_camera_world_rect() -> Rect2:
 	var viewport := get_viewport_rect() # size in pixels
@@ -135,3 +144,6 @@ func get_camera_world_rect() -> Rect2:
 
 	var top_left := center - adjusted_size / 2.0
 	return Rect2(top_left, adjusted_size)
+	
+func tween_offset_to_zero():
+	create_tween().tween_property(self, "offset", Vector2.ZERO, 0.1)

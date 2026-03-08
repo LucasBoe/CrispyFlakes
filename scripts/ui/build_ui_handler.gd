@@ -55,6 +55,7 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	buttonDummy.get_parent().add_child(instance)
 	instance.visible = true
 	instance.icon = data.room_icon
+	instance.text = str(Global.Building.count_rooms_by_data(data))
 	instance.button_down.connect(PlacementHandler.start_building.bind(data, custom_placement_check))
 	instance.button_down.connect(SoundPlayer.mouse_click_down.play)
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=96 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=98 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -70,6 +70,8 @@
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
 [ext_resource type="Texture2D" uid="uid://cpm3j0j8jebt6" path="res://assets/sprites/ui/room_table_icon.png" id="54_k504d"]
 [ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
+[ext_resource type="Script" uid="uid://b0amasqnb3qge" path="res://scripts/ui/button_idles.gd" id="63_ggyeh"]
+[ext_resource type="Texture2D" uid="uid://pstb0wurhta1" path="res://assets/sprites/ui/icon_idle_workers.png" id="63_pd6sg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_owwh3"]
 atlas = ExtResource("5_hvbcb")
@@ -1161,6 +1163,40 @@ texture_under = ExtResource("19_wkmvq")
 texture_progress = ExtResource("19_wkmvq")
 tint_under = Color(0, 0, 0, 1)
 
+[node name="Button_Idles" type="Button" parent="UI/UITime"]
+self_modulate = Color(1, 0.7, 0, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -12.0
+offset_top = 33.0
+offset_right = 12.0
+offset_bottom = 57.0
+grow_horizontal = 2
+theme = ExtResource("26_jj3vu")
+text = "0"
+alignment = 2
+icon_alignment = 1
+script = ExtResource("63_ggyeh")
+
+[node name="TextureRect" type="TextureRect" parent="UI/UITime/Button_Idles"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -23.0
+offset_top = -23.0
+offset_right = -8.0
+offset_bottom = -1.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("63_pd6sg")
+stretch_mode = 3
+
 [node name="UIMenu" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
@@ -1386,6 +1422,9 @@ custom_minimum_size = Vector2(32, 16)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("25_q3hll")
+theme_override_font_sizes/font_size = 11
+text = "1"
 icon = ExtResource("54_k504d")
 icon_alignment = 1
 
@@ -1650,6 +1689,8 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -1.0
+offset_right = -1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
