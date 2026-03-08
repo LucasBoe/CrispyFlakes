@@ -15,7 +15,7 @@ func set_behaviour_from_job(job: Enum.Jobs) -> Behaviour:
 	return set_behaviour(Enum.job_to_behaviour(job))
 
 func set_behaviour(behaviour_script, data = null) -> Behaviour:
-	DebugLog.info("new behaviour", behaviour_script, "previous:",behaviour_instance)
+	DebugLog.info("new behaviour", behaviour_script, "previous:", behaviour_instance)
 	clear_behaviour()
 
 	behaviour_instance = behaviour_script.new(npc, data) as Behaviour

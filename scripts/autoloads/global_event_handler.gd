@@ -1,3 +1,4 @@
 extends Node
 
+signal on_room_created_signal
 signal on_room_deleted_signal

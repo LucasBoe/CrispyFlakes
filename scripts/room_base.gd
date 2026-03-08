@@ -15,6 +15,7 @@ var worker = null
 const backwallDefault = preload("res://assets/sprites/back-wall.png");
 const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");
 
+signal on_destroy_signal
 
 func InitRoom(x : int, y : int):
 	self.x = x
@@ -36,3 +37,10 @@ func get_top_center_position():
 	
 func get_center_floor_position():
 	return global_position + Vector2(24, 0)
+	
+func get_notification_position():
+	return global_position + Vector2(2, -32)
+
+func destroy():
+	on_destroy_signal.emit()
+	queue_free()

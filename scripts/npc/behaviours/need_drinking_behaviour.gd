@@ -16,6 +16,10 @@ func loop():
 		return
 	
 	await move(bar.get_random_floor_position())
+	
+	if not is_instance_valid(bar):
+		return
+	
 	var request = bar.request_drink(self)
 	UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)	
 	

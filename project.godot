@@ -44,6 +44,7 @@ NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
 FightHandler="*res://scripts/autoloads/fight_handler.gd"
 Console="*res://addons/console/console.gd"
 GlobalEventHandler="*res://scripts/autoloads/global_event_handler.gd"
+RoomStatusHandler="*res://scripts/autoloads/room_status_handler.gd"
 
 [display]
 

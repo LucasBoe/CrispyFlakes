@@ -4,6 +4,7 @@ extends Node2D
 @onready var need_bar_dummy = $NeedBarDummy #new type
 
 var instances = []
+const DEFAULT_LIFETIME = 3.0
 
 class instance_info:
 	var instance
@@ -24,7 +25,7 @@ func _create_from_dummy(dummy) -> instance_info:
 
 	var i := instance_info.new()
 	i.instance = instance
-	i.lifetime_left = 3.0
+	i.lifetime_left = DEFAULT_LIFETIME
 	instances.append(i)
 	return i
 

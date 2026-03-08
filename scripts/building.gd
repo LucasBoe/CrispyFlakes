@@ -76,6 +76,8 @@ func set_room(data : RoomData, x : int, y : int, autoInitialize = true):
 		
 	if autoInitialize:
 		instance.InitRoom(x,y)
+		
+	GlobalEventHandler.on_room_created_signal.emit(instance)
 
 func InitalizeAllRooms():
 	for y in floors.keys():
@@ -85,7 +87,7 @@ func InitalizeAllRooms():
 func delete_room(room : RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	set_room(room_data_empty, room.x, room.y)
-	room.queue_free()
+	room.destroy()
 	
 func update_foreground_tiles():
 	

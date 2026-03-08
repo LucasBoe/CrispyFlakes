@@ -44,12 +44,16 @@ func  try_get_room_if_not_occupied(data, type, ocupied):
 		room = Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied)
 	
 	if room == null:
-		npc.change_job(Enum.Jobs.IDLE)
+		_change_to_idle()
 		return null
 	
 	ocupied.append(room)
 	room.worker = npc
+	room.on_destroy_signal.connect(_change_to_idle)
 	return room
+	
+func _change_to_idle():
+	npc.change_job(Enum.Jobs.IDLE)
 	
 func move(target, custom_speed = -1):
 	npc.Navigation.set_target(target, custom_speed)

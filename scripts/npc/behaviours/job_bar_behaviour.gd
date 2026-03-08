@@ -24,12 +24,16 @@ func loop():
 				var item = npc.Item.DropCurrent()
 				item.Destroy()
 				drinks_available = 1.0
+			else:
+				RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_upgrade.item_icon)
 				
 		else:		
 			
 			await move(bar.get_center_floor_position())
+						
 			if bar.drinkRequests.size() > 0:
 				await progress(.5, bar.progressBar)
+								
 				bar.fullfill_next_request()
 				drinks_available -= .25
 					

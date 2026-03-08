@@ -6,7 +6,7 @@ var destillery
 static var occupied_destilleries = []
 
 func start_loop(data : BehaviourSaveData):
-	destillery = try_get_room_if_not_occupied(data, RoomBrewery, occupied_destilleries)
+	destillery = try_get_room_if_not_occupied(data, RoomDestillery, occupied_destilleries)
 
 func loop():
 	await move(destillery.get_random_floor_position())
