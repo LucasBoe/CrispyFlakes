@@ -1,59 +1,50 @@
 extends Node
-
 class_name BehaviourModule
 
-@onready var behaviourHost = $Host;
+var npc: NPC
+var behaviour_instance : Behaviour = null
+var previous_data : BehaviourSaveData
+var has_behaviour := false
 
-var npc
-var behaviour_instance = null
-var has_behaviour = false
-
-func _ready():
+func _ready() -> void:
 	npc = get_parent() as NPC
 	if npc:
-		pass
-		
-	npc.Behaviour = self
+		npc.Behaviour = self
 
-func set_behaviour_from_job(job : Enum.Jobs):
-	set_behaviour(Enum.job_to_behaviour(job))
-	
-func set_behaviour(behaviour):	
+func set_behaviour_from_job(job: Enum.Jobs) -> Behaviour:
+	return set_behaviour(Enum.job_to_behaviour(job))
+
+func set_behaviour(behaviour_script, data = null) -> Behaviour:
 	clear_behaviour()
-			
-	behaviourHost.set_script(behaviour)
-	
-	behaviour_instance = (behaviourHost as Behaviour)
-	behaviour_instance.npc = npc
-	
-	behaviourHost.set_process(true)
+
+	behaviour_instance = behaviour_script.new(npc, null) as Behaviour
+
 	has_behaviour = true
-	
 	return behaviour_instance
-	
-func clear_behaviour():
-	
+
+func clear_behaviour() -> void:
 	if behaviour_instance != null:
-		behaviour_instance.stop_loop()
-		behaviour_instance.is_running = false
-		
-	behaviourHost.set_process(false)
-	behaviourHost.set_script(null)
+		previous_data = behaviour_instance.stop_loop()
+
 	behaviour_instance = null
 	has_behaviour = false
 
+func restore_previous_behaviour() -> Behaviour:
+	print("restore previous behaviour")
+	var data = previous_data
+	return set_behaviour(data.type, data)
+
 func get_behaviour_from_available_rooms(all_rooms):
 	var all = []
+
 	for room in all_rooms:
-		
 		if room is RoomBar:
 			all.append(NeedDrinkingBehaviour)
-			
+
 		if room is RoomBath:
 			all.append(NeedCleaningBehaviour)
-			
+
 		if room is RoomOuthouse:
 			all.append(UseOuthouseBehaviour)
-			
-	var pick = all.pick_random();
-	return pick;
+
+	return all.pick_random()

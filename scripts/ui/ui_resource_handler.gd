@@ -13,14 +13,12 @@ func _ready():
 		#labelResourceDict[resourceType] = instance
 		
 	ResourceHandler.on_resource_changed.connect(on_resource_changed)
-	print(get_rect().size)
 	
 func on_resource_changed(resourceType, newAmount, change):
 	
 	if not labelResourceDict.has(resourceType):
 		return
 	
-	print(str("on resource changed", resourceType))
 	labelResourceDict[resourceType].update_amount(newAmount, change)
 	
 func get_resource_label_relative_position(resourceType):	

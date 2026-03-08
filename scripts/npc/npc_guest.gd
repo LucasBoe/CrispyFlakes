@@ -38,8 +38,6 @@ func get_next_behaviour():
 	var f = randf()
 	var s = Needs.drunkenness.strength
 	
-	print(s, " > ", f, " = ", s > f)
-	
 	if s > f:
 		return FightBehaviour
 	

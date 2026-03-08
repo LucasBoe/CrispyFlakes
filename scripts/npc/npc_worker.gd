@@ -224,8 +224,6 @@ func _input(event):
 	
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
 		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5))
-		
-	print(room.associatedJob)
 	
 	if not new_room_highlight && room:
 		new_room_highlight = RoomHighlighter.request_rect(room)
@@ -268,7 +266,6 @@ func _input(event):
 			RoomHighlighter.dispose(h)
 		
 		Navigation.set_process(true)
-		print("released")
 
 func try_stop_fight_in_room(room : RoomBase):
 	var fight = FightHandler.get_fight_for_room(room)
@@ -276,7 +273,7 @@ func try_stop_fight_in_room(room : RoomBase):
 	if fight == null:
 		return false
 		
-	var behaviour = force_behaviour(StopFightBehaviour)
+	var behaviour = force_behaviour(StopFightBehaviour, true)
 	behaviour.fight = fight
 	return true
 

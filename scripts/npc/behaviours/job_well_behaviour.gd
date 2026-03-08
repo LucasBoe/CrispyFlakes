@@ -2,11 +2,12 @@ extends Behaviour
 class_name JobWellBehaviour
 
 var well
-
 static var occupied_wells = []
 
+func start_loop(data : BehaviourSaveData):
+	well = try_get_room_if_not_occupied(data, RoomWell, occupied_wells)
+	
 func loop():
-	well = Global.Building.get_closest_room_of_type(RoomWell, npc.global_position, occupied_wells)
 	
 	if well == null:
 		npc.change_job(Enum.Jobs.IDLE)
@@ -17,7 +18,7 @@ func loop():
 	
 	await move(well)
 	
-	while is_running:
+	while true:
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
@@ -32,3 +33,7 @@ func loop():
 func stop_loop():
 	well.worker = null
 	occupied_wells.erase(well)
+	
+	var save = super.stop_loop()
+	save.room = well
+	return save

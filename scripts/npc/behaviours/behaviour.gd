@@ -1,28 +1,36 @@
-extends Node
+extends RefCounted
 class_name Behaviour
 
 var npc : NPC
-var is_running = true
 
-func _init():
-	start_loop()
-	
-func start_loop():	
-	while not npc:
-		await end_of_frame()	
-		
+func _init(_npc, _data : BehaviourSaveData):
+	npc = _npc
+	start_loop(_data)
+	_do_loop()
+
+func _do_loop():
 	await loop()
 	
 	if is_instance_valid(npc):
 		npc.Behaviour.clear_behaviour()
+
+#optional override
+func start_loop(data : BehaviourSaveData):
+	return
 	
 #mandatory override
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
 	
 #optional override
-func stop_loop():
-	return
+func stop_loop() -> BehaviourSaveData:
+	return BehaviourSaveData.new(get_script())
+	
+func  try_get_room_if_not_occupied(data, type, ocupied):
+	if data != null and not ocupied.has(data.room):
+		return data.room
+	
+	return Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied)
 	
 func move(target, custom_speed = -1):
 	npc.Navigation.set_target(target, custom_speed)
@@ -30,7 +38,7 @@ func move(target, custom_speed = -1):
 		await end_of_frame()
 	
 func pause(duration):
-	return get_tree().create_timer(duration).timeout
+	return npc.get_tree().create_timer(duration).timeout #error
 	
 func fetch_item(item : Enum.Items):
 	var source_item = null
@@ -116,14 +124,14 @@ func progress(duration, bar : TextureProgressBar):
 	var t = float(duration)
 	bar.visible = true
 	while t > 0:
-		t -= get_process_delta_time()
+		t -= npc.get_process_delta_time() #error
 		bar.value = (1.0 - (t / duration)) * 100
 		await end_of_frame()
 		
 	bar.visible = false
 	
 func end_of_frame():
-	return get_tree().process_frame
+	return Global.get_tree().process_frame
 
 func custom_array_sort(a, b):
 		return a[1] < b[1]

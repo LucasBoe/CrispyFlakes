@@ -5,9 +5,10 @@ var destillery
 
 static var occupied_destilleries = []
 
+func start_loop(data : BehaviourSaveData):
+	destillery = try_get_room_if_not_occupied(data, RoomBrewery, occupied_destilleries)
+
 func loop():
-	
-	destillery = Global.Building.get_closest_room_of_type(RoomDestillery, npc.global_position, occupied_destilleries)
 	
 	if destillery == null:
 		npc.change_job(Enum.Jobs.IDLE)
@@ -17,7 +18,7 @@ func loop():
 	destillery.worker = npc
 	await move(destillery.get_random_floor_position())
 	
-	while is_running:
+	while true:
 		
 		await fetch_item(Enum.Items.WATER_BUCKET)
 			
@@ -36,3 +37,7 @@ func loop():
 func stop_loop():
 	destillery.worker = null
 	occupied_destilleries.erase(destillery)
+	
+	var save = super.stop_loop()
+	save.room = destillery
+	return save
