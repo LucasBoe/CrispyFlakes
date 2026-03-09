@@ -56,3 +56,7 @@ func clean():
 	is_dirty = false
 	sprite.modulate = Color.WHITE
 	Needs.satisfaction.strength += 0.3
+	notify(UiNotifications.ICON_PLUS_2)
+
+func notify(tex):
+	UiNotifications.create_npc_notification(self, tex)

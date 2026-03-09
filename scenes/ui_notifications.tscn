@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cbiagv3wch5jo"]
+[gd_scene load_steps=11 format=3 uid="uid://cbiagv3wch5jo"]
 
 [ext_resource type="Script" uid="uid://dqi0cet2rinmj" path="res://scripts/ui_notification_handler.gd" id="1_q2bjm"]
 [ext_resource type="Theme" uid="uid://c4484uuc0plfm" path="res://assets/notification.tres" id="2_rbolc"]
@@ -6,6 +6,7 @@
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="4_ts1og"]
 [ext_resource type="Texture2D" uid="uid://co2jbipk7jsog" path="res://assets/sprites/ui/icon_energy.png" id="5_bd4f5"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="6_nu268"]
+[ext_resource type="Texture2D" uid="uid://ldes6kwybucd" path="res://assets/sprites/ui/icon_plus_3.png" id="7_nu268"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_nu268"]
 line_spacing = 0.0
@@ -31,6 +32,7 @@ border_color = Color(0, 0, 0, 1)
 script = ExtResource("1_q2bjm")
 
 [node name="SpeechbubbleDummy" type="PanelContainer" parent="."]
+visible = false
 z_index = 4000
 anchors_preset = 2
 anchor_top = 1.0
@@ -74,6 +76,7 @@ text = "?"
 label_settings = SubResource("LabelSettings_nu268")
 
 [node name="NeedBarDummy" type="Control" parent="."]
+visible = false
 z_index = 3900
 layout_mode = 3
 anchors_preset = 7
@@ -114,3 +117,20 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_2j60r")
 max_value = 1.0
 value = 0.5
 show_percentage = false
+
+[node name="NPCNotificationDummy" type="MarginContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -5.5
+offset_top = -5.0
+offset_right = 8.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="NPCNotificationDummy"]
+layout_mode = 2
+texture = ExtResource("7_nu268")
+stretch_mode = 2

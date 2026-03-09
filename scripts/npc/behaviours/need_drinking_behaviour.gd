@@ -21,9 +21,16 @@ func loop():
 		return
 	
 	var request = bar.request_drink(self)
-	UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)	
+	
+	var sent_notification = false
+	var notification_start_check_time = Global.time_now
 	
 	while request.status == Enum.RequestStatus.OPEN:
+		if not sent_notification:
+			var delta = Global.time_now - notification_start_check_time
+			if delta > 2:
+				UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)	
+				sent_notification = true
 		await end_of_frame()
 		
 	if request.status == Enum.RequestStatus.FULFILLED:
@@ -56,6 +63,13 @@ func loop():
 			
 		if not table:
 			satisfaction_increase /= 3
+		
+		if satisfaction_increase > .5:
+			npc.notify(UiNotifications.ICON_PLUS_3)
+		elif satisfaction_increase > .25:
+			npc.notify(UiNotifications.ICON_PLUS_2)
+		else:
+			npc.notify(UiNotifications.ICON_PLUS_1)
 			
 		var drink_duration = 10
 		
@@ -69,5 +83,6 @@ func loop():
 			
 		npc.Item.DropCurrent().Destroy()
 	else:
-		UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
+		#UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
 		npc.Needs.satisfaction.strength -= .1
+		npc.notify(UiNotifications.ICON_MINUS_1)

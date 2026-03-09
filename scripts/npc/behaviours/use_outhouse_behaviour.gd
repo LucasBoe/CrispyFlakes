@@ -27,3 +27,4 @@ func loop():
 	outhouse.user = null
 		
 	npc.Needs.satisfaction.strength += .3
+	npc.notify(UiNotifications.ICON_PLUS_2)
