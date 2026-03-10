@@ -3,9 +3,13 @@ extends Area2D
 class_name NPC
 
 var Animator : AnimationModule;
+var Tint : TintModule
 var Navigation : NavigationModule
 var Behaviour : BehaviourModule
 var Item : ItemModule
+
+func _init():
+	Tint = TintModule.new(self)
 
 func _ready():
 	mouse_entered.connect(_on_mouse_entered)

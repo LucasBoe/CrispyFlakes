@@ -6,12 +6,11 @@ var manual_behaviour = false
 var Needs : NeedsModule
 var is_dirty = true
 
-@onready var sprite = $AnimationModule
 @onready var dirt = $AnimationModule/Dirt
 
 func _ready():
 	super._ready()
-	sprite.modulate = Color.LIGHT_GRAY
+	Tint.add_tint(Color.LIGHT_GRAY, 5, self)
 	while is_dirty:
 		try_drop_dirt()
 		await get_tree().create_timer(1).timeout
@@ -54,7 +53,7 @@ func try_drop_dirt():
 
 func clean():
 	is_dirty = false
-	sprite.modulate = Color.WHITE
+	Tint.remove_tint_for(self)
 	Needs.satisfaction.strength += 0.3
 	notify(UiNotifications.ICON_PLUS_2)
 

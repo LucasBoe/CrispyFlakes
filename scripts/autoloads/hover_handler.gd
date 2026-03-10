@@ -47,14 +47,11 @@ func _set_outline(node, color: Color) -> void:
 		sprite.visible = color == Color.WHITE	
 	
 	if node is NPC:
-		if sprite.material == null:
-			return
-	
-		var mat := sprite.material as ShaderMaterial
-		if mat == null:
-			return
-		
-		mat.set_shader_parameter("outline_color", color)
+		var npc = node as NPC
+		if color != Color.BLACK:
+			npc.Tint.add_outline(color, 10, self)
+		else:
+			npc.Tint.remove_outline_for(self)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):

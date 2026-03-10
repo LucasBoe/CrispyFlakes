@@ -8,7 +8,7 @@ var data : RoomData
 var associatedJob = null
 var isOutsideRoom = false
 var has_upgrades = false
-var worker = null
+var worker : NPCWorker = null
 
 @onready var backWallSprite2D = $"Back-wall"
 

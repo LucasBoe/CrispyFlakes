@@ -9,8 +9,10 @@ extends FullscreenDragable
 
 var target = null
 var needs = null
-
 var need_ui_instances = []
+
+var selected_room_highlight_instance
+var selected_npc_highlight_instance
 
 func _ready():
 	super._ready()
@@ -29,17 +31,22 @@ func _on_click_hovered_node_signal(node):
 	need_ui_instances.clear()
 	
 	if node == null:
-		hide()
+		do_hide()
 		return
 		
 	target = node
 	
+	if target is NPC:
+		selected_npc_highlight_instance = target.Tint.add_outline(Color.WHITE, 15, self)
+	
+	# WORKER UI
 	if target is NPCWorker:
 		header_label.text = "Worker"
 		describtion_label.text = str((target as NPCWorker).character_name,"\nThis worker can be dragged onto rooms in order to work there.")
 		describtion_label.show()
 		room_delete_button.hide()
 	
+	# GUEST UI
 	if target is NPCGuest:
 		header_label.text = "Guest"
 		describtion_label.text = "This guest will stay around as long as he is satisfied with your saloons services."
@@ -61,7 +68,9 @@ func _on_click_hovered_node_signal(node):
 	else:
 		needs = null
 		
+	# ROOM UI
 	if target is RoomBase:
+		var room = target as RoomBase
 		header_label.text = target.get_script().get_global_name().trim_prefix("Room")
 		room_delete_button.visible = target is not RoomJunk
 		Util.disconnect_all_pressed(room_delete_button)
@@ -77,6 +86,11 @@ func _on_click_hovered_node_signal(node):
 		describtion_label.visible = describtion != ""
 		if describtion != "":
 			describtion_label.text = describtion
+			
+		if room.worker:
+			room.worker.Tint.add_outline(Color.WHITE, 20, self)
+			
+		selected_room_highlight_instance = RoomHighlighter.request_rect(room, Color.WHITE)
 	
 		room_upgrade_hbox.get_parent().visible = target.has_upgrades
 		if target.has_upgrades:
@@ -140,7 +154,18 @@ func refresh_upgrades():
 		
 func _on_potential_target_deleted(room):
 	if target == room:
-		hide()
+		do_hide()
+		
+func do_hide():
+	if is_instance_valid(selected_room_highlight_instance):
+		RoomHighlighter.dispose(selected_room_highlight_instance)
+		
+	if is_instance_valid(selected_npc_highlight_instance):
+		selected_npc_highlight_instance.destroy()
+		
+	for worker : NPC in Global.NPCSpawner.workers:
+		worker.Tint.remove_outline_for(self)
+	hide()
 	
 func _process(delta):
 	super._process(delta)
