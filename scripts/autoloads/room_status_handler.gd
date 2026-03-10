@@ -20,7 +20,12 @@ func _on_room_created(room : RoomBase):
 	if not room.associatedJob:
 		return
 	
-	if room is RoomWell: #mandatory
+	if room is RoomWell: #not mandatory
+		return
+		
+	#only when people need to be arested
+	if room is RoomPrison\
+	and JobPrisonBehaviour.count_people_that_need_arrestment() == 0:
 		return
 		
 	rooms.append(room)
