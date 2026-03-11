@@ -21,7 +21,7 @@ func _ready():
 	
 	await get_tree().process_frame
 	
-	hire_button.pressed.connect(	Global.NPCSpawner.SpawnNewWorker)
+	hire_button.pressed.connect(	Global.NPCSpawner.spawn_new_worker)
 	visibility_changed.connect(_on_visibility_changed)
 		
 func _on_visibility_changed():

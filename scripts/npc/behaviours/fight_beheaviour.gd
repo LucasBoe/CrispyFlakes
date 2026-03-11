@@ -6,8 +6,8 @@ var fight : Fight = null
 
 var notification_instance
 
-func start_loop(data : BehaviourSaveData):
-	super.start_loop(data)
+func start_loop():
+	super.start_loop()
 	notification_instance = UiNotifications.create_npc_notification(npc, UiNotifications.ICON_FIGHT, true)
 	
 func loop():

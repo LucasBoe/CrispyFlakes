@@ -6,12 +6,12 @@ class_name RoomWell
 var current_user
 var registered_users = []
 
-func InitRoom(x : int, y : int):
-	isOutsideRoom = true
-	super.InitRoom(x,y)
+func init_room(_x : int, _y : int):
+	is_outside_room = true
+	super.init_room(_x, _y)
 	progressBar.visible = false
-	associatedJob = Enum.Jobs.WELL
-	
+	associated_job = Enum.Jobs.WELL
+
 func register(npc : NPC):
 	registered_users.append(npc)
 	check_next()

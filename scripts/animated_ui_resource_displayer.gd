@@ -10,22 +10,22 @@ var actively_animated = []
 func _ready():
 	coin_dummy.visible = false
 	ResourceHandler.on_animate_resource_add.connect(animate_resource_add)
-	
+
 func animate_resource_add(resource, amount, global_pos, duration):
 	var dummy = coin_dummy
-	
-	for i in amount:	
+
+	for i in amount:
 		var instance = dummy.duplicate()
 		add_child(instance)
 		instance.global_position = global_pos
 		instance.visible = true
 		instance.play()
 		instance.frame = randi_range(0,3)
-		
+
 		var tween = get_tree().create_tween()
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_OUT)
-		
+
 		var offset_target = global_pos + Vector2(randf_range(-24, 24), randf_range(-10, 10))
 		tween.tween_property(instance, "global_position", offset_target, duration * .3)
 		tween.tween_callback(create_animation.bind(instance, duration * .7))
@@ -38,10 +38,10 @@ func _process(delta):
 		#var l = (a.TimeEnd - a.TimeStart) = a.Duration
 		var t = (Time.get_ticks_usec()/1000000.0)
 		var l = (t - a.TimeStart) / a.Duration
-		
+
 		var lll = l*l*l*l*l*l
-	
-		
+
+
 		a.Sprite.global_position = lerp(a.Sprite.global_position, target, lll)
 
 func create_animation(instance, duration):
@@ -51,18 +51,18 @@ func create_animation(instance, duration):
 	anim.TimeEnd = anim.TimeStart + duration
 	anim.Duration = duration
 	actively_animated.append(anim)
-	
+
 func kill_animation(instance):
-	var toRemove = -1
-	
+	var to_remove = -1
+
 	for i in actively_animated.size():
 		if actively_animated[i].Sprite == instance:
-			toRemove = i;
-			
-	if toRemove >= 0:
-		actively_animated[toRemove].Sprite.queue_free()
-		actively_animated.remove_at(toRemove)
-	
+			to_remove = i;
+
+	if to_remove >= 0:
+		actively_animated[to_remove].Sprite.queue_free()
+		actively_animated.remove_at(to_remove)
+
 class ActiveAnimation:
 	var Sprite : AnimatedSprite2D
 	var TimeStart : float

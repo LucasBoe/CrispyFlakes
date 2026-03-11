@@ -8,8 +8,8 @@ extends Camera2D
 
 var zoomTarget : float = 1
 
-var dragStartMousePos = Vector2.ZERO
-var dragStartCameraPos = Vector2.ZERO
+var drag_start_mouse_pos = Vector2.ZERO
+var drag_start_camera_pos = Vector2.ZERO
 var isDragging : bool = false
 var zoomFactor : float = 1
 var zoom_tween: Tween
@@ -20,23 +20,23 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	handle_zoom(delta)
-	SimplePan(delta)
-	ClickAndDrag()
+	simple_pan(delta)
+	click_and_drag()
 	clamp_pan_to_bounds()
-	
+
 func handle_zoom(delta):
 	if Input.is_action_just_pressed("zoom_in"):
 		zoomTarget *= 0.9
 		zoom_in_out();
-		
+
 	if Input.is_action_just_pressed("zoom_out"):
 		zoomTarget *= 1.1
-		zoom_in_out();		
-	
+		zoom_in_out();
+
 func _input(event):
-	
-	var delta = get_process_delta_time() 
-	
+
+	var delta = get_process_delta_time()
+
 	#if event is InputEventMouseButton and event.is_pressed() and not event.is_echo():
 		#if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			#zoomTarget *= 1.1
@@ -44,7 +44,7 @@ func _input(event):
 		#elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			#zoomTarget *= 0.9
 			#zoom_in_out();
-		
+
 	if event is InputEventPanGesture:
 		if event.delta.y < 0:
 			zoomTarget *= 1.005
@@ -52,24 +52,24 @@ func _input(event):
 		else:
 			zoomTarget *= 0.99
 			zoom_in_out();
-		
-func SimplePan(delta):
-	var moveAmount = Vector2.ZERO
+
+func simple_pan(delta):
+	var move_amount = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"):
-		moveAmount.x += 1
-		
+		move_amount.x += 1
+
 	if Input.is_action_pressed("ui_left"):
-		moveAmount.x -= 1
-		
+		move_amount.x -= 1
+
 	if Input.is_action_pressed("ui_up"):
-		moveAmount.y -= 1
-		
+		move_amount.y -= 1
+
 	if Input.is_action_pressed("ui_down"):
-		moveAmount.y += 1
-		
-	moveAmount = moveAmount.normalized()
-	position += moveAmount * delta * 100 * (1/zoomFactor)
-	
+		move_amount.y += 1
+
+	move_amount = move_amount.normalized()
+	position += move_amount * delta * 100 * (1/zoomFactor)
+
 func clamp_pan_to_bounds() -> void:
 	if panBounds.size == Vector2.ZERO:
 		return
@@ -101,23 +101,23 @@ func clamp_pan_to_bounds() -> void:
 	if shift != Vector2.ZERO:
 		if isDragging:
 			offset += shift
-			dragStartCameraPos += shift
+			drag_start_camera_pos += shift
 		else:
 			global_position += shift
-	
-func ClickAndDrag():
+
+func click_and_drag():
 	if !isDragging and Input.is_action_just_pressed("camera_pan"):
-		dragStartMousePos = get_viewport().get_mouse_position()
-		dragStartCameraPos = global_position
+		drag_start_mouse_pos = get_viewport().get_mouse_position()
+		drag_start_camera_pos = global_position
 		isDragging = true
 
 	if isDragging and Input.is_action_just_released("camera_pan"):
 		isDragging = false
 
 	if isDragging:
-		var moveVector = get_viewport().get_mouse_position() - dragStartMousePos
-		global_position = dragStartCameraPos - moveVector * (1.0 / zoomFactor)
-		
+		var move_vector = get_viewport().get_mouse_position() - drag_start_mouse_pos
+		global_position = drag_start_camera_pos - move_vector * (1.0 / zoomFactor)
+
 func zoom_in_out(tween := false, duration := 0.15):
 	zoomTarget = clampf(zoomTarget, minZoom, maxZoom)
 
@@ -135,7 +135,7 @@ func zoom_in_out(tween := false, duration := 0.15):
 
 	zoom_tween = create_tween().set_parallel(true)
 	zoom_tween.tween_property(self, "zoom", target_zoom, duration)
-	
+
 func get_camera_world_rect() -> Rect2:
 	var viewport := get_viewport_rect() # size in pixels
 
@@ -144,6 +144,6 @@ func get_camera_world_rect() -> Rect2:
 
 	var top_left := center - adjusted_size / 2.0
 	return Rect2(top_left, adjusted_size)
-	
+
 func tween_offset_to_zero():
 	create_tween().tween_property(self, "offset", Vector2.ZERO, 0.1)

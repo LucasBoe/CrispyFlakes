@@ -4,9 +4,9 @@ class_name NavigationModule
 var _debug = true
 
 var npc: NPC
-var currentRoomIndex
-var targetPath = []
-var targetFinal
+var current_room_index
+var target_path = []
+var target_final
 
 var has_target = false
 var is_moving = false
@@ -26,25 +26,25 @@ func _process(delta):
 
 	npc.Animator.direction = Vector2.ZERO
 
-	if global_position.distance_to(targetPath[0]) < 1:
-		targetPath.remove_at(0)
-		if targetPath.is_empty():
+	if global_position.distance_to(target_path[0]) < 1:
+		target_path.remove_at(0)
+		if target_path.is_empty():
 			stop_navigation()
 			target_reached_signal.emit()
 			return
 
-	npc.Animator.direction = targetPath[0] - npc.global_position
-	npc.global_position = npc.global_position.move_toward(targetPath[0], delta * move_speed)
+	npc.Animator.direction = target_path[0] - npc.global_position
+	npc.global_position = npc.global_position.move_toward(target_path[0], delta * move_speed)
 
 
 func stop_navigation():
-	targetFinal = null
+	target_final = null
 	has_target = false
 	is_moving = false
 
 
 func set_target(target, custom_speed):
-	targetFinal = target
+	target_final = target
 	refresh_target_path()
 	is_moving = true
 	has_target = true
@@ -55,13 +55,13 @@ func get_random_target():
 	var random_floor = Util.get_random_element(Global.Building.floors)
 	var rooms = []
 	for room: RoomBase in random_floor.values():
-		if not room.isOutsideRoom:
+		if not room.is_outside_room:
 			rooms.append(room)
 	return rooms.pick_random()
 
 
 func refresh_room_index():
-	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0, -1))
+	current_room_index = Global.Building.round_room_index_from_global_position(global_position + Vector2(0, -1))
 
 
 func get_reachable_rooms() -> Array[RoomBase]:
@@ -117,13 +117,13 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 
 
 func refresh_target_path() -> void:
-	targetPath.clear()
+	target_path.clear()
 
 	var final_target: Vector2
-	if targetFinal is Node2D:
-		final_target = (targetFinal as Node2D).global_position + Vector2(24, 0)
+	if target_final is Node2D:
+		final_target = (target_final as Node2D).global_position + Vector2(24, 0)
 	else:
-		final_target = targetFinal
+		final_target = target_final
 
 	refresh_room_index()
 
@@ -145,7 +145,7 @@ func refresh_target_path() -> void:
 		var to_room := room_path[i + 1] as RoomBase
 		_append_transition_to_target_path(from_room, to_room, i == room_path.size() - 2)
 
-	targetPath.append(final_target)
+	target_path.append(final_target)
 
 
 func _find_room_path(start_room: RoomBase, goal_room: RoomBase) -> Array[RoomBase]:
@@ -218,7 +218,7 @@ func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, i
 	if to_room is RoomStairs or is_final:
 		return
 
-	targetPath.append(to_room.get_center_floor_position())
+	target_path.append(to_room.get_center_floor_position())
 
 
 func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -> void:
@@ -245,22 +245,22 @@ func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -
 
 func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
 	if go_downwards:
-		targetPath.append(stairs.global_position + Vector2(8, 0))
-		targetPath.append(stairs.global_position + Vector2(28, 24))
-		targetPath.append(stairs.global_position + Vector2(36, 24))
-		targetPath.append(stairs.global_position + Vector2(36, 48))
+		target_path.append(stairs.global_position + Vector2(8, 0))
+		target_path.append(stairs.global_position + Vector2(28, 24))
+		target_path.append(stairs.global_position + Vector2(36, 24))
+		target_path.append(stairs.global_position + Vector2(36, 48))
 	else:
-		targetPath.append(stairs.global_position + Vector2(36, 48))
-		targetPath.append(stairs.global_position + Vector2(36, 24))
-		targetPath.append(stairs.global_position + Vector2(28, 24))
-		targetPath.append(stairs.global_position + Vector2(8, 0))
+		target_path.append(stairs.global_position + Vector2(36, 48))
+		target_path.append(stairs.global_position + Vector2(36, 24))
+		target_path.append(stairs.global_position + Vector2(28, 24))
+		target_path.append(stairs.global_position + Vector2(8, 0))
 
 
 func _fail_target_path() -> void:
-	targetPath.clear()
+	target_path.clear()
 	var current_room := Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase
 	if current_room != null:
-		targetPath.append(current_room.get_random_floor_position())
+		target_path.append(current_room.get_random_floor_position())
 
 
 func _reconstruct_path(came_from: Dictionary, goal_room: RoomBase) -> Array[RoomBase]:

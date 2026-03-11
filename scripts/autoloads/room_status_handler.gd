@@ -17,7 +17,7 @@ func _on_room_created(room : RoomBase):
 	
 	await get_tree().process_frame
 	
-	if not room.associatedJob:
+	if not room.associated_job:
 		return
 	
 	if room is RoomWell: #not mandatory

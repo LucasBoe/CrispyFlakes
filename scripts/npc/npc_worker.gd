@@ -3,9 +3,9 @@ class_name NPCWorker
 
 var current_job = Enum.Jobs.IDLE
 var current_job_room = null
-var pickUpOrigin
+var pick_up_origin
 var available_rooms_highlights = []
- 
+
 var current_job_room_highlight = null
 var new_job_room_highlight = null
 var new_room_highlight = null
@@ -156,7 +156,7 @@ const possible_names = [
 "Nevaeh? nope"
 ]
 
-@onready var anim : Sprite2D = $AnimationModule 
+@onready var anim : Sprite2D = $AnimationModule
 var possible_sprites = ["res://assets/sprites/worker_charesmatitc.png", "res://assets/sprites/worker_fast.png", "res://assets/sprites/worker_strongt.png"]
 
 static var picked_up_npc : NPC = null
@@ -167,90 +167,90 @@ func _ready():
 	anim.texture = load(possible_sprites.pick_random())
 
 func _process(delta):
-	
+
 	if picked_up_npc == self:
 		global_position = get_global_mouse_position()
-		
+
 	if Behaviour.has_behaviour:
 		return
-		
+
 	change_job(current_job)
 
 func change_job(new):
 	current_job = new
 	Behaviour.set_behaviour_from_job(current_job);
 	JobHandler.on_job_changed(self, current_job)
-	
+
 	if new == 0:
 		return
-		
-	UiNotifications.create_notification_dynamic(str("New Job: ", Enum.Jobs.keys()[new]), self, Vector2(0,-32))	
+
+	UiNotifications.create_notification_dynamic(str("New Job: ", Enum.Jobs.keys()[new]), self, Vector2(0,-32))
 
 func click_on():
-	
+
 	if picked_up_npc != null:
-		return;		
-		
+		return;
+
 	picked_up_npc = self
 	Navigation.set_process(false)
-	pickUpOrigin = global_position
-	
+	pick_up_origin = global_position
+
 	available_rooms_highlights.clear()
 	for room : RoomBase in Global.Building.get_all_rooms_of_type(RoomBase):
-		if room.associatedJob == null:
+		if room.associated_job == null:
 			continue
-			
+
 		if room.worker != null:
 			continue
-			
+
 		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1)
 		available_rooms_highlights.append(highlight)
 
 func _input(event):
-	
+
 	if picked_up_npc != self:
 		#if (assignmentIndicator.visible):
 		#	assignmentIndicator.visible = false
 		return
-		
-	var targetPos = null
-	
+
+	var target_pos = null
+
 	var room : RoomBase = Global.Building.get_closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
 	if room:
-		targetPos = room.global_position + Vector2(24,0)
+		target_pos = room.global_position + Vector2(24,0)
 
 	#if not assignmentIndicator.visible:
 	#	assignmentIndicator.visible = true
-	
+
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
 		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5))
-	
+
 	if not new_room_highlight && room:
 		new_room_highlight = RoomHighlighter.request_rect(room)
-		
-	if targetPos && new_room_highlight:
+
+	if target_pos && new_room_highlight:
 		new_room_highlight.global_position = room.get_center_position()
-		
+
 	if room and new_room_highlight and current_job_room != room:
-		new_room_highlight.modulate = Color.GREEN if room.associatedJob else Color.WHITE
-		
-	if room && room.associatedJob:
+		new_room_highlight.modulate = Color.GREEN if room.associated_job else Color.WHITE
+
+	if room && room.associated_job:
 		if not new_job_room_highlight:
 			new_job_room_highlight = RoomHighlighter.request_arrow(room)
-		new_job_room_highlight.global_position = targetPos + Vector2(0,-16)
+		new_job_room_highlight.global_position = target_pos + Vector2(0,-16)
 	else:
-		RoomHighlighter.dispose(new_job_room_highlight)	
+		RoomHighlighter.dispose(new_job_room_highlight)
 		new_job_room_highlight = null
-	
+
 	if event.is_action_released("click"):
-		if targetPos:
-			global_position = targetPos
+		if target_pos:
+			global_position = target_pos
 			Navigation.stop_navigation()
 			if not try_stop_fight_in_room(room):
 				try_change_job_based_on_room(room)
 			Animator.direction = Vector2.ZERO
 		else:
-			global_position = pickUpOrigin
+			global_position = pick_up_origin
 		picked_up_npc = null
 
 		RoomHighlighter.dispose(current_job_room_highlight)
@@ -258,30 +258,30 @@ func _input(event):
 
 		RoomHighlighter.dispose(new_job_room_highlight)
 		new_job_room_highlight = null
-		
+
 		RoomHighlighter.dispose(new_room_highlight)
-		new_room_highlight = null		
-		
+		new_room_highlight = null
+
 		for h in available_rooms_highlights:
 			RoomHighlighter.dispose(h)
-		
+
 		Navigation.set_process(true)
 
 func try_stop_fight_in_room(room : RoomBase):
 	var fight = FightHandler.get_fight_for_room(room)
-	
+
 	if fight == null:
 		return false
-		
+
 	var behaviour = force_behaviour(StopFightBehaviour)
 	behaviour.fight = fight
 	return true
 
 func try_change_job_based_on_room(room : RoomBase):
-	var new_job = room.associatedJob
+	var new_job = room.associated_job
 	current_job_room = room
-	
+
 	if new_job == null:
 		new_job = Enum.Jobs.IDLE
-			
+
 	change_job(new_job)

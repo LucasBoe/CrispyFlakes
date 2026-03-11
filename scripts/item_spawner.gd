@@ -9,7 +9,7 @@ var items : Array
 func _ready():
 	Global.ItemSpawner = self
 
-func Create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
+func create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
 	var instance = itemScene.instantiate().init(itemIndentifier)
 	items.append(instance)
 	add_child(instance)

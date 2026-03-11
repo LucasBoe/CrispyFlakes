@@ -9,22 +9,22 @@ func _ready():
 	#for resourceType in [Enum.Resources.MONEY]:
 		#var instance = labelScene.instantiate()
 		#($HBoxContainer).add_child(instance)
-		#instance.Init(resourceType);
+		#instance.init(resourceType);
 		#labelResourceDict[resourceType] = instance
-		
+
 	ResourceHandler.on_resource_changed.connect(on_resource_changed)
-	
+
 func on_resource_changed(resourceType, newAmount, change):
-	
+
 	if not labelResourceDict.has(resourceType):
 		return
-	
+
 	labelResourceDict[resourceType].update_amount(newAmount, change)
-	
-func get_resource_label_relative_position(resourceType):	
+
+func get_resource_label_relative_position(resourceType):
 	if labelResourceDict.has(resourceType):
 		var label_node = labelResourceDict[resourceType]
 		var relative_pos = (label_node.global_position + label_node.size / 2) / get_rect().size
 		return relative_pos
-		
+
 	return Vector2.ZERO

@@ -19,44 +19,44 @@ func create_unique_look():
 	var mat := Animator.material as ShaderMaterial
 	if mat == null:
 		return
-		
+
 	mat.set_shader_parameter("base_hue_offset", Vector3(randf(),randf_range(0.5, 0.833333),randf_range(-.2, .5)))
 	mat.set_shader_parameter("sprite_index", Vector2(randi_range(0,16),randi_range(0,9)))
 
 func _process(delta):
-	
+
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
-		
+
 	if Behaviour.has_behaviour:
 		return
-		
-	var newBehaviour = IdleBehaviour
-		
+
+	var new_behaviour = IdleBehaviour
+
 	if not manual_behaviour:
-		newBehaviour = get_next_behaviour()
-		
-	Behaviour.set_behaviour(newBehaviour)
-	
+		new_behaviour = get_next_behaviour()
+
+	Behaviour.set_behaviour(new_behaviour)
+
 func get_next_behaviour():
-	
+
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
 		return NeedLeaveBehaviour
-		
+
 	var f = randf()
 	var s = Needs.drunkenness.strength
-	
+
 	if s > f:
 		return FightBehaviour
-	
+
 	return Behaviour.get_behaviour_from_available_rooms(Global.Building.get_all_rooms_of_type(RoomBase))
-	
+
 func try_drop_dirt():
 	if not dirt.get_child(0).visible:
 		return
-		
+
 	if randf() < .8:
 		return
-		
+
 	DirtHandler.create_dirt_at(global_position)
 
 func clean():

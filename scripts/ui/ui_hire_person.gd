@@ -9,6 +9,6 @@ func try_hire():
 	Global.UI.confirm.show_dialogue("You are about to hire somebody. You will have to pay them daily. Are you sure?", hire)
 	
 func hire():
-	Global.NPCSpawner.SpawnNewWorker()
+	Global.NPCSpawner.spawn_new_worker()
 	queue_free()
 	hire_ui.hide()

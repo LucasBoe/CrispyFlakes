@@ -6,13 +6,13 @@ extends Control
 
 var rng := RandomNumberGenerator.new()
 
-func Init(resource):
-	
+func init(resource):
+
 	match resource:
-		
+
 		Enum.Resources.MONEY:
 			icon.texture = load("res://assets/sprites/ui/icon_money.png")
-			
+
 		Enum.Resources.GUEST:
 			icon.texture = load("res://assets/sprites/ui/icon_guests.png")
 

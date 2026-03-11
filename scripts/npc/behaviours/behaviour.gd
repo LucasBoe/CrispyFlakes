@@ -10,31 +10,31 @@ func _init(_npc, _data : BehaviourSaveData):
 	data = _data
 
 func run():
-	
-	start_loop(data)
-	
+
+	start_loop()
+
 	await npc.get_tree().process_frame
-	
+
 	if stopped:
 		return
-	
+
 	await loop()
-	
+
 	if is_instance_valid(npc):
 		npc.Behaviour.clear_behaviour()
 
 #optional override
-func start_loop(data : BehaviourSaveData):
+func start_loop():
 	return
-	
+
 #mandatory override
 func loop():
 	print("loop base, make sure to override in inheriting scripts")
-	
+
 #optional override
 func stop_loop() -> BehaviourSaveData:
 	return BehaviourSaveData.new(get_script())
-	
+
 func try_get_room_if_not_occupied(saved_data, type, ocupied):
 	var room = null
 
@@ -52,7 +52,7 @@ func try_get_room_if_not_occupied(saved_data, type, ocupied):
 	room.worker = npc
 	room.on_destroy_signal.connect(_change_to_idle)
 	return room
-	
+
 func _change_to_idle():
 	npc.change_job(Enum.Jobs.IDLE)
 
@@ -95,12 +95,12 @@ func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
 			closest_dist = dist
 			closest = room
 	return closest
-	
+
 func pause(duration):
 	return npc.get_tree().create_timer(duration).timeout #error
-	
+
 func fetch_item(item: Enum.Items):
-	if npc.Item.currentItem and npc.Item.currentItem.itemType == item:
+	if npc.Item.current_item and npc.Item.current_item.itemType == item:
 		return
 
 	var source_item = null
@@ -111,7 +111,7 @@ func fetch_item(item: Enum.Items):
 		if b.has(item):
 			if closest_loose_item == null or npc.global_position.distance_to(b.global_position) < npc.global_position.distance_to(closest_loose_item.global_position):
 				await move(b)
-				source_item = b.Take(item)
+				source_item = b.take(item)
 			break
 
 	if source_item == null and closest_loose_item != null:
@@ -123,7 +123,7 @@ func fetch_item(item: Enum.Items):
 		for c: RoomAgingCellar in get_all_rooms_of_type_ordered_by_distance(RoomAgingCellar):
 			if c.has(item):
 				await move(c)
-				source_item = c.Take(item)
+				source_item = c.take(item)
 				break
 
 	# fetch water from well
@@ -134,36 +134,36 @@ func fetch_item(item: Enum.Items):
 		while well.current_user != npc:
 			await end_of_frame()
 		await progress(1, well.progressBar)
-		source_item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, well.get_center_position())
+		source_item = Global.ItemSpawner.create(Enum.Items.WATER_BUCKET, well.get_center_position())
 		well.unregister(npc)
 
 	if source_item != null:
-		npc.Item.PickUp(source_item)
+		npc.Item.pick_up(source_item)
 	else:
 		await pause(3)
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Item.get_info(item).Tex)
-		
+
 func store_item(item: Item):
 	if item.itemType == Enum.Items.WISKEY_BOX_RAW:
 		var cellar = get_closest_room_of_type(RoomAgingCellar)
 		if cellar != null:
 			await move(cellar)
-			if not npc.Item.TryPutTo(cellar):
+			if not npc.Item.try_put_to(cellar):
 				await move(cellar.get_random_floor_position())
-				npc.Item.DropCurrent()
+				npc.Item.drop_current()
 		return
 
 	var buttery = get_closest_room_of_type(RoomButtery)
 	if buttery != null:
 		await move(buttery)
-		if not npc.Item.TryPutTo(buttery):
+		if not npc.Item.try_put_to(buttery):
 			await move(buttery.get_random_floor_position())
-			npc.Item.DropCurrent()
+			npc.Item.drop_current()
 	else:
 		var current_room = Global.Building.get_current_room_from_global_position(npc.global_position) as RoomBase
 		await move(current_room.get_random_floor_position())
-		npc.Item.DropCurrent()
-				
+		npc.Item.drop_current()
+
 func progress(duration, bar: TextureProgressBar):
 	var t = float(duration)
 	if is_instance_valid(bar):
@@ -176,6 +176,6 @@ func progress(duration, bar: TextureProgressBar):
 		await end_of_frame()
 	if is_instance_valid(bar):
 		bar.visible = false
-	
+
 func end_of_frame():
 	return Global.get_tree().process_frame

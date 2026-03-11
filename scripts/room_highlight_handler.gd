@@ -1,7 +1,7 @@
 extends Node2D
 
-@onready var rectDummy = $Rect;
-@onready var arrowDummy = $Arrow;
+@onready var rect_dummy = $Rect;
+@onready var arrow_dummy = $Arrow;
 
 @onready var rect_texture_2px = preload("res://assets/sprites/room_highlight.png")
 @onready var rect_texture_1px = preload("res://assets/sprites/room_highlight_slim.png")
@@ -10,63 +10,63 @@ extends Node2D
 var active : Dictionary[RoomBase, Array] = {}
 
 func _ready():
-	rectDummy.visible = false
-	arrowDummy.visible = false
-	
+	rect_dummy.visible = false
+	arrow_dummy.visible = false
+
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 
 func request_rect(room, color = Color.WHITE, size = 2):
-	var inst = create(rectDummy, room)
+	var inst = create(rect_dummy, room)
 	inst.modulate = color
 	inst.texture = texture_from_size(size)
 	return inst
-	
+
 func texture_from_size(size):
 	if size == 2:
 		return rect_texture_2px
-	
+
 	return rect_texture_1px
-	
+
 func request_arrow(room):
-	var inst = create(arrowDummy, room)
+	var inst = create(arrow_dummy, room)
 	return inst
-	
+
 func create(dummy, room : RoomBase):
 	var instance = dummy.duplicate()
 	instance.visible = true
 	instance.position = room.get_center_position()
 	add_child(instance)
-	
+
 	if not active.has(room):
 		active[room] = []
-		
+
 	active[room].append(instance)
-	
+
 	return instance
-	
+
 func _on_room_deleted(room):
-	
+
 	if not active.has(room):
 		return
-		
+
 	for all in active[room]:
 		all.queue_free()
-		
+
 	active.erase(room)
-	
+
 func dispose(highlight):
-	
+
 	if not is_instance_valid(highlight):
 		return
 
 	for key in active.keys():
-		
+
 		#TODO find reason why null rooms remain in dict in the first place
 		if key == null:
 			active.erase(key)
 			continue
-		
+
 		if active[key].has(highlight):
 			active[key].erase(highlight)
-		
+
 	highlight.queue_free()

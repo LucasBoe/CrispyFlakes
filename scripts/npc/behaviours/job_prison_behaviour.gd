@@ -5,7 +5,7 @@ var room : RoomPrison
 
 static var occupied_rooms = []
 
-func start_loop(data : BehaviourSaveData):
+func start_loop():
 	room = try_get_room_if_not_occupied(data, RoomPrison, occupied_rooms)
 	
 func loop():

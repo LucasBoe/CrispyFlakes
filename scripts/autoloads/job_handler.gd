@@ -61,7 +61,7 @@ func count_rooms_for(job):
 	var count = 0
 	for floor in Global.Building.floors.values():
 		for room : RoomBase in floor.values():
-			if room.associatedJob == job:
+			if room.associated_job == job:
 				count+=1
 	
 	return count

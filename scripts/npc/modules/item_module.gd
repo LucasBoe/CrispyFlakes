@@ -3,46 +3,46 @@ extends Node2D
 class_name ItemModule
 
 var npc : NPC
-var currentItem : Item
+var current_item : Item
 
 func _ready():
 	npc =  $"../.."
 	if npc:
 		pass
-		
+
 	npc.Item = self
-	
+
 func is_item(item_type : Enum.Items):
-	if currentItem == null:
+	if current_item == null:
 		return false
-		
-	return currentItem.itemType == item_type
 
-func PickUp(item):
-	if currentItem:
-		DropCurrent()
-		
-	currentItem = item
-	currentItem.reparent(self, false)
+	return current_item.itemType == item_type
+
+func pick_up(item):
+	if current_item:
+		drop_current()
+
+	current_item = item
+	current_item.reparent(self, false)
 	LooseItemHandler.unregister_loose_item_instance(item)
-	currentItem.position = Vector2.ZERO
-	currentItem.z_index = 0
+	current_item.position = Vector2.ZERO
+	current_item.z_index = 0
 
-func TryPutTo(storage) -> bool:
-	if storage.TryReceive(currentItem):
-		currentItem = null
+func try_put_to(storage) -> bool:
+	if storage.try_receive(current_item):
+		current_item = null
 		return true
 	else:
 		return false
-	
-func DropCurrent() -> Item:
-	
-	if not currentItem:
+
+func drop_current() -> Item:
+
+	if not current_item:
 		return null
-	
-	var item = currentItem
-	currentItem.reparent(Global.ItemSpawner)
+
+	var item = current_item
+	current_item.reparent(Global.ItemSpawner)
 	LooseItemHandler.register_loose_item_instance(item)
-	currentItem.global_position = npc.global_position
-	currentItem = null
+	current_item.global_position = npc.global_position
+	current_item = null
 	return item

@@ -3,7 +3,7 @@ class_name RoomJunk
 
 @onready var progressBar : TextureProgressBar = $ProgressBar
 
-func InitRoom(x : int, y : int):
-	super.InitRoom(x,y)
+func init_room(_x : int, _y : int):
+	super.init_room(_x, _y)
 	progressBar.visible = false
-	associatedJob = Enum.Jobs.JUNK
+	associated_job = Enum.Jobs.JUNK

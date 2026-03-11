@@ -24,9 +24,9 @@ var last_hover = null
 
 func _ready():
 	tab_cointainer.tab_changed.connect(_on_tab_changed)
-	
+
 	var group = room_group.new(groups)
-	
+
 	create_button(group, Global.Building.room_data_table)
 	create_button(group, Global.Building.room_data_stairs, RoomStairs.custom_placement_check)
 	create_button(group, Global.Building.room_data_well)
@@ -42,17 +42,17 @@ func _ready():
 	room_tier_dummy.hide()
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
 	hover_info_room_box_root.hide()
-	
-func create_button(group : room_group, data : RoomData, custom_placement_check = null):	
-	
+
+func create_button(group : room_group, data : RoomData, custom_placement_check = null):
+
 	var tier = data.tier
 	while group.tiers.size() <= tier:
 		group.create_new_tier_dummy(room_tier_dummy)
-		
-	var buttonDummy = group.button_dummies[tier]
-		
-	var instance : Button = buttonDummy.duplicate()
-	buttonDummy.get_parent().add_child(instance)
+
+	var button_dummy = group.button_dummies[tier]
+
+	var instance : Button = button_dummy.duplicate()
+	button_dummy.get_parent().add_child(instance)
 	instance.visible = true
 	instance.icon = data.room_icon
 	instance.text = str(Global.Building.count_rooms_by_data(data))
@@ -61,25 +61,25 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))
 	instance.mouse_exited.connect(_on_hover_exit.bind(instance, data))
 	instance.show()
-	
+
 	if not group.button_instances.has(tier):
 		group.button_instances[tier] = []
-		
+
 	group.button_instances[tier].append(instance)
-	
+
 	return instance
-	
+
 func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_name_label.text = data.room_name
 	hover_info_room_desc_label.text = data.room_desc
 	hover_info_room_price_label.text = str(data.construction_price, "$")
 	hover_info_room_preview_texture_rect.texture = data.room_preview
-	
+
 	var item_root = hover_info_room_item_name_label.get_parent()
 	item_root.visible = data.produces_item
 	hover_info_room_item_name_label.text = data.produced_item_name
 	hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
-	
+
 	last_hover = data
 	hover_info_room_box_root.show()
 	return
@@ -91,23 +91,23 @@ func _on_hover_exit(button : Button, data : RoomData):
 	return
 
 func _on_tab_changed(tab):
-	
+
 	SoundPlayer.mouse_click_down.play()
-	
+
 	var group = groups[tab]
-	
+
 	#hide previous
 	for g in groups.values():
 		for x in g.button_instances.values():
 				for button in x:
 					button.hide()
-		
+
 	for tier in group.button_instances.keys():
 		for button in group.button_instances[tier]:
 			button.show()
-			
+
 		group.overlays[tier].visible = tier > TierHandler.current_tier
-			
+
 func _on_tier_unlocked(tier):
 	for g in groups.values():
 		for i in g.overlays.size():
@@ -119,20 +119,20 @@ class room_group:
 	var overlays = []
 	var button_dummies = []
 	var button_instances = {}
-	
+
 	func _init(groups):
 		groups[groups.size()] = self
 
 	func create_new_tier_dummy(tier_dummy : Control):
-		
+
 		var tier_level = tiers.size()
 		var clone = tier_dummy.duplicate()
 		tier_dummy.get_parent().add_child(clone)
-		
+
 		tiers.append(clone)
 		var overlay = clone.get_child(1)
 		overlays.append(overlay)
-		var overlay_number_label = overlay.get_child(1).get_child(0).get_child(1) 
+		var overlay_number_label = overlay.get_child(1).get_child(0).get_child(1)
 		overlay_number_label.text = str(TierHandler.tier_visitors_needed[tier_level], " Guests")
 		var button_dummy = clone.get_child(0).get_child(0).get_child(0)
 		button_dummies.append(button_dummy)
