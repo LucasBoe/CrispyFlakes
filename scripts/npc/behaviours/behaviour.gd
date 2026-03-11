@@ -54,11 +54,46 @@ func  try_get_room_if_not_occupied(data, type, ocupied):
 	
 func _change_to_idle():
 	npc.change_job(Enum.Jobs.IDLE)
-	
+
+func get_random_room_of_type(type):
+	var reachable = npc.Navigation.get_reachable_rooms()
+	return Global.Building.get_all_rooms_of_type(type, reachable).pick_random()
+
+func get_closest_room_of_type(type):
+	var reachable = npc.Navigation.get_reachable_rooms()
+	return Global.Building.get_closest_room_of_type(type, npc.global_position, null, Vector2.ZERO, reachable)
+
+func get_all_rooms_of_type_ordered_by_distance(type):
+	var reachable = npc.Navigation.get_reachable_rooms()
+	return Global.Building.get_rooms_of_type_ordered_by_distance(type, npc.global_position, null, reachable)
+
 func move(target, custom_speed = -1):
+	var goal_pos: Vector2 = (target as Node2D).global_position if target is Node2D else target
+	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, goal_pos) as RoomBase
+
+	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
+		var fallback_room := _get_closest_reachable_room_to(goal_pos)
+		while fallback_room != null and not npc.Navigation.is_room_reachable(goal_room):
+			npc.Navigation.set_target(fallback_room.get_random_floor_position(), -1)
+			while npc.Navigation.is_moving:
+				await end_of_frame()
+			UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Global.Building.room_data_stairs.room_icon)
+			await pause(3)
+
 	npc.Navigation.set_target(target, custom_speed)
-	while npc.Navigation.is_moving:	
+	while npc.Navigation.is_moving:
 		await end_of_frame()
+
+
+func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
+	var closest: RoomBase = null
+	var closest_dist := INF
+	for room: RoomBase in npc.Navigation.get_reachable_rooms():
+		var dist = goal_pos.distance_to(room.get_center_position())
+		if dist < closest_dist:
+			closest_dist = dist
+			closest = room
+	return closest
 	
 func pause(duration):
 	return npc.get_tree().create_timer(duration).timeout #error

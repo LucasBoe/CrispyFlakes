@@ -74,6 +74,9 @@ func idle_tween(timeInSeconds):
 	var y = 1 + scaleBase
 	return TweenTargetData.new(Vector2.ZERO, 0, Vector2(x, y))
 	
+func set_z(z):
+	z_index = z
+	
 class TweenTargetData:
 	@export var Position : Vector2
 	@export var Rotation : float

@@ -5,7 +5,7 @@ var outhouse : RoomOuthouse;
 
 func loop():
 	
-	outhouse = Global.Building.get_all_rooms_of_type(RoomOuthouse).pick_random();
+	outhouse = get_random_room_of_type(RoomOuthouse)
 	
 	if not outhouse:
 		await pause(3)

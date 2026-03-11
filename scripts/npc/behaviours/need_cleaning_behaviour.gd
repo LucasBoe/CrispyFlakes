@@ -9,7 +9,7 @@ static func get_probability_by_needs(needs : NeedsModule):
 	
 func loop():
 	
-	bath = Global.Building.get_all_rooms_of_type(RoomBath).pick_random();
+	bath = get_random_room_of_type(RoomBath)
 	
 	if bath == null:
 		return

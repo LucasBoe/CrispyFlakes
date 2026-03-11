@@ -1,8 +1,9 @@
 extends Node2D
-
 class_name NavigationModule
 
-var npc : NPC
+var _debug = true
+
+var npc: NPC
 var currentRoomIndex
 var targetPath = []
 var targetFinal
@@ -17,105 +18,268 @@ signal target_reached_signal
 
 func _ready():
 	npc = get_parent() as NPC
-	if npc:
-		pass
-		
 	npc.Navigation = self
-	
-func _process(delta):	
+
+func _process(delta):
 	if not has_target:
 		return
-	
+
 	npc.Animator.direction = Vector2.ZERO
-	
-	#debug draw nav path
-	#var previous = global_position;
-	#for p in targetPath:
-		#DebugDraw2D.line(previous, p)
-		#previous = p
-	
-	#check reached target
+
 	if global_position.distance_to(targetPath[0]) < 1:
 		targetPath.remove_at(0)
 		if targetPath.is_empty():
 			stop_navigation()
 			target_reached_signal.emit()
 			return
-	
-	if len(targetPath) == 0:
-		return
-	
-	#move towards next target position
+
 	npc.Animator.direction = targetPath[0] - npc.global_position
 	npc.global_position = npc.global_position.move_toward(targetPath[0], delta * move_speed)
+
 
 func stop_navigation():
 	targetFinal = null
 	has_target = false
 	is_moving = false
 
+
 func set_target(target, custom_speed):
 	targetFinal = target
 	refresh_target_path()
 	is_moving = true
 	has_target = true
-	
 	move_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
 
+
 func get_random_target():
-	var floor = Util.get_random_element(Global.Building.floors)
-	
+	var random_floor = Util.get_random_element(Global.Building.floors)
 	var rooms = []
-	
-	for room : RoomBase in floor.values():
-		if room.isOutsideRoom:
-			continue
-		rooms.append(room)
-	
+	for room: RoomBase in random_floor.values():
+		if not room.isOutsideRoom:
+			rooms.append(room)
 	return rooms.pick_random()
-	
-func refresh_target_path():
-	
-	targetPath.clear()
-	
-	if targetFinal is Node2D:
-		targetFinal = targetFinal.global_position + Vector2(24,0)
-	
-	refresh_room_index()
-	var targetRoomIndex = Global.Building.round_room_index_from_global_position(targetFinal)
-	var last_position = global_position
-	var currentY = currentRoomIndex.y
-	var targetY = targetRoomIndex.y
-	
-	#navigate to target floor
-	if targetY != currentY:
-		var goDownwards = targetRoomIndex.y < currentRoomIndex.y
-		var multiplier = 1 if goDownwards else -1
-		
-		
-		for i in range(currentRoomIndex.y, targetRoomIndex.y, -1 * multiplier):
-			var stairs = Global.Building.get_closest_room_of_type_on_floor(RoomStairs, last_position, i if goDownwards else i + 1) as RoomStairs
-			if stairs == null:
-				UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), Global.Building.room_data_stairs.room_icon)
-				targetPath.clear()
-				targetPath.append((Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase).get_random_floor_position())
-				return
-			else:
-				targetPath.append(stairs.global_position + Vector2(8  if goDownwards else 36, (0 if goDownwards else 48) + 0 * multiplier))
-				targetPath.append(stairs.global_position + Vector2(28 if goDownwards else 36, (0 if goDownwards else 48) + 24 * multiplier))
-				targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 28, (0 if goDownwards else 48) + 24 * multiplier))
-				targetPath.append(stairs.global_position + Vector2(36 if goDownwards else 8 , (0 if goDownwards else 48) + 48 * multiplier))
-				last_position = stairs.global_position
-				
-	#move to target location
-	targetPath.append(targetFinal);
+
 
 func refresh_room_index():
-	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0,-1))
-	#
-	#print(currentRoomIndex)
-	#
-	#var r = (Global.Building.floors[currentRoomIndex.y][currentRoomIndex.x] as RoomBase)
-	#if r:
-		#var p2 = r.get_center_position()
-		#DebugDraw2D.line(global_position, p2)
+	currentRoomIndex = Global.Building.round_room_index_from_global_position(global_position + Vector2(0, -1))
+
+
+func get_reachable_rooms() -> Array[RoomBase]:
+	var start_index = Global.Building.round_room_index_from_global_position(global_position)
+	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+	if start_room == null:
+		return []
+
+	var reachable: Array[RoomBase] = []
+	var open: Array[RoomBase] = [start_room]
+	var visited := {}
+	visited[start_room] = true
+
+	while open.size() > 0:
+		var current = open.pop_front()
+		reachable.append(current)
+		for neighbor in _get_connected_rooms(current):
+			if neighbor != null and not visited.has(neighbor):
+				visited[neighbor] = true
+				open.push_back(neighbor)
+
+	return reachable
+
+
+func is_room_reachable(room: RoomBase) -> bool:
+	var start_index = Global.Building.round_room_index_from_global_position(global_position)
+	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+
+	if start_room == null or room == null:
+		return false
+
+	var path := _find_room_path(start_room, room)
+	return path.size() > 0
+
+
+func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
+	var start_index = Global.Building.round_room_index_from_global_position(start_pos)
+	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, start_pos, start_index.y) as RoomBase
+	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, goal_pos) as RoomBase
+
+	if start_room == null or goal_room == null:
+		if _debug:
+			_draw_debug_line(start_pos, goal_pos, false)
+		return false
+
+	var path := _find_room_path(start_room, goal_room)
+	var valid := path.size() > 0
+
+	if _debug:
+		_draw_room_path(path, valid, start_pos, goal_pos)
+
+	return valid
+
+
+func refresh_target_path() -> void:
+	targetPath.clear()
+
+	var final_target: Vector2
+	if targetFinal is Node2D:
+		final_target = (targetFinal as Node2D).global_position + Vector2(24, 0)
+	else:
+		final_target = targetFinal
+
+	refresh_room_index()
+
+	var start_room := Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase
+	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, final_target) as RoomBase
+
+	if start_room == null or goal_room == null:
+		_fail_target_path()
+		return
+
+	var room_path := _find_room_path(start_room, goal_room)
+	if room_path.is_empty():
+		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Global.Building.room_data_stairs.room_icon)
+		_fail_target_path()
+		return
+
+	for i in range(room_path.size() - 1):
+		var from_room := room_path[i] as RoomBase
+		var to_room := room_path[i + 1] as RoomBase
+		_append_transition_to_target_path(from_room, to_room, i == room_path.size() - 2)
+
+	targetPath.append(final_target)
+
+
+func _find_room_path(start_room: RoomBase, goal_room: RoomBase) -> Array[RoomBase]:
+	if start_room == goal_room:
+		return [start_room]
+
+	var open: Array[RoomBase] = [start_room]
+	var visited := {}
+	var came_from := {}
+
+	visited[start_room] = true
+
+	while open.size() > 0:
+		var current = open.pop_front()
+
+		if current == goal_room:
+			return _reconstruct_path(came_from, goal_room)
+
+		for neighbor in _get_connected_rooms(current):
+			if neighbor == null or visited.has(neighbor):
+				continue
+			visited[neighbor] = true
+			came_from[neighbor] = current
+			open.push_back(neighbor)
+
+	return []
+
+
+func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
+	var result: Array[RoomBase] = []
+
+	# 1. Ground floor rooms are all mutually reachable
+	if room.y == 0:
+		var all_rooms = Global.Building.get_all_rooms_of_type(RoomBase)
+		for other in all_rooms:
+			if other != room and other.y == 0:
+				result.append(other)
+
+	# 2. Horizontal adjacency only
+	var left_room = Global.Building.get_room_from_index(Vector2i(room.x - 1, room.y))
+	var right_room = Global.Building.get_room_from_index(Vector2i(room.x + 1, room.y))
+	if left_room is RoomBase:
+		result.append(left_room)
+	if right_room is RoomBase:
+		result.append(right_room)
+
+	# 3. Vertical movement only via stairs on adjacent floors
+	if room is RoomStairs:
+		var stairs_above = Global.Building.get_room_from_index(Vector2i(room.x, room.y + 1))
+		var stairs_below = Global.Building.get_room_from_index(Vector2i(room.x, room.y - 1))
+		if stairs_above is RoomStairs:
+			result.append(stairs_above)
+		if stairs_below is RoomStairs:
+			result.append(stairs_below)
+
+	return result
+
+
+func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, is_final := false) -> void:
+	if from_room == null or to_room == null:
+		return
+
+	# Vertical movement via stairs
+	if from_room is RoomStairs and to_room is RoomStairs and from_room.y != to_room.y:
+		_append_stairs_transition(from_room as RoomStairs, to_room as RoomStairs)
+		return
+
+	# Skip center waypoint when entering stairs (zig-zag provides the entry point)
+	# or on the last hop (final_target handles the destination)
+	if to_room is RoomStairs or is_final:
+		return
+
+	targetPath.append(to_room.get_center_floor_position())
+
+
+func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -> void:
+	var go_downwards = to_stairs.y < from_stairs.y
+	var current_floor = from_stairs.y if go_downwards else from_stairs.y + 1
+	var end_floor = to_stairs.y if go_downwards else to_stairs.y + 1
+
+	while current_floor != end_floor:
+		var current_stairs = Global.Building.get_room_from_index(Vector2i(from_stairs.x, current_floor)) as RoomStairs
+
+		if current_stairs == null:
+			current_stairs = Global.Building.get_closest_room_of_type_on_floor(
+				RoomStairs,
+				from_stairs.global_position,
+				current_floor
+			) as RoomStairs
+
+		if current_stairs == null:
+			return
+
+		_append_stairs_zig_zag(current_stairs, go_downwards)
+		current_floor += -1 if go_downwards else 1
+
+
+func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
+	if go_downwards:
+		targetPath.append(stairs.global_position + Vector2(8, 0))
+		targetPath.append(stairs.global_position + Vector2(28, 24))
+		targetPath.append(stairs.global_position + Vector2(36, 24))
+		targetPath.append(stairs.global_position + Vector2(36, 48))
+	else:
+		targetPath.append(stairs.global_position + Vector2(36, 48))
+		targetPath.append(stairs.global_position + Vector2(36, 24))
+		targetPath.append(stairs.global_position + Vector2(28, 24))
+		targetPath.append(stairs.global_position + Vector2(8, 0))
+
+
+func _fail_target_path() -> void:
+	targetPath.clear()
+	var current_room := Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase
+	if current_room != null:
+		targetPath.append(current_room.get_random_floor_position())
+
+
+func _reconstruct_path(came_from: Dictionary, goal_room: RoomBase) -> Array[RoomBase]:
+	var path: Array[RoomBase] = [goal_room]
+	var current = goal_room
+	while came_from.has(current):
+		current = came_from[current]
+		path.push_front(current)
+	return path
+
+
+func _draw_room_path(path: Array[RoomBase], valid: bool, start_pos: Vector2, goal_pos: Vector2) -> void:
+	var color := Color.GREEN if valid else Color.RED
+	if path.size() < 2:
+		DebugDraw2D.line(start_pos, goal_pos, color)
+		return
+	for i in range(path.size() - 1):
+		DebugDraw2D.line(path[i].get_center_position(), path[i + 1].get_center_position(), color)
+
+
+func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:
+	DebugDraw2D.line(start_pos, goal_pos, Color.GREEN if valid else Color.RED)

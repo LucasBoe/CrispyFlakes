@@ -9,7 +9,7 @@ static func get_probability_by_needs(needs : NeedsModule):
 	
 func loop():
 	
-	bar = Global.Building.get_all_rooms_of_type(RoomBar).pick_random();
+	bar = get_random_room_of_type(RoomBar)
 	
 	if not bar:
 		await pause(3)
@@ -39,7 +39,7 @@ func loop():
 		var item = Global.ItemSpawner.Create(Enum.Items.DRINK, bar.get_random_floor_position())
 		npc.Item.PickUp(item)
 		
-		var tables = Global.Building.get_rooms_of_type_ordered_by_distance(RoomTable, npc.global_position)
+		var tables = get_all_rooms_of_type_ordered_by_distance(RoomTable)
 		for t : RoomTable in tables:
 			if t.is_free():
 				table = t

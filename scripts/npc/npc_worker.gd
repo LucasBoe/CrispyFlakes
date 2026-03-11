@@ -167,6 +167,7 @@ func _ready():
 	anim.texture = load(possible_sprites.pick_random())
 
 func _process(delta):
+	
 	if picked_up_npc == self:
 		global_position = get_global_mouse_position()
 		

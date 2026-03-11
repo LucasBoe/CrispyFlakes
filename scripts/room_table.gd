@@ -31,14 +31,14 @@ func sit(guest : NPC):
 			break
 	
 	var stool = stools[index]
-	guest.Animator.z_index = -50
+	guest.Animator.set_z(-50)
 	
 	show_guest_count_notification()
 	
 	return stool.global_position
 	
 func stand_up(guest : NPC):
-	guest.Animator.z_index = 0
+	guest.Animator.set_z(0)
 	for i in MAX_GUEST_COUNT:
 		if guests[i] == guest:
 			guests[i] = null
