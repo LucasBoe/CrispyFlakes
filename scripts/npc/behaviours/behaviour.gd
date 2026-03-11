@@ -35,18 +35,19 @@ func loop():
 func stop_loop() -> BehaviourSaveData:
 	return BehaviourSaveData.new(get_script())
 	
-func  try_get_room_if_not_occupied(data, type, ocupied):
+func try_get_room_if_not_occupied(saved_data, type, ocupied):
 	var room = null
-	
-	if data != null and not ocupied.has(data.room):
-		room = data.room
+
+	if saved_data != null and not ocupied.has(saved_data.room):
+		room = saved_data.room
 	else:
-		room = Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied)
-	
+		var reachable = npc.Navigation.get_reachable_rooms()
+		room = Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied, Vector2.ZERO, reachable)
+
 	if room == null:
 		_change_to_idle()
 		return null
-	
+
 	ocupied.append(room)
 	room.worker = npc
 	room.on_destroy_signal.connect(_change_to_idle)
@@ -98,87 +99,69 @@ func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
 func pause(duration):
 	return npc.get_tree().create_timer(duration).timeout #error
 	
-func fetch_item(item : Enum.Items):
-	#already has item
+func fetch_item(item: Enum.Items):
 	if npc.Item.currentItem and npc.Item.currentItem.itemType == item:
 		return
-	
+
 	var source_item = null
 	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position, item)
-			
-	#fetch source item from buttery
-	var butteries = Global.Building.get_all_rooms_of_type(RoomButtery)
-	var valid_butteries = []
-	for b in butteries:
-		if (b as RoomButtery).has(item):
-			var distance_to_npc = npc.global_position.direction_to(b.get_center_position())
-			valid_butteries.append([b,distance_to_npc])
-	
-	if valid_butteries.size() > 0:
-		valid_butteries.sort_custom(Callable(self, "custom_array_sort"))
-		var buttery : RoomButtery = valid_butteries[0][0]
-		
-		if closest_loose_item == null or npc.global_position.distance_to(buttery.global_position) < npc.global_position.distance_to(closest_loose_item.global_position):
-			await move(buttery)
-			source_item = buttery.Take(item)
-		
+
+	# fetch from buttery
+	for b: RoomButtery in get_all_rooms_of_type_ordered_by_distance(RoomButtery):
+		if b.has(item):
+			if closest_loose_item == null or npc.global_position.distance_to(b.global_position) < npc.global_position.distance_to(closest_loose_item.global_position):
+				await move(b)
+				source_item = b.Take(item)
+			break
+
 	if source_item == null and closest_loose_item != null:
 		await move(closest_loose_item)
 		source_item = closest_loose_item
-			
-	#if wiskey
+
+	# fetch whiskey from aging cellar
 	if source_item == null and item == Enum.Items.WISKEY_BOX:
-		var cellars = Global.Building.get_all_rooms_of_type(RoomAgingCellar)
-		var valid_cellars = []
-		for c in cellars:
-			if (c as RoomAgingCellar).has(item):
-				var distance_to_npc = npc.global_position.direction_to(c.get_center_position())
-				valid_cellars.append([c,distance_to_npc])
-				
-		if valid_cellars.size() > 0:
-			valid_cellars.sort_custom(Callable(self, "custom_array_sort"))
-			var cellar : RoomAgingCellar = valid_cellars[0][0]
-			await move(cellar)
-			source_item = cellar.Take(item)
-				
-	#if water, fetch from well
+		for c: RoomAgingCellar in get_all_rooms_of_type_ordered_by_distance(RoomAgingCellar):
+			if c.has(item):
+				await move(c)
+				source_item = c.Take(item)
+				break
+
+	# fetch water from well
 	if source_item == null and item == Enum.Items.WATER_BUCKET:
-		var well = Global.Building.get_closest_room_of_type(RoomWell, npc.global_position)
+		var well = get_closest_room_of_type(RoomWell)
 		await move(well)
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
-		
 		await progress(1, well.progressBar)
 		source_item = Global.ItemSpawner.Create(Enum.Items.WATER_BUCKET, well.get_center_position())
 		well.unregister(npc)
-				
+
 	if source_item != null:
 		npc.Item.PickUp(source_item)
-	else	:
+	else:
 		await pause(3)
-		var icon = Item.get_info(item).Tex
-		UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), icon)
+		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Item.get_info(item).Tex)
 		
-func store_item(item : Item):
-	var pos = npc.global_position
-	
-	var closestButtery = Global.Building.get_closest_room_of_type(RoomButtery, pos)
+func store_item(item: Item):
 	if item.itemType == Enum.Items.WISKEY_BOX_RAW:
-		var closestAgingCellar = Global.Building.get_closest_room_of_type(RoomAgingCellar, pos)
-		if closestAgingCellar != null:
-			await move(closestAgingCellar)
-			if not npc.Item.TryPutTo(closestAgingCellar):
-				await move(closestAgingCellar.get_random_floor_position())
+		var cellar = get_closest_room_of_type(RoomAgingCellar)
+		if cellar != null:
+			await move(cellar)
+			if not npc.Item.TryPutTo(cellar):
+				await move(cellar.get_random_floor_position())
 				npc.Item.DropCurrent()
-			
-	elif closestButtery != null:
-		await move(closestButtery)
-		if not npc.Item.TryPutTo(closestButtery):
-			await move(closestButtery.get_random_floor_position())
+		return
+
+	var buttery = get_closest_room_of_type(RoomButtery)
+	if buttery != null:
+		await move(buttery)
+		if not npc.Item.TryPutTo(buttery):
+			await move(buttery.get_random_floor_position())
 			npc.Item.DropCurrent()
 	else:
-		await move((Global.Building.get_current_room_from_global_position(pos) as RoomBase).get_random_floor_position())
+		var current_room = Global.Building.get_current_room_from_global_position(npc.global_position) as RoomBase
+		await move(current_room.get_random_floor_position())
 		npc.Item.DropCurrent()
 				
 func progress(duration, bar : TextureProgressBar):
@@ -193,6 +176,3 @@ func progress(duration, bar : TextureProgressBar):
 	
 func end_of_frame():
 	return Global.get_tree().process_frame
-
-func custom_array_sort(a, b):
-		return a[1] < b[1]
