@@ -10,10 +10,18 @@ var is_dirty = true
 
 func _ready():
 	super._ready()
-	Tint.add_tint(Color.LIGHT_GRAY, 5, self)
+	create_unique_look()
 	while is_dirty:
 		try_drop_dirt()
 		await get_tree().create_timer(1).timeout
+
+func create_unique_look():
+	var mat := Animator.material as ShaderMaterial
+	if mat == null:
+		return
+		
+	mat.set_shader_parameter("base_hue_offset", Vector3(randf(),randf_range(0.5, 0.833333),randf_range(-.2, .5)))
+	mat.set_shader_parameter("sprite_index", Vector2(randi_range(0,16),randi_range(0,9)))
 
 func _process(delta):
 	

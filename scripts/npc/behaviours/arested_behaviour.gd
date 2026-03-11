@@ -2,6 +2,7 @@ extends NeedBehaviour
 class_name ArrestedBehaviour
 
 var cell : RoomPrison = null
+var is_in_cell = false
 var notification_instance
 
 func loop():
@@ -12,6 +13,7 @@ func loop():
 		await pause(1)
 
 	await move(cell.get_center_floor_position())
+	is_in_cell = true
 	cell.prisoners.append(npc)
 	npc.Animator.set_z(-50)
 	await move(cell.get_random_floor_position())

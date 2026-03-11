@@ -1,9 +1,10 @@
-[gd_scene load_steps=14 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=15 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
-[ext_resource type="Shader" uid="uid://qjtxc3ptfctc" path="res://assets/shaders/outline.gdshader" id="2_n6wgk"]
-[ext_resource type="Texture2D" uid="uid://ww5uiq2q6ol7" path="res://assets/sprites/cowboy.png" id="2_prewa"]
+[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
+[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="3_1phmo"]
 [ext_resource type="Script" uid="uid://d1nmgpv0uiia6" path="res://scripts/npc/modules/guest_visual_module.gd" id="4_482k3"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="4_cyq43"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_n6wgk"]
 [ext_resource type="Texture2D" uid="uid://hyt8nvqdaup7" path="res://assets/sprites/cowboy_dirty_overlayt.png" id="4_p1iho"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_482k3"]
@@ -16,9 +17,13 @@ radius = 7.0
 height = 24.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_482k3"]
-shader = ExtResource("2_n6wgk")
+shader = ExtResource("2_cyq43")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
+shader_parameter/sprite_sheet = ExtResource("3_1phmo")
+shader_parameter/sprite_index = Vector2i(0, 0)
+shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/base_hue_offset = Vector3(0, 0, 0)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_p1iho"]
 particle_flag_disable_z = true
@@ -42,11 +47,12 @@ shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_482k3")
-texture = ExtResource("2_prewa")
+texture = ExtResource("4_cyq43")
 offset = Vector2(0, -12)
 script = ExtResource("4_482k3")
 
 [node name="Dirt" type="Sprite2D" parent="AnimationModule"]
+visible = false
 position = Vector2(0, -12)
 texture = ExtResource("4_p1iho")
 
@@ -60,6 +66,7 @@ position = Vector2(0, -3)
 script = ExtResource("4_n6wgk")
 
 [node name="Handcuffs" type="Sprite2D" parent="AnimationModule"]
+visible = false
 position = Vector2(-1, -9)
 texture = ExtResource("7_482k3")
 offset = Vector2(0.5, 0.5)
