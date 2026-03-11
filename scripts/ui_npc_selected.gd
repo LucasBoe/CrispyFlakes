@@ -33,6 +33,12 @@ func _on_click_hovered_node_signal(node):
 	if node == null:
 		do_hide()
 		return
+	else:
+		if is_instance_valid(selected_room_highlight_instance):
+			RoomHighlighter.dispose(selected_room_highlight_instance)
+		
+		if is_instance_valid(selected_npc_highlight_instance):
+			selected_npc_highlight_instance.destroy()
 		
 	target = node
 	

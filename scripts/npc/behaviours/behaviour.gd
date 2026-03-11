@@ -164,15 +164,18 @@ func store_item(item: Item):
 		await move(current_room.get_random_floor_position())
 		npc.Item.DropCurrent()
 				
-func progress(duration, bar : TextureProgressBar):
+func progress(duration, bar: TextureProgressBar):
 	var t = float(duration)
-	bar.visible = true
+	if is_instance_valid(bar):
+		bar.visible = true
 	while t > 0:
 		t -= npc.get_process_delta_time() #error
+		if not is_instance_valid(bar):
+			return
 		bar.value = (1.0 - (t / duration)) * 100
 		await end_of_frame()
-		
-	bar.visible = false
+	if is_instance_valid(bar):
+		bar.visible = false
 	
 func end_of_frame():
 	return Global.get_tree().process_frame

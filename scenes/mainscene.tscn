@@ -1,4 +1,4 @@
-[gd_scene load_steps=98 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=102 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -44,14 +44,17 @@
 [ext_resource type="Texture2D" uid="uid://boca2hk30ecvv" path="res://assets/sprites/ui/speechbubble.aseprite" id="25_pklhh"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
 [ext_resource type="Script" uid="uid://cj1w0puuageyu" path="res://scripts/ui_need_info.gd" id="25_rbvcb"]
+[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="26_7e0oe"]
 [ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
 [ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
 [ext_resource type="FontFile" uid="uid://lqh04fcpwlab" path="res://assets/fonts/Cubix_Mystical.ttf" id="26_lbk5b"]
 [ext_resource type="Texture2D" uid="uid://ckpjxsbbfx781" path="res://assets/sprites/ui/icon_dialogue_skip.png" id="27_8145v"]
+[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="27_wanb0"]
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
 [ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="28_b52we"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="28_peq8b"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://ceaqnkct2m7dc" path="res://assets/sprites/ui/icon_npc_closeup_cowboy.png" id="29_8st1d"]
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="29_x63bv"]
@@ -153,6 +156,15 @@ tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v46vo"]
+shader = ExtResource("26_7e0oe")
+shader_parameter/outline_color = Color(0, 0, 0, 0)
+shader_parameter/corner_pixel = false
+shader_parameter/sprite_sheet = ExtResource("27_wanb0")
+shader_parameter/sprite_index = Vector2i(1, 2)
+shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v28my"]
 
@@ -485,6 +497,57 @@ mouse_filter = 2
 theme = ExtResource("22_hpv7r")
 text = "Describtion label"
 fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+color = Color(0.8745098, 0.627451, 0.3647059, 1)
+
+[node name="MarginContainer2" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(0.13725491, 0.1254902, 0.12941177, 1)
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Wanted"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer2/VBoxContainer/MarginContainer"]
+modulate = Color(0.92183876, 0.8089338, 0.7250012, 1)
+material = SubResource("ShaderMaterial_v46vo")
+custom_minimum_size = Vector2(48, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("28_peq8b")
+stretch_mode = 6
+
+[node name="Label2" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "100$"
+horizontal_alignment = 1
 
 [node name="NeedDummy" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -1221,7 +1284,6 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 40
 
 [node name="UIWorkers" type="Control" parent="UI/UIMenu/MarginContainer"]
-visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("19_6ravm")
@@ -1231,8 +1293,8 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -91.0
-offset_bottom = 37.0
+offset_left = -102.0
+offset_bottom = 311.0
 grow_horizontal = 0
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer"]
@@ -1251,14 +1313,18 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="GridContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/HBoxContainer"]
+[node name="ProgressBar" type="ProgressBar" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1267,26 +1333,26 @@ max_value = 1.0
 value = 0.13
 show_percentage = false
 
-[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
 text = "69 $"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer"]
 layout_direction = 2
 layout_mode = 2
 script = ExtResource("41_pyam4")
 
-[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "name"
 
-[node name="ButtonFire" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
+[node name="ButtonFire" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
@@ -1294,11 +1360,11 @@ icon = ExtResource("19_3ocru")
 icon_alignment = 1
 vertical_icon_alignment = 0
 
-[node name="WorkerUIAddRemove" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+[node name="WorkerUIAddRemove" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
 script = ExtResource("26_fq3y7")
 
-[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Label" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("22_hpv7r")
@@ -1306,30 +1372,31 @@ theme_override_constants/line_spacing = -3
 text = "Cleaner"
 horizontal_alignment = 2
 
-[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "-"
 
-[node name="Label2" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Label2" type="Label" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
 text = "0 / 0"
 
-[node name="Button2" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Button2" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "+"
 
-[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/GridContainer"]
+[node name="Button" type="Button" parent="UI/UIMenu/MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="MarginContainer" parent="UI/UIMenu/MarginContainer"]
+visible = false
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 8

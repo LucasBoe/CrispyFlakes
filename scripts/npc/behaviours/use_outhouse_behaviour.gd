@@ -20,11 +20,14 @@ func loop():
 		await end_of_frame()
 		
 	await  move(outhouse.get_center_floor_position())
-	npc.Animator.hide()
-	outhouse.user = npc;
-	await progress(3, outhouse.progressBar)
-	npc.Animator.show()
-	outhouse.user = null
+	if is_instance_valid(outhouse):
+		npc.Animator.hide()
+		outhouse.user = npc;
+		await progress(3, outhouse.progressBar)
+		npc.Animator.show()
 		
-	npc.Needs.satisfaction.strength += .3
-	npc.notify(UiNotifications.ICON_PLUS_2)
+		if is_instance_valid(outhouse):
+			outhouse.user = null
+			
+		npc.Needs.satisfaction.strength += .3
+		npc.notify(UiNotifications.ICON_PLUS_2)
