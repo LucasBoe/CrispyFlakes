@@ -3,18 +3,18 @@ extends Node
 signal sold_beer
 
 func start_tutorial():
-	Global.should_auto_spawn_guests = true
+	pass
 	#Global.UI.resources.hide()
 	#ResourceHandler.change_resource(Enum.Resources.MONEY, 100)
 	#Global.UI.menu.hide()
 	#for button : Button in Global.UI.menu.build_tab.all_buttons:
 		#button.disabled = true
 	#
-	var tutorial_worker = Global.NPCSpawner.spawn_new_worker(Vector2(-72,0)) as NPCWorker
+	#var tutorial_worker = Global.NPCSpawner.spawn_new_worker(Vector2(-72,0)) as NPCWorker
 	#await get_tree().create_timer(2).timeout
 	#await Global.UI.dialogue.print_dialogue("Oh boi, what a mess uncle jack left here.", tutorial_worker)
 	#
-	#var total_rooms = Global.Building.get_all_rooms_of_type(RoomJunk).size()
+	#var total_rooms = Global.Building.query.all_rooms_of_type(RoomJunk).size()
 	#
 	#var asign_junk = Global.UI.tutorial.add_task("Use drag and drop to asign workers to rooms")
 	#var clean_text = "Clean out all rooms full of junk"
@@ -28,7 +28,7 @@ func start_tutorial():
 	#var missing_rooms = total_rooms
 	#
 	#while missing_rooms > 0:
-		#missing_rooms = Global.Building.get_all_rooms_of_type(RoomJunk).size()
+		#missing_rooms = Global.Building.query.all_rooms_of_type(RoomJunk).size()
 		#clean_junk.set_text(junk_text(clean_text, total_rooms - missing_rooms, total_rooms))
 		#await end_of_frame()
 	#
@@ -51,7 +51,7 @@ func start_tutorial():
 	#Global.UI.tutorial.clear_tasks()
 	#var asign_worker = Global.UI.tutorial.add_task("Assign a worker to the bar")
 	#
-	#var bar =  Global.Building.get_all_rooms_of_type(RoomBar)[0]
+	#var bar = Global.Building.query.all_rooms_of_type(RoomBar)[0]
 	#var room_highlight_rect = RoomHighlighter.request_rect(bar)
 	#var workers = Global.NPCSpawner.workers
 	#while not workers.any(worker_is_working_at_bar):
@@ -64,11 +64,9 @@ func start_tutorial():
 	#var speed_up_todo = Global.UI.tutorial.add_task("(Opt.) Speed up the time")
 	#
 	#while not Global.NPCSpawner.guests.any(npc_has_item):
-		#
 		#if not speed_up_todo.is_done:
-			#if 	Engine.time_scale > 1:
+			#if Engine.time_scale > 1:
 				#speed_up_todo.set_done()
-		#
 		#await end_of_frame()
 		#
 	#wait_for_drink_todo.set_done()
@@ -89,29 +87,25 @@ func start_tutorial():
 	#var beer_bar_todo = Global.UI.tutorial.add_task("Upgrade the bar to sell Beer")
 	#
 	#while not beer_bar_todo.is_done or not brewery_todo.is_done or not buttery_todo.is_done:
-		#
 		#if not beer_bar_todo.is_done:
-			#if Global.Building.get_all_rooms_of_type(RoomBar).any(bar_has_beer):
+			#if Global.Building.query.all_rooms_of_type(RoomBar).any(bar_has_beer):
 				#beer_bar_todo.set_done()
-				#
 		#if not brewery_todo.is_done:
-			#if Global.Building.get_all_rooms_of_type(RoomBrewery).size() > 0:
+			#if Global.Building.query.all_rooms_of_type(RoomBrewery).size() > 0:
 				#brewery_todo.set_done()
-				#
 		#if not buttery_todo.is_done:
-			#if Global.Building.get_all_rooms_of_type(RoomButtery).size() > 0:
+			#if Global.Building.query.all_rooms_of_type(RoomButtery).size() > 0:
 				#buttery_todo.set_done()
-		#
 		#await end_of_frame()
 		#
 	#await Global.UI.dialogue.print_dialogue("That's a whole heap for one pair of hands. Gear up and hire some help.", tutorial_guest)
-		#
+	#
 	#Global.UI.tutorial.clear_tasks()
 	#
 	#var hire_todo = Global.UI.tutorial.add_task("Hire a new worker")
 	#var asign_todo = Global.UI.tutorial.add_task("Asign it to the brewery")
 	#
-	#while Global.NPCSpawner.workers.size() <2:
+	#while Global.NPCSpawner.workers.size() < 2:
 		#await end_of_frame()
 		#
 	#hire_todo.set_done()
@@ -133,29 +127,14 @@ func start_tutorial():
 	#guest_beer.set_done()
 	#
 	#await Global.UI.dialogue.print_dialogue("Much obliged. I'll spread the word to my cowpoke pals and this place'll be hummin' in no time. Now show me how to run this place, yeah?", tutorial_guest)
-#
+	#
 	#ResourceHandler.change_resource(Enum.Resources.MONEY, -(ResourceHandler.resources[Enum.Resources.MONEY] - 100))
-	Global.UI.resources.show()
-	Global.should_auto_spawn_guests = true
-	#tutorial_guest.manual_behaviour = false
-	#
-	#for button : Button in Global.UI.menu.build_tab.all_buttons:
-		#button.disabled = false
-	#
-	#var sell_beer
-	#
-	#for i in 30:
-		#Global.UI.tutorial.clear_tasks()
-		#sell_beer = Global.UI.tutorial.add_task(str("Sell ", 30, " Beer (", i,")"))
-		#await sold_beer
-		#
-	#sell_beer.set_done()
-
-func junk_text(text, amount_done, amount_needed):
-	return str(text, " (", amount_done, "/",amount_needed,")")
 
 func try_notify_sold_beer():
 	sold_beer.emit()
+
+func junk_text(text, amount_done, amount_needed):
+	return str(text, " (", amount_done, "/", amount_needed, ")")
 
 func worker_is_working_at_bar(worker : NPCWorker):
 	return worker.Behaviour.behaviour_instance is JobBarBehaviour

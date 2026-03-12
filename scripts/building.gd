@@ -1,11 +1,12 @@
 extends Node2D
-
 class_name Building
 
-@onready var tilesWalls : TileMapLayer = $ForegroundTiles
-@onready var tilesRoof : TileMapLayer = $RoofTiles
+@onready var _tiles_walls : TileMapLayer = $ForegroundTiles
+@onready var _tiles_roof : TileMapLayer = $RoofTiles
 
 var floors = {}
+var query : BuildingRoomQueries
+var _tile_renderer : BuildingTileRenderer
 
 # RoomData resources
 const room_data_empty := preload("res://assets/resources/room_empty.tres")
@@ -21,185 +22,49 @@ const room_data_outhouse := preload("res://assets/resources/room_outhouse.tres")
 const room_data_destillery := preload("res://assets/resources/room_destillery.tres")
 const room_data_aging_cellar := preload("res://assets/resources/room_aging_cellar.tres")
 const room_data_prison := preload("res://assets/resources/room_prison.tres")
-
-enum levelDifference {
-	SAME,
-	HIGHER,
-	LOWER,
-}
-
-enum placementContext {
-	OUTER_LEFT = 0,
-	LEFT = 1,
-	MIDDLE = 2,
-	RIGHT = 3,
-	OUTER_RIGHT = 4
-}
-
-enum roofIndexMap {
-	OUTER_LEFT_LOWER = 0,
-	RIGHT_END_HIGHER = 1,
-	LEFT_END_HIGHER = 2,
-	MIDDLE = 3,
-	OUTER_RIGHT_LOWER = 4,
-	SIGN = 5,
-	DOUBLE_END_HIGHER = 6,
-}
+const room_data_wanted_board := preload("res://assets/resources/room_wanted_board.tres")
 
 func _ready():
 	Global.Building = self
+	query = BuildingRoomQueries.new(self)
+	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
 
-	set_room(room_data_table, -2,0, false)
-	set_room(room_data_bar, -1,0, false)
-	set_room(room_data_stairs, 0,0, false)
-	set_room(room_data_well, 3,0, false)
-	set_room(room_data_stairs, 0,-1, false)
-	set_room(room_data_junk, -1,-1, false)
-
-	initialize_all_rooms()
-	update_foreground_tiles()
-
-func set_room(data : RoomData, x : int, y : int, autoInitialize = true):
+func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene
 	var instance = scene.instantiate() as RoomBase
-	#instance.name = str("room_", x, "_", y)
 	instance.data = data
 	add_child(instance)
 	instance.position = Vector2(x * 48, y * -48)
 
 	if floors.is_empty():
-		floors = { y : { x : instance }}
+		floors = { y: { x: instance } }
 	elif not floors.has(y):
-		floors[y] = { x : instance }
+		floors[y] = { x: instance }
 	else:
-		floors[y][x] = instance;
+		floors[y][x] = instance
 
-	if autoInitialize:
-		instance.init_room(x,y)
+	if auto_initialize:
+		instance.init_room(x, y)
 
 	GlobalEventHandler.on_room_created_signal.emit(instance)
 
 func initialize_all_rooms():
 	for y in floors.keys():
 		for x in floors[y].keys():
-			floors[y][x].init_room(x,y)
+			floors[y][x].init_room(x, y)
 
-func delete_room(room : RoomBase):
+func delete_room(room: RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	set_room(room_data_empty, room.x, room.y)
 	room.destroy()
 
 func update_foreground_tiles():
+	_tile_renderer.update(floors)
 
-	tilesWalls.clear()
-	tilesRoof.clear()
-
-	var list_of_x_positions = []
-	var list_of_room_indexes_on_floor = {}
-	var max_floor_height_at_x = {}
-	var max_floor_level = -1;
-	var triplets = []
-
-	for y in floors.keys():
-		list_of_room_indexes_on_floor[y] = []
-
-		max_floor_level = max(max_floor_level, y)
-
-		for x in floors[y].keys():
-
-			#skip all rooms that are outside rooms
-			if floors[y][x].is_outside_room:
-				continue
-
-			list_of_room_indexes_on_floor[y].append(x)
-			list_of_room_indexes_on_floor[y].sort()
-
-			if max_floor_height_at_x.has(x):
-				max_floor_height_at_x[x] = max(max_floor_height_at_x[x], y)
-			else:
-				max_floor_height_at_x[x] = y
-
-			if not list_of_x_positions.has(x):
-				list_of_x_positions.append(x)
-
-	for y in floors.keys():
-		for x in list_of_room_indexes_on_floor[y]:
-			if not list_of_room_indexes_on_floor[y].has(x-1):
-				set_wall(x-1, y, placementContext.OUTER_LEFT);
-				set_wall(x, y, placementContext.LEFT);
-			elif not list_of_room_indexes_on_floor[y].has(x+1):
-				set_wall(x+1, y, placementContext.OUTER_RIGHT);
-				set_wall(x, y, placementContext.RIGHT);
-			else:
-				set_wall(x, y, placementContext.MIDDLE);
-
-	for x in list_of_x_positions:
-		var y = max_floor_height_at_x[x];
-
-		var previous_level = compare_level.call(max_floor_height_at_x, x, - 1)
-		var next_level = compare_level.call(max_floor_height_at_x, x, + 1)
-
-		if y == max_floor_level and previous_level == levelDifference.SAME and next_level == levelDifference.SAME:
-			triplets.append(Vector2i(x,y))
-
-		var own_roof_index = roofIndexMap.MIDDLE
-
-		if previous_level == levelDifference.LOWER:
-			set_roof(x-1,y, roofIndexMap.OUTER_LEFT_LOWER)
-		elif previous_level == levelDifference.HIGHER:
-			own_roof_index = roofIndexMap.LEFT_END_HIGHER
-
-		if next_level == levelDifference.LOWER:
-			set_roof(x+1, y, roofIndexMap.OUTER_RIGHT_LOWER)
-		elif next_level == levelDifference.HIGHER:
-			if previous_level == levelDifference.HIGHER:
-				own_roof_index = roofIndexMap.DOUBLE_END_HIGHER
-			else:
-				own_roof_index = roofIndexMap.RIGHT_END_HIGHER
-
-		set_roof(x,y, own_roof_index)
-
-	if len(triplets) > 0:
-		var index = triplets[(len(triplets) - 1)/2]
-		var x = index.x
-		var y = index.y
-
-		set_roof(x-1,y, -1, true)
-		set_roof(x, y, roofIndexMap.SIGN)
-		set_roof(x+1,y, -1, true)
-
-func compare_level(floorHeightsOverX : Dictionary, x : int, offset : int):
-
-		if not floorHeightsOverX.has(x + offset):
-			return levelDifference.LOWER
-
-		var y = floorHeightsOverX[x]
-		var otherY = floorHeightsOverX[x + offset]
-
-		if y == otherY:
-			return levelDifference.SAME
-		elif y > otherY:
-			return levelDifference.LOWER
-		else:
-			return levelDifference.HIGHER
-
-func set_wall(x : int, y : int, context : int = -1):
-	tilesWalls.set_cell(Vector2i(x,y*-1 -1), 1 if y < 0 else 0, Vector2i(context,0))
-
-func set_roof(x : int, y : int, context : int = -1, clear : bool = false):
-
-	var cords = Vector2i(x, y*-1 -1)
-
-	if (context >= 0):
-		tilesRoof.set_cell(cords, 1 if y < 0 else 0, Vector2i(context,0))
-	elif clear:
-		tilesRoof.erase_cell(cords)
-
-func get_room_from_index(index : Vector2i):
+func get_room_from_index(index: Vector2i):
 	if floors.has(index.y):
 		if floors[index.y].has(index.x):
 			return floors[index.y][index.x]
-
 	return null
 
 func has_any_rooms_on_x(xx):
@@ -209,144 +74,35 @@ func has_any_rooms_on_x(xx):
 				return true
 	return false
 
-func get_current_room_from_global_position(global_pos : Vector2):
-	var list_of_all_rooms = []
-	for y in floors.keys():
-		for x in floors[y]:
-			list_of_all_rooms.append(floors[y][x])
-
-	var closest_room
-	var shortest_distance: float = sqrt(pow(24,2)*2)
-
-	for room in list_of_all_rooms:
-		var distance = room.get_center_position().distance_to(global_pos)
-		if distance < shortest_distance:
-			shortest_distance = distance
-			closest_room = room
-
-	return closest_room
-
-func round_room_index_from_global_position(global_pos : Vector2):
-	var x = floor((global_pos.x -24) / 48)
-	var y = floor(global_pos.y / -48)
-	return Vector2i(x,y)
-
-func global_position_from_room_index(room_index : Vector2i):
-	var x = room_index.x * 48 + 24
-	var y = room_index.y * -48
-	return Vector2(x,y)
-
-func is_bottom_floor(y : int):
+func is_bottom_floor(y: int):
 	if floors.is_empty():
 		return false
+	var floor_indexes = floors.keys()
+	floor_indexes.sort()
+	return floor_indexes[0] == y
 
-	var floorIndexes = floors.keys()
-	floorIndexes.sort()
-	return floorIndexes[0] == y
-
-func is_top_floor(y : int):
+func is_top_floor(y: int):
 	if floors.is_empty():
 		return false
+	var floor_indexes = floors.keys()
+	floor_indexes.sort()
+	return floor_indexes[len(floor_indexes) - 1] == y
 
-	var floorIndexes = floors.keys()
-	floorIndexes.sort()
-	return floorIndexes[len(floorIndexes)-1] == y
-
-func get_closest_room_of_type_on_floor(type, global_pos : Vector2, y):
-	var closest_room
-	var shortest_distance: float = INF
-
-	for x in floors[y]:
-		var room = floors[y][x]
-
-		if room:
-			pass
-
-		if room is not RoomBase:
-			continue
-
-		if not is_instance_of(room, type):
-			continue
-
-		var distance = room.global_position.distance_to(global_pos)
-		if distance < shortest_distance:
-			shortest_distance = distance
-			closest_room = room
-
-	return closest_room
-
-func get_closest_room_of_type(type, global_pos: Vector2, blacklist = null, offset = Vector2(0, 0), reachable_rooms: Array = []):
-	var closest_reachable = null
-	var closest_any = null
-	var dist_reachable := INF
-	var dist_any := INF
-
-	for y in floors:
-		for x in floors[y]:
-			var room = floors[y][x]
-			if room is not RoomBase or not is_instance_of(room, type):
-				continue
-			if blacklist != null and blacklist.has(room):
-				continue
-
-			var d = room.global_position.distance_to(global_pos + offset)
-			if d < dist_any:
-				dist_any = d
-				closest_any = room
-			if not reachable_rooms.is_empty() and room in reachable_rooms and d < dist_reachable:
-				dist_reachable = d
-				closest_reachable = room
-
-	return closest_reachable if closest_reachable != null else closest_any
-
-
-func get_all_rooms_of_type(type, reachable_rooms: Array = []):
-	var rooms = []
-	for y in floors:
-		for x in floors[y]:
-			var room = floors[y][x]
-			if room is not RoomBase or not is_instance_of(room, type):
-				continue
-			rooms.append(room)
-
-	if reachable_rooms.is_empty():
-		return rooms
-
-	var filtered = rooms.filter(func(r): return r in reachable_rooms)
-	return filtered if not filtered.is_empty() else rooms
-
-
-func get_rooms_of_type_ordered_by_distance(type, global_pos: Vector2, blacklist = null, reachable_rooms: Array = []) -> Array:
-	var reachable_result = []
-	var any_result = []
-
-	for y in floors:
-		for x in floors[y]:
-			var room = floors[y][x]
-			if room == null or room is not RoomBase or not is_instance_of(room, type):
-				continue
-			if blacklist != null and blacklist.has(room):
-				continue
-
-			var d = room.global_position.distance_to(global_pos)
-			any_result.append({ "room": room, "dist": d })
-			if not reachable_rooms.is_empty() and room in reachable_rooms:
-				reachable_result.append({ "room": room, "dist": d })
-
-	var result = reachable_result if not reachable_result.is_empty() else any_result
-	result.sort_custom(func(a, b): return a["dist"] < b["dist"])
-
-	var ordered: Array = []
-	for entry in result:
-		ordered.append(entry["room"])
-	return ordered
-
-func count_rooms_by_data(data : RoomData):
+func count_rooms_by_data(data: RoomData):
 	var count = 0
 	for y in floors:
 		for x in floors[y]:
 			var room = floors[y][x] as RoomBase
 			if room.data == data:
-				count+= 1
-
+				count += 1
 	return count
+
+func round_room_index_from_global_position(global_pos: Vector2):
+	var x = floor((global_pos.x - 24) / 48)
+	var y = floor(global_pos.y / -48)
+	return Vector2i(x, y)
+
+func global_position_from_room_index(room_index: Vector2i):
+	var x = room_index.x * 48 + 24
+	var y = room_index.y * -48
+	return Vector2(x, y)

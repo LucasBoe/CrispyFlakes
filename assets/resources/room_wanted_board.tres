@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://c03abkwh8cns1"]
+
+[ext_resource type="PackedScene" uid="uid://skfve22ith4j" path="res://scenes/rooms/room_wanted_board.tscn" id="1_rqija"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_hc611"]
+
+[resource]
+script = ExtResource("4_hc611")
+packed_scene = ExtResource("1_rqija")
+room_name = "Wanted Board"
+room_desc = "See current bounties here."
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

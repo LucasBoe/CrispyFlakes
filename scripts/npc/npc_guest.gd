@@ -48,7 +48,7 @@ func get_next_behaviour():
 	if s > f:
 		return FightBehaviour
 
-	return Behaviour.get_behaviour_from_available_rooms(Global.Building.get_all_rooms_of_type(RoomBase))
+	return Behaviour.get_behaviour_from_available_rooms(Global.Building.query.all_rooms_of_type(RoomBase))
 
 func try_drop_dirt():
 	if not dirt.get_child(0).visible:

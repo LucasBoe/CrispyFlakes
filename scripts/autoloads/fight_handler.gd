@@ -9,7 +9,7 @@ func get_or_create_fight(npc : NPC) -> Fight:
 	if active_fights.size() > 0:
 		fight = active_fights[0]
 	else:	
-		var room = Global.Building.get_closest_room_of_type(RoomBase, npc.global_position)
+		var room = Global.Building.query.closest_room_of_type(RoomBase, npc.global_position)
 		fight = Fight.new()
 		active_fights.append(fight)
 		fight.start_fight(room)

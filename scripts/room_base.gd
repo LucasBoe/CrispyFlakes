@@ -17,13 +17,23 @@ const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");
 
 signal on_destroy_signal
 
-func init_room(_x : int, _y : int):
-	x = _x
-	y = _y
-	is_basement = _y < 0
+func init_room(x : int, y : int):
+	self.x = x
+	self.y = y
+	is_basement = y < 0
 
 	if not is_outside_room:
 		back_wall_sprite_2d.texture = backwallBasement if is_basement else backwallDefault
+
+func set_outline(state):
+	
+	var sprite: CanvasItem = null
+	sprite = get_child(1) as CanvasItem
+	
+	if not sprite:
+		return
+
+	sprite.visible = state	
 
 func get_random_floor_position():
 	var offset = Vector2(randi_range(4, 44), 0)

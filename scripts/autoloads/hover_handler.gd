@@ -19,7 +19,7 @@ func _process(delta):
 	
 	if not currently_hovered or currently_hovered is not NPC:
 		var mouse_position = get_global_mouse_position()
-		change_hover(Global.Building.get_current_room_from_global_position(mouse_position))
+		change_hover(Global.Building.query.room_at_position(mouse_position))
 
 func change_hover(new_hover):
 	previously_hovered = currently_hovered
@@ -29,27 +29,20 @@ func change_hover(new_hover):
 		return
 		
 	if previously_hovered:
-		_set_outline(previously_hovered, Color.BLACK)
+		_set_outline(previously_hovered, false)
 			
 	if currently_hovered:
-		_set_outline(currently_hovered, Color.LIGHT_GRAY if currently_hovered is NPCGuest else Color.WHITE)
+		_set_outline(currently_hovered, true)
 
-func _set_outline(node, color: Color) -> void:
-	
-	var sprite: CanvasItem = null
-	
-	sprite = node.get_child(1) as CanvasItem
-	
-	if not sprite:
-		return
+func _set_outline(node, state) -> void:
 		
 	if node is RoomBase:
-		sprite.visible = color == Color.WHITE	
+		node.set_outline(state)
 	
 	if node is NPC:
 		var npc = node as NPC
-		if color != Color.BLACK:
-			npc.Tint.add_outline(color, 10, self)
+		if state:
+			npc.Tint.add_outline(Color.LIGHT_GRAY if currently_hovered is NPCGuest else Color.WHITE, 10, self)
 		else:
 			npc.Tint.remove_outline_for(self)
 

@@ -42,7 +42,7 @@ func try_get_room_if_not_occupied(saved_data, type, ocupied):
 		room = saved_data.room
 	else:
 		var reachable = npc.Navigation.get_reachable_rooms()
-		room = Global.Building.get_closest_room_of_type(type, npc.global_position, ocupied, Vector2.ZERO, reachable)
+		room = Global.Building.query.closest_room_of_type(type, npc.global_position, ocupied, Vector2.ZERO, reachable)
 
 	if room == null:
 		_change_to_idle()
@@ -58,19 +58,19 @@ func _change_to_idle():
 
 func get_random_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
-	return Global.Building.get_all_rooms_of_type(type, reachable).pick_random()
+	return Global.Building.query.all_rooms_of_type(type, reachable).pick_random()
 
 func get_closest_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
-	return Global.Building.get_closest_room_of_type(type, npc.global_position, null, Vector2.ZERO, reachable)
+	return Global.Building.query.closest_room_of_type(type, npc.global_position, null, Vector2.ZERO, reachable)
 
 func get_all_rooms_of_type_ordered_by_distance(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
-	return Global.Building.get_rooms_of_type_ordered_by_distance(type, npc.global_position, null, reachable)
+	return Global.Building.query.rooms_of_type_ordered_by_distance(type, npc.global_position, null, reachable)
 
 func move(target, custom_speed = -1):
 	var goal_pos: Vector2 = (target as Node2D).global_position if target is Node2D else target
-	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, goal_pos) as RoomBase
+	var goal_room := Global.Building.query.closest_room_of_type(RoomBase, goal_pos) as RoomBase
 
 	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
 		var fallback_room := _get_closest_reachable_room_to(goal_pos)
@@ -160,7 +160,7 @@ func store_item(item: Item):
 			await move(buttery.get_random_floor_position())
 			npc.Item.drop_current()
 	else:
-		var current_room = Global.Building.get_current_room_from_global_position(npc.global_position) as RoomBase
+		var current_room = Global.Building.query.room_at_position(npc.global_position) as RoomBase
 		await move(current_room.get_random_floor_position())
 		npc.Item.drop_current()
 

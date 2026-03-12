@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dkygfkyxds8yp"
-path="res://.godot/imported/well.png-aae79cb9f34640b8599764d87a93a066.ctex"
+uid="uid://dybjhcdgqmrbc"
+path="res://.godot/imported/bounty_sign.png-ab6facb8af232a8eb928a445110ec6bb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/well.png"
-dest_files=["res://.godot/imported/well.png-aae79cb9f34640b8599764d87a93a066.ctex"]
+source_file="res://assets/sprites/bounty_sign.png"
+dest_files=["res://.godot/imported/bounty_sign.png-ab6facb8af232a8eb928a445110ec6bb.ctex"]
 
 [params]
 

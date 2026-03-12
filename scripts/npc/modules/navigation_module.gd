@@ -66,7 +66,7 @@ func refresh_room_index():
 
 func get_reachable_rooms() -> Array[RoomBase]:
 	var start_index = Global.Building.round_room_index_from_global_position(global_position)
-	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+	var start_room := Global.Building.query.closest_on_floor(RoomBase, global_position, start_index.y) as RoomBase
 	if start_room == null:
 		return []
 
@@ -88,7 +88,7 @@ func get_reachable_rooms() -> Array[RoomBase]:
 
 func is_room_reachable(room: RoomBase) -> bool:
 	var start_index = Global.Building.round_room_index_from_global_position(global_position)
-	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+	var start_room := Global.Building.query.closest_on_floor(RoomBase, global_position, start_index.y) as RoomBase
 
 	if start_room == null or room == null:
 		return false
@@ -99,8 +99,8 @@ func is_room_reachable(room: RoomBase) -> bool:
 
 func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 	var start_index = Global.Building.round_room_index_from_global_position(start_pos)
-	var start_room := Global.Building.get_closest_room_of_type_on_floor(RoomBase, start_pos, start_index.y) as RoomBase
-	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, goal_pos) as RoomBase
+	var start_room := Global.Building.query.closest_on_floor(RoomBase, start_pos, start_index.y) as RoomBase
+	var goal_room := Global.Building.query.closest_room_of_type(RoomBase, goal_pos) as RoomBase
 
 	if start_room == null or goal_room == null:
 		if _debug:
@@ -127,8 +127,8 @@ func refresh_target_path() -> void:
 
 	refresh_room_index()
 
-	var start_room := Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase
-	var goal_room := Global.Building.get_closest_room_of_type(RoomBase, final_target) as RoomBase
+	var start_room := Global.Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
+	var goal_room := Global.Building.query.closest_room_of_type(RoomBase, final_target) as RoomBase
 
 	if start_room == null or goal_room == null:
 		_fail_target_path()
@@ -179,7 +179,7 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 
 	# 1. Ground floor rooms are all mutually reachable
 	if room.y == 0:
-		var all_rooms = Global.Building.get_all_rooms_of_type(RoomBase)
+		var all_rooms = Global.Building.query.all_rooms_of_type(RoomBase)
 		for other in all_rooms:
 			if other != room and other.y == 0:
 				result.append(other)
@@ -230,7 +230,7 @@ func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -
 		var current_stairs = Global.Building.get_room_from_index(Vector2i(from_stairs.x, current_floor)) as RoomStairs
 
 		if current_stairs == null:
-			current_stairs = Global.Building.get_closest_room_of_type_on_floor(
+			current_stairs = Global.Building.query.closest_on_floor(
 				RoomStairs,
 				from_stairs.global_position,
 				current_floor
@@ -258,7 +258,7 @@ func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
 
 func _fail_target_path() -> void:
 	target_path.clear()
-	var current_room := Global.Building.get_closest_room_of_type(RoomBase, global_position) as RoomBase
+	var current_room := Global.Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
 	if current_room != null:
 		target_path.append(current_room.get_random_floor_position())
 

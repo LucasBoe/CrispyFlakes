@@ -196,7 +196,7 @@ func click_on():
 	pick_up_origin = global_position
 
 	available_rooms_highlights.clear()
-	for room : RoomBase in Global.Building.get_all_rooms_of_type(RoomBase):
+	for room : RoomBase in Global.Building.query.all_rooms_of_type(RoomBase):
 		if room.associated_job == null:
 			continue
 
@@ -215,7 +215,7 @@ func _input(event):
 
 	var target_pos = null
 
-	var room : RoomBase = Global.Building.get_closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
+	var room : RoomBase = Global.Building.query.closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
 	if room:
 		target_pos = room.global_position + Vector2(24,0)
 

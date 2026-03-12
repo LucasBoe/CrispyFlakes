@@ -5,7 +5,20 @@ var done = false
 func _process(delta):
 	if done:
 		return
-		
-	TutorialHandler.start_tutorial()
-		
+
+	var b = Global.Building
+	b.set_room(b.room_data_wanted_board, -4, 0, false)
+	b.set_room(b.room_data_table, -2, 0, false)
+	b.set_room(b.room_data_bar, -1, 0, false)
+	b.set_room(b.room_data_stairs, 0, 0, false)
+	b.set_room(b.room_data_well, 3, 0, false)
+	b.set_room(b.room_data_stairs, 0, -1, false)
+	b.set_room(b.room_data_junk, -1, -1, false)
+	b.initialize_all_rooms()
+	b.update_foreground_tiles()
+
+	Global.NPCSpawner.spawn_new_worker(Vector2(-72, 0))
+	Global.UI.resources.show()
+	Global.should_auto_spawn_guests = true
+
 	done = true
