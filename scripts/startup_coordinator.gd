@@ -16,6 +16,11 @@ func _process(delta):
 	b.set_room(b.room_data_junk, -1, -1, false)
 	b.initialize_all_rooms()
 	b.update_foreground_tiles()
+	
+	for i in 3:
+		var look = NPCLookInfo.new_random()
+		var bounty = randi_range(1, 5) * 10
+		WantedHandler.create_bounty(look, bounty)
 
 	Global.NPCSpawner.spawn_new_worker(Vector2(-72, 0))
 	Global.UI.resources.show()

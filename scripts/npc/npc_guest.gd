@@ -8,20 +8,27 @@ var is_dirty = true
 
 @onready var dirt = $AnimationModule/Dirt
 
-func _ready():
-	super._ready()
-	create_unique_look()
+func init(custom_look = null):
+	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()
 		await get_tree().create_timer(1).timeout
 
-func create_unique_look():
+func _ready():
+	super._ready()
+
+func apply_look(custom_look = null):
 	var mat := Animator.material as ShaderMaterial
 	if mat == null:
 		return
 
-	mat.set_shader_parameter("base_hue_offset", Vector3(randf(),randf_range(0.5, 0.833333),randf_range(-.2, .5)))
-	mat.set_shader_parameter("sprite_index", Vector2(randi_range(0,16),randi_range(0,9)))
+	if custom_look:
+		look_info = custom_look
+	else:
+		look_info = NPCLookInfo.new_random()
+
+	mat.set_shader_parameter("base_hue_offset", look_info.color_offsets)
+	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
 
 func _process(delta):
 

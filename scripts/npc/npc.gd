@@ -8,6 +8,9 @@ var Navigation : NavigationModule
 var Behaviour : BehaviourModule
 var Item : ItemModule
 
+
+var look_info : NPCLookInfo
+
 func _init():
 	Tint = TintModule.new(self)
 

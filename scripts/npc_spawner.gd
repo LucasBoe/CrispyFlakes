@@ -40,9 +40,19 @@ func spawn_new_worker(opt_spawn_position = Vector2(-320,0)):
 func spawn_new_guest():
 	print("spawn_new_guest")
 
-	var guest = guestScene.instantiate()
+	var guest = guestScene.instantiate() as NPCGuest
 	guest.global_position = Vector2(-320,0)
 	add_child(guest)
+	
+	var available_wanted = WantedHandler.get_available_wanted_npcs()
+	if randf() < 0.1 and available_wanted.size() > 0:
+		var wanted = available_wanted[randi_range(0, available_wanted.size() - 1)]
+		WantedHandler.activate(wanted.look)
+		guest.init(wanted.look)
+	else:
+		guest.init()
+		while WantedHandler.is_look_similar_to_any_wanted(guest.look_info):
+			guest.apply_look()
 
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
@@ -69,7 +79,7 @@ func console_spawn_guests(amount, adj):
 
 func console_spawn_worker():
 	print("spawn_worker")
-	var worker = spawn_new_worker() as NPCWorker
+	var _worker = spawn_new_worker() as NPCWorker
 
 func console_spawn_workers(amount):
 	print("spawn_workers ", amount)
