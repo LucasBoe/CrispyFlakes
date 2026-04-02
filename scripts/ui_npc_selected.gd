@@ -7,6 +7,7 @@ class_name UISelectionPanel
 @onready var need_ui_dummy = $MarginContainer/MarginContainer/VBoxContainer/NeedDummy
 @onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
+@onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
 @onready var wanted_item_container = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer
 @onready var wanted_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer
 
@@ -27,6 +28,7 @@ func _ready():
 	hide()
 	need_ui_dummy.hide()
 	wanted_item_dummy.hide()
+	arrest_button.hide()
 
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
@@ -79,6 +81,7 @@ func _show_for_worker(worker: NPCWorker):
 	describtion_label.text = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.")
 	describtion_label.show()
 	room_delete_button.hide()
+	arrest_button.hide()
 	room_upgrade_hbox.get_parent().hide()
 	needs = null
 
@@ -88,6 +91,13 @@ func _show_for_guest(guest: NPCGuest):
 	describtion_label.show()
 	room_delete_button.hide()
 	room_upgrade_hbox.get_parent().hide()
+
+	arrest_button.show()
+	Util.disconnect_all_pressed(arrest_button)
+	arrest_button.pressed.connect(func():
+		if is_instance_valid(guest):
+			guest.Behaviour.set_behaviour(ArrestedBehaviour)
+	)
 
 	needs = guest.Needs
 	for need : Need in needs.needs:
@@ -102,6 +112,7 @@ func _show_for_guest(guest: NPCGuest):
 func _show_for_room(room: RoomBase):
 	#needs = null
 
+	arrest_button.hide()
 	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
 
 	if room is not RoomJunk:

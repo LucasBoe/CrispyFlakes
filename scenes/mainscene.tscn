@@ -700,6 +700,12 @@ theme = ExtResource("22_hpv7r")
 icon = ExtResource("19_3ocru")
 icon_alignment = 1
 
+[node name="ArrestButton" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Arrest"
+
 [node name="UIRoom" type="Control" parent="UI"]
 visible = false
 layout_mode = 3
