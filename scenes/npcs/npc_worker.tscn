@@ -1,10 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://dexn3jgkl81oo"]
+[gd_scene load_steps=12 format=3 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
-[ext_resource type="Texture2D" uid="uid://m83v8bxndfmq" path="res://assets/sprites/worker.png" id="2_d0f16"]
-[ext_resource type="Shader" uid="uid://qjtxc3ptfctc" path="res://assets/shaders/outline.gdshader" id="2_ivbhr"]
+[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_dc1yn"]
+[ext_resource type="Texture2D" uid="uid://dpc0ua32ji2lj" path="res://assets/sprites/cowboy_apron.png" id="3_aq4br"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_escwn"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="3_ivbhr"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_dc1yn"]
+[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="4_lmhvm"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
 
@@ -13,9 +15,15 @@ radius = 11.0
 height = 32.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_escwn"]
-shader = ExtResource("2_ivbhr")
+shader = ExtResource("2_dc1yn")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
+shader_parameter/sprite_sheet = ExtResource("4_lmhvm")
+shader_parameter/sprite_index = Vector2i(0, 0)
+shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
+shader_parameter/apron_sheet = ExtResource("3_aq4br")
+shader_parameter/use_apron = true
 
 [node name="NPCWorker" type="Area2D"]
 z_index = 1
@@ -27,7 +35,7 @@ shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_escwn")
-texture = ExtResource("2_d0f16")
+texture = ExtResource("3_ivbhr")
 offset = Vector2(0, -12)
 script = ExtResource("3_escwn")
 metadata/_aseprite_wizard_interface_config_ = {

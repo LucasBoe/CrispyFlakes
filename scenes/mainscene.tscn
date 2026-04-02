@@ -404,17 +404,7 @@ text = "- Assign a worker to the bar"
 layout_mode = 2
 texture = ExtResource("19_mwcfc")
 
-[node name="UINPC_(Wrapper)" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="UINPC" type="MarginContainer" parent="UI/UINPC_(Wrapper)"]
-layout_mode = 1
+[node name="UISelectionPanel" type="MarginContainer" parent="UI"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -428,26 +418,26 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("22_s200y")
 
-[node name="LineAnchor" type="Control" parent="UI/UINPC_(Wrapper)/UINPC"]
+[node name="LineAnchor" type="Control" parent="UI/UISelectionPanel"]
 custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 4
 
-[node name="Line2D" type="Line2D" parent="UI/UINPC_(Wrapper)/UINPC/LineAnchor"]
+[node name="Line2D" type="Line2D" parent="UI/UISelectionPanel/LineAnchor"]
 visible = false
 points = PackedVector2Array(0, 0, 12, 12)
 width = 1.0
 sharp_limit = 1.0
 round_precision = 1
 
-[node name="Line" type="Node2D" parent="UI/UINPC_(Wrapper)/UINPC/LineAnchor"]
+[node name="Line" type="Node2D" parent="UI/UISelectionPanel/LineAnchor"]
 script = ExtResource("24_xsu8o")
 pixel_size = null
 line_color = null
 snap_to_grid = null
 
-[node name="ButtonDrag" type="Button" parent="UI/UINPC_(Wrapper)/UINPC"]
+[node name="ButtonDrag" type="Button" parent="UI/UISelectionPanel"]
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
@@ -456,11 +446,11 @@ theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="NinePatchRect" type="NinePatchRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer"]
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UISelectionPanel/MarginContainer"]
 layout_mode = 2
 texture = ExtResource("28_3ou18")
 region_rect = Rect2(16, 0, 8, 8)
@@ -469,7 +459,7 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 8
@@ -477,61 +467,61 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("29_1f2rr")
 text = "NPC"
 horizontal_alignment = 1
 
-[node name="ColorRect" type="ColorRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="ColorRect" type="ColorRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="DescribtionLabel" type="RichTextLabel" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="DescribtionLabel" type="RichTextLabel" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme = ExtResource("22_hpv7r")
 text = "Describtion label"
 fit_content = true
 
-[node name="WantedContainer" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="WantedContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer"]
 layout_mode = 2
 script = ExtResource("26_wanb0")
 
-[node name="ColorRect" type="ColorRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer"]
+[node name="ColorRect" type="ColorRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer"]
 layout_mode = 2
 color = Color(0.8745098, 0.627451, 0.3647059, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 2
 theme_override_constants/margin_top = 2
 theme_override_constants/margin_right = 2
 theme_override_constants/margin_bottom = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.13725491, 0.1254902, 0.12941177, 1)
 text = "Wanted"
 horizontal_alignment = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+[node name="TextureRect" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
 modulate = Color(0.92183876, 0.8089338, 0.7250012, 1)
 material = SubResource("ShaderMaterial_v46vo")
 custom_minimum_size = Vector2(32, 28)
@@ -541,7 +531,7 @@ size_flags_vertical = 0
 texture = ExtResource("28_peq8b")
 stretch_mode = 6
 
-[node name="Label2" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="Label2" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
@@ -550,20 +540,20 @@ theme_override_font_sizes/font_size = 16
 text = "100$"
 horizontal_alignment = 1
 
-[node name="NeedDummy" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="NeedDummy" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 4
 alignment = 1
 script = ExtResource("25_rbvcb")
 
-[node name="TextureRect" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+[node name="TextureRect" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
 layout_mode = 2
 mouse_filter = 2
 texture = ExtResource("23_42hm2")
 stretch_mode = 3
 
-[node name="ProgressBar" type="ProgressBar" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+[node name="ProgressBar" type="ProgressBar" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -574,33 +564,33 @@ max_value = 1.0
 value = 0.5
 show_percentage = false
 
-[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/NeedDummy"]
 custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "drink"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "- Upgrades -"
 horizontal_alignment = 1
 
-[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="UpgradeSelection" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Dummy" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection"]
+[node name="Dummy" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection"]
 custom_minimum_size = Vector2(60, 128)
 layout_mode = 2
 size_flags_horizontal = 4
 theme = ExtResource("22_hpv7r")
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -613,16 +603,16 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="LabelNumber" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="LabelNumber" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -630,7 +620,7 @@ text = "1."
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="LabelName" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="LabelName" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -638,7 +628,7 @@ text = "Service Table"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="LabelPrice" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="LabelPrice" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 modulate = Color(1, 0.89411765, 0.19607843, 1)
 layout_mode = 2
 size_flags_horizontal = 5
@@ -646,7 +636,7 @@ size_flags_vertical = 7
 text = "128 $"
 horizontal_alignment = 1
 
-[node name="LabelCurrent" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="LabelCurrent" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 modulate = Color(1, 0.89411765, 0.19607843, 1)
 layout_mode = 2
 size_flags_horizontal = 5
@@ -654,7 +644,7 @@ size_flags_vertical = 7
 text = "(Current)"
 horizontal_alignment = 1
 
-[node name="TextureRectPreview" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="TextureRectPreview" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -662,11 +652,11 @@ mouse_filter = 2
 texture = ExtResource("28_b52we")
 stretch_mode = 3
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer2" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="LabelSells" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
+[node name="LabelSells" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -674,11 +664,11 @@ text = "Sells:"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
 layout_mode = 2
 alignment = 1
 
-[node name="TextureRectIcon" type="TextureRect" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+[node name="TextureRectIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -686,7 +676,7 @@ mouse_filter = 2
 texture = ExtResource("29_x63bv")
 stretch_mode = 3
 
-[node name="LabelCost" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+[node name="LabelCost" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -694,7 +684,7 @@ text = "6$"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="LabelRequirements" type="Label" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
+[node name="LabelRequirements" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection/Dummy/MarginContainer/VBoxContainer/VBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 7
@@ -703,7 +693,7 @@ text = "needs\\nBrewery"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="Button" type="Button" parent="UI/UINPC_(Wrapper)/UINPC/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")

@@ -9,11 +9,15 @@ class_name UIHolder
 #@onready var time: UITime = $UITime
 @onready var menu: MenuUIHandler = $UIMenu
 #@onready var fullscreen: UIFullscreen = $UIFullscreen
+@onready var selection :  = $UISelectionPanel
 @onready var hire : UIHire = $UIFullscreen/UIHire
 @onready var confirm : UIConfirm = $UIFullscreen/UIConfirm
 @onready var close_handler : UICloseHandler = $UICloseHandler
 #@onready var pause: UIPause = $UIPause
 
 
-func _ready():
+func _init():
 	Global.UI = self
+
+func _ready():
+	close_handler.fullscreen_ui_close_signal.connect(menu._on_ui_close)

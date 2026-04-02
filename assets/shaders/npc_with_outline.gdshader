@@ -6,6 +6,8 @@ uniform sampler2D sprite_sheet : filter_nearest;
 uniform ivec2 sprite_index = ivec2(0, 0);
 uniform vec2 cell_pixel_size = vec2(24.0, 16.0);
 uniform vec3 base_hue_offset = vec3(0.1, -0.33, 0.0);
+uniform sampler2D apron_sheet : filter_nearest;
+uniform bool use_apron = false;
 
 const vec3 rgbh = vec3(0.0, 0.333333,  0.666667);
 
@@ -78,7 +80,13 @@ vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
     vec4 overlay = texture(sprite_sheet, sheet_uv);
 
     float mask = 1.0 - step(0.66, uv.y);
-    return mix(base, overlay, overlay.a * mask);
+    vec4 result = mix(base, overlay, overlay.a * mask);
+
+    if (use_apron) {
+        vec4 apron = texture(apron_sheet, uv);
+        result = mix(result, apron, apron.a);
+    }
+    return result;
 }
 void fragment() {
     vec4 comp = composite(TEXTURE, UV, TEXTURE_PIXEL_SIZE);

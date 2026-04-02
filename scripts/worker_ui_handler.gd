@@ -19,8 +19,6 @@ func _ready():
 	worker_info_dummy.hide()
 	worker_ui_add_remove_dummy.hide()
 	
-	await get_tree().process_frame
-	
 	hire_button.pressed.connect(	Global.NPCSpawner.spawn_new_worker)
 	visibility_changed.connect(_on_visibility_changed)
 		

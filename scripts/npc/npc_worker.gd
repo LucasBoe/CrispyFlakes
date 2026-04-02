@@ -157,14 +157,12 @@ const possible_names = [
 ]
 
 @onready var anim : Sprite2D = $AnimationModule
-var possible_sprites = ["res://assets/sprites/worker_charesmatitc.png", "res://assets/sprites/worker_fast.png", "res://assets/sprites/worker_strongt.png"]
 
 static var picked_up_npc : NPC = null
 
 func _ready():
 	super._ready()
 	character_name = possible_names.pick_random()
-	anim.texture = load(possible_sprites.pick_random())
 
 func _process(delta):
 

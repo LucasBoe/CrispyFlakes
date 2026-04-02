@@ -145,5 +145,5 @@ func get_camera_world_rect() -> Rect2:
 	var top_left := center - adjusted_size / 2.0
 	return Rect2(top_left, adjusted_size)
 
-func tween_offset_to_zero():
-	create_tween().tween_property(self, "offset", Vector2.ZERO, 0.1)
+func tween_offset_to_zero() -> Tweener:
+	return create_tween().tween_property(self, "offset", Vector2.ZERO, 0.1)

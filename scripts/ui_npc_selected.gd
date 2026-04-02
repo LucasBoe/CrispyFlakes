@@ -28,6 +28,9 @@ func _ready():
 	need_ui_dummy.hide()
 	wanted_item_dummy.hide()
 
+func manually_select(node):
+	_on_click_hovered_node_signal(node)
+
 func _on_click_hovered_node_signal(node):
 	_clear_instances()
 

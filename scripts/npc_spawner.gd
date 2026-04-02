@@ -13,8 +13,10 @@ var next_guest_progression = 0.0
 
 signal spawned_guest_signal
 
-func _ready():
+func _init():
 	Global.NPCSpawner = self
+
+func _ready():
 	Console.add_command("guest", console_spawn_guest, ["adjective"])
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)
 	Console.add_command("worker", console_spawn_worker)

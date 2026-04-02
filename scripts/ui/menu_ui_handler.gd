@@ -18,8 +18,7 @@ func _ready():
 	bind_slot(settings_button, settings_tab)
 	set_tab(null)
 	
-	await  get_tree().process_frame
-	Global.UI.close_handler.fullscreen_ui_close_signal.connect(_on_ui_close)
+
 
 func _on_ui_close():
 	set_tab(null)

@@ -3,6 +3,7 @@ class_name FightBehaviour
 
 var energy = 1.0
 var fight : Fight = null
+var arrived_at_roon = false
 
 var notification_instance
 
@@ -14,6 +15,7 @@ func loop():
 	fight = FightHandler.get_or_create_fight(npc)
 	while fight.energy > 0.0:
 		await move(fight.room.get_random_floor_position())
+		arrived_at_roon = true
 		npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)
 		await pause(2)
 

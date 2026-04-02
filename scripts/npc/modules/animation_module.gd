@@ -10,8 +10,17 @@ const IDLE_ANIMATION_SPEED = 3
 const IDLE_PEAK_SHARPNESS = 4
 const WALK_ANIMATION_SPEED = 15.0
 const WALK_ROTATION_STRENGTH = .15
+const FIGHT_ANIMATION_SPEED = 7.0
+const FIGHT_MOVE_DISTANCE = 8.0
+const FIGHT_ROTATION = 1.0
+
+const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
+const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
+const TEX_CARRY = preload("res://assets/sprites/cowboy_raw_carry.png")
+const TEX_SIT   = preload("res://assets/sprites/cowboy_raw_sit.png")
 
 var npc
+var is_sitting : bool = false
 
 func _ready():
 	material = material.duplicate(true)
@@ -23,12 +32,32 @@ func _ready():
 	npc.Animator = self
 	random_instance_offset = randf()
 
+func set_sitting(value : bool):
+	is_sitting = value
+
+func _update_texture():
+	if npc.Behaviour.behaviour_instance is FightBehaviour:
+		texture = TEX_FIGHT
+	elif npc.Item.current_item != null:
+		texture = TEX_CARRY
+	elif is_sitting:
+		texture = TEX_SIT
+	else:
+		texture = TEX_STAND
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-
-
 	var time_in_seconds = Global.time_now + random_instance_offset
-	var target = idle_tween(time_in_seconds)
+
+	_update_texture()
+
+	var target = null
+
+	DebugLog.info(npc.Behaviour.behaviour_instance)
+	if npc.Behaviour.behaviour_instance is FightBehaviour:
+		target = fight_tween(time_in_seconds)
+	else:
+		target = idle_tween(time_in_seconds)
 
 	if direction.length() > 0:
 		target = walk_tween(time_in_seconds)
@@ -40,7 +69,6 @@ func _process(delta):
 	scale = lerp(scale, target.scale, lerp)
 
 func walk_tween(time_in_seconds):
-
 	var drunk = 0.0
 
 	if npc and npc is NPCGuest:
@@ -73,7 +101,12 @@ func idle_tween(time_in_seconds):
 	var x = (1 + abs(scale_base - SQUASH_STRENGTH)) * x_orientation
 	var y = 1 + scale_base
 	return TweenTargetData.new(Vector2.ZERO, 0, Vector2(x, y))
-
+	
+func fight_tween(time_in_seconds):
+	var s = time_in_seconds * FIGHT_ANIMATION_SPEED
+	var x = clamp( sin(s) * sin(s + 1), 0, 1)
+	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2.ONE)
+	
 func set_z(z):
 	z_index = z
 

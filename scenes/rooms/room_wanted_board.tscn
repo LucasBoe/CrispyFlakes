@@ -25,6 +25,7 @@ position = Vector2(24, -24)
 texture = ExtResource("3_1lj21")
 
 [node name="ProgressBar" parent="." instance=ExtResource("4_twqmn")]
+visible = false
 z_index = 4096
 offset_top = -41.0
 offset_bottom = -37.0

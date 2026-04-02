@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://cs511gmlyw12x"]
+
+[ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="1_v6dhw"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_v46vo"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_peq8b"]
+colors = PackedColorArray(0.76395, 0.51006466, 0.2958502, 0.6156863, 0.930538, 0.8246237, 0.57125634, 0.827451)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_v46vo"]
+gradient = SubResource("Gradient_peq8b")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wanb0"]
+particle_flag_disable_z = true
+radial_velocity_min = 3.9999776
+radial_velocity_max = 7.9999776
+gravity = Vector3(0, -1, 0)
+color_initial_ramp = SubResource("GradientTexture1D_v46vo")
+anim_speed_min = 1.0
+anim_speed_max = 1.0
+
+[node name="FightParticles" type="GPUParticles2D"]
+z_index = 500
+material = SubResource("CanvasItemMaterial_v46vo")
+texture = ExtResource("1_v6dhw")
+process_material = SubResource("ParticleProcessMaterial_wanb0")

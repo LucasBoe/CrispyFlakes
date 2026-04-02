@@ -20,7 +20,6 @@ var tier_visitors_needed = [
 ]
 
 func _ready():
-	await get_tree().process_frame
 	Global.NPCSpawner.spawned_guest_signal.connect(_on_spawned_guest)
 	Console.add_command("tiers", console_unlock_all_tiers)
 

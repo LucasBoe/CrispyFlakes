@@ -24,8 +24,10 @@ const room_data_aging_cellar := preload("res://assets/resources/room_aging_cella
 const room_data_prison := preload("res://assets/resources/room_prison.tres")
 const room_data_wanted_board := preload("res://assets/resources/room_wanted_board.tres")
 
-func _ready():
+func _init():
 	Global.Building = self
+
+func _ready():
 	query = BuildingRoomQueries.new(self)
 	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
 

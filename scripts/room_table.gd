@@ -31,6 +31,7 @@ func sit(guest : NPC):
 			break
 
 	var stool = stools[index]
+	guest.Animator.set_sitting(true)
 	guest.Animator.set_z(-50)
 
 	show_guest_count_notification()
@@ -38,6 +39,7 @@ func sit(guest : NPC):
 	return stool.global_position
 
 func stand_up(guest : NPC):
+	guest.Animator.set_sitting(false)
 	guest.Animator.set_z(0)
 	for i in MAX_GUEST_COUNT:
 		if guests[i] == guest:
@@ -47,6 +49,5 @@ func stand_up(guest : NPC):
 
 func show_guest_count_notification():
 	var free = get_free_count()
-	var max = MAX_GUEST_COUNT
-	var txt = str(max - free, "/", max)
+	var txt = str(MAX_GUEST_COUNT - free, "/", MAX_GUEST_COUNT)
 	UiNotifications.create_notification_static(txt, get_center_position(), null, Color.BLACK if free > 0 else Color.RED)
