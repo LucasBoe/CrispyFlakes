@@ -10,11 +10,13 @@ var Item : ItemModule
 
 
 var look_info : NPCLookInfo
+var strength: float = 0.5
 
 func _init():
 	Tint = TintModule.new(self)
 
 func _ready():
+	strength = randf_range(0.3, 1.0)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 		

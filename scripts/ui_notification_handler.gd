@@ -3,6 +3,7 @@ extends Node2D
 @onready var speechbubbe_dummy = $SpeechbubbleDummy
 @onready var need_bar_dummy = $NeedBarDummy
 @onready var npc_notification_dummy = $NPCNotificationDummy
+@onready var fight_bar_dummy = $FightBarDummy
 
 #notification textures
 const ICON_PLUS_1 = preload("uid://be0je5p0o105l")
@@ -13,6 +14,7 @@ const ICON_MINUS_2 = preload("uid://com64xsv8rgjb")
 const ICON_MINUS_3 = preload("uid://bbdxndq8d6dak")
 const ICON_FIGHT = preload("uid://cq7ltdnrruphx")
 const ICON_HANDCUFFS = preload("uid://cl2jtn5jtk0yh")
+const ICON_KNOCKED_OUT = preload("res://assets/sprites/ui/icon_knocked_out.png")
 
 var instances = []
 const DEFAULT_LIFETIME = 3.0
@@ -29,6 +31,7 @@ func _ready():
 	speechbubbe_dummy.hide()
 	need_bar_dummy.hide()
 	npc_notification_dummy.hide()
+	fight_bar_dummy.hide()
 
 func _create_from_dummy(dummy, duration) -> instance_info:
 	var instance = dummy.duplicate()
@@ -103,6 +106,18 @@ func create_npc_notification(target: Node2D, texture: Texture2D, permanent: bool
 	tex.texture = texture
 
 	return i
+	
+func create_fight_bar(target_room : RoomBase) -> instance_info:
+	var i := _create_from_dummy(fight_bar_dummy, INF)
+	i.is_permanent = true
+	i.instance.global_position = target_room.get_center_position() + Vector2(0, -24)
+	return i
+
+func update_fight_bar(i : instance_info, bar_value : float):
+	if not i or not i.instance:
+		return
+	var bar := i.instance.get_node("ProgressBar") as ProgressBar
+	bar.value = bar_value
 
 func _process(delta):
 	speechbubbe_dummy.global_position = get_global_mouse_position() - speechbubbe_dummy.pivot_offset

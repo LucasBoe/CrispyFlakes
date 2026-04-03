@@ -20,6 +20,9 @@ func run():
 
 	await loop()
 
+	if stopped:
+		return
+
 	if is_instance_valid(npc):
 		npc.Behaviour.clear_behaviour()
 
@@ -82,8 +85,13 @@ func move(target, custom_speed = -1):
 			await pause(3)
 
 	npc.Navigation.set_target(target, custom_speed)
-	while npc.Navigation.is_moving:
-		await end_of_frame()
+	if target is Node2D:
+		while npc.Navigation.is_moving:
+			npc.Navigation.refresh_target_path()
+			await end_of_frame()
+	else:
+		while npc.Navigation.is_moving:
+			await end_of_frame()
 
 
 func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:

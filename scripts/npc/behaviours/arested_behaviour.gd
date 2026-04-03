@@ -8,14 +8,14 @@ var notification_instance
 func loop():
 	npc.Animator.handcuffs.show()
 	notification_instance = UiNotifications.create_npc_notification(npc, UiNotifications.ICON_HANDCUFFS, true)
-	
+
 	while not cell:
 		await pause(1)
 
 	await move(cell.get_center_floor_position())
+	npc.Animator.set_z(-150)
 	is_in_cell = true
 	cell.prisoners.append(npc)
-	npc.Animator.set_z(-50)
 	await move(cell.get_random_floor_position())
 
 	UiNotifications.try_kill(notification_instance)

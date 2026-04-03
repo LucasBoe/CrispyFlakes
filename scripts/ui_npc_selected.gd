@@ -95,8 +95,8 @@ func _show_for_guest(guest: NPCGuest):
 	arrest_button.show()
 	Util.disconnect_all_pressed(arrest_button)
 	arrest_button.pressed.connect(func():
-		if is_instance_valid(guest):
-			guest.Behaviour.set_behaviour(ArrestedBehaviour)
+		if is_instance_valid(guest) and not guest.pending_arrest:
+			guest.pending_arrest = true
 	)
 
 	needs = guest.Needs
@@ -141,11 +141,26 @@ func _show_for_room(room: RoomBase):
 
 	if room is RoomWantedBoard:
 		_show_wanted_board()
+	elif room is RoomPrison:
+		_show_prison(room)
 
 	if room.has_upgrades:
 		_show_room_upgrades(room)
 	else:
 		room_upgrade_hbox.get_parent().hide()
+
+func _show_prison(room: RoomPrison):
+	for prisoner: NPC in room.prisoners:
+		if prisoner.look_info == null:
+			continue
+		var bounty = WantedHandler.npc_bounties.get(prisoner.look_info, 0)
+		var instance = wanted_item_dummy.duplicate() as WantedItemUI
+		wanted_item_container.add_child(instance)
+		wanted_item_instances.append(instance)
+		instance.init({"look": prisoner.look_info, "bounty": bounty})
+		instance.show()
+	if room.prisoners.size() > 0:
+		wanted_item_container.show()
 
 func _show_wanted_board():
 	var wanted_npcs = WantedHandler.get_all_wanted_npcs()

@@ -7,50 +7,66 @@ static var occupied_rooms = []
 
 func start_loop():
 	room = try_get_room_if_not_occupied(data, RoomPrison, occupied_rooms)
-	
+
 func loop():
 	while true:
-		await move(room.get_random_floor_position())
-		
-		# arrest behaviour
 		var to_arrest := get_npc_to_arrest()
 		if to_arrest != null:
+			if to_arrest.pending_arrest:
+				var drunkenness = to_arrest.Needs.drunkenness.strength
+				await move(to_arrest)
+				if true:
+					var fight = FightHandler.create_arrest_fight(to_arrest, npc)
+					to_arrest.Behaviour.set_behaviour(FightBehaviour)
+					(to_arrest.Behaviour.behaviour_instance as FightBehaviour).fight = fight
+					var stop = npc.Behaviour.set_behaviour(StopFightBehaviour) as StopFightBehaviour
+					stop.fight = fight
+					stop.arrest_target = to_arrest
+					stop.arrest_room = room
+					return
+				else:
+					to_arrest.pending_arrest = false
+					to_arrest.force_behaviour(ArrestedBehaviour)
+
 			var behaviour = (to_arrest.Behaviour.behaviour_instance as ArrestedBehaviour)
-			await move(to_arrest.global_position)
-			behaviour.cell = room
-			await move(room.get_center_floor_position())
-			
-		# guard behaviour
+			if behaviour != null:
+				await move(to_arrest)
+				behaviour.cell = room
+				await move(room.get_center_floor_position())
+
 		elif room.prisoners.size() > 0:
+			await move(room.get_random_floor_position())
 			await pause(10)
-			
+
 		else:
+			await move(room.get_random_floor_position())
 			RoomStatusHandler.notify(room, "no prisoners", Color.ORANGE)
-			await pause(RoomStatusHandler.REFRESH_RATE-.5)
-		
-	#await progress(6, room.progressBar)
-	
+			await pause(RoomStatusHandler.REFRESH_RATE - .5)
+
 static func get_npc_to_arrest() -> NPCGuest:
 	for g : NPCGuest in Global.NPCSpawner.guests:
-		if g.Behaviour.behaviour_instance is ArrestedBehaviour\
+		if g.pending_arrest:
+			return g
+		if g.Behaviour.behaviour_instance is ArrestedBehaviour \
 		and not (g.Behaviour.behaviour_instance as ArrestedBehaviour).cell:
 			return g
-			
 	return null
-	
+
 static func count_people_that_need_arrestment() -> int:
 	var count = 0
 	for g : NPCGuest in Global.NPCSpawner.guests:
-		if g.Behaviour.behaviour_instance is ArrestedBehaviour\
+		if g.pending_arrest:
+			count += 1
+			continue
+		if g.Behaviour.behaviour_instance is ArrestedBehaviour \
 		and not (g.Behaviour.behaviour_instance as ArrestedBehaviour).is_in_cell:
 			count += 1
-			
 	return count
-		
+
 func stop_loop() -> BehaviourSaveData:
 	room.worker = null
 	occupied_rooms.erase(room)
-	
+
 	var save = super.stop_loop()
 	save.room = room
 	return save

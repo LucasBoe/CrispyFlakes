@@ -1,6 +1,8 @@
 extends Sprite2D
 class_name AnimationModule
 
+const KnockedOutBehaviourScript = preload("res://scripts/npc/behaviours/knocked_out_behaviour.gd")
+
 @export var direction : Vector2 = Vector2(0,0);
 var x_orientation = 1;
 var random_instance_offset = 0
@@ -38,6 +40,8 @@ func set_sitting(value : bool):
 func _update_texture():
 	if npc.Behaviour.behaviour_instance is FightBehaviour:
 		texture = TEX_FIGHT
+	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
+		texture = TEX_STAND
 	elif npc.Item.current_item != null:
 		texture = TEX_CARRY
 	elif is_sitting:
@@ -46,27 +50,28 @@ func _update_texture():
 		texture = TEX_STAND
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	var time_in_seconds = Global.time_now + random_instance_offset
 
 	_update_texture()
 
 	var target = null
 
-	DebugLog.info(npc.Behaviour.behaviour_instance)
 	if npc.Behaviour.behaviour_instance is FightBehaviour:
 		target = fight_tween(time_in_seconds)
+	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
+		target = knocked_out_tween()
 	else:
 		target = idle_tween(time_in_seconds)
 
 	if direction.length() > 0:
 		target = walk_tween(time_in_seconds)
 
-	var lerp = .2
+	var lerp_speed = .2
 
-	position = lerp(position, target.position, lerp)
-	rotation = lerp(rotation, target.rotation, lerp)
-	scale = lerp(scale, target.scale, lerp)
+	position = lerp(position, target.position, lerp_speed)
+	rotation = lerp(rotation, target.rotation, lerp_speed)
+	scale = lerp(scale, target.scale, lerp_speed)
 
 func walk_tween(time_in_seconds):
 	var drunk = 0.0
@@ -106,7 +111,10 @@ func fight_tween(time_in_seconds):
 	var s = time_in_seconds * FIGHT_ANIMATION_SPEED
 	var x = clamp( sin(s) * sin(s + 1), 0, 1)
 	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2.ONE)
-	
+
+func knocked_out_tween():
+	return TweenTargetData.new(Vector2(0, 4), PI / 2.0 * x_orientation, Vector2.ONE)
+
 func set_z(z):
 	z_index = z
 

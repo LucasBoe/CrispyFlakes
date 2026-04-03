@@ -2,6 +2,16 @@ extends NPC
 class_name NPCGuest
 
 var manual_behaviour = false
+var pending_arrest: bool = false:
+	set(value):
+		pending_arrest = value
+		if value:
+			_pending_arrest_notification = UiNotifications.create_npc_notification(self, UiNotifications.ICON_HANDCUFFS, true)
+		else:
+			UiNotifications.try_kill(_pending_arrest_notification)
+			_pending_arrest_notification = null
+
+var _pending_arrest_notification = null
 
 var Needs : NeedsModule
 var is_dirty = true
@@ -30,7 +40,7 @@ func apply_look(custom_look = null):
 	mat.set_shader_parameter("base_hue_offset", look_info.color_offsets)
 	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
 
-func _process(delta):
+func _process(_delta):
 
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
 
@@ -45,6 +55,9 @@ func _process(delta):
 	Behaviour.set_behaviour(new_behaviour)
 
 func get_next_behaviour():
+
+	if pending_arrest:
+		return IdleBehaviour
 
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
 		return NeedLeaveBehaviour
