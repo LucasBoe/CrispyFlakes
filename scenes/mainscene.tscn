@@ -166,6 +166,7 @@ shader_parameter/sprite_sheet = ExtResource("27_wanb0")
 shader_parameter/sprite_index = Vector2i(361, 142)
 shader_parameter/cell_pixel_size = Vector2(24, 16)
 shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
+shader_parameter/use_apron = false
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v28my"]
 
@@ -569,6 +570,39 @@ custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "drink"
+
+[node name="StatusIconLabelDummy" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Status"
+
+[node name="MarginContainer_Status" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="ColorRect" type="ColorRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.5, 0, 0.35)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = " No Job"
+
+[node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = ">"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

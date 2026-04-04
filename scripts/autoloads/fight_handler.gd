@@ -80,15 +80,13 @@ func _process(delta):
 				arrived = (b as FightBehaviour).arrived_at_roon
 			elif b is StopFightBehaviour:
 				arrived = (b as StopFightBehaviour).arrived_at_room
-			print("[FIGHT] participant:", p.name, " behaviour:", b, " arrived:", arrived)
 			if not arrived:
 				continue
 			if p is NPCWorker:
-				worker_strength += p.strength
+				worker_strength += p.strength * p.stamina
 			elif p is NPCGuest:
-				npc_strength += p.strength
+				npc_strength += p.strength * p.stamina
 
-		print("[FIGHT] bar:", f.bar, " worker_str:", worker_strength, " npc_str:", npc_strength)
 		if worker_strength > 0.0 and npc_strength > 0.0:
 			f.bar += (worker_strength - npc_strength) * delta
 

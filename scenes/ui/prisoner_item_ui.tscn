@@ -1,0 +1,69 @@
+[gd_scene load_steps=9 format=3 uid="uid://couxaj642nl1w"]
+
+[ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="1_prisui"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_prisui"]
+[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="3_prisui"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="4_prisui"]
+[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="5_prisui"]
+[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="6_prisui"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_prisui"]
+shader = ExtResource("3_prisui")
+shader_parameter/outline_color = Color(0, 0, 0, 0)
+shader_parameter/corner_pixel = false
+shader_parameter/sprite_sheet = ExtResource("5_prisui")
+shader_parameter/sprite_index = Vector2i(361, 142)
+shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
+shader_parameter/use_apron = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(1, 0.89411765, 0.19607843, 1)
+
+[node name="PrisonerItemUI" type="Button"]
+custom_minimum_size = Vector2(40, 48)
+theme = ExtResource("2_prisui")
+script = ExtResource("1_prisui")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/MarginContainer"]
+modulate = Color(0.92183876, 0.8089338, 0.7250012, 1)
+material = SubResource("ShaderMaterial_prisui")
+custom_minimum_size = Vector2(32, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("4_prisui")
+stretch_mode = 6
+
+[node name="BountyLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("2_prisui")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+theme_override_fonts/font = ExtResource("6_prisui")
+theme_override_font_sizes/font_size = 16
+text = "100$"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_prisui")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
+max_value = 1.0
+show_percentage = false

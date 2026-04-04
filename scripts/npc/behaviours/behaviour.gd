@@ -85,7 +85,7 @@ func move(target, custom_speed = -1):
 			await pause(3)
 
 	npc.Navigation.set_target(target, custom_speed)
-	if target is Node2D:
+	if target is NPC:
 		while npc.Navigation.is_moving:
 			npc.Navigation.refresh_target_path()
 			await end_of_frame()

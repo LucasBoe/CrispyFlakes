@@ -5,28 +5,39 @@ class_name UISelectionPanel
 @onready var describtion_label = $MarginContainer/MarginContainer/VBoxContainer/DescribtionLabel
 @onready var line : PixelLine = $LineAnchor/Line
 @onready var need_ui_dummy = $MarginContainer/MarginContainer/VBoxContainer/NeedDummy
+@onready var status_icon_label_dummy: Label = $MarginContainer/MarginContainer/VBoxContainer/StatusIconLabelDummy
+@onready var status_row_dummy: MarginContainer = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status
 @onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
 @onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
 @onready var wanted_item_container = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer
 @onready var wanted_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer
 
+const PrisonerItemScene = preload("res://scenes/ui/prisoner_item_ui.tscn")
+
 var target = null
 var needs = null
 var need_ui_instances = []
 var wanted_item_instances = []
+var prisoner_item_instances = []
+var status_icon_row = null
+var _current_status_labels: Array = []
+var _status_row_instance = null
 
 var selected_room_highlight_instance
 var selected_npc_highlight_instance
 
 func _ready():
 	super._ready()
+	describtion_label.bbcode_enabled = true
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_potential_target_deleted)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
 
 	hide()
 	need_ui_dummy.hide()
+	status_icon_label_dummy.hide()
+	status_row_dummy.hide()
 	wanted_item_dummy.hide()
 	arrest_button.hide()
 
@@ -67,6 +78,15 @@ func _on_click_hovered_node_signal(node):
 	show()
 
 func _clear_instances():
+	if is_instance_valid(status_icon_row):
+		status_icon_row.queue_free()
+	status_icon_row = null
+	_current_status_labels = []
+
+	if is_instance_valid(_status_row_instance):
+		_status_row_instance.queue_free()
+	_status_row_instance = null
+
 	for n in need_ui_instances:
 		n.queue_free()
 	need_ui_instances.clear()
@@ -76,18 +96,95 @@ func _clear_instances():
 	wanted_item_instances.clear()
 	wanted_item_container.hide()
 
+	for p in prisoner_item_instances:
+		if is_instance_valid(p):
+			p.queue_free()
+	prisoner_item_instances.clear()
+
+func _get_status_icon_entries(npc: NPC) -> Array:
+	var entries = []
+	var b = npc.Behaviour.behaviour_instance
+	if b is KnockedOutBehaviour:
+		entries.append({icon = UiNotifications.ICON_KNOCKED_OUT, label = "Knocked out"})
+	if b is FightBehaviour or b is StopFightBehaviour:
+		entries.append({icon = UiNotifications.ICON_FIGHT, label = "Fighting"})
+	if npc is NPCGuest:
+		var guest := npc as NPCGuest
+		if guest.pending_arrest:
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest"})
+		if b is ArrestedBehaviour:
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Arrested"})
+		if npc.look_info != null and WantedHandler.npc_bounties.has(npc.look_info):
+			entries.append({icon = UiNotifications.ICON_FUGITIVE, label = "Has Bounty"})
+	return entries
+
+func _rebuild_status_icons(entries: Array):
+	if is_instance_valid(status_icon_row):
+		status_icon_row.queue_free()
+	status_icon_row = null
+
+	if entries.is_empty():
+		return
+
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	var parent = need_ui_dummy.get_parent()
+	parent.add_child(container)
+	parent.move_child(container, describtion_label.get_index() + 1)
+	status_icon_row = container
+
+	for entry in entries:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 6)
+		container.add_child(row)
+
+		var tex_rect := TextureRect.new()
+		tex_rect.texture = entry.icon
+		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex_rect.custom_minimum_size = Vector2(16, 16)
+		row.add_child(tex_rect)
+
+		var lbl := status_icon_label_dummy.duplicate() as Label
+		lbl.text = entry.label
+		lbl.show()
+		row.add_child(lbl)
+
+func _show_status_row(text: String, color: Color, link_target = null, link_text: String = ""):
+	if is_instance_valid(_status_row_instance):
+		_status_row_instance.queue_free()
+	var instance := status_row_dummy.duplicate() as MarginContainer
+	var parent = status_row_dummy.get_parent()
+	parent.add_child(instance)
+	parent.move_child(instance, status_row_dummy.get_index() + 1)
+	instance.get_node("ColorRect").color = color
+	instance.get_node("HBoxContainer/Label").text = str(" ", text)
+	var btn := instance.get_node("HBoxContainer/Button") as Button
+	if link_target != null:
+		btn.text = link_text
+		btn.show()
+		btn.pressed.connect(func(): manually_select(link_target))
+	else:
+		btn.hide()
+	instance.show()
+	_status_row_instance = instance
+
 func _show_for_worker(worker: NPCWorker):
 	header_label.text = "Worker"
-	describtion_label.text = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.")
+	describtion_label.text = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
 	describtion_label.show()
 	room_delete_button.hide()
 	arrest_button.hide()
 	room_upgrade_hbox.get_parent().hide()
 	needs = null
+	var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
+	var job_color = Color.TRANSPARENT if has_job else Color.ORANGE
+	var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
+	var job_text = str("Working at") if has_job else "No Job"
+	_show_status_row(job_text, job_color, worker.current_job_room if has_job else null, room_name)
 
 func _show_for_guest(guest: NPCGuest):
 	header_label.text = "Guest"
-	describtion_label.text = "This guest will stay around as long as he is satisfied with your saloons services."
+	describtion_label.text = "This guest will stay around as long as he is satisfied with your saloons services.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(guest.strength * 100), int(guest.agility * 100), int(guest.intelligence * 100)]
 	describtion_label.show()
 	room_delete_button.hide()
 	room_upgrade_hbox.get_parent().hide()
@@ -136,8 +233,12 @@ func _show_for_room(room: RoomBase):
 	if description != "":
 		describtion_label.text = description
 
-	if room.worker:
-		room.worker.Tint.add_outline(Color.WHITE, 20, self)
+	if room.associated_job != null:
+		if room.worker:
+			_show_status_row("Worker", Color.TRANSPARENT, room.worker, room.worker.character_name)
+			room.worker.Tint.add_outline(Color.WHITE, 20, self)
+		else:
+			_show_status_row("No Worker", Color.ORANGE)
 
 	if room is RoomWantedBoard:
 		_show_wanted_board()
@@ -150,14 +251,15 @@ func _show_for_room(room: RoomBase):
 		room_upgrade_hbox.get_parent().hide()
 
 func _show_prison(room: RoomPrison):
-	for prisoner: NPC in room.prisoners:
-		if prisoner.look_info == null:
+	for prisoner in room.prisoners:
+		if not prisoner is NPCGuest:
 			continue
-		var bounty = WantedHandler.npc_bounties.get(prisoner.look_info, 0)
-		var instance = wanted_item_dummy.duplicate() as WantedItemUI
+		var bounty: int = WantedHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
+		var fine: int = WantedHandler.npc_fight_fines.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
+		var instance = PrisonerItemScene.instantiate()
 		wanted_item_container.add_child(instance)
-		wanted_item_instances.append(instance)
-		instance.init({"look": prisoner.look_info, "bounty": bounty})
+		prisoner_item_instances.append(instance)
+		instance.init(prisoner, bounty, fine)
 		instance.show()
 	if room.prisoners.size() > 0:
 		wanted_item_container.show()
@@ -246,3 +348,21 @@ func _process(delta):
 
 	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, %Camera)
 	line.target_position = pos
+
+	if target is NPC:
+		var entries = _get_status_icon_entries(target)
+		var labels = entries.map(func(e): return e.label)
+		if labels != _current_status_labels:
+			_current_status_labels = labels
+			_rebuild_status_icons(entries)
+
+	if target is NPCWorker:
+		var worker := target as NPCWorker
+		var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
+		if is_instance_valid(_status_row_instance):
+			var lbl := _status_row_instance.get_node("HBoxContainer/Label") as Label
+			var expected = " Working at" if has_job else " No Job"
+			if lbl.text != expected:
+				var job_color = Color(0.3, 0.8, 0.3, 0.35) if has_job else Color(1.0, 0.5, 0.0, 0.35)
+				var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
+				_show_status_row("Working at" if has_job else "No Job", job_color, worker.current_job_room if has_job else null, room_name)

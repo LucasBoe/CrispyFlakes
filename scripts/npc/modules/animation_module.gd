@@ -4,7 +4,7 @@ class_name AnimationModule
 const KnockedOutBehaviourScript = preload("res://scripts/npc/behaviours/knocked_out_behaviour.gd")
 
 @export var direction : Vector2 = Vector2(0,0);
-var x_orientation = 1;
+var x_orientation = -1;
 var random_instance_offset = 0
 
 const SQUASH_STRENGTH = 0.05
@@ -38,7 +38,7 @@ func set_sitting(value : bool):
 	is_sitting = value
 
 func _update_texture():
-	if npc.Behaviour.behaviour_instance is FightBehaviour:
+	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		texture = TEX_FIGHT
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
 		texture = TEX_STAND
@@ -57,7 +57,7 @@ func _process(_delta):
 
 	var target = null
 
-	if npc.Behaviour.behaviour_instance is FightBehaviour:
+	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		target = fight_tween(time_in_seconds)
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
 		target = knocked_out_tween()
@@ -82,12 +82,12 @@ func walk_tween(time_in_seconds):
 	var t = time_in_seconds * WALK_ANIMATION_SPEED / (1.0 + drunk)
 	var raw = pow(abs(sin(t)), .2) * sign(sin(t))
 
-	direction = direction * Vector2(1,.2)
+	var flat_direction = direction * Vector2(1, .2)
 
 	if (direction.x):
 		x_orientation = sign(direction.x)
 
-	var dir_to_rotation = Vector2(1, direction.y * 0.2).angle() * x_orientation
+	var dir_to_rotation = Vector2(1, flat_direction.y * 0.2).angle() * x_orientation
 	var rotation_target = dir_to_rotation + raw * WALK_ROTATION_STRENGTH * lerp(1.0, (sin(t * .667) + 1.0) * 3.0, drunk)
 
 	var rawS = pow(abs(sin(t)), .4) * sign(sin(t))
@@ -113,7 +113,7 @@ func fight_tween(time_in_seconds):
 	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2.ONE)
 
 func knocked_out_tween():
-	return TweenTargetData.new(Vector2(0, 4), PI / 2.0 * x_orientation, Vector2.ONE)
+	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x_orientation, Vector2.ONE)
 
 func set_z(z):
 	z_index = z

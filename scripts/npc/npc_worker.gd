@@ -160,6 +160,10 @@ const possible_names = [
 
 static var picked_up_npc : NPC = null
 
+const DRAG_THRESHOLD = 8.0
+var _drag_pending = false
+var _drag_start_mouse = Vector2.ZERO
+
 func _ready():
 	super._ready()
 	character_name = possible_names.pick_random()
@@ -189,9 +193,14 @@ func click_on():
 	if picked_up_npc != null:
 		return;
 
-	picked_up_npc = self
-	Navigation.set_process(false)
+	_drag_pending = true
+	_drag_start_mouse = get_global_mouse_position()
 	pick_up_origin = global_position
+
+func _activate_drag():
+	picked_up_npc = self
+	_drag_pending = false
+	Navigation.set_process(false)
 
 	available_rooms_highlights.clear()
 	for room : RoomBase in Global.Building.query.all_rooms_of_type(RoomBase):
@@ -205,6 +214,13 @@ func click_on():
 		available_rooms_highlights.append(highlight)
 
 func _input(event):
+
+	if _drag_pending:
+		if event.is_action_released("click"):
+			_drag_pending = false
+			return
+		if get_global_mouse_position().distance_to(_drag_start_mouse) >= DRAG_THRESHOLD:
+			_activate_drag()
 
 	if picked_up_npc != self:
 		#if (assignmentIndicator.visible):

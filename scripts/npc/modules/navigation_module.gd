@@ -48,7 +48,7 @@ func set_target(target, custom_speed):
 	refresh_target_path()
 	is_moving = true
 	has_target = true
-	move_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
+	move_speed = DEFAULT_MOVE_SPEED * (0.75 + npc.agility * 0.5) if custom_speed < 0 else custom_speed
 
 
 func get_random_target():

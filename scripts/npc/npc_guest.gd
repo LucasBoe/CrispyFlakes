@@ -2,16 +2,10 @@ extends NPC
 class_name NPCGuest
 
 var manual_behaviour = false
-var pending_arrest: bool = false:
-	set(value):
-		pending_arrest = value
-		if value:
-			_pending_arrest_notification = UiNotifications.create_npc_notification(self, UiNotifications.ICON_HANDCUFFS, true)
-		else:
-			UiNotifications.try_kill(_pending_arrest_notification)
-			_pending_arrest_notification = null
+var pending_arrest: bool = false
 
-var _pending_arrest_notification = null
+var _status_icon_instance = null
+var _status_icon_texture = null
 
 var Needs : NeedsModule
 var is_dirty = true
@@ -43,6 +37,7 @@ func apply_look(custom_look = null):
 func _process(_delta):
 
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
+	_refresh_status_icon()
 
 	if Behaviour.has_behaviour:
 		return
@@ -53,6 +48,29 @@ func _process(_delta):
 		new_behaviour = get_next_behaviour()
 
 	Behaviour.set_behaviour(new_behaviour)
+
+func _refresh_status_icon():
+	var b = Behaviour.behaviour_instance
+	var icon = null
+
+	if b is KnockedOutBehaviour:
+		icon = UiNotifications.ICON_KNOCKED_OUT
+	elif b is FightBehaviour:
+		icon = UiNotifications.ICON_FIGHT
+	elif pending_arrest or b is ArrestedBehaviour:
+		icon = UiNotifications.ICON_HANDCUFFS
+	elif look_info != null and WantedHandler.npc_bounties.has(look_info):
+		icon = UiNotifications.ICON_FUGITIVE
+
+	if icon == _status_icon_texture:
+		return
+
+	UiNotifications.try_kill(_status_icon_instance)
+	_status_icon_instance = null
+	_status_icon_texture = icon
+
+	if icon != null:
+		_status_icon_instance = UiNotifications.create_npc_notification(self, icon, true)
 
 func get_next_behaviour():
 

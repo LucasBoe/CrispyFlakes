@@ -30,7 +30,8 @@ func custom_array_sort(a, b):
 		return a[1] < b[1]
 
 func stop_loop():
-	brewery.worker = null
+	if brewery:
+		brewery.worker = null
 	occupied_breweries.erase(brewery)
 
 	var save = super.stop_loop()
