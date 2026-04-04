@@ -1,2 +1,2 @@
 extends RoomStorageBase
-class_name RoomButtery
+class_name RoomStorage

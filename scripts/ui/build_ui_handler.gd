@@ -17,7 +17,7 @@ var groups = {}
 var all_tiers = []
 var button_dummies = []
 
-var buttery_button;
+var storage_button;
 var brewery_button;
 
 var last_hover = null
@@ -32,7 +32,7 @@ func _ready():
 	create_button(group, Global.Building.room_data_well)
 	create_button(group, Global.Building.room_data_bar)
 	brewery_button = create_button(group, Global.Building.room_data_brewery)
-	buttery_button = create_button(group, Global.Building.room_data_buttery)
+	storage_button = create_button(group, Global.Building.room_data_storage)
 	create_button(group, Global.Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
 	create_button(group, Global.Building.room_data_bath)
 	create_button(group, Global.Building.room_data_destillery)

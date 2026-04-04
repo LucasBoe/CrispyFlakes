@@ -78,24 +78,24 @@ func start_tutorial():
 	#tutorial_guest.set_process(false)
 	##tutorial_guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
 	#
-	#Global.UI.menu.build_tab.buttery_button.disabled = false
+	#Global.UI.menu.build_tab.storage_button.disabled = false
 	#Global.UI.menu.build_tab.brewery_button.disabled = false
 	#Global.UI.menu.show()
 	#
 	#var brewery_todo = Global.UI.tutorial.add_task("Build a Brewery")
-	#var buttery_todo = Global.UI.tutorial.add_task("Build a Buttery")
+	#var storage_todo = Global.UI.tutorial.add_task("Build a Storage")
 	#var beer_bar_todo = Global.UI.tutorial.add_task("Upgrade the bar to sell Beer")
 	#
-	#while not beer_bar_todo.is_done or not brewery_todo.is_done or not buttery_todo.is_done:
+	#while not beer_bar_todo.is_done or not brewery_todo.is_done or not storage_todo.is_done:
 		#if not beer_bar_todo.is_done:
 			#if Global.Building.query.all_rooms_of_type(RoomBar).any(bar_has_beer):
 				#beer_bar_todo.set_done()
 		#if not brewery_todo.is_done:
 			#if Global.Building.query.all_rooms_of_type(RoomBrewery).size() > 0:
 				#brewery_todo.set_done()
-		#if not buttery_todo.is_done:
-			#if Global.Building.query.all_rooms_of_type(RoomButtery).size() > 0:
-				#buttery_todo.set_done()
+		#if not storage_todo.is_done:
+			#if Global.Building.query.all_rooms_of_type(RoomStorage).size() > 0:
+				#storage_todo.set_done()
 		#await end_of_frame()
 		#
 	#await Global.UI.dialogue.print_dialogue("That's a whole heap for one pair of hands. Gear up and hire some help.", tutorial_guest)

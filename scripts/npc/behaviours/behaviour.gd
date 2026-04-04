@@ -114,8 +114,8 @@ func fetch_item(item: Enum.Items):
 	var source_item = null
 	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position, item)
 
-	# fetch from buttery
-	for b: RoomButtery in get_all_rooms_of_type_ordered_by_distance(RoomButtery):
+	# fetch from storage
+	for b: RoomStorage in get_all_rooms_of_type_ordered_by_distance(RoomStorage):
 		if b.has(item):
 			if closest_loose_item == null or npc.global_position.distance_to(b.global_position) < npc.global_position.distance_to(closest_loose_item.global_position):
 				await move(b)
@@ -161,11 +161,11 @@ func store_item(item: Item):
 				npc.Item.drop_current()
 		return
 
-	var buttery = get_closest_room_of_type(RoomButtery)
-	if buttery != null:
-		await move(buttery)
-		if not npc.Item.try_put_to(buttery):
-			await move(buttery.get_random_floor_position())
+	var storage = get_closest_room_of_type(RoomStorage)
+	if storage != null:
+		await move(storage)
+		if not npc.Item.try_put_to(storage):
+			await move(storage.get_random_floor_position())
 			npc.Item.drop_current()
 	else:
 		var current_room = Global.Building.query.room_at_position(npc.global_position) as RoomBase

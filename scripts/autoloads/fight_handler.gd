@@ -6,6 +6,7 @@ var fight_bars = {}
 
 @onready var fight_particle_scene : PackedScene = preload("res://scenes/fight_particles.tscn")
 
+
 func get_or_create_fight(npc : NPC) -> Fight:
 	var fight = null
 
@@ -52,6 +53,14 @@ func _end_fight(fight):
 	UiNotifications.try_kill(fight_bars[fight])
 	fight_bars.erase(fight)
 
+	var room = fight.room
+
+	if fight.npc_won() and not fight.is_arrest_fight:
+		if room and not (room is RoomJunk) and not (room is RoomEmpty):
+			GlobalEventHandler.on_room_deleted_signal.emit(room)
+			Global.Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
+			room.destroy()
+
 	fight.end_fight()
 	active_fights.erase(fight)
 
@@ -87,8 +96,14 @@ func _process(delta):
 			elif p is NPCGuest:
 				npc_strength += p.strength * p.stamina
 
+		f.time_elapsed += delta
+
 		if worker_strength > 0.0 and npc_strength > 0.0:
 			f.bar += (worker_strength - npc_strength) * delta
+
+		# Escalating fatigue drain — guests tire out over time, guaranteeing a resolution
+		var fatigue = (f.time_elapsed / Fight.MAX_DURATION_IN_SECONDS) * 0.12 * delta
+		f.bar -= fatigue
 
 		f.bar = clamp(f.bar, 0.0, 1.0)
 

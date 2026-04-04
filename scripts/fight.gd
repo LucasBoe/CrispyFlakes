@@ -4,6 +4,7 @@ var bar: float = 0.5
 var participants = []
 var room : RoomBase
 var highlight
+var time_elapsed: float = 0.0
 
 # Optionally set when this fight is an arrest confrontation
 var is_arrest_fight: bool = false

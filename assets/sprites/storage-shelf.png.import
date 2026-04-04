@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cuaienvs3ayb6"
-path="res://.godot/imported/room_buttery_preview.png-0e85809d65b7a6cb43986ccbc9abae47.ctex"
+uid="uid://ftv45kuneih7"
+path="res://.godot/imported/storage-shelf.png-ebbf714efc4398bd1ab902892ca048ff.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/room_buttery_preview.png"
-dest_files=["res://.godot/imported/room_buttery_preview.png-0e85809d65b7a6cb43986ccbc9abae47.ctex"]
+source_file="res://assets/sprites/storage-shelf.png"
+dest_files=["res://.godot/imported/storage-shelf.png-ebbf714efc4398bd1ab902892ca048ff.ctex"]
 
 [params]
 
