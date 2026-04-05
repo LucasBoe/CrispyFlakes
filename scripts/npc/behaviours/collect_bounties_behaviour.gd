@@ -43,8 +43,8 @@ func _collect_bounty(prisoner: NPCGuest):
 	if prisoner.look_info == null:
 		return
 	var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0)
-	var fine: int = BountyHandler.npc_fight_fines.get(prisoner.look_info, 0)
+	var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0)
 	if bounty + fine > 0:
 		ResourceHandler.change_money(bounty + fine)
 		BountyHandler.npc_bounties.erase(prisoner.look_info)
-		BountyHandler.npc_fight_fines.erase(prisoner.look_info)
+		BountyHandler.npc_fight_fines.erase(prisoner)

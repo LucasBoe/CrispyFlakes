@@ -122,12 +122,16 @@ func _get_status_icon_entries(npc: NPC) -> Array:
 		entries.append({icon = UiNotifications.ICON_FIGHT, label = "Fighting"})
 	if npc is NPCGuest:
 		var guest := npc as NPCGuest
+		
+		var bounty = BountyHandler.get_bounty_for(guest)
+		var bounty_info = " (0$)" if bounty == null else str(" (", bounty ,"$)")
+		
 		if guest.pending_arrest:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest"})
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Marked for Arrest",bounty_info)})
 		if b is ArrestedBehaviour:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Arrested"})
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Arrested",bounty_info)})
 		if npc.look_info != null and BountyHandler.npc_bounties.has(npc.look_info):
-			entries.append({icon = UiNotifications.ICON_FUGITIVE, label = "Has Bounty"})
+			entries.append({icon = UiNotifications.ICON_FUGITIVE, label =  str("Has Bounty",bounty_info)})
 	return entries
 
 func _rebuild_status_icons(entries: Array):
@@ -284,7 +288,7 @@ func _show_prison(room: RoomPrison):
 		if not prisoner is NPCGuest:
 			continue
 		var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
-		var fine: int = BountyHandler.npc_fight_fines.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
+		var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0) if prisoner.look_info != null else 0
 		var instance := prisoner_item_dummy.duplicate() as PrisonerItemUI
 		bounty_item_container.add_child(instance)
 		prisoner_item_instances.append(instance)
