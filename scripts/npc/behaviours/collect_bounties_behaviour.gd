@@ -45,6 +45,11 @@ func _collect_bounty(prisoner: NPCGuest):
 	var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0)
 	var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0)
 	if bounty + fine > 0:
+		
+		ResourceHandler.add_animated(Enum.Resources.MONEY, bounty + fine, npc.global_position + Vector2(0, 12))
 		ResourceHandler.change_money(bounty + fine)
 		BountyHandler.npc_bounties.erase(prisoner.look_info)
 		BountyHandler.npc_fight_fines.erase(prisoner)
+	else:
+		#add variant where prisoners without fine or bounty are just freed
+		return

@@ -86,7 +86,7 @@ func move(target, custom_speed = -1):
 
 	npc.Navigation.set_target(target, custom_speed)
 	if target is NPC:
-		while npc.Navigation.is_moving:
+		while is_instance_valid(target) and npc.Navigation.is_moving:
 			npc.Navigation.refresh_target_path()
 			await end_of_frame()
 	else:

@@ -29,7 +29,8 @@ func loop():
 		if not sent_notification:
 			var delta = Global.time_now - notification_start_check_time
 			if delta > 2:
-				UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)
+				if is_instance_valid(bar):
+					UiNotifications.create_notification_dynamic("!", npc, Vector2(0,-32), Item.get_info(bar.drink_type).Tex)
 				sent_notification = true
 		await end_of_frame()
 

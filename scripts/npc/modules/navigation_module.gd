@@ -44,12 +44,12 @@ func stop_navigation():
 
 
 func set_target(target, custom_speed):
-	target_final = target
-	refresh_target_path()
-	is_moving = true
-	has_target = true
-	move_speed = DEFAULT_MOVE_SPEED * (0.75 + npc.agility * 0.5) if custom_speed < 0 else custom_speed
-
+	if target is Vector2 or is_instance_valid(target):
+		target_final = target
+		refresh_target_path()
+		is_moving = true
+		has_target = true
+		move_speed = DEFAULT_MOVE_SPEED * (0.75 + npc.agility * 0.5) if custom_speed < 0 else custom_speed
 
 func get_random_target():
 	var random_floor = Util.get_random_element(Global.Building.floors)

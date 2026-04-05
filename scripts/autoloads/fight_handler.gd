@@ -56,13 +56,23 @@ func _end_fight(fight):
 	var room = fight.room
 
 	if fight.npc_won() and not fight.is_arrest_fight:
-		if room and not (room is RoomJunk) and not (room is RoomEmpty):
+		if _is_destructable_room(room):
 			GlobalEventHandler.on_room_deleted_signal.emit(room)
 			Global.Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
 			room.destroy()
 
 	fight.end_fight()
 	active_fights.erase(fight)
+	
+func _is_destructable_room(room):
+	if room is RoomJunk:
+		return false
+	elif room is RoomBountyBoard:
+		return false
+	elif room is RoomEmpty:
+		return false
+		
+	return true
 
 func _destroy_particles(particles : GPUParticles2D):
 	particles.emitting = false
