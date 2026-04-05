@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v7r04bop5lty"
-path="res://.godot/imported/hande_8x8.png-339131b948d7e244d1fd3ddb63aecb95.ctex"
+uid="uid://c43k5ht037w7i"
+path="res://.godot/imported/horse.png-bc19b0c9892ca28afc642c564905c18c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/hande_8x8.png"
-dest_files=["res://.godot/imported/hande_8x8.png-339131b948d7e244d1fd3ddb63aecb95.ctex"]
+source_file="res://assets/sprites/horse.png"
+dest_files=["res://.godot/imported/horse.png-bc19b0c9892ca28afc642c564905c18c.ctex"]
 
 [params]
 

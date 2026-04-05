@@ -21,6 +21,7 @@ func loop():
 
 func stop_loop():
 	npc.Animator.handcuffs.hide()
-	cell.prisoners.erase(npc)
+	if is_instance_valid(cell):
+		cell.prisoners.erase(npc)
 	npc.Animator.set_z(0)
 	return super.stop_loop()

@@ -1,2 +1,0 @@
-extends RoomOutsideBase
-class_name RoomWantedBoard

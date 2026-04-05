@@ -1,12 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://skfve22ith4j"]
+[gd_scene load_steps=6 format=3 uid="uid://cjyg5ndwdht3m"]
 
-[ext_resource type="Script" uid="uid://drm1gnto3nejp" path="res://scripts/room_wanted_board.gd" id="1_j7q48"]
+[ext_resource type="Script" uid="uid://drm1gnto3nejp" path="res://scripts/room_bounty_board.gd" id="1_j7q48"]
 [ext_resource type="Texture2D" uid="uid://dybjhcdgqmrbc" path="res://assets/sprites/bounty_sign.png" id="1_q16jd"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="2_jevch"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_1lj21"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_twqmn"]
 
-[node name="Room_WantedBoard" type="Node2D"]
+[node name="Room_BountyBoard" type="Node2D"]
 texture_filter = 1
 material = ExtResource("2_jevch")
 script = ExtResource("1_j7q48")

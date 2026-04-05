@@ -59,7 +59,7 @@ func _refresh_status_icon():
 		icon = UiNotifications.ICON_FIGHT
 	elif pending_arrest or b is ArrestedBehaviour:
 		icon = UiNotifications.ICON_HANDCUFFS
-	elif look_info != null and WantedHandler.npc_bounties.has(look_info):
+	elif look_info != null and BountyHandler.npc_bounties.has(look_info):
 		icon = UiNotifications.ICON_FUGITIVE
 
 	if icon == _status_icon_texture:

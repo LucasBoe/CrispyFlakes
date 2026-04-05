@@ -1,0 +1,2 @@
+extends RoomOutsideBase
+class_name RoomBountyBoard

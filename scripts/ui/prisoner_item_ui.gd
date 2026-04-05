@@ -59,8 +59,8 @@ func _on_pressed() -> void:
 
 	ResourceHandler.change_money(bounty + fine)
 	if prisoner.look_info != null:
-		WantedHandler.npc_bounties.erase(prisoner.look_info)
-		WantedHandler.npc_fight_fines.erase(prisoner.look_info)
+		BountyHandler.npc_bounties.erase(prisoner.look_info)
+		BountyHandler.npc_fight_fines.erase(prisoner.look_info)
 
 	prisoner.force_behaviour(NeedLeaveBehaviour)
 	queue_free()

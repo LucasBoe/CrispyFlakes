@@ -4,6 +4,7 @@ class_name NPCSpawner
 
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn");
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
+const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 
 var guests = []
 var workers = []
@@ -46,20 +47,26 @@ func spawn_new_guest():
 	guest.global_position = Vector2(-320,0)
 	add_child(guest)
 	
-	var available_wanted = WantedHandler.get_available_wanted_npcs()
-	if randf() < 0.1 and available_wanted.size() > 0:
-		var wanted = available_wanted[randi_range(0, available_wanted.size() - 1)]
-		WantedHandler.activate(wanted.look)
-		guest.init(wanted.look)
+	var available_bounties = BountyHandler.get_available_bounties()
+	if randf() < 0.1 and available_bounties.size() > 0:
+		var bounty_entry = available_bounties[randi_range(0, available_bounties.size() - 1)]
+		BountyHandler.activate(bounty_entry.look)
+		guest.init(bounty_entry.look)
 	else:
 		guest.init()
-		while WantedHandler.is_look_similar_to_any_wanted(guest.look_info):
+		while BountyHandler.is_look_similar_to_any_bounty(guest.look_info):
 			guest.apply_look()
 
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
 	spawned_guest_signal.emit(guests.size())
 	return guest
+
+func spawn_sheriff():
+	var sheriff = sheriffScene.instantiate()
+	sheriff.global_position = Vector2(-320, 0)
+	add_child(sheriff)
+	return sheriff
 
 func on_guest_destroy(guest):
 	guests.erase(guest)

@@ -261,7 +261,8 @@ func _input(event):
 			global_position = target_pos
 			Navigation.stop_navigation()
 			if not try_stop_fight_in_room(room):
-				try_change_job_based_on_room(room)
+				if not try_arrest_in_room(room):
+					try_change_job_based_on_room(room)
 			Animator.direction = Vector2.ZERO
 		else:
 			global_position = pick_up_origin
@@ -290,6 +291,32 @@ func try_stop_fight_in_room(room : RoomBase):
 	var behaviour = force_behaviour(StopFightBehaviour)
 	behaviour.fight = fight
 	return true
+
+func try_arrest_in_room(room: RoomBase) -> bool:
+	var target := _get_pending_arrest_in_room(room)
+	if target == null:
+		return false
+
+	var prison := Global.Building.query.closest_room_of_type(RoomPrison, global_position) as RoomPrison
+
+	var fight = FightHandler.create_arrest_fight(target, self)
+	target.Behaviour.set_behaviour(FightBehaviour)
+	(target.Behaviour.behaviour_instance as FightBehaviour).fight = fight
+
+	var stop = force_behaviour(StopFightBehaviour) as StopFightBehaviour
+	stop.fight = fight
+	stop.arrest_target = target
+	stop.arrest_room = prison
+	return true
+
+func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		if not guest.pending_arrest:
+			continue
+		var guest_room = Global.Building.query.room_at_position(guest.global_position) as RoomBase
+		if guest_room == room:
+			return guest
+	return null
 
 func try_change_job_based_on_room(room : RoomBase):
 	var new_job = room.associated_job

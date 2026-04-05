@@ -83,6 +83,8 @@ func _process(delta):
 		var npc_strength := 0.0
 
 		for p in f.participants:
+			if not is_instance_valid(p):
+				continue
 			var arrived := false
 			var b = p.Behaviour.behaviour_instance
 			if b is FightBehaviour:

@@ -29,7 +29,7 @@ func end_fight():
 				if is_arrest_fight:
 					p.pending_arrest = false
 				elif p.look_info != null:
-					WantedHandler.create_fight_fine(p.look_info, DRUNK_FIGHT_BOUNTY)
+					BountyHandler.create_fight_fine(p.look_info, DRUNK_FIGHT_BOUNTY)
 				p.force_behaviour(ArrestedBehaviour)
 	else:
 		for p in participants:

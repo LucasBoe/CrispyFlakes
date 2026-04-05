@@ -21,22 +21,22 @@ func activate(look: NPCLookInfo):
 func deactivate(look: NPCLookInfo):
 	active_looks.erase(look)
 
-func get_all_wanted_npcs() -> Array:
+func get_all_bounties() -> Array:
 	var result = []
 	for look in npc_bounties:
 		result.append({"look": look, "bounty": npc_bounties[look]})
 	return result
 
-func get_available_wanted_npcs() -> Array:
+func get_available_bounties() -> Array:
 	var result = []
 	for look in npc_bounties:
 		if look not in active_looks:
 			result.append({"look": look, "bounty": npc_bounties[look]})
 	return result
 
-func is_look_similar_to_any_wanted(look: NPCLookInfo) -> bool:
-	for wanted_look in npc_bounties:
-		if _hue_distance(look.color_offsets.x, wanted_look.color_offsets.x) < 0.15:
+func is_look_similar_to_any_bounty(look: NPCLookInfo) -> bool:
+	for bounty_look in npc_bounties:
+		if _hue_distance(look.color_offsets.x, bounty_look.color_offsets.x) < 0.15:
 			return true
 	return false
 

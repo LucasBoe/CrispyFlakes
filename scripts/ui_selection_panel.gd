@@ -10,15 +10,20 @@ class_name UISelectionPanel
 @onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
 @onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
-@onready var wanted_item_container = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer
-@onready var wanted_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/WantedContainer/MarginContainer
-
-const PrisonerItemScene = preload("res://scenes/ui/prisoner_item_ui.tscn")
+@onready var bounty_item_container = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer
+@onready var bounty_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer/MarginContainer
+@onready var storage_filter_container = $MarginContainer/MarginContainer/VBoxContainer/StorageFilterContainer
+@onready var storage_filter_grid = $MarginContainer/MarginContainer/VBoxContainer/StorageFilterContainer/StorageFilterGrid
+@onready var storage_filter_button_dummy: Button = $MarginContainer/MarginContainer/VBoxContainer/StorageFilterContainer/StorageFilterGrid/StorageFilterButtonDummy
+@onready var prisoner_item_dummy: PrisonerItemUI = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer/PrisonerItemDummy
+@onready var call_sheriff_button: Button = $MarginContainer/MarginContainer/VBoxContainer/CallSheriffButton
+@onready var status_icon_container_dummy: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconContainerDummy
+@onready var status_icon_row_dummy: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy
 
 var target = null
 var needs = null
 var need_ui_instances = []
-var wanted_item_instances = []
+var bounty_item_instances = []
 var prisoner_item_instances = []
 var status_icon_row = null
 var _current_status_labels: Array = []
@@ -37,8 +42,13 @@ func _ready():
 	hide()
 	need_ui_dummy.hide()
 	status_icon_label_dummy.hide()
+	status_icon_container_dummy.hide()
+	status_icon_row_dummy.hide()
 	status_row_dummy.hide()
-	wanted_item_dummy.hide()
+	bounty_item_dummy.hide()
+	prisoner_item_dummy.hide()
+	call_sheriff_button.hide()
+	storage_filter_button_dummy.hide()
 	arrest_button.hide()
 
 func manually_select(node):
@@ -91,10 +101,12 @@ func _clear_instances():
 		n.queue_free()
 	need_ui_instances.clear()
 
-	for w in wanted_item_instances:
+	for w in bounty_item_instances:
 		w.queue_free()
-	wanted_item_instances.clear()
-	wanted_item_container.hide()
+	bounty_item_instances.clear()
+	bounty_item_container.hide()
+	call_sheriff_button.hide()
+	call_sheriff_button.disabled = false
 
 	for p in prisoner_item_instances:
 		if is_instance_valid(p):
@@ -114,7 +126,7 @@ func _get_status_icon_entries(npc: NPC) -> Array:
 			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest"})
 		if b is ArrestedBehaviour:
 			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Arrested"})
-		if npc.look_info != null and WantedHandler.npc_bounties.has(npc.look_info):
+		if npc.look_info != null and BountyHandler.npc_bounties.has(npc.look_info):
 			entries.append({icon = UiNotifications.ICON_FUGITIVE, label = "Has Bounty"})
 	return entries
 
@@ -126,28 +138,20 @@ func _rebuild_status_icons(entries: Array):
 	if entries.is_empty():
 		return
 
-	var container := VBoxContainer.new()
-	container.add_theme_constant_override("separation", 2)
+	var container := status_icon_container_dummy.duplicate() as VBoxContainer
 	var parent = need_ui_dummy.get_parent()
 	parent.add_child(container)
 	parent.move_child(container, describtion_label.get_index() + 1)
+	container.show()
 	status_icon_row = container
 
 	for entry in entries:
-		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 6)
+		var row := status_icon_row_dummy.duplicate() as HBoxContainer
 		container.add_child(row)
-
-		var tex_rect := TextureRect.new()
-		tex_rect.texture = entry.icon
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.custom_minimum_size = Vector2(16, 16)
-		row.add_child(tex_rect)
-
-		var lbl := status_icon_label_dummy.duplicate() as Label
+		row.get_child(0).texture = entry.icon
+		var lbl := row.get_child(1) as Label
 		lbl.text = entry.label
-		lbl.show()
-		row.add_child(lbl)
+		row.show()
 
 func _show_status_row(text: String, color: Color, link_target = null, link_text: String = ""):
 	if is_instance_valid(_status_row_instance):
@@ -240,39 +244,79 @@ func _show_for_room(room: RoomBase):
 		else:
 			_show_status_row("No Worker", Color.ORANGE)
 
-	if room is RoomWantedBoard:
-		_show_wanted_board()
+	storage_filter_container.visible = false
+	if room is RoomBountyBoard:
+		_show_bounty_board()
 	elif room is RoomPrison:
 		_show_prison(room)
+	elif room.get_script() != null and room.get_script().get_global_name() == "RoomStorage":
+		_show_storage_filter(room)
 
 	if room.has_upgrades:
 		_show_room_upgrades(room)
 	else:
 		room_upgrade_hbox.get_parent().hide()
 
+func _show_storage_filter(room: RoomBase):
+	storage_filter_container.visible = true
+	Util.delete_all_children_execept_index_0(storage_filter_grid)
+	for item_type in Enum.Items.values():
+		var btn := storage_filter_button_dummy.duplicate() as Button
+		var is_allowed: bool = item_type in room.allowed_items
+		btn.button_pressed = is_allowed
+		btn.icon = Item.get_info(item_type).Tex
+		btn.tooltip_text = Enum.Items.keys()[item_type]
+		var x_overlay := btn.get_node("XOverlay") as TextureRect
+		x_overlay.visible = not is_allowed
+		btn.toggled.connect(func(pressed: bool):
+			x_overlay.visible = not pressed
+			if pressed:
+				if item_type not in room.allowed_items:
+					room.allowed_items.append(item_type)
+			else:
+				room.allowed_items.erase(item_type)
+		)
+		storage_filter_grid.add_child(btn)
+		btn.show()
+
 func _show_prison(room: RoomPrison):
 	for prisoner in room.prisoners:
 		if not prisoner is NPCGuest:
 			continue
-		var bounty: int = WantedHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
-		var fine: int = WantedHandler.npc_fight_fines.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
-		var instance = PrisonerItemScene.instantiate()
-		wanted_item_container.add_child(instance)
+		var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
+		var fine: int = BountyHandler.npc_fight_fines.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
+		var instance := prisoner_item_dummy.duplicate() as PrisonerItemUI
+		bounty_item_container.add_child(instance)
 		prisoner_item_instances.append(instance)
 		instance.init(prisoner, bounty, fine)
 		instance.show()
 	if room.prisoners.size() > 0:
-		wanted_item_container.show()
+		bounty_item_container.show()
+		call_sheriff_button.show()
+		Util.disconnect_all_pressed(call_sheriff_button)
+		call_sheriff_button.pressed.connect(func():
+			Global.NPCSpawner.spawn_sheriff()
+			call_sheriff_button.disabled = true
+		)
 
-func _show_wanted_board():
-	var wanted_npcs = WantedHandler.get_all_wanted_npcs()
-	for i in range(0, min(4, wanted_npcs.size())):
-		var instance = wanted_item_dummy.duplicate() as WantedItemUI
-		wanted_item_container.add_child(instance)
-		wanted_item_instances.append(instance)
-		instance.init(wanted_npcs[i])
+func _show_bounty_board():
+	var bounties = BountyHandler.get_all_bounties()
+	for i in range(0, min(4, bounties.size())):
+		var instance = bounty_item_dummy.duplicate() as BountyItemUI
+		bounty_item_container.add_child(instance)
+		bounty_item_instances.append(instance)
+		instance.init(bounties[i])
 		instance.show()
-	wanted_item_container.show()
+	bounty_item_container.show()
+
+	var has_prison = Global.Building.count_rooms_by_data(Global.Building.room_data_prison) > 0
+	call_sheriff_button.visible = not has_prison
+
+	Util.disconnect_all_pressed(call_sheriff_button)
+	call_sheriff_button.pressed.connect(func():
+		Global.NPCSpawner.spawn_sheriff()
+		call_sheriff_button.disabled = true
+	)
 
 func _show_room_upgrades(room: RoomBase):
 	room_upgrade_hbox.get_parent().show()
