@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://cm20no2kr7t3b"]
+
+[ext_resource type="Script" uid="uid://bxevcdb70bobu" path="res://scripts/room_safe.gd" id="1_safe"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_safe"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_safe"]
+[ext_resource type="Texture2D" uid="uid://dp5vwwwy2jkpj" path="res://assets/sprites/safe.png" id="4_4sg5j"]
+
+[node name="Room_Safe" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_safe")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_safe")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_safe")
+
+[node name="Safe" type="Sprite2D" parent="."]
+position = Vector2(22, -19)
+texture = ExtResource("4_4sg5j")
+offset = Vector2(0, 0.5)

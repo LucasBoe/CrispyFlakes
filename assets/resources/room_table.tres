@@ -13,4 +13,5 @@ room_desc = "Guests that were served will sit down here."
 room_icon = ExtResource("2_fhs30")
 room_preview = ExtResource("3_gmxco")
 construction_price = 20
+money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

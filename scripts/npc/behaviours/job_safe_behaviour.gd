@@ -1,0 +1,48 @@
+extends Behaviour
+class_name JobSafeBehaviour
+
+var safe : RoomSafe
+
+static var occupied_safes = []
+
+func start_loop():
+	safe = try_get_room_if_not_occupied(data, RoomSafe, occupied_safes)
+
+func loop():
+	await move(safe.get_random_floor_position())
+
+	while true:
+		var safe_loc = Vector2i(safe.x, safe.y)
+		var target_loc = MoneyHandler.richest_location(safe_loc)
+
+		if target_loc == Vector2i(-9999, -9999) or MoneyHandler.get_money_at(target_loc) < 1.0:
+			# Nothing to collect — idle at safe
+			await move(safe.get_random_floor_position())
+			await pause(2)
+			continue
+
+		# Walk to the target room location
+		var target_room = Global.Building.get_room_from_index(target_loc)
+		if is_instance_valid(target_room):
+			await move(target_room.get_random_floor_position())
+		else:
+			var world_pos = Global.Building.global_position_from_room_index(target_loc)
+			await move(world_pos)
+
+		# Brief collect animation, then transfer money to safe
+		if is_instance_valid(target_room) and is_instance_valid(target_room.get_node_or_null("ProgressBar")):
+			await progress(1.0, target_room.get_node("ProgressBar"))
+
+		MoneyHandler.collect_to(target_loc, safe_loc)
+
+		# Return to safe
+		await move(safe.get_random_floor_position())
+
+func stop_loop() -> BehaviourSaveData:
+	occupied_safes.erase(safe)
+	if is_instance_valid(safe):
+		safe.worker = null
+
+	var _data = BehaviourSaveData.new(get_script())
+	_data.room = safe
+	return _data

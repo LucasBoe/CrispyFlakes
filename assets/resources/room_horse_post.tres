@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://room_horse_post_data"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_hpost"]
+[ext_resource type="PackedScene" uid="uid://room_horse_post_scene" path="res://scenes/rooms/room_horse_post.tscn" id="2_hpost"]
+
+[resource]
+script = ExtResource("1_hpost")
+packed_scene = ExtResource("2_hpost")
+room_name = "Horse Post"
+room_desc = "Guests arriving on horseback will tie their horses here."
+is_outdoor = true
+construction_price = 20
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

@@ -9,6 +9,11 @@ class_name UIMoney
 func _ready():
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
 	ResourceHandler.on_money_changed.connect(_on_money_changed)
+	GlobalEventHandler.on_room_created_signal.connect(_on_room_changed)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_changed)
+
+func _on_room_changed(_room = null):
+	_on_money_changed()
 	
 func _on_jobs_changed():
 	var worker_payments_daily = JobHandler.payment_total
@@ -16,17 +21,16 @@ func _on_jobs_changed():
 	
 func _on_money_changed():
 	var total_money = ResourceHandler.resources[Enum.Resources.MONEY]
-	
+
 	var added_money = 0.0
-	
 	for change in ResourceHandler.money_transaction_history.values():
 		if change < 0:
 			continue
-			
 		added_money += change
-	
-	plus_label.text = str("+",roundi(added_money), "/D")
-	count_label.text = str(total_money, "")
+
+	plus_label.text = str("+", roundi(added_money), "/D")
+	var cap = MoneyHandler.total_capacity()
+	count_label.text = str(roundi(total_money), "/", roundi(cap))
 	
 func get_label_relative_position(camera : Camera2D):
 	

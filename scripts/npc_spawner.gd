@@ -60,6 +60,10 @@ func spawn_new_guest():
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
 	spawned_guest_signal.emit(guests.size())
+
+	if randf() < 0.3:
+		guest.force_behaviour(ArriveOnHorseBehaviour)
+
 	return guest
 
 func spawn_sheriff():
@@ -80,6 +84,8 @@ func console_spawn_guest(adj):
 	if adj and adj != "":
 		if adj == "drunk":
 			guest.Needs.drunkenness.strength = .5
+		elif adj == "horse":
+			guest.force_behaviour(ArriveOnHorseBehaviour)
 
 func console_spawn_guests(amount, adj):
 	print("spawn_guests", amount)

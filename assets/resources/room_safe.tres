@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://room_safe_data"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_safe"]
+[ext_resource type="PackedScene" uid="uid://room_safe_scene" path="res://scenes/rooms/room_safe.tscn" id="2_safe"]
+
+[resource]
+script = ExtResource("1_safe")
+packed_scene = ExtResource("2_safe")
+room_name = "Safe"
+room_desc = "Keeps your earnings secure. A worker will collect money from all rooms and store it here."
+money_capacity = 1000
+construction_price = 150
+tier = 1
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

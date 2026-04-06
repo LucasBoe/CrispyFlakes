@@ -20,9 +20,13 @@ const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
 const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
 const TEX_CARRY = preload("res://assets/sprites/cowboy_raw_carry.png")
 const TEX_SIT   = preload("res://assets/sprites/cowboy_raw_sit.png")
+const TEX_RIDE  = preload("res://assets/sprites/cowboy_raw_ride.png")
 
 var npc
 var is_sitting : bool = false
+var is_riding : bool = false
+
+const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 
 func _ready():
 	material = material.duplicate(true)
@@ -37,8 +41,13 @@ func _ready():
 func set_sitting(value : bool):
 	is_sitting = value
 
+func set_riding(value : bool):
+	is_riding = value
+
 func _update_texture():
-	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
+	if is_riding:
+		texture = TEX_RIDE
+	elif npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		texture = TEX_FIGHT
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
 		texture = TEX_STAND
@@ -69,9 +78,11 @@ func _process(_delta):
 
 	var lerp_speed = .2
 
-	position = lerp(position, target.position, lerp_speed)
+	var base_pos = RIDE_BODY_OFFSET if is_riding else Vector2.ZERO
+	position = lerp(position, base_pos + target.position, lerp_speed)
 	rotation = lerp(rotation, target.rotation, lerp_speed)
 	scale = lerp(scale, target.scale, lerp_speed)
+
 
 func walk_tween(time_in_seconds):
 	var drunk = 0.0

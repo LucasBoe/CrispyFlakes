@@ -9,7 +9,8 @@ class_name BuildMenuUITab
 @onready var hover_info_room_desc_label : RichTextLabel = %RoomBuildHoverInfoDescLabel
 @onready var hover_info_room_price_label : Label = %RoomBuildHoverInfoPriceLabel
 @onready var hover_info_room_preview_texture_rect : TextureRect = %RoomBuildHoverInfoRoomPreviewTextureRect
-@onready var hover_info_room_item_name_label : Label = %RoomBuildHoverInfoItemNameLabel
+@onready var hover_info_room_consumed_texture_rect : TextureRect = %RoomBuildHoverInfoConsumedTextureRect
+@onready var hover_info_room_arrow_label : Label = %RoomBuildHoverInfoArrowLabel
 @onready var hover_info_room_item_texture_rect : TextureRect = %RoomBuildHoverInfoItemTextureRect
 
 var groups = {}
@@ -34,10 +35,12 @@ func _ready():
 	brewery_button = create_button(group, Global.Building.room_data_brewery)
 	storage_button = create_button(group, Global.Building.room_data_storage)
 	create_button(group, Global.Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
+	create_button(group, Global.Building.room_data_horse_post, RoomHorsePost.custom_placement_check)
 	create_button(group, Global.Building.room_data_bath)
 	create_button(group, Global.Building.room_data_destillery)
 	create_button(group, Global.Building.room_data_aging_cellar)
 	create_button(group, Global.Building.room_data_prison)
+	create_button(group, Global.Building.room_data_safe)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
@@ -75,10 +78,15 @@ func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_price_label.text = str(data.construction_price, "$")
 	hover_info_room_preview_texture_rect.texture = data.room_preview
 
-	var item_root = hover_info_room_item_name_label.get_parent()
-	item_root.visible = data.produces_item
-	hover_info_room_item_name_label.text = data.produced_item_name
-	hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
+	var recipe_row = hover_info_room_item_texture_rect.get_parent()
+	recipe_row.visible = data.produces_item or data.has_consumed_item
+	hover_info_room_item_texture_rect.visible = data.produces_item
+	if data.produces_item:
+		hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
+	hover_info_room_consumed_texture_rect.visible = data.has_consumed_item
+	hover_info_room_arrow_label.visible = data.has_consumed_item and data.produces_item
+	if data.has_consumed_item:
+		hover_info_room_consumed_texture_rect.texture = Item.get_info(data.consumed_item_type).Tex
 
 	last_hover = data
 	hover_info_room_box_root.show()

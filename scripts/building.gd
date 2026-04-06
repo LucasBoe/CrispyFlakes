@@ -23,6 +23,8 @@ const room_data_destillery := preload("res://assets/resources/room_destillery.tr
 const room_data_aging_cellar := preload("res://assets/resources/room_aging_cellar.tres")
 const room_data_prison := preload("res://assets/resources/room_prison.tres")
 const room_data_bounty_board := preload("res://assets/resources/room_bounty_board.tres")
+const room_data_safe := preload("res://assets/resources/room_safe.tres")
+const room_data_horse_post := preload("res://assets/resources/room_horse_post.tres")
 
 func _init():
 	Global.Building = self

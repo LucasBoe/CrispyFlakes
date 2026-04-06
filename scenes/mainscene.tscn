@@ -502,6 +502,27 @@ theme = ExtResource("22_hpv7r")
 text = "Describtion label"
 fit_content = true
 
+[node name="RoomRecipeRow" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ConsumedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+visible = false
+layout_mode = 2
+stretch_mode = 5
+
+[node name="ArrowLabel" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+text = ">"
+vertical_alignment = 2
+
+[node name="ProducedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+layout_mode = 2
+stretch_mode = 5
+
 [node name="BountyContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -849,6 +870,12 @@ mouse_filter = 2
 texture = ExtResource("72_filter")
 stretch_mode = 6
 
+[node name="RoomMoneyLabel" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+text = "310 / 133 $"
+
 [node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
@@ -1004,7 +1031,7 @@ mouse_filter = 2
 script = ExtResource("37_u4j4d")
 
 [node name="MarginContainer" type="Control" parent="UI/UIMoney"]
-custom_minimum_size = Vector2(52, 16)
+custom_minimum_size = Vector2(112, 16)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -1039,14 +1066,14 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 5.0
+offset_left = -16.0
 offset_top = -7.0
-offset_right = 37.0
+offset_right = 48.0
 offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_fonts/font = ExtResource("29_1f2rr")
-text = "100"
+text = "100/100"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -1058,9 +1085,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -37.0
+offset_left = -61.0
 offset_top = -19.0
-offset_right = -11.0
+offset_right = -35.0
 offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -1077,9 +1104,9 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -37.0
+offset_left = -61.0
 offset_top = -12.0
-offset_right = -11.0
+offset_right = -35.0
 offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 0
@@ -1091,16 +1118,13 @@ vertical_alignment = 2
 [node name="TextureRect" type="TextureRect" parent="UI/UIMoney/MarginContainer"]
 texture_filter = 1
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
+anchors_preset = 4
 anchor_top = 0.5
-anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -7.0
+offset_left = 23.0
 offset_top = -12.0
-offset_right = 18.0
+offset_right = 48.0
 offset_bottom = 12.0
-grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("38_wm4va")
 expand_mode = 2
@@ -1607,20 +1631,28 @@ fit_content = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 2
 
-[node name="RoomBuildHoverInfoItemNameLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+[node name="RoomBuildHoverInfoConsumedTextureRect" type="TextureRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
+visible = false
+layout_mode = 2
+stretch_mode = 5
+
+[node name="RoomBuildHoverInfoArrowLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("22_hpv7r")
-theme_override_colors/font_color = Color(0, 1, 1, 1)
-text = "+ Beer Barrels"
+text = ">"
 vertical_alignment = 2
 
 [node name="RoomBuildHoverInfoItemTextureRect" type="TextureRect" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 texture = ExtResource("19_v28my")
+stretch_mode = 5
 
 [node name="RoomBuildHoverInfoPriceLabel" type="Label" parent="UI/UIMenu/MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true

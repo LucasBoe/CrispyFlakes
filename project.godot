@@ -46,6 +46,7 @@ Console="*res://addons/console/console.gd"
 GlobalEventHandler="*res://scripts/autoloads/global_event_handler.gd"
 RoomStatusHandler="*res://scripts/autoloads/room_status_handler.gd"
 BountyHandler="*res://scripts/autoloads/bounty_handler.gd"
+MoneyHandler="*res://scripts/autoloads/money_handler.gd"
 
 [display]
 

@@ -1,6 +1,8 @@
 extends Control
 class_name UICloseHandler
 
+#TODO: replace with proper check
+
 signal fullscreen_ui_close_signal
 
 func _ready():

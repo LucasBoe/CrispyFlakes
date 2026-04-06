@@ -28,6 +28,7 @@ enum Jobs {
 	JUNK,
 	DESTILLERY,
 	PRISON,
+	SAFE,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -55,6 +56,9 @@ static func job_to_behaviour(job : Jobs):
 			
 		Enum.Jobs.PRISON:
 			return JobPrisonBehaviour
+
+		Enum.Jobs.SAFE:
+			return JobSafeBehaviour
 
 enum RequestStatus {
 	OPEN,

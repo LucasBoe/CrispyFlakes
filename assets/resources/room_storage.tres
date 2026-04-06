@@ -14,4 +14,5 @@ room_icon = ExtResource("2_ot1c6")
 room_preview = ExtResource("3_tfq55")
 construction_price = 20
 tier = 1
+money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

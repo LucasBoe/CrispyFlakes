@@ -17,6 +17,8 @@ func change_resource(resource, change):
 	#print("on change resource ", Enum.Resources.keys()[r], " (", change, ")")
 	resources[r] += change
 	on_resource_changed.emit(r, resources[r], change)
+	if r == Enum.Resources.MONEY and change < 0:
+		MoneyHandler.spend(-change)
 	
 	#if r == Enum.Resources.MONEY:
 		#for c in clamp(change, 1, 5):
@@ -53,15 +55,20 @@ func has(resource, amount):
 func has_money(amount) -> bool:
 	return has(Enum.Resources.MONEY, amount)
 
-func add_animated(resource, amount, global_pos):
-	
+func add_animated(resource, amount, global_pos, room_location: Vector2i = Vector2i(-9999, -9999)):
+
 	if resource == Enum.Resources.MONEY:
 		SoundPlayer.treasure.play_random_pitch()
-	
+
 	var animation_duration = 1.0
 	on_animate_resource_add.emit(resource, amount, global_pos, animation_duration)
 	await get_tree().create_timer(animation_duration).timeout
 	change_resource(resource, amount)
+	if resource == Enum.Resources.MONEY and amount > 0:
+		if room_location != Vector2i(-9999, -9999):
+			MoneyHandler.deposit(room_location, amount)
+		else:
+			MoneyHandler.deposit_free(amount)
 	
 
 func _process(delta):

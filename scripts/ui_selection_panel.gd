@@ -19,6 +19,11 @@ class_name UISelectionPanel
 @onready var call_sheriff_button: Button = $MarginContainer/MarginContainer/VBoxContainer/CallSheriffButton
 @onready var status_icon_container_dummy: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconContainerDummy
 @onready var status_icon_row_dummy: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy
+@onready var room_money_label: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomMoneyLabel
+@onready var room_recipe_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow
+@onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
+@onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
+@onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
 
 var target = null
 var needs = null
@@ -97,6 +102,9 @@ func _clear_instances():
 		_status_row_instance.queue_free()
 	_status_row_instance = null
 
+	room_money_label.hide()
+	room_recipe_row.hide()
+
 	for n in need_ui_instances:
 		n.queue_free()
 	need_ui_instances.clear()
@@ -124,14 +132,20 @@ func _get_status_icon_entries(npc: NPC) -> Array:
 		var guest := npc as NPCGuest
 		
 		var bounty = BountyHandler.get_bounty_for(guest)
-		var bounty_info = " (0$)" if bounty == null else str(" (", bounty ,"$)")
+		var bounty_info = " 0$" if bounty == null else str(" ",bounty,"$")
+
+		var pending_arrest = guest.pending_arrest
+		var is_arrested = b is ArrestedBehaviour
+		var has_bounty = bounty != null
 		
-		if guest.pending_arrest:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Marked for Arrest",bounty_info)})
-		if b is ArrestedBehaviour:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Arrested",bounty_info)})
-		if npc.look_info != null and BountyHandler.npc_bounties.has(npc.look_info):
-			entries.append({icon = UiNotifications.ICON_FUGITIVE, label =  str("Has Bounty",bounty_info)})
+		if pending_arrest:
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Marked for Arrest (Drop Worker)")})
+		if is_arrested:
+			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Arrested (Call Sherrif)")})
+		if has_bounty:
+			entries.append({icon = UiNotifications.ICON_FUGITIVE, label =  str("Has Bounty (",bounty_info, ")")})
+		elif pending_arrest or is_arrested:
+			entries.append({label = "Has No Bounty or Fine"})
 	return entries
 
 func _rebuild_status_icons(entries: Array):
@@ -152,7 +166,8 @@ func _rebuild_status_icons(entries: Array):
 	for entry in entries:
 		var row := status_icon_row_dummy.duplicate() as HBoxContainer
 		container.add_child(row)
-		row.get_child(0).texture = entry.icon
+		if entry.has("icon"):
+			row.get_child(0).texture = entry.icon
 		var lbl := row.get_child(1) as Label
 		lbl.text = entry.label
 		row.show()
@@ -247,6 +262,20 @@ func _show_for_room(room: RoomBase):
 			room.worker.Tint.add_outline(Color.WHITE, 20, self)
 		else:
 			_show_status_row("No Worker", Color.ORANGE)
+
+	room_money_label.visible = room.data != null and room.data.money_capacity > 0
+
+	var d = room.data
+	var has_recipe = d != null and (d.produces_item or d.has_consumed_item)
+	room_recipe_row.visible = has_recipe
+	if has_recipe:
+		room_recipe_consumed_icon.visible = d.has_consumed_item
+		room_recipe_arrow.visible = d.has_consumed_item and d.produces_item
+		room_recipe_produced_icon.visible = d.produces_item
+		if d.has_consumed_item:
+			room_recipe_consumed_icon.texture = Item.get_info(d.consumed_item_type).Tex
+		if d.produces_item:
+			room_recipe_produced_icon.texture = Item.get_info(d.produced_item_type).Tex
 
 	storage_filter_container.visible = false
 	if room is RoomBountyBoard:
@@ -396,6 +425,11 @@ func _process(delta):
 
 	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, %Camera)
 	line.target_position = pos
+
+	if room_money_label.visible and target is RoomBase:
+		var stored = MoneyHandler.get_money_at(Vector2i(target.x, target.y))
+		var cap = target.data.money_capacity if target.data != null else 0
+		room_money_label.text = str("Cash stored here: ", roundi(stored), " / ", cap, "$")
 
 	if target is NPC:
 		var entries = _get_status_icon_entries(target)

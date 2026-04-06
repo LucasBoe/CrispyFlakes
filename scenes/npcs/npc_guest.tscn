@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=16 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_cyq43"]
 [ext_resource type="Texture2D" uid="uid://dyupopynhn884" path="res://assets/sprites/handcuffs.png" id="7_482k3"]
 [ext_resource type="Script" uid="uid://qx7b2210t8x7" path="res://scripts/npc/modules/needs_module.gd" id="7_prewa"]
+[ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="8_horse"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 radius = 7.0
@@ -24,6 +25,7 @@ shader_parameter/sprite_sheet = ExtResource("3_1phmo")
 shader_parameter/sprite_index = Vector2i(0, 0)
 shader_parameter/cell_pixel_size = Vector2(24, 16)
 shader_parameter/base_hue_offset = Vector3(0, 0, 0)
+shader_parameter/use_apron = false
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_p1iho"]
 particle_flag_disable_z = true
@@ -50,6 +52,11 @@ material = SubResource("ShaderMaterial_482k3")
 texture = ExtResource("4_cyq43")
 offset = Vector2(0, -12)
 script = ExtResource("4_482k3")
+
+[node name="Horse" type="Sprite2D" parent="AnimationModule"]
+visible = false
+z_index = -100
+texture = ExtResource("8_horse")
 
 [node name="Dirt" type="Sprite2D" parent="AnimationModule"]
 visible = false

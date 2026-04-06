@@ -7,6 +7,9 @@ var pending_arrest: bool = false
 var _status_icon_instance = null
 var _status_icon_texture = null
 
+var _arrest_highlight = null
+var _arrest_highlight_room = null
+
 var Needs : NeedsModule
 var is_dirty = true
 
@@ -34,10 +37,14 @@ func apply_look(custom_look = null):
 	mat.set_shader_parameter("base_hue_offset", look_info.color_offsets)
 	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
 
+func _exit_tree():
+	_clear_arrest_highlight()
+
 func _process(_delta):
 
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
 	_refresh_status_icon()
+	_refresh_arrest_highlight()
 
 	if Behaviour.has_behaviour:
 		return
@@ -87,6 +94,24 @@ func get_next_behaviour():
 		return FightBehaviour
 
 	return Behaviour.get_behaviour_from_available_rooms(Global.Building.query.all_rooms_of_type(RoomBase))
+
+func _refresh_arrest_highlight():
+	var in_fight = Behaviour.behaviour_instance is FightBehaviour
+	if pending_arrest and not in_fight:
+		var current_room = Global.Building.query.room_at_position(global_position)
+		if current_room != _arrest_highlight_room:
+			_clear_arrest_highlight()
+			_arrest_highlight_room = current_room
+			if current_room != null:
+				_arrest_highlight = RoomHighlighter.request_rect(current_room, Color.YELLOW)
+	else:
+		_clear_arrest_highlight()
+
+func _clear_arrest_highlight():
+	if _arrest_highlight != null:
+		RoomHighlighter.dispose(_arrest_highlight)
+		_arrest_highlight = null
+		_arrest_highlight_room = null
 
 func try_drop_dirt():
 	if not dirt.get_child(0).visible:

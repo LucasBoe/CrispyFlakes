@@ -25,7 +25,7 @@ func loop():
 
 			await progress(6, bath.progressBar)
 
-			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position())
+			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position(), Vector2i(bath.x, bath.y))
 			bath.clean_customer()
 
 func stop_loop():

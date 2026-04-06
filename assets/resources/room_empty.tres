@@ -6,4 +6,5 @@
 [resource]
 script = ExtResource("4_4s8o0")
 packed_scene = ExtResource("1_g85or")
+money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"
