@@ -12,5 +12,5 @@ func loop():
 	if npc is NPCGuest:
 		Global.NPCSpawner.on_guest_destroy(npc)
 
-	await move(Vector2(-256,0))
+	await move(Global.LEAVE_POSITION)
 	npc.destroy()

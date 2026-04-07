@@ -64,8 +64,10 @@ func _refresh_status_icon():
 		icon = UiNotifications.ICON_KNOCKED_OUT
 	elif b is FightBehaviour:
 		icon = UiNotifications.ICON_FIGHT
-	elif pending_arrest or b is ArrestedBehaviour:
+	elif pending_arrest:
 		icon = UiNotifications.ICON_HANDCUFFS
+	elif b is ArrestedBehaviour:
+		icon = UiNotifications.ICON_HANDCUFFED
 	elif look_info != null and BountyHandler.npc_bounties.has(look_info):
 		icon = UiNotifications.ICON_FUGITIVE
 
@@ -103,7 +105,7 @@ func _refresh_arrest_highlight():
 			_clear_arrest_highlight()
 			_arrest_highlight_room = current_room
 			if current_room != null:
-				_arrest_highlight = RoomHighlighter.request_rect(current_room, Color.YELLOW)
+				_arrest_highlight = RoomHighlighter.request_rect(current_room, Color.YELLOW, 2, RoomHighlighter.Priority.ARREST)
 	else:
 		_clear_arrest_highlight()
 

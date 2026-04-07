@@ -13,6 +13,8 @@ class_name BuildMenuUITab
 @onready var hover_info_room_arrow_label : Label = %RoomBuildHoverInfoArrowLabel
 @onready var hover_info_room_item_texture_rect : TextureRect = %RoomBuildHoverInfoItemTextureRect
 
+const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
+
 var groups = {}
 
 var all_tiers = []
@@ -79,14 +81,19 @@ func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_preview_texture_rect.texture = data.room_preview
 
 	var recipe_row = hover_info_room_item_texture_rect.get_parent()
-	recipe_row.visible = data.produces_item or data.has_consumed_item
-	hover_info_room_item_texture_rect.visible = data.produces_item
-	if data.produces_item:
-		hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
+	recipe_row.visible = data.produces_item or data.has_consumed_item or data.produces_money
 	hover_info_room_consumed_texture_rect.visible = data.has_consumed_item
-	hover_info_room_arrow_label.visible = data.has_consumed_item and data.produces_item
+	hover_info_room_arrow_label.visible = data.has_consumed_item and (data.produces_item or data.produces_money)
 	if data.has_consumed_item:
 		hover_info_room_consumed_texture_rect.texture = Item.get_info(data.consumed_item_type).Tex
+	hover_info_room_item_texture_rect.visible = data.produces_item or data.produces_money
+	if data.produces_item:
+		hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
+	elif data.produces_money:
+		var coin_tex = AtlasTexture.new()
+		coin_tex.atlas = _COIN_ATLAS
+		coin_tex.region = Rect2(0, 0, 8, 8)
+		hover_info_room_item_texture_rect.texture = coin_tex
 
 	last_hover = data
 	hover_info_room_box_root.show()

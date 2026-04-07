@@ -14,6 +14,7 @@ var strength: float = 0.5
 var agility: float = 0.5
 var intelligence: float = 0.5
 var stamina: float = 1.0
+var health: float = 1.0
 
 const STAMINA_DRAIN = 0.08
 const STAMINA_REGEN = 0.05

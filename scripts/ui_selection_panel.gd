@@ -25,6 +25,8 @@ class_name UISelectionPanel
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
 
+const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
+
 var target = null
 var needs = null
 var need_ui_instances = []
@@ -141,7 +143,7 @@ func _get_status_icon_entries(npc: NPC) -> Array:
 		if pending_arrest:
 			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Marked for Arrest (Drop Worker)")})
 		if is_arrested:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Arrested (Call Sherrif)")})
+			entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = str("Arrested (Call Sherrif)")})
 		if has_bounty:
 			entries.append({icon = UiNotifications.ICON_FUGITIVE, label =  str("Has Bounty (",bounty_info, ")")})
 		elif pending_arrest or is_arrested:
@@ -249,7 +251,7 @@ func _show_for_room(room: RoomBase):
 	else:
 		room_delete_button.hide()
 
-	selected_room_highlight_instance = RoomHighlighter.request_rect(room, Color.WHITE)
+	selected_room_highlight_instance = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
 	var description = room.data.room_desc if room.data != null else ""
 	describtion_label.visible = description != ""
@@ -266,16 +268,10 @@ func _show_for_room(room: RoomBase):
 	room_money_label.visible = room.data != null and room.data.money_capacity > 0
 
 	var d = room.data
-	var has_recipe = d != null and (d.produces_item or d.has_consumed_item)
+	var has_recipe = d != null and (d.produces_item or d.has_consumed_item or d.produces_money)
 	room_recipe_row.visible = has_recipe
 	if has_recipe:
-		room_recipe_consumed_icon.visible = d.has_consumed_item
-		room_recipe_arrow.visible = d.has_consumed_item and d.produces_item
-		room_recipe_produced_icon.visible = d.produces_item
-		if d.has_consumed_item:
-			room_recipe_consumed_icon.texture = Item.get_info(d.consumed_item_type).Tex
-		if d.produces_item:
-			room_recipe_produced_icon.texture = Item.get_info(d.produced_item_type).Tex
+		_update_recipe_row(room)
 
 	storage_filter_container.visible = false
 	if room is RoomBountyBoard:
@@ -391,6 +387,31 @@ func _show_room_upgrades(room: RoomBase):
 
 	refresh_upgrades()
 
+func _update_recipe_row(room: RoomBase):
+	var d = room.data
+	if d == null:
+		return
+	if d.produces_money and room is RoomBar:
+		var bar := room as RoomBar
+		var has_upgrade = bar.current_upgrade != null
+		room_recipe_consumed_icon.visible = has_upgrade
+		room_recipe_arrow.visible = has_upgrade
+		if has_upgrade:
+			room_recipe_consumed_icon.texture = bar.current_upgrade.item_icon
+		room_recipe_produced_icon.visible = true
+		var coin_tex = AtlasTexture.new()
+		coin_tex.atlas = _COIN_ATLAS
+		coin_tex.region = Rect2(0, 0, 8, 8)
+		room_recipe_produced_icon.texture = coin_tex
+	else:
+		room_recipe_consumed_icon.visible = d.has_consumed_item
+		room_recipe_arrow.visible = d.has_consumed_item and d.produces_item
+		room_recipe_produced_icon.visible = d.produces_item
+		if d.has_consumed_item:
+			room_recipe_consumed_icon.texture = Item.get_info(d.consumed_item_type).Tex
+		if d.produces_item:
+			room_recipe_produced_icon.texture = Item.get_info(d.produced_item_type).Tex
+
 func refresh_upgrades():
 	for child in room_upgrade_hbox.get_children():
 		var upgrade_name = child.get_child(0).get_child(0).get_child(0).get_child(1).text
@@ -400,6 +421,9 @@ func refresh_upgrades():
 		child.modulate = Color.WHITE if not is_current else Color.WEB_GRAY
 		price_label.visible = not is_current
 		current_label.visible = is_current
+
+	if target is RoomBar:
+		_update_recipe_row(target)
 
 func _on_potential_target_deleted(room):
 	if target == room:

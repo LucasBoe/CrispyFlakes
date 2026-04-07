@@ -8,6 +8,7 @@ var UI : UIHolder
 var should_auto_spawn_guests = false
 
 const DAY_DURATION = 60.0
+const LEAVE_POSITION = Vector2(512, 0)
 
 var time_now: float = 0.0
 

@@ -14,6 +14,7 @@ const ICON_MINUS_2 = preload("uid://com64xsv8rgjb")
 const ICON_MINUS_3 = preload("uid://bbdxndq8d6dak")
 const ICON_FIGHT = preload("uid://cq7ltdnrruphx")
 const ICON_HANDCUFFS = preload("uid://cl2jtn5jtk0yh")
+const ICON_HANDCUFFED = preload("uid://d2mm1tn7w7oot")
 const ICON_KNOCKED_OUT = preload("res://assets/sprites/ui/icon_knocked_out.png")
 const ICON_FUGITIVE = preload("uid://dcde01v5i4hgb")
 
@@ -108,17 +109,22 @@ func create_npc_notification(target: Node2D, texture: Texture2D, permanent: bool
 
 	return i
 	
-func create_fight_bar(target_room : RoomBase) -> instance_info:
+func create_npc_health_bar(npc: NPC, color: Color) -> instance_info:
 	var i := _create_from_dummy(fight_bar_dummy, INF)
 	i.is_permanent = true
-	i.instance.global_position = target_room.get_center_position() + Vector2(0, -24)
+	i.target_object = npc
+	i.offset = Vector2(-3, -32)
+	var bar := i.instance.get_node("ProgressBar") as ProgressBar
+	var fill_style := bar.get_theme_stylebox("fill").duplicate() as StyleBoxFlat
+	fill_style.bg_color = color
+	bar.add_theme_stylebox_override("fill", fill_style)
 	return i
 
-func update_fight_bar(i : instance_info, bar_value : float):
+func update_npc_health_bar(i : instance_info, health_value : float):
 	if not i or not i.instance:
 		return
 	var bar := i.instance.get_node("ProgressBar") as ProgressBar
-	bar.value = bar_value
+	bar.value = health_value
 
 func _process(delta):
 	speechbubbe_dummy.global_position = get_global_mouse_position() - speechbubbe_dummy.pivot_offset

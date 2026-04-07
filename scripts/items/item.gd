@@ -44,6 +44,12 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 	info.Offset = offset
 	return info
 
+static func get_money_texture() -> AtlasTexture:
+	var tex = AtlasTexture.new()
+	tex.atlas = load("res://assets/sprites/coins-sprite-sheet.png")
+	tex.region = Rect2(0, 0, 8, 8)
+	return tex
+
 func destroy():
 	# preventive
 	LooseItemHandler.unregister_loose_item_instance(self)

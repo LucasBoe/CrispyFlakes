@@ -16,7 +16,7 @@ func start_building(data : RoomData, check):
 	is_placing = true
 
 	if not highlight:
-		highlight = RoomHighlighter.request_rect(Global.Building.floors[0][0])
+		highlight = RoomHighlighter.request_rect(Global.Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
 func stop_building():
 	if highlight:

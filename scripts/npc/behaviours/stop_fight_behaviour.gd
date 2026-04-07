@@ -14,7 +14,7 @@ func loop():
 	await move(fight.room)
 	arrived_at_room = true
 
-	while fight.bar > 0.0 and fight.bar < 1.0:
+	while not fight.is_over:
 		await end_of_frame()
 
 	if fight.worker_won():

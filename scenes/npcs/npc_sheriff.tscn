@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://npc_sheriff"]
+[gd_scene load_steps=12 format=3 uid="uid://dkofpmq8apncf"]
 
-[ext_resource type="Script" path="res://scripts/npc/npc_sheriff.gd" id="1_sheriff"]
+[ext_resource type="Script" uid="uid://ua4epfjpm88i" path="res://scripts/npc/npc_sheriff.gd" id="1_sheriff"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_sheriff"]
 [ext_resource type="Texture2D" uid="uid://dpc0ua32ji2lj" path="res://assets/sprites/cowboy_apron.png" id="3_sheriff"]
+[ext_resource type="Texture2D" uid="uid://b1a5ai6al5ike" path="res://assets/sprites/sherrif_upper_body.png" id="4_p477w"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="4_sheriff"]
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="5_sheriff"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="6_sheriff"]
@@ -17,9 +18,9 @@ height = 24.0
 shader = ExtResource("2_sheriff")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
-shader_parameter/sprite_sheet = ExtResource("3_sheriff")
+shader_parameter/sprite_sheet = ExtResource("4_p477w")
 shader_parameter/sprite_index = Vector2i(0, 0)
-shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/cell_pixel_size = Vector2(24, 18)
 shader_parameter/base_hue_offset = Vector3(0.6, 0.3, 0)
 shader_parameter/apron_sheet = ExtResource("3_sheriff")
 shader_parameter/use_apron = false

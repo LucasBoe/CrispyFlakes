@@ -79,7 +79,7 @@ vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
 
     vec4 overlay = texture(sprite_sheet, sheet_uv);
 
-    float mask = 1.0 - step(0.66, uv.y);
+    float mask = 1.0 - step(0.71, uv.y);
     vec4 result = mix(base, overlay, overlay.a * mask);
 
     if (use_apron) {

@@ -2,7 +2,7 @@ extends Node
 
 var active_fights = []
 var fight_particles = {}
-var fight_bars = {}
+var npc_health_bars = {}  # NPC -> instance_info
 
 @onready var fight_particle_scene : PackedScene = preload("res://scenes/fight_particles.tscn")
 
@@ -42,16 +42,18 @@ func _create_fight(position):
 	particle_scene.global_position = room.get_center_position()
 	fight_particles[fight] = particle_scene
 
-	fight_bars[fight] = UiNotifications.create_fight_bar(room)
-
 	return fight
 
 func _end_fight(fight):
 	_destroy_particles(fight_particles[fight])
 	fight_particles.erase(fight)
 
-	UiNotifications.try_kill(fight_bars[fight])
-	fight_bars.erase(fight)
+	for p in fight.participants:
+		if npc_health_bars.has(p):
+			UiNotifications.try_kill(npc_health_bars[p])
+			npc_health_bars.erase(p)
+
+	fight.is_over = true
 
 	var room = fight.room
 
@@ -63,7 +65,7 @@ func _end_fight(fight):
 
 	fight.end_fight()
 	active_fights.erase(fight)
-	
+
 func _is_destructable_room(room):
 	if room is RoomJunk:
 		return false
@@ -71,7 +73,7 @@ func _is_destructable_room(room):
 		return false
 	elif room is RoomEmpty:
 		return false
-		
+
 	return true
 
 func _destroy_particles(particles : GPUParticles2D):
@@ -89,8 +91,8 @@ func _get_valid_participant_positions(fight: Fight) -> Array:
 
 func _process(delta):
 	for f : Fight in active_fights:
-		var worker_strength := 0.0
-		var npc_strength := 0.0
+		var arrived_workers = []
+		var arrived_guests = []
 
 		for p in f.participants:
 			if not is_instance_valid(p):
@@ -104,27 +106,51 @@ func _process(delta):
 			if not arrived:
 				continue
 			if p is NPCWorker:
-				worker_strength += p.strength * p.stamina
+				arrived_workers.append(p)
 			elif p is NPCGuest:
-				npc_strength += p.strength * p.stamina
+				arrived_guests.append(p)
+
+			# Create health bar on first arrival
+			if not npc_health_bars.has(p):
+				p.health = 1.0
+				var color = Color.GREEN if p is NPCWorker else Color.RED
+				npc_health_bars[p] = UiNotifications.create_npc_health_bar(p, color)
 
 		f.time_elapsed += delta
 
-		if worker_strength > 0.0 and npc_strength > 0.0:
-			f.bar += (worker_strength - npc_strength) * delta
+		# Workers deal damage to guests, guests deal damage to workers
+		var worker_strength := 0.0
+		for w in arrived_workers:
+			worker_strength += w.strength * w.stamina
 
-		# Escalating fatigue drain — guests tire out over time, guaranteeing a resolution
-		var fatigue = (f.time_elapsed / Fight.MAX_DURATION_IN_SECONDS) * 0.12 * delta
-		f.bar -= fatigue
+		var guest_strength := 0.0
+		for g in arrived_guests:
+			guest_strength += g.strength * g.stamina
 
-		f.bar = clamp(f.bar, 0.0, 1.0)
+		if worker_strength > 0.0 and arrived_guests.size() > 0:
+			var dmg = worker_strength * delta / arrived_guests.size() / 4.0
+			for g in arrived_guests:
+				g.health = max(0.0, g.health - dmg)
 
-		if f.bar >= 1.0 or f.bar <= 0.0:
+		if guest_strength > 0.0 and arrived_workers.size() > 0:
+			var dmg = guest_strength * delta / arrived_workers.size() / 4.0
+			for w in arrived_workers:
+				w.health = max(0.0, w.health - dmg)
+
+		# Escalating fatigue — guests tire out over time, guaranteeing a resolution
+		if arrived_guests.size() > 0:
+			var fatigue = (f.time_elapsed / Fight.MAX_DURATION_IN_SECONDS) * 0.12 * delta / 4.0
+			for g in arrived_guests:
+				g.health = max(0.0, g.health - fatigue)
+
+		# Update health bar visuals
+		for p in f.participants:
+			if npc_health_bars.has(p) and is_instance_valid(p):
+				UiNotifications.update_npc_health_bar(npc_health_bars[p], p.health)
+
+		if f.worker_won() or f.npc_won():
 			_end_fight(f)
 			continue
-
-		if fight_bars.has(f):
-			UiNotifications.update_fight_bar(fight_bars[f], f.bar)
 
 		if fight_particles.has(f):
 			var positions = _get_valid_participant_positions(f)

@@ -1,10 +1,10 @@
 class_name Fight
 
-var bar: float = 0.5
 var participants = []
 var room : RoomBase
 var highlight
 var time_elapsed: float = 0.0
+var is_over: bool = false
 
 # Optionally set when this fight is an arrest confrontation
 var is_arrest_fight: bool = false
@@ -14,13 +14,25 @@ const DRUNK_FIGHT_BOUNTY: int = 10
 
 func start_fight(_room):
 	room = _room
-	highlight = RoomHighlighter.request_rect(room, Color.RED)
+	highlight = RoomHighlighter.request_rect(room, Color.RED, 2, RoomHighlighter.Priority.FIGHT)
 
 func worker_won() -> bool:
-	return bar >= 1.0
+	var has_guests = false
+	for p in participants:
+		if p is NPCGuest:
+			has_guests = true
+			if p.health > 0.0:
+				return false
+	return has_guests
 
 func npc_won() -> bool:
-	return bar <= 0.0
+	var has_workers = false
+	for p in participants:
+		if p is NPCWorker:
+			has_workers = true
+			if p.health > 0.0:
+				return false
+	return has_workers
 
 func end_fight():
 	if worker_won():
@@ -31,9 +43,5 @@ func end_fight():
 				elif p.look_info != null:
 					BountyHandler.create_fight_fine(p, DRUNK_FIGHT_BOUNTY)
 				p.force_behaviour(ArrestedBehaviour)
-	else:
-		for p in participants:
-			if p is NPCGuest and is_arrest_fight:
-				p.pending_arrest = false
 
 	RoomHighlighter.dispose(highlight)

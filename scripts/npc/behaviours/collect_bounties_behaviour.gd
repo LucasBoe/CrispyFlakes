@@ -20,7 +20,7 @@ func loop():
 		follow_b.sheriff = npc
 
 	# Walk out
-	await move(Vector2(-256, 0))
+	await move(Global.LEAVE_POSITION)
 
 	if is_instance_valid(npc):
 		npc.destroy()

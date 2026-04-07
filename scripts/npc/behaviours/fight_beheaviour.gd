@@ -8,7 +8,7 @@ var arrived_at_roon = false
 func loop():
 	if fight == null:
 		fight = FightHandler.get_or_create_fight(npc)
-	while fight.bar > 0.0 and fight.bar < 1.0:
+	while not fight.is_over:
 		await move(fight.room.get_random_floor_position())
 		arrived_at_roon = true
 		npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)

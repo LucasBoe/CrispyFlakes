@@ -210,7 +210,7 @@ func _activate_drag():
 		if room.worker != null:
 			continue
 
-		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1)
+		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
 		available_rooms_highlights.append(highlight)
 
 func _input(event):
@@ -237,10 +237,10 @@ func _input(event):
 	#	assignmentIndicator.visible = true
 
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
-		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5))
+		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5), 2, RoomHighlighter.Priority.SELECTION)
 
 	if not new_room_highlight && room:
-		new_room_highlight = RoomHighlighter.request_rect(room)
+		new_room_highlight = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
 	if target_pos && new_room_highlight:
 		new_room_highlight.global_position = room.get_center_position()

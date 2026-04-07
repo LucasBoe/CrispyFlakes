@@ -10,7 +10,7 @@ func loop():
 		await move(sheriff)
 
 	# Sheriff left — follow out
-	await move(Vector2(-256, 0))
+	await move(Global.LEAVE_POSITION)
 
 	if npc is NPCGuest:
 		Global.NPCSpawner.on_guest_destroy(npc)
