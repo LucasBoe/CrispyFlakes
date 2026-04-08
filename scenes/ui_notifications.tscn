@@ -14,18 +14,11 @@ font = ExtResource("4_ts1og")
 font_size = 11
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3mn1n"]
-bg_color = Color(1, 1, 1, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
+bg_color = Color(0.69342947, 0.6934295, 0.69342947, 1)
 border_color = Color(0.0076186024, 0.0076186024, 0.0076186024, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2j60r"]
 bg_color = Color(0.9607843, 0, 0, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_bottom = 1
 border_color = Color(0, 0, 0, 1)
 
 [node name="UINotifications" type="Node2D"]
@@ -139,9 +132,8 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -1.0
 offset_top = -16.0
-offset_right = 2.0
+offset_right = 1.0
 grow_horizontal = 2
-theme = ExtResource("6_nu268")
 theme_override_styles/background = SubResource("StyleBoxFlat_3mn1n")
 theme_override_styles/fill = SubResource("StyleBoxFlat_2j60r")
 max_value = 1.0
@@ -150,6 +142,7 @@ fill_mode = 3
 show_percentage = false
 
 [node name="NPCNotificationDummy" type="MarginContainer" parent="."]
+visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -162,6 +155,7 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="TextureRect" type="TextureRect" parent="NPCNotificationDummy"]
+visible = false
 layout_mode = 2
 texture = ExtResource("7_nu268")
 stretch_mode = 2

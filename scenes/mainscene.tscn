@@ -707,6 +707,24 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = ">"
 
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_right = 8
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
+layout_mode = 2
+text = "This is text"
+
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2

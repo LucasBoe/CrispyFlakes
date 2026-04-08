@@ -125,17 +125,20 @@ func _process(delta):
 
 		var guest_strength := 0.0
 		for g in arrived_guests:
-			guest_strength += g.strength * g.stamina
+			var sobriety = 1.0 - g.Needs.drunkenness.strength
+			guest_strength += g.strength * g.stamina * sobriety
 
 		if worker_strength > 0.0 and arrived_guests.size() > 0:
 			var dmg = worker_strength * delta / arrived_guests.size() / 4.0
 			for g in arrived_guests:
 				g.health = max(0.0, g.health - dmg)
 
-		if guest_strength > 0.0 and arrived_workers.size() > 0:
-			var dmg = guest_strength * delta / arrived_workers.size() / 4.0
-			for w in arrived_workers:
-				w.health = max(0.0, w.health - dmg)
+		# Guest damage is split evenly across all participants (workers + other guests)
+		var all_targets = arrived_workers + arrived_guests
+		if guest_strength > 0.0 and all_targets.size() > 0:
+			var dmg = guest_strength * delta / all_targets.size() / 4.0
+			for t in all_targets:
+				t.health = max(0.0, t.health - dmg)
 
 		# Escalating fatigue — guests tire out over time, guaranteeing a resolution
 		if arrived_guests.size() > 0:
@@ -143,12 +146,24 @@ func _process(delta):
 			for g in arrived_guests:
 				g.health = max(0.0, g.health - fatigue)
 
+		# Knock out individual guests that hit 0 health
+		var fight_ending = f.worker_won() or f.npc_won() or f.guests_all_down()
+		for g in arrived_guests:
+			if g.health <= 0.0:
+				if npc_health_bars.has(g):
+					UiNotifications.try_kill(npc_health_bars[g])
+					npc_health_bars.erase(g)
+				# Only force intermediate KnockedOutBehaviour if fight continues;
+				# if the fight is ending this frame, end_fight() sets the final state.
+				if not fight_ending:
+					g.force_behaviour(KnockedOutBehaviour)
+
 		# Update health bar visuals
 		for p in f.participants:
 			if npc_health_bars.has(p) and is_instance_valid(p):
 				UiNotifications.update_npc_health_bar(npc_health_bars[p], p.health)
 
-		if f.worker_won() or f.npc_won():
+		if fight_ending:
 			_end_fight(f)
 			continue
 

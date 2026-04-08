@@ -119,9 +119,10 @@ func idle_tween(time_in_seconds):
 	return TweenTargetData.new(Vector2.ZERO, 0, Vector2(x, y))
 	
 func fight_tween(time_in_seconds):
-	var s = time_in_seconds * FIGHT_ANIMATION_SPEED
+	var s = time_in_seconds * FIGHT_ANIMATION_SPEED + random_instance_offset
 	var x = clamp( sin(s) * sin(s + 1), 0, 1)
-	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2.ONE)
+	var scale = Vector2(1 if random_instance_offset < .5 else -1, 1)
+	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, scale)
 
 func knocked_out_tween():
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x_orientation, Vector2.ONE)

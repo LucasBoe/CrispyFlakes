@@ -127,7 +127,8 @@ func _get_status_icon_entries(npc: NPC) -> Array:
 	var entries = []
 	var b = npc.Behaviour.behaviour_instance
 	if b is KnockedOutBehaviour:
-		entries.append({icon = UiNotifications.ICON_KNOCKED_OUT, label = "Knocked out"})
+		var secs = int((b as KnockedOutBehaviour).time_remaining)
+		entries.append({icon = UiNotifications.ICON_KNOCKED_OUT, label = "Knocked out (%ds)" % secs})
 	if b is FightBehaviour or b is StopFightBehaviour:
 		entries.append({icon = UiNotifications.ICON_FIGHT, label = "Fighting"})
 	if npc is NPCGuest:
@@ -258,7 +259,12 @@ func _show_for_room(room: RoomBase):
 	if description != "":
 		describtion_label.text = description
 
-	if room.associated_job != null:
+	if room is RoomOuthouse:
+		var outhouse := room as RoomOuthouse
+		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, RoomOuthouse.MAX_USES]
+		var fill_color = Color.ORANGE if outhouse.is_full() else Color.TRANSPARENT
+		_show_status_row(fill_text, fill_color)
+	elif room.associated_job != null:
 		if room.worker:
 			_show_status_row("Worker", Color.TRANSPARENT, room.worker, room.worker.character_name)
 			room.worker.Tint.add_outline(Color.WHITE, 20, self)

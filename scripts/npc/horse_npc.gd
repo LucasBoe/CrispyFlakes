@@ -70,12 +70,12 @@ func _animate():
 		var s = t * WALK_SPEED
 		var raw = pow(abs(sin(s)), 0.3) * sign(sin(s))
 		var bob = abs(raw) * SQUASH_STRENGTH
-		target_pos = Vector2(0, -abs(raw) * 3.0)
+		target_pos = Vector2(0, 2.0 - abs(raw) * 3.0)
 		target_scale = Vector2(_x_orientation * (1.0 + bob), 1.0 + abs(bob - SQUASH_STRENGTH))
 	else:
 		var s = sin(t * IDLE_SPEED)
 		var base = pow(abs(s), IDLE_PEAK_SHARPNESS) * SQUASH_STRENGTH
-		target_pos = Vector2.ZERO
+		target_pos = Vector2(0, 2)
 		target_scale = Vector2(_x_orientation * (1.0 + abs(base - SQUASH_STRENGTH)), 1.0 + base)
 
 	sprite.position = lerp(sprite.position, target_pos, LERP_SPEED)

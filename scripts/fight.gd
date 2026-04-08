@@ -18,12 +18,15 @@ func start_fight(_room):
 
 func worker_won() -> bool:
 	var has_guests = false
+	var has_workers = false
 	for p in participants:
 		if p is NPCGuest:
 			has_guests = true
 			if p.health > 0.0:
 				return false
-	return has_guests
+		elif p is NPCWorker:
+			has_workers = true
+	return has_guests and has_workers
 
 func npc_won() -> bool:
 	var has_workers = false
@@ -34,6 +37,19 @@ func npc_won() -> bool:
 				return false
 	return has_workers
 
+func guests_all_down() -> bool:
+	var has_guests = false
+	for p in participants:
+		if p is NPCGuest:
+			has_guests = true
+			if p.health > 0.0:
+				return false
+	var has_workers = false
+	for p in participants:
+		if p is NPCWorker:
+			has_workers = true
+	return has_guests and not has_workers
+
 func end_fight():
 	if worker_won():
 		for p in participants:
@@ -43,5 +59,9 @@ func end_fight():
 				elif p.look_info != null:
 					BountyHandler.create_fight_fine(p, DRUNK_FIGHT_BOUNTY)
 				p.force_behaviour(ArrestedBehaviour)
+	elif guests_all_down():
+		for p in participants:
+			if p is NPCGuest:
+				p.force_behaviour(KnockedOutBehaviour)
 
 	RoomHighlighter.dispose(highlight)

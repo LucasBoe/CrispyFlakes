@@ -113,7 +113,7 @@ func create_npc_health_bar(npc: NPC, color: Color) -> instance_info:
 	var i := _create_from_dummy(fight_bar_dummy, INF)
 	i.is_permanent = true
 	i.target_object = npc
-	i.offset = Vector2(-3, -32)
+	i.offset = Vector2(-12, -24)
 	var bar := i.instance.get_node("ProgressBar") as ProgressBar
 	var fill_style := bar.get_theme_stylebox("fill").duplicate() as StyleBoxFlat
 	fill_style.bg_color = color
