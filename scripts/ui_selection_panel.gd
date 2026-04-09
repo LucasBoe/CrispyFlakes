@@ -20,6 +20,7 @@ class_name UISelectionPanel
 @onready var status_icon_container_dummy: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconContainerDummy
 @onready var status_icon_row_dummy: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy
 @onready var room_money_label: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomMoneyLabel
+@onready var room_module_ui: UISelectionRoomModules = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer
 @onready var room_recipe_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow
 @onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
@@ -106,6 +107,7 @@ func _clear_instances():
 
 	room_money_label.hide()
 	room_recipe_row.hide()
+	room_module_ui.hide()
 
 	for n in need_ui_instances:
 		n.queue_free()
@@ -287,6 +289,8 @@ func _show_for_room(room: RoomBase):
 	elif room.get_script() != null and room.get_script().get_global_name() == "RoomStorage":
 		_show_storage_filter(room)
 
+	room_module_ui.populate(room)
+
 	if room.has_upgrades:
 		_show_room_upgrades(room)
 	else:
@@ -399,11 +403,11 @@ func _update_recipe_row(room: RoomBase):
 		return
 	if d.produces_money and room is RoomBar:
 		var bar := room as RoomBar
-		var has_upgrade = bar.current_upgrade != null
-		room_recipe_consumed_icon.visible = has_upgrade
-		room_recipe_arrow.visible = has_upgrade
-		if has_upgrade:
-			room_recipe_consumed_icon.texture = bar.current_upgrade.item_icon
+		var has_module = bar.current_module != null
+		room_recipe_consumed_icon.visible = has_module
+		room_recipe_arrow.visible = has_module
+		if has_module:
+			room_recipe_consumed_icon.texture = bar.current_module.icon
 		room_recipe_produced_icon.visible = true
 		var coin_tex = AtlasTexture.new()
 		coin_tex.atlas = _COIN_ATLAS

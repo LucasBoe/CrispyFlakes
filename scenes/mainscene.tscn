@@ -1,4 +1,4 @@
-[gd_scene load_steps=107 format=4 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=116 format=4 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_4c2fu"]
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
@@ -60,8 +60,13 @@
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="29_x63bv"]
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
+[ext_resource type="Script" uid="uid://bylm6fts7jdun" path="res://scripts/ui/selection_room_module_ui.gd" id="33_3qqvy"]
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
+[ext_resource type="Texture2D" uid="uid://dn16dvqbbmpks" path="res://assets/sprites/ui/module_inactive.png" id="34_bfe7r"]
+[ext_resource type="Texture2D" uid="uid://bl8kmj3c14iqo" path="res://assets/sprites/ui/module_icon_brewer_small.png" id="35_cm1h5"]
 [ext_resource type="Texture2D" uid="uid://bl2f4bqvktgp1" path="res://assets/sprites/ui/icon_locked_1.png" id="35_em0su"]
+[ext_resource type="Texture2D" uid="uid://b30u56pch7l0u" path="res://assets/sprites/ui/module_active.png" id="35_tlefx"]
+[ext_resource type="Texture2D" uid="uid://dc2hanvpmpkab" path="res://assets/sprites/ui/module_connector_active.png" id="36_bfe7r"]
 [ext_resource type="Script" uid="uid://bxubwaflp8wkf" path="res://scripts/ui/ui_money_info.gd" id="37_u4j4d"]
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
 [ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
@@ -159,6 +164,35 @@ tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_jifap")
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ydpv1"]
+texture = ExtResource("34_bfe7r")
+texture_margin_left = 1.0
+texture_margin_top = 1.0
+texture_margin_right = 1.0
+texture_margin_bottom = 1.0
+modulate_color = Color(0.5019608, 0.4862745, 0.45882353, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ynify"]
+texture = ExtResource("34_bfe7r")
+texture_margin_left = 1.0
+texture_margin_top = 1.0
+texture_margin_right = 1.0
+texture_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dkmmk"]
+texture = ExtResource("34_bfe7r")
+texture_margin_left = 1.0
+texture_margin_top = 1.0
+texture_margin_right = 1.0
+texture_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cm1h5"]
+texture = ExtResource("35_tlefx")
+texture_margin_left = 1.0
+texture_margin_top = 1.0
+texture_margin_right = 1.0
+texture_margin_bottom = 1.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v46vo"]
 shader = ExtResource("26_7e0oe")
@@ -495,6 +529,34 @@ custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 mouse_filter = 2
 
+[node name="MarginContainer_Status" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="ColorRect" type="ColorRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 0.5, 0, 0.35)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = " No Job"
+
+[node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = ">"
+
 [node name="DescribtionLabel" type="RichTextLabel" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
@@ -502,27 +564,80 @@ theme = ExtResource("22_hpv7r")
 text = "Describtion label"
 fit_content = true
 
-[node name="RoomRecipeRow" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
-visible = false
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 2
+script = ExtResource("33_3qqvy")
 
-[node name="ConsumedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
-visible = false
+[node name="Control" type="Control" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
-stretch_mode = 5
+size_flags_horizontal = 8
 
-[node name="ArrowLabel" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
-visible = false
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 8
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
 layout_mode = 2
-size_flags_vertical = 3
+texture = ExtResource("28_3ou18")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = ">"
-vertical_alignment = 2
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Name"
 
-[node name="ProducedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+[node name="RichTextLabel" type="RichTextLabel" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
-stretch_mode = 5
+theme = ExtResource("22_hpv7r")
+text = "This is text"
+fit_content = true
+
+[node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Buy"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TextureButton" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(13, 13)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_ydpv1")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_ynify")
+theme_override_styles/hover = SubResource("StyleBoxTexture_dkmmk")
+theme_override_styles/focus = SubResource("StyleBoxTexture_cm1h5")
+icon = ExtResource("35_cm1h5")
+icon_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+modulate = Color(0.5019608, 0.4862745, 0.45882353, 1)
+layout_mode = 2
+texture = ExtResource("36_bfe7r")
 
 [node name="BountyContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -679,51 +794,24 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Status"
 
-[node name="MarginContainer_Status" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="RoomRecipeRow" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 0
-theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 0
+theme_override_constants/separation = 2
 
-[node name="ColorRect" type="ColorRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+[node name="ConsumedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
 layout_mode = 2
-mouse_filter = 2
-color = Color(1, 0.5, 0, 0.35)
+stretch_mode = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
+[node name="ArrowLabel" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
 layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 4
-
-[node name="Label" type="Label" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme = ExtResource("22_hpv7r")
-text = " No Job"
-
-[node name="Button" type="Button" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status/HBoxContainer"]
-layout_mode = 2
+size_flags_vertical = 3
 theme = ExtResource("22_hpv7r")
 text = ">"
+vertical_alignment = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="ProducedIcon" type="TextureRect" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
 layout_mode = 2
-
-[node name="Control" type="Control" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 8
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_right = 8
-
-[node name="RichTextLabel" type="RichTextLabel" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
-layout_mode = 2
-text = "This is text"
+stretch_mode = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/UISelectionPanel/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -1826,7 +1914,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -1.0
+offset_top = -1.0
 offset_right = -1.0
+offset_bottom = -1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2

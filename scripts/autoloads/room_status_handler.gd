@@ -13,8 +13,6 @@ func _ready():
 	
 func _on_room_created(room : RoomBase):
 	
-	DebugLog.info("_on_room_created", room)
-	
 	await get_tree().process_frame
 	
 	if not room.associated_job:

@@ -12,7 +12,7 @@
 script = ExtResource("4_r7qge")
 packed_scene = ExtResource("1_hgofh")
 room_name = "Bar"
-room_desc = "Asign a worker to serve different types of drinks to your guests."
+room_desc = "serve drinks to guests"
 room_upgrades = [ExtResource("2_r8oam"), ExtResource("3_yi57w"), ExtResource("4_o33vy")]
 room_icon = ExtResource("2_r7qge")
 room_preview = ExtResource("3_o33vy")

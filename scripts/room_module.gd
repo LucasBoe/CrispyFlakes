@@ -1,0 +1,20 @@
+extends Sprite2D
+
+@export var icon : Texture
+@export var price : int
+@export var module_name : String
+@export var describtion : String
+@export var item_cost : int
+@export var brew_duration : float = 20.0
+
+@export var bought: bool = false
+
+signal bought_changed(module)
+
+func _ready() -> void:
+	visible = bought
+
+func set_bought(value: bool) -> void:
+	bought = value
+	visible = value
+	bought_changed.emit(self)

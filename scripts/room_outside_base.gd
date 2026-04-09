@@ -11,7 +11,6 @@ func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	
 func set_outline(state):
-	DebugLog.info(mat, state)
 	if mat == null:
 		return
 		

@@ -20,7 +20,8 @@ func loop():
 			var i = npc.Item.drop_current()
 			i.destroy()
 
-			await progress(20, brewery.progressBar)
+			var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
+			await progress(duration, brewery.progressBar)
 			var item_spawn_pos = brewery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.BEER_BARREL, item_spawn_pos)
 			npc.Item.pick_up(item)

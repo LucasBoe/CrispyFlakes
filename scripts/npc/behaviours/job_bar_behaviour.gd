@@ -25,7 +25,7 @@ func loop():
 				item.destroy()
 				drinks_available = 1.0
 			else:
-				RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_upgrade.item_icon)
+				RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
 
 		else:
 
@@ -37,7 +37,7 @@ func loop():
 				bar.fullfill_next_request()
 				drinks_available -= .25
 
-				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_upgrade.item_cost, bar.get_center_position(), Vector2i(bar.x, bar.y))
+				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_module.item_cost if bar.current_module else 0, bar.get_center_position(), Vector2i(bar.x, bar.y))
 			else:
 				await move(bar.get_random_floor_position())
 

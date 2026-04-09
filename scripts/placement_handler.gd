@@ -85,8 +85,6 @@ func _input(event):
 
 	var can_place = has_valid_target && has_money
 
-	DebugLog.info(get_viewport().gui_get_hovered_control())
-
 	if event is InputEventMouseButton \
 	and event.button_index == MOUSE_BUTTON_LEFT \
 	and not event.pressed \
