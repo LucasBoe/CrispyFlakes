@@ -1,10 +1,12 @@
-extends Sprite2D
+extends Node2D
 
 @export var icon : Texture
 @export var price : int
 @export var module_name : String
 @export var describtion : String
 @export var item_cost : int
+@export var max_guests : int = 0
+@export var seat_positions: Array[Vector2] = []
 @export var brew_duration : float = 20.0
 
 @export var bought: bool = false
