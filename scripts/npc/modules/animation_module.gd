@@ -49,12 +49,10 @@ func _update_texture():
 		texture = TEX_RIDE
 	elif npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		texture = TEX_FIGHT
-	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
-		texture = TEX_STAND
-	elif npc.Item.current_item != null:
-		texture = TEX_CARRY
 	elif is_sitting:
 		texture = TEX_SIT
+	elif npc.Item.current_item != null:
+		texture = TEX_CARRY
 	else:
 		texture = TEX_STAND
 
