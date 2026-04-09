@@ -71,11 +71,10 @@ func get_room_from_index(index: Vector2i):
 			return floors[index.y][index.x]
 	return null
 
-func has_any_rooms_on_x(xx):
+func has_any_rooms_on_x(xx : int):
 	for y in floors.keys():
-		for x in floors[y]:
-			if x == xx:
-				return true
+		if xx in floors[y]:
+			return true
 	return false
 
 func is_bottom_floor(y: int):

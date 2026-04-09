@@ -25,6 +25,8 @@ const TEX_RIDE  = preload("res://assets/sprites/cowboy_raw_ride.png")
 var npc
 var is_sitting : bool = false
 var is_riding : bool = false
+var is_peeing : bool = false
+var is_puking : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 
@@ -68,6 +70,10 @@ func _process(_delta):
 		target = fight_tween(time_in_seconds)
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
 		target = knocked_out_tween()
+	elif is_peeing:
+		target = pee_tween(time_in_seconds)
+	elif is_puking:
+		target = puke_tween(time_in_seconds)
 	else:
 		target = idle_tween(time_in_seconds)
 
@@ -121,6 +127,16 @@ func fight_tween(time_in_seconds):
 	var x = clamp( sin(s) * sin(s + 1), 0, 1)
 	var scale = Vector2(1 if random_instance_offset < .5 else -1, 1)
 	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, scale)
+
+func pee_tween(time_in_seconds):
+	# Lean sideways like a dog, with a small bob
+	var bob = sin(time_in_seconds * 4.0) * 0.5
+	return TweenTargetData.new(Vector2(0, bob), PI / 3.0 * x_orientation, Vector2(x_orientation, 1.0))
+
+func puke_tween(time_in_seconds):
+	# Hunch forward with a heaving bob
+	var bob = abs(sin(time_in_seconds * 5.0)) * 2.0
+	return TweenTargetData.new(Vector2(0, bob), PI / 4.0 * x_orientation, Vector2(x_orientation, 1.0))
 
 func knocked_out_tween():
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x_orientation, Vector2.ONE)

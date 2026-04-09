@@ -47,6 +47,7 @@ GlobalEventHandler="*res://scripts/autoloads/global_event_handler.gd"
 RoomStatusHandler="*res://scripts/autoloads/room_status_handler.gd"
 BountyHandler="*res://scripts/autoloads/bounty_handler.gd"
 MoneyHandler="*res://scripts/autoloads/money_handler.gd"
+PuddleHandler="*res://scripts/autoloads/puddle_handler.gd"
 
 [display]
 

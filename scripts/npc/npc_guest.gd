@@ -4,6 +4,9 @@ class_name NPCGuest
 var manual_behaviour = false
 var pending_arrest: bool = false
 
+var needs_to_pee: float = 0.0
+const PEE_RATE: float = 0.01
+
 var _status_icon_instance = null
 var _status_icon_texture = null
 
@@ -16,6 +19,7 @@ var is_dirty = true
 @onready var dirt = $AnimationModule/Dirt
 
 func init(custom_look = null):
+	needs_to_pee = randf()
 	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()
@@ -42,6 +46,7 @@ func _exit_tree():
 
 func _process(_delta):
 
+	needs_to_pee = minf(needs_to_pee + PEE_RATE * _delta, 1.0)
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
 	_refresh_status_icon()
 	_refresh_arrest_highlight()
@@ -89,11 +94,14 @@ func get_next_behaviour():
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
 		return NeedLeaveBehaviour
 
-	var f = randf()
-	var s = Needs.drunkenness.strength
+	if Needs.drunkenness.strength > randf():
+		return PukeBehaviour
 
-	if s > f:
+	if Needs.drunkenness.strength > randf():
 		return FightBehaviour
+
+	if needs_to_pee > randf():
+		return UseOuthouseBehaviour
 
 	return Behaviour.get_behaviour_from_available_rooms(Global.Building.query.all_rooms_of_type(RoomBase))
 
