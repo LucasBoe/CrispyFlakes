@@ -1,23 +1,17 @@
 extends RoomStorageBase
 class_name RoomAgingCellar
 
-var raw_items = {} #item - placement time
-const RIPE_DURATION = Global.DAY_DURATION / 2
+const CELLAR_MULTIPLIER = 2.0
 
 func try_receive(item : Item) -> bool:
 	var received = super.try_receive(item)
 	if received:
-		raw_items[item] = Global.time_now
+		item.aging_multiplier = CELLAR_MULTIPLIER
 	return received
 
-func _process(delta):
+func take(itemType : Enum.Items) -> Item:
+	var item = super.take(itemType)
+	if item != null:
+		item.aging_multiplier = 1.0
+	return item
 
-	var ripe = []
-	for key in raw_items.keys():
-		if raw_items[key] + RIPE_DURATION < Global.time_now:
-			ripe.append(key)
-
-	for item in ripe:
-		item.itemType = Enum.Items.WISKEY_BOX
-		item.refresh_texture()
-		raw_items.erase(item)

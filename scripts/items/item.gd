@@ -4,6 +4,16 @@ class_name Item
 
 var itemType : Enum.Items
 
+const WISKEY_AGING_DURATION: float = Global.DAY_DURATION
+var age: float = 0.0
+var aging_multiplier: float = 1.0
+
+func _process(delta):
+	if itemType == Enum.Items.WISKEY_BOX_RAW:
+		age += delta * aging_multiplier
+		if age >= WISKEY_AGING_DURATION:
+			itemType = Enum.Items.WISKEY_BOX
+			refresh_texture()
 
 func init(itemType : Enum.Items) -> Item:
 	self.itemType = itemType
