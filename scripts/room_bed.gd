@@ -1,9 +1,11 @@
 extends RoomBase
 class_name RoomBed
 
-const SLEEP_DURATION := 8.0
+const SLEEP_DURATION := 60.0
+const SLEEP_PRICE := 6
 
 const BED_EMPTY := preload("res://assets/sprites/bed_empty_back.png")
+const BED_EMPTY_DIRTY := preload("res://assets/sprites/bed_empty_back_dirty.png")
 const BED_FULL := preload("res://assets/sprites/bed_full_back.png")
 
 var current_guest: NPCGuest
@@ -28,6 +30,9 @@ func is_available_for(npc: NPC) -> bool:
 func occupy(guest: NPCGuest):
 	current_guest = guest
 	_refresh_visual()
+	
+func get_sleep_position():
+	return get_center_floor_position() + Vector2(10,-6)
 
 func release(guest: NPCGuest):
 	if current_guest != guest:
@@ -45,6 +50,11 @@ func _refresh_visual():
 		return
 
 	var occupied := current_guest != null
-	bed_sprite.texture = BED_FULL if occupied else BED_EMPTY
+	if occupied:
+		bed_sprite.texture = BED_FULL
+	elif needs_cleaning:
+		bed_sprite.texture = BED_EMPTY_DIRTY
+	else:
+		bed_sprite.texture = BED_EMPTY
 	bed_front.visible = occupied
-	bed_sprite.modulate = Color(0.83, 0.78, 0.72, 1.0) if needs_cleaning and not occupied else Color.WHITE
+	bed_sprite.modulate = Color.WHITE

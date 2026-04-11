@@ -27,6 +27,7 @@ var is_sitting : bool = false
 var is_riding : bool = false
 var is_peeing : bool = false
 var is_puking : bool = false
+var is_sleeping : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 
@@ -46,11 +47,16 @@ func set_sitting(value : bool):
 func set_riding(value : bool):
 	is_riding = value
 
+func set_sleeping(value : bool):
+	is_sleeping = value
+
 func _update_texture():
 	if is_riding:
 		texture = TEX_RIDE
 	elif npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		texture = TEX_FIGHT
+	elif is_sleeping:
+		texture = TEX_STAND
 	elif is_sitting:
 		texture = TEX_SIT
 	elif npc.Item.current_item != null:
@@ -68,7 +74,7 @@ func _process(_delta):
 
 	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		target = fight_tween(time_in_seconds)
-	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript:
+	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript or is_sleeping:
 		target = knocked_out_tween()
 	elif is_peeing:
 		target = pee_tween(time_in_seconds)
@@ -139,9 +145,10 @@ func puke_tween(time_in_seconds):
 	return TweenTargetData.new(Vector2(0, bob), PI / 4.0 * x_orientation, Vector2(x_orientation, 1.0))
 
 func knocked_out_tween():
-	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x_orientation, Vector2.ONE)
+	var x = -1 if is_sleeping else x_orientation
+	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x, Vector2.ONE)
 
-func set_z(z):
+func set_z(z : Enums.ZLayer):
 	z_index = z
 
 class TweenTargetData:

@@ -23,12 +23,13 @@ position = Vector2(24, -24)
 texture = ExtResource("3_tjrrh")
 
 [node name="Bed" type="Sprite2D" parent="."]
+z_index = -100
 position = Vector2(24, -6)
 texture = ExtResource("3_myj6w")
 offset = Vector2(0.5, 0)
 
 [node name="Bed_Front" type="Sprite2D" parent="Bed"]
-z_index = 200
+z_index = 90
 texture = ExtResource("4_67a5o")
 offset = Vector2(0.5, 0)
 

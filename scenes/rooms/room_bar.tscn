@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://dvvvnn4s5rhak"]
+[gd_scene load_steps=12 format=3 uid="uid://dvvvnn4s5rhak"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
@@ -37,35 +37,34 @@ pivot_offset = Vector2(14, 2)
 [node name="Drinks" type="Node2D" parent="ModulesRoot"]
 
 [node name="Water" type="Sprite2D" parent="ModulesRoot/Drinks"]
-z_index = -100
+z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("6_water")
 script = ExtResource("5_mod")
 icon = ExtResource("9_iwater")
-price = 0
 module_name = "Service Table"
-item_cost = 2
 describtion = "Barkeep serves water to guests"
+item_cost = 2
 bought = true
 
 [node name="Beer" type="Sprite2D" parent="ModulesRoot/Drinks"]
-z_index = -100
+z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("7_beer")
 script = ExtResource("5_mod")
 icon = ExtResource("10_ibeer")
 price = 15
 module_name = "Barrel Holder"
-item_cost = 4
 describtion = "Barkeep serves beer to guests"
+item_cost = 4
 
 [node name="Whiskey" type="Sprite2D" parent="ModulesRoot/Drinks"]
-z_index = -100
+z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("8_wiskey")
 script = ExtResource("5_mod")
 icon = ExtResource("11_iwiskey")
 price = 50
 module_name = "Bottle Shelf"
-item_cost = 7
 describtion = "Barkeep serves aged whiskey to guests"
+item_cost = 7

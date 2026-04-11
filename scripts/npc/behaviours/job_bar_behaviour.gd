@@ -13,11 +13,9 @@ func loop():
 	while true:
 		var drink = bar.drink_type
 
-		await pause(1)
-		await move(bar.get_center_floor_position())
-
 		if drinks_available < .1:
 
+			npc.Animator.set_z(Enums.ZLayer.NPC_DEFAULT)
 			await fetch_item(drink)
 
 			if npc.Item.is_item(drink):
@@ -30,7 +28,7 @@ func loop():
 
 		else:
 
-			npc.Animator.set_z(-50)
+			npc.Animator.set_z(Enums.ZLayer.NPC_BEHIND_ROOM_CONTENT)
 			await move(bar.get_center_floor_position())
 
 			if bar.drink_requests.size() > 0:
@@ -41,12 +39,10 @@ func loop():
 
 				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_module.item_cost if bar.current_module else 0, bar.get_center_position(), Vector2i(bar.x, bar.y))
 			else:
-				await move(bar.get_random_floor_position())
-			
-			npc.Animator.set_z(0)
+				await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
-	npc.Animator.set_z(0)
+	npc.Animator.set_z(Enums.ZLayer.NPC_DEFAULT)
 	ocupied_bars.erase(bar)
 	if is_instance_valid(bar):
 		bar.worker = null
