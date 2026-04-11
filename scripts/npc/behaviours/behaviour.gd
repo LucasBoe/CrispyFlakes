@@ -77,7 +77,7 @@ func move(target, custom_speed = -1):
 
 	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
 		var fallback_room := _get_closest_reachable_room_to(goal_pos)
-		while fallback_room != null and not npc.Navigation.is_room_reachable(goal_room):
+		while fallback_room != null and is_instance_valid(goal_room) and not npc.Navigation.is_room_reachable(goal_room):
 			npc.Navigation.set_target(fallback_room.get_random_floor_position(), -1)
 			while npc.Navigation.is_moving:
 				await end_of_frame()
@@ -138,10 +138,13 @@ func fetch_item(item: Enum.Items):
 	if source_item == null and item == Enum.Items.WATER_BUCKET:
 		var well = get_closest_room_of_type(RoomWell)
 		await move(well)
+		while not well.has_water():
+			await end_of_frame()
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
 		await progress(1, well.progressBar)
+		well.consume_water()
 		source_item = Global.ItemSpawner.create(Enum.Items.WATER_BUCKET, well.get_center_position())
 		well.unregister(npc)
 

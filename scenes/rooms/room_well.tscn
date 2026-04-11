@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://ds54o420pb2t7"]
+[gd_scene load_steps=8 format=3 uid="uid://ds54o420pb2t7"]
 
 [ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scripts/room_well.gd" id="1_bkap1"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_dw1fm"]
 [ext_resource type="Texture2D" uid="uid://dkygfkyxds8yp" path="res://assets/sprites/well.png" id="2_d5ivy"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_6d42y"]
 [ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="3_bkap1"]
+[ext_resource type="Texture2D" uid="uid://buyglaurncwbt" path="res://assets/sprites/well_sheet_back.png" id="6_3vav0"]
+[ext_resource type="Texture2D" uid="uid://d18uy6yfwjagu" path="res://assets/sprites/well_sheet_front.png" id="7_ghqru"]
 
 [node name="Room_Well" type="Node2D"]
 texture_filter = 1
@@ -28,3 +30,39 @@ texture = ExtResource("3_6d42y")
 z_index = 4096
 offset_bottom = -35.0
 pivot_offset = Vector2(14, 2)
+
+[node name="Underground" type="Node2D" parent="."]
+
+[node name="Background" type="NinePatchRect" parent="Underground"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 13.0
+offset_right = 37.0
+offset_bottom = 48.0
+grow_horizontal = 2
+texture = ExtResource("6_3vav0")
+patch_margin_top = 14
+patch_margin_bottom = 16
+axis_stretch_vertical = 1
+
+[node name="WaterLevelRect" type="ColorRect" parent="Underground"]
+offset_left = 18.0
+offset_top = 31.0
+offset_right = 32.0
+offset_bottom = 42.0
+color = Color(0, 0.4509804, 1, 0.3137255)
+
+[node name="Foreground" type="NinePatchRect" parent="Underground"]
+z_index = 200
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 13.0
+offset_right = 37.0
+offset_bottom = 48.0
+grow_horizontal = 2
+texture = ExtResource("7_ghqru")
+patch_margin_top = 14
+patch_margin_bottom = 16
+axis_stretch_vertical = 1

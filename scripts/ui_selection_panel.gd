@@ -17,6 +17,7 @@ class_name UISelectionPanel
 @onready var storage_filter_button_dummy: Button = $MarginContainer/MarginContainer/VBoxContainer/StorageFilterContainer/StorageFilterGrid/StorageFilterButtonDummy
 @onready var prisoner_item_dummy: PrisonerItemUI = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer/PrisonerItemDummy
 @onready var call_sheriff_button: Button = $MarginContainer/MarginContainer/VBoxContainer/CallSheriffButton
+@onready var dig_deeper_button: Button = $MarginContainer/MarginContainer/VBoxContainer/DigDeeperButton
 @onready var status_icon_container_dummy: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconContainerDummy
 @onready var status_icon_row_dummy: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy
 @onready var room_money_label: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomMoneyLabel
@@ -56,6 +57,7 @@ func _ready():
 	bounty_item_dummy.hide()
 	prisoner_item_dummy.hide()
 	call_sheriff_button.hide()
+	dig_deeper_button.hide()
 	storage_filter_button_dummy.hide()
 	arrest_button.hide()
 
@@ -104,6 +106,8 @@ func _clear_instances():
 	if is_instance_valid(_status_row_instance):
 		_status_row_instance.queue_free()
 	_status_row_instance = null
+
+	dig_deeper_button.hide()
 
 	room_money_label.hide()
 	room_recipe_row.hide()
@@ -238,7 +242,7 @@ func _show_for_room(room: RoomBase):
 	arrest_button.hide()
 	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
 
-	if room is not RoomJunk:
+	if room is not RoomJunk and room is not RoomWell:
 		room_delete_button.show()
 		Util.disconnect_all_pressed(room_delete_button)
 		room_delete_button.pressed.connect(func():
@@ -272,6 +276,18 @@ func _show_for_room(room: RoomBase):
 			_show_status_row(status_text, Color.TRANSPARENT, entertainment.worker, entertainment.worker.character_name)
 		else:
 			_show_status_row("No Performer", Color.ORANGE)
+	elif room is RoomWell:
+		var well := room as RoomWell
+		var water_text = "Water %d/%d" % [int(well.current_water), int(well.max_water)]
+		var water_color = Color.ORANGE if not well.has_water() else Color.TRANSPARENT
+		_show_status_row(water_text, water_color, well.worker if well.worker else null, well.worker.character_name if well.worker else "")
+		dig_deeper_button.text = "Dig Deeper (%d$)" % well.get_dig_cost()
+		dig_deeper_button.show()
+		Util.disconnect_all_pressed(dig_deeper_button)
+		dig_deeper_button.pressed.connect(func():
+			if well.dig_deeper():
+				dig_deeper_button.text = "Dig Deeper (%d$)" % well.get_dig_cost()
+		)
 	elif room is RoomBed:
 		var bed := room as RoomBed
 		if bed.current_guest != null:
@@ -497,6 +513,13 @@ func _process(delta):
 
 	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, Camera)
 	line.target_position = pos
+
+	if target is RoomWell and is_instance_valid(_status_row_instance):
+		var well := target as RoomWell
+		var water_text = "Water %d/%d" % [int(well.current_water), int(well.max_water)]
+		_status_row_instance.get_node("HBoxContainer/Label").text = str(" ", water_text)
+		var water_color = Color.ORANGE if not well.has_water() else Color.TRANSPARENT
+		_status_row_instance.get_node("ColorRect").color = water_color
 
 	if room_money_label.visible and target is RoomBase:
 		var stored = MoneyHandler.get_money_at(Vector2i(target.x, target.y))
