@@ -10,6 +10,7 @@ var actively_animated = []
 func _ready():
 	coin_dummy.visible = false
 	ResourceHandler.on_animate_resource_add.connect(animate_resource_add)
+	ResourceHandler.on_animate_resource_spend.connect(animate_resource_spend)
 
 func animate_resource_add(resource, amount, global_pos, duration):
 	var dummy = coin_dummy
@@ -31,6 +32,25 @@ func animate_resource_add(resource, amount, global_pos, duration):
 		tween.tween_callback(create_animation.bind(instance, duration * .7))
 		tween.tween_interval(duration * .7);
 		tween.tween_callback(kill_animation.bind(instance))
+
+func animate_resource_spend(amount: int, world_target: Vector2, duration: float) -> void:
+	var label_pos = Global.UI.money.get_label_relative_position(camera)
+	for i in mini(amount, 5):
+		var instance = coin_dummy.duplicate()
+		add_child(instance)
+		instance.global_position = label_pos
+		instance.visible = true
+		instance.play()
+		instance.frame = randi_range(0, 3)
+
+		var tween = get_tree().create_tween()
+		tween.set_trans(Tween.TRANS_QUAD)
+		tween.set_ease(Tween.EASE_OUT)
+
+		var offset_target = world_target + Vector2(randf_range(-24, 24), randf_range(-10, 10))
+		tween.tween_property(instance, "global_position", offset_target, duration)
+		#tween.tween_property(instance, "modulate:a", 0.0, duration * 0.2)
+		tween.tween_callback(instance.queue_free)
 
 func _process(delta):
 	var target = Global.UI.money.get_label_relative_position(camera)

@@ -14,6 +14,7 @@ class_name UISelectionRoomModules
 @onready var module_button_base_inactive = preload("res://assets/sprites/ui/module_inactive.png") # base for inactive modules
 
 var _selected_module = null
+var _current_room: RoomBase = null
 var _branch_instances: Array = []
 var _module_buttons: Dictionary = {}  # module node -> Button
 
@@ -26,6 +27,7 @@ func _ready() -> void:
 
 func populate(room: Node2D) -> void:
 	_clear()
+	_current_room = room
 
 	var modules_root = room.get_node_or_null("ModulesRoot")
 	if modules_root == null or modules_root.get_child_count() == 0:
@@ -154,34 +156,41 @@ func _refresh_buy_button() -> void:
 	else:
 		details_window_button.show()
 		details_window_button.text = _get_buy_label()
-		details_window_button.disabled = MoneyHandler.total_stored() < _selected_module.price
+		details_window_button.disabled = not ResourceHandler.has_money(_selected_module.price)
 
 func _on_buy_pressed() -> void:
 	if _selected_module == null or _selected_module.bought:
 		return
-	if MoneyHandler.total_stored() < _selected_module.price:
+	if not ResourceHandler.has_money(_selected_module.price):
 		return
 
-	MoneyHandler.spend(_selected_module.price)
-
-	# Deactivate all other modules in the same group
+	# Update buttons immediately
 	var group = _selected_module.get_parent()
 	for module in group.get_children():
 		if module == _selected_module:
 			continue
 		if module.bought:
-			module.set_bought(false)
 			if _module_buttons.has(module):
 				_apply_button_style(_module_buttons[module], false)
-
-	_selected_module.set_bought(true)
 	if _module_buttons.has(_selected_module):
 		_apply_button_style(_module_buttons[_selected_module], true)
-
 	_refresh_buy_button()
+
+	# Wait for animation, then update room visuals
+	var purchased = _selected_module
+	var world_pos = _current_room.get_center_position() if is_instance_valid(_current_room) else global_position
+	await ResourceHandler.spend_animated(purchased.price, world_pos)
+
+	for module in group.get_children():
+		if module == purchased:
+			continue
+		if module.bought:
+			module.set_bought(false)
+	purchased.set_bought(true)
 
 func _clear() -> void:
 	_selected_module = null
+	_current_room = null
 	_module_buttons.clear()
 	for branch in _branch_instances:
 		if is_instance_valid(branch):

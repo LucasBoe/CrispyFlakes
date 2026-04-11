@@ -3,6 +3,7 @@ extends Node2D
 var resources : Dictionary = {}
 signal on_resource_changed
 signal on_animate_resource_add
+signal on_animate_resource_spend
 signal on_money_changed
 
 var money_transaction_history = {}
@@ -70,6 +71,13 @@ func add_animated(resource, amount, global_pos, room_location: Vector2i = Vector
 		else:
 			MoneyHandler.deposit_free(amount)
 	
+
+func spend_animated(amount: int, global_pos: Vector2) -> void:
+	change_money(-amount)
+	SoundPlayer.treasure.play_random_pitch()
+	var animation_duration = .3
+	on_animate_resource_spend.emit(amount, global_pos, animation_duration)
+	await get_tree().create_timer(animation_duration).timeout
 
 func _process(delta):
 	if Input.is_key_pressed(KEY_4):
