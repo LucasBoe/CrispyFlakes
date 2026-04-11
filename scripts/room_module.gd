@@ -8,6 +8,8 @@ extends Node2D
 @export var max_guests : int = 0
 @export var seat_positions: Array[Vector2] = []
 @export var brew_duration : float = 20.0
+@export var effect_interval : float = 10.0
+@export var satisfaction_boost : float = 0.1
 
 @export var bought: bool = false
 

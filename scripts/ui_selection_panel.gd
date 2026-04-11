@@ -264,6 +264,14 @@ func _show_for_room(room: RoomBase):
 		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, RoomOuthouse.MAX_USES]
 		var fill_color = Color.ORANGE if outhouse.is_full() else Color.TRANSPARENT
 		_show_status_row(fill_text, fill_color)
+	elif room is RoomEntertainment:
+		var entertainment := room as RoomEntertainment
+		if entertainment.worker:
+			var module_name : String = entertainment.current_module.module_name if entertainment.current_module else "Act"
+			var status_text := "%s Active (%d nearby guests)" % [module_name, entertainment.count_guests_in_range()]
+			_show_status_row(status_text, Color.TRANSPARENT, entertainment.worker, entertainment.worker.character_name)
+		else:
+			_show_status_row("No Performer", Color.ORANGE)
 	elif room is RoomBed:
 		var bed := room as RoomBed
 		if bed.current_guest != null:

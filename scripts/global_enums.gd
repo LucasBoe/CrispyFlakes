@@ -6,7 +6,6 @@ extends Node
 @onready var need_icon_mood = preload("res://assets/sprites/ui/icon_mood.png")
 @onready var need_icon_drunk = preload("res://assets/sprites/ui/icon_drunk.png")
 
-const JOB_BED_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_bed_behaviour.gd")
 
 enum Items {
 	BEER_BARREL,
@@ -25,6 +24,7 @@ enum Jobs {
 	IDLE,
 	BREWERY,
 	BAR,
+	ENTERTAINMENT,
 	WELL,
 	BATH,
 	JUNK,
@@ -45,6 +45,9 @@ static func job_to_behaviour(job : Jobs):
 			
 		Enum.Jobs.BAR:
 			return JobBarBehaviour
+
+		Enum.Jobs.ENTERTAINMENT:
+			return JobEntertainmentBehaviour
 			
 		Enum.Jobs.WELL:
 			return JobWellBehaviour
@@ -68,7 +71,7 @@ static func job_to_behaviour(job : Jobs):
 			return JobOuthouseBehaviour
 
 		Enum.Jobs.BED_CLEANER:
-			return JOB_BED_BEHAVIOUR
+			return JobBedBehaviour
 
 enum RequestStatus {
 	OPEN,

@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://cg2swmkkvvrld"]
+
+[ext_resource type="Script" uid="uid://bol2ol310lev1" path="res://scripts/room_entertainment.gd" id="1_roomscript"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_progress"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="5_module"]
+[ext_resource type="Texture2D" uid="uid://b0kd2v4qy4nn6" path="res://assets/sprites/piano.png" id="6_piano"]
+
+[node name="Room_Entertainment" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_roomscript")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_backwall")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_outline")
+
+[node name="ProgressBar" parent="." instance=ExtResource("4_progress")]
+z_index = 4096
+offset_bottom = -35.0
+pivot_offset = Vector2(14, 2)
+
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Acts" type="Node2D" parent="ModulesRoot"]
+
+[node name="Piano" type="Sprite2D" parent="ModulesRoot/Acts"]
+z_index = -10
+position = Vector2(33, -8.5)
+scale = Vector2(-1, 1)
+texture = ExtResource("6_piano")
+script = ExtResource("5_module")
+icon = ExtResource("6_piano")
+module_name = "Piano"
+describtion = "A pianist keeps the whole floor entertained."
+satisfaction_boost = 0.08
+bought = true

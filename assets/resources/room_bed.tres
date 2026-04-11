@@ -1,8 +1,7 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://h6js6a66xoeh"]
 
-[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
 [ext_resource type="PackedScene" uid="uid://lppwt5wtasri" path="res://scenes/rooms/room_bed.tscn" id="1_bedscene"]
-[ext_resource type="Texture2D" uid="uid://dsjgcbax1uvlo" path="res://assets/sprites/bed_full_back.png" id="2_bedicon"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
 [ext_resource type="Texture2D" uid="uid://dsjgcbax1uvlo" path="res://assets/sprites/bed_full_back.png" id="3_bedpreview"]
 
 [resource]
@@ -10,7 +9,7 @@ script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_bedscene")
 room_name = "Bed"
 room_desc = "Guests can recover energy here. After sleeping, the bed needs to be cleaned before it can be used again."
-room_icon = ExtResource("2_bedicon")
+room_icon = ExtResource("3_bedpreview")
 room_preview = ExtResource("3_bedpreview")
 construction_price = 25
 tier = 2

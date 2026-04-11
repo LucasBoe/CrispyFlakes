@@ -35,6 +35,7 @@ func _ready():
 	create_button(group, Building.room_data_stairs, RoomStairs.custom_placement_check)
 	create_button(group, Building.room_data_well)
 	create_button(group, Building.room_data_bar)
+	create_button(group, Building.room_data_entertainment)
 	brewery_button = create_button(group, Building.room_data_brewery)
 	storage_button = create_button(group, Building.room_data_storage)
 	create_button(group, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
