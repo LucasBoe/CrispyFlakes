@@ -19,6 +19,7 @@ const ICON_KNOCKED_OUT = preload("res://assets/sprites/ui/icon_knocked_out.png")
 const ICON_FUGITIVE = preload("uid://dcde01v5i4hgb")
 
 var instances = []
+var _ui_layer: CanvasLayer
 const DEFAULT_LIFETIME = 3.0
 
 class instance_info:
@@ -34,6 +35,9 @@ func _ready():
 	need_bar_dummy.hide()
 	npc_notification_dummy.hide()
 	fight_bar_dummy.hide()
+	_ui_layer = CanvasLayer.new()
+	_ui_layer.layer = 10
+	add_child(_ui_layer)
 
 func _create_from_dummy(dummy, duration) -> instance_info:
 	var instance = dummy.duplicate()
@@ -70,6 +74,12 @@ func create(text, icon, color, duration):
 func create_notification_static(text, target_position, icon = null, color = Color.BLACK, duration = DEFAULT_LIFETIME):
 	var i = create(text, icon, color, duration)
 	i.instance.position = target_position - i.instance.pivot_offset
+	return i
+
+func create_notification_ui(text, screen_position: Vector2, icon = null, color = Color.BLACK, duration = DEFAULT_LIFETIME):
+	var i = create(text, icon, color, duration)
+	i.instance.reparent(_ui_layer, false)
+	i.instance.position = screen_position - i.instance.pivot_offset
 	return i
 
 func create_notification_dynamic(text, target : Node2D = null, offset = Vector2.ZERO, icon = null, color = Color.BLACK, duration = DEFAULT_LIFETIME):

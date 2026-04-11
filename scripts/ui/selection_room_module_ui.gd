@@ -156,12 +156,14 @@ func _refresh_buy_button() -> void:
 	else:
 		details_window_button.show()
 		details_window_button.text = _get_buy_label()
-		details_window_button.disabled = not ResourceHandler.has_money(_selected_module.price)
+		details_window_button.disabled = false
 
 func _on_buy_pressed() -> void:
 	if _selected_module == null or _selected_module.bought:
 		return
 	if not ResourceHandler.has_money(_selected_module.price):
+		var btn_center = details_window_button.global_position + details_window_button.size / 2
+		UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		return
 
 	# Update buttons immediately

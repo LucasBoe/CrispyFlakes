@@ -287,6 +287,9 @@ func _show_for_room(room: RoomBase):
 		dig_deeper_button.pressed.connect(func():
 			if well.dig_deeper():
 				dig_deeper_button.text = "Dig Deeper (%d$)" % well.get_dig_cost()
+			else:
+				var btn_center = dig_deeper_button.global_position + dig_deeper_button.size / 2
+				UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		)
 	elif room is RoomBed:
 		var bed := room as RoomBed
