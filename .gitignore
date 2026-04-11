@@ -13,4 +13,13 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Local editor settings
+.vscode/
+.idea/
+
+# Local build outputs
+builds/
+
+# OS files
 .DS_Store
