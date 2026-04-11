@@ -203,7 +203,7 @@ func _activate_drag():
 	Navigation.set_process(false)
 
 	available_rooms_highlights.clear()
-	for room : RoomBase in Global.Building.query.all_rooms_of_type(RoomBase):
+	for room : RoomBase in Building.query.all_rooms_of_type(RoomBase):
 		if room.associated_job == null:
 			continue
 
@@ -229,7 +229,7 @@ func _input(event):
 
 	var target_pos = null
 
-	var room : RoomBase = Global.Building.query.closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
+	var room : RoomBase = Building.query.closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
 	if room:
 		target_pos = room.global_position + Vector2(24,0)
 
@@ -297,7 +297,7 @@ func try_arrest_in_room(room: RoomBase) -> bool:
 	if target == null:
 		return false
 
-	var prison := Global.Building.query.closest_room_of_type(RoomPrison, global_position) as RoomPrison
+	var prison := Building.query.closest_room_of_type(RoomPrison, global_position) as RoomPrison
 
 	var fight = FightHandler.create_arrest_fight(target, self)
 	target.Behaviour.set_behaviour(FightBehaviour)
@@ -313,7 +313,7 @@ func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
 	for guest: NPCGuest in Global.NPCSpawner.guests:
 		if not guest.pending_arrest:
 			continue
-		var guest_room = Global.Building.query.room_at_position(guest.global_position) as RoomBase
+		var guest_room = Building.query.room_at_position(guest.global_position) as RoomBase
 		if guest_room == room:
 			return guest
 	return null

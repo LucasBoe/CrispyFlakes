@@ -17,6 +17,9 @@ signal spawned_guest_signal
 func _init():
 	Global.NPCSpawner = self
 
+func _enter_tree():
+	Global.NPCSpawner = self
+
 func _ready():
 	Console.add_command("guest", console_spawn_guest, ["adjective"])
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)

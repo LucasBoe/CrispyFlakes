@@ -26,6 +26,6 @@ func _process(delta):
 	if current_target == null:
 		return
 		
-	var pos = Util.world_to_ui_position(current_target.global_position - Vector2(0, 24), self, %Camera)
+	var pos = Util.world_to_ui_position(current_target.global_position - Vector2(0, 24), self, Camera)
 	pos -= Vector2(0, root.size.y)
 	root.global_position = pos

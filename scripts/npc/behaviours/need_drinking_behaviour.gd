@@ -49,7 +49,7 @@ func loop():
 		if table:
 			await move(table.sit(npc))
 		else:
-			await move(Global.Building.floors.values().pick_random().values().pick_random().get_random_floor_position())
+			await move(Building.floors.values().pick_random().values().pick_random().get_random_floor_position())
 
 		var drunkenenes_increase = 0.0
 		var satisfaction_increase = 0.15

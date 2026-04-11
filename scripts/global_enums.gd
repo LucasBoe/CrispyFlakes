@@ -6,6 +6,8 @@ extends Node
 @onready var need_icon_mood = preload("res://assets/sprites/ui/icon_mood.png")
 @onready var need_icon_drunk = preload("res://assets/sprites/ui/icon_drunk.png")
 
+const JOB_BED_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_bed_behaviour.gd")
+
 enum Items {
 	BEER_BARREL,
 	WISKEY_BOX,
@@ -30,6 +32,7 @@ enum Jobs {
 	PRISON,
 	SAFE,
 	OUTHOUSE_CLEANER,
+	BED_CLEANER,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -64,6 +67,9 @@ static func job_to_behaviour(job : Jobs):
 		Enum.Jobs.OUTHOUSE_CLEANER:
 			return JobOuthouseBehaviour
 
+		Enum.Jobs.BED_CLEANER:
+			return JOB_BED_BEHAVIOUR
+
 enum RequestStatus {
 	OPEN,
 	TIMEOUT,
@@ -75,9 +81,12 @@ enum Need {
 	STAY_DURATION,
 	PASSIVE_SATISFACTION_LOSS,
 	DRUNKENNESS,
+	ENERGY,
 }
 static func need_to_icon(need : Enum.Need) -> Texture:
 	match need:
+		Enum.Need.ENERGY:
+			return Enum.need_icon_energy
 			
 		Enum.Need.DRUNKENNESS:
 			return Enum.need_icon_drunk

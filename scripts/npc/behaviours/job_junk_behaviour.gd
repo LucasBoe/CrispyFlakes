@@ -13,7 +13,7 @@ func loop():
 	await progress(6, room.progressBar)
 	
 	occupied_rooms.erase(room)
-	Global.Building.delete_room(room)
+	Building.delete_room(room)
 			
 func custom_array_sort(a, b):
 		return a[1] < b[1]

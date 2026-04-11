@@ -19,7 +19,7 @@ func _process(delta):
 	
 	if not currently_hovered or currently_hovered is not NPC:
 		var mouse_position = get_global_mouse_position()
-		change_hover(Global.Building.query.room_at_position(mouse_position))
+		change_hover(Building.query.room_at_position(mouse_position))
 
 func change_hover(new_hover):
 	previously_hovered = currently_hovered

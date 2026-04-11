@@ -1,0 +1,89 @@
+[gd_scene load_steps=7 format=4 uid="uid://brd7wfwl3sv5n"]
+
+[ext_resource type="Texture2D" uid="uid://ulsbt763ecmh" path="res://assets/sprites/sky.png" id="2_golqe"]
+[ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="5_0aorq"]
+[ext_resource type="Texture2D" uid="uid://5bdykruptoea" path="res://assets/sprites/montains.png" id="5_mo382"]
+[ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
+[ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_cm1h5"]
+_data = PackedByteArray("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")
+size_override = Vector2(64, 64)
+
+[node name="Environment" type="Node2D"]
+texture_filter = 1
+
+[node name="Ground" type="Sprite2D" parent="."]
+z_index = -2000
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(0, 32)
+texture = SubResource("PortableCompressedTexture2D_cm1h5")
+region_enabled = true
+region_rect = Rect2(0, 0, 10240, 64)
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"slice": "",
+"source": "res://assets/sprites/ground-tile-64px.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "1a66c4b0236c1a2385aed43fbce46e23"
+
+[node name="ColorRect" type="ColorRect" parent="Ground"]
+z_index = -2000
+offset_left = -5120.0
+offset_top = 32.0
+offset_right = 5120.0
+offset_bottom = 5152.0
+color = Color(0, 0, 0, 1)
+
+[node name="Sky" type="Sprite2D" parent="."]
+z_index = -4096
+texture_filter = 1
+position = Vector2(4.76837e-07, -54.5)
+scale = Vector2(320, 1.697)
+texture = ExtResource("2_golqe")
+
+[node name="ColorRect" type="ColorRect" parent="Sky"]
+z_index = -4096
+offset_left = -16.0
+offset_top = -2228.0
+offset_right = 16.0
+offset_bottom = -180.0
+color = Color(0.274806, 0.476909, 0.669251, 1)
+
+[node name="Montains" type="Sprite2D" parent="."]
+z_index = -3000
+texture_filter = 1
+position = Vector2(-363, 0)
+texture = ExtResource("5_mo382")
+offset = Vector2(0, -40.5)
+
+[node name="Montains2" type="Sprite2D" parent="."]
+z_index = -3000
+texture_filter = 1
+position = Vector2(271, 22)
+texture = ExtResource("5_mo382")
+offset = Vector2(0, -40.5)
+
+[node name="CloudHandler" type="Node2D" parent="."]
+script = ExtResource("8_owwh3")
+
+[node name="Cloud" type="Sprite2D" parent="CloudHandler"]
+z_index = -3100
+position = Vector2(0, -123)
+texture = ExtResource("9_lj14v")
+
+[node name="Signpost" type="Sprite2D" parent="."]
+position = Vector2(-320, -12)
+texture = ExtResource("5_0aorq")

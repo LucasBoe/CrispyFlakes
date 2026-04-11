@@ -8,6 +8,9 @@ var items : Array
 
 func _init():
 	Global.ItemSpawner = self
+
+func _enter_tree():
+	Global.ItemSpawner = self
 	
 func create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
 	var instance = itemScene.instantiate().init(itemIndentifier)

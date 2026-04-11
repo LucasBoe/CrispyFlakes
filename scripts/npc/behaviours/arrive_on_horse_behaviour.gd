@@ -6,7 +6,7 @@ const HorseScene = preload("res://scenes/npcs/horse_npc.tscn")
 var horse: Node2D = null  # HorseNPC
 
 func loop():
-	var horse_post = Global.Building.query.closest_room_of_type(RoomHorsePost, npc.global_position) as RoomHorsePost
+	var horse_post = Building.query.closest_room_of_type(RoomHorsePost, npc.global_position) as RoomHorsePost
 
 	# Spawn the HorseNPC alongside the guest
 	horse = HorseScene.instantiate()
@@ -35,16 +35,16 @@ func loop():
 
 # Returns the world x of the leftmost ground-floor room's left pixel edge.
 func _get_entrance_x() -> float:
-	if not Global.Building.floors.has(0):
+	if not Building.floors.has(0):
 		return 0.0
 	var min_x = INF
-	for x in Global.Building.floors[0]:
-		var room = Global.Building.floors[0][x]
+	for x in Building.floors[0]:
+		var room = Building.floors[0][x]
 		if room != null and room is not RoomEmpty:
 			min_x = minf(min_x, float(x))
 	if min_x == INF:
 		return 0.0
-	return Global.Building.global_position_from_room_index(Vector2i(int(min_x), 0)).x - 24.0
+	return Building.global_position_from_room_index(Vector2i(int(min_x), 0)).x - 24.0
 
 # Bypass room pathfinder — move directly in world space
 func _ride_to(target: Vector2) -> void:

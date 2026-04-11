@@ -1,5 +1,4 @@
 extends Node2D
-class_name Building
 
 @onready var _tiles_walls : TileMapLayer = $ForegroundTiles
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
@@ -25,9 +24,6 @@ const room_data_prison := preload("res://assets/resources/room_prison.tres")
 const room_data_bounty_board := preload("res://assets/resources/room_bounty_board.tres")
 const room_data_safe := preload("res://assets/resources/room_safe.tres")
 const room_data_horse_post := preload("res://assets/resources/room_horse_post.tres")
-
-func _init():
-	Global.Building = self
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
@@ -59,7 +55,10 @@ func initialize_all_rooms():
 
 func delete_room(room: RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
-	set_room(room_data_empty, room.x, room.y)
+	if room.data != null and room.data.is_outdoor:
+		floors[room.y].erase(room.x)
+	else:
+		set_room(room_data_empty, room.x, room.y)
 	room.destroy()
 
 func update_foreground_tiles():

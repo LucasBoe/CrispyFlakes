@@ -1,9 +1,6 @@
 extends Node2D
 
 @onready var coin_dummy = $Coin
-@onready var ui_resource_handler : UIRessourceHandler = $"../UI/UIResources"
-@onready var camera = %Camera
-@onready var canvas : CanvasLayer = $"../UI";
 
 var actively_animated = []
 
@@ -34,6 +31,7 @@ func animate_resource_add(resource, amount, global_pos, duration):
 		tween.tween_callback(kill_animation.bind(instance))
 
 func animate_resource_spend(amount: int, world_target: Vector2, duration: float) -> void:
+	var camera := Camera
 	var label_pos = Global.UI.money.get_label_relative_position(camera)
 	for i in mini(amount, 5):
 		var instance = coin_dummy.duplicate()
@@ -53,6 +51,7 @@ func animate_resource_spend(amount: int, world_target: Vector2, duration: float)
 		tween.tween_callback(instance.queue_free)
 
 func _process(delta):
+	var camera := Camera
 	var target = Global.UI.money.get_label_relative_position(camera)
 	for a in actively_animated:
 		#var l = (a.TimeEnd - a.TimeStart) = a.Duration

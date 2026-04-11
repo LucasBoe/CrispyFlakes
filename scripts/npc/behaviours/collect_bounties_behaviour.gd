@@ -33,7 +33,7 @@ func _get_all_arrested() -> Array:
 
 func _get_all_prisoners() -> Array:
 	var result = []
-	for room: RoomPrison in Global.Building.query.all_rooms_of_type(RoomPrison):
+	for room: RoomPrison in Building.query.all_rooms_of_type(RoomPrison):
 		for prisoner in room.prisoners.duplicate():
 			if is_instance_valid(prisoner) and prisoner is NPCGuest:
 				result.append(prisoner)

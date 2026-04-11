@@ -16,7 +16,7 @@ func start_building(data : RoomData, check):
 	is_placing = true
 
 	if not highlight:
-		highlight = RoomHighlighter.request_rect(Global.Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
+		highlight = RoomHighlighter.request_rect(Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
 func stop_building():
 	if highlight:
@@ -28,7 +28,7 @@ func stop_building():
 func _get_tetris_y(x: int) -> int:
 	var y = 0
 	while y < 100:
-		var room = Global.Building.get_room_from_index(Vector2i(x, y))
+		var room = Building.get_room_from_index(Vector2i(x, y))
 		if room == null or room is RoomEmpty:
 			return y
 		y += 1
@@ -39,7 +39,7 @@ func _input(event):
 		return
 
 	var mouse = get_global_mouse_position()
-	_raw_location = Global.Building.round_room_index_from_global_position(mouse + Vector2(24,0))
+	_raw_location = Building.round_room_index_from_global_position(mouse + Vector2(24,0))
 
 	# Outdoor rooms always use the raw mouse location (custom_placement_check enforces y==0).
 	# Basement rooms (y < 0) use raw location — adjacency rules apply instead of gravity.
@@ -49,7 +49,7 @@ func _input(event):
 	else:
 		location = _raw_location
 
-	var room_at_location = Global.Building.get_room_from_index(location)
+	var room_at_location = Building.get_room_from_index(location)
 	has_valid_target = room_at_location == null or room_at_location is RoomEmpty
 	var has_money = ResourceHandler.has_money(building_data.construction_price)
 
@@ -59,14 +59,14 @@ func _input(event):
 	if location.y < 0:
 		# Basement: require adjacency in all 4 directions (left, right, up, down)
 		for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-			if Global.Building.get_room_from_index(location + dir):
+			if Building.get_room_from_index(location + dir):
 				has_adjacent_room_or_is_ground_floor = true
 				break
 	else:
 		# Above ground: require a room above or below, or be on ground floor
-		if Global.Building.get_room_from_index(location + Vector2i.UP):
+		if Building.get_room_from_index(location + Vector2i.UP):
 			has_adjacent_room_or_is_ground_floor = true
-		if Global.Building.get_room_from_index(location + Vector2i.DOWN):
+		if Building.get_room_from_index(location + Vector2i.DOWN):
 			has_adjacent_room_or_is_ground_floor = true
 		if location.y == 0:
 			has_adjacent_room_or_is_ground_floor = true
@@ -75,7 +75,7 @@ func _input(event):
 
 	# Indoor rooms cannot be placed in a column where y=0 is an outdoor room
 	if not building_data.is_outdoor:
-		var ground_room = Global.Building.get_room_from_index(Vector2i(location.x, 0))
+		var ground_room = Building.get_room_from_index(Vector2i(location.x, 0))
 		if ground_room is RoomOutsideBase:
 			has_valid_target = false
 
@@ -86,6 +86,12 @@ func _input(event):
 	var can_place = has_valid_target && has_money
 
 	if event is InputEventMouseButton \
+	and event.button_index == MOUSE_BUTTON_RIGHT \
+	and not event.pressed:
+		stop_building()
+		return
+
+	if event is InputEventMouseButton \
 	and event.button_index == MOUSE_BUTTON_LEFT \
 	and not event.pressed \
 	and get_viewport().gui_get_hovered_control() is UICloseHandler:#bottom most ui used for checking click on none ui
@@ -93,13 +99,13 @@ func _input(event):
 			SoundPlayer.construction_placed.play()
 			if room_at_location != null:
 				room_at_location.queue_free()
-			Global.Building.set_room(building_data, location.x, location.y)
-			Global.Building.update_foreground_tiles()
+			Building.set_room(building_data, location.x, location.y)
+			Building.update_foreground_tiles()
 
 			# Tween the placed room down from the cursor y to its landed position
 			var drop_distance = _raw_location.y - location.y
 			if drop_distance > 0:
-				var placed_room = Global.Building.get_room_from_index(location)
+				var placed_room = Building.get_room_from_index(location)
 				if placed_room:
 					var final_y = placed_room.position.y
 					placed_room.position.y = _raw_location.y * -48.0
@@ -123,6 +129,6 @@ func _input(event):
 				print("not enough money")
 
 	if highlight:
-		var highlight_target_pos = Global.Building.global_position_from_room_index(_raw_location) + Vector2(0,-24)
+		var highlight_target_pos = Building.global_position_from_room_index(_raw_location) + Vector2(0,-24)
 		highlight.global_position = highlight_target_pos
 		highlight.modulate = Color.GREEN if can_place else Color.YELLOW if has_valid_target else Color.RED

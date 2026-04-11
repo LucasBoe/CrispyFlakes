@@ -6,7 +6,7 @@ func _process(delta):
 	if done:
 		return
 
-	var b = Global.Building
+	var b = Building
 	b.set_room(b.room_data_bounty_board, -4, 0, false)
 	b.set_room(b.room_data_table, -2, 0, false)
 	b.set_room(b.room_data_bar, -1, 0, false)

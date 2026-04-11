@@ -22,11 +22,11 @@ func loop():
 			continue
 
 		# Walk to the target room location
-		var target_room = Global.Building.get_room_from_index(target_loc)
+		var target_room = Building.get_room_from_index(target_loc)
 		if is_instance_valid(target_room):
 			await move(target_room.get_random_floor_position())
 		else:
-			var world_pos = Global.Building.global_position_from_room_index(target_loc)
+			var world_pos = Building.global_position_from_room_index(target_loc)
 			await move(world_pos)
 
 		# Brief collect animation, then transfer money to safe

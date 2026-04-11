@@ -14,7 +14,7 @@ func start_tutorial():
 	#await get_tree().create_timer(2).timeout
 	#await Global.UI.dialogue.print_dialogue("Oh boi, what a mess uncle jack left here.", tutorial_worker)
 	#
-	#var total_rooms = Global.Building.query.all_rooms_of_type(RoomJunk).size()
+	#var total_rooms = Building.query.all_rooms_of_type(RoomJunk).size()
 	#
 	#var asign_junk = Global.UI.tutorial.add_task("Use drag and drop to asign workers to rooms")
 	#var clean_text = "Clean out all rooms full of junk"
@@ -28,7 +28,7 @@ func start_tutorial():
 	#var missing_rooms = total_rooms
 	#
 	#while missing_rooms > 0:
-		#missing_rooms = Global.Building.query.all_rooms_of_type(RoomJunk).size()
+		#missing_rooms = Building.query.all_rooms_of_type(RoomJunk).size()
 		#clean_junk.set_text(junk_text(clean_text, total_rooms - missing_rooms, total_rooms))
 		#await end_of_frame()
 	#
@@ -51,7 +51,7 @@ func start_tutorial():
 	#Global.UI.tutorial.clear_tasks()
 	#var asign_worker = Global.UI.tutorial.add_task("Assign a worker to the bar")
 	#
-	#var bar = Global.Building.query.all_rooms_of_type(RoomBar)[0]
+	#var bar = Building.query.all_rooms_of_type(RoomBar)[0]
 	#var room_highlight_rect = RoomHighlighter.request_rect(bar)
 	#var workers = Global.NPCSpawner.workers
 	#while not workers.any(worker_is_working_at_bar):
@@ -88,13 +88,13 @@ func start_tutorial():
 	#
 	#while not beer_bar_todo.is_done or not brewery_todo.is_done or not storage_todo.is_done:
 		#if not beer_bar_todo.is_done:
-			#if Global.Building.query.all_rooms_of_type(RoomBar).any(bar_has_beer):
+			#if Building.query.all_rooms_of_type(RoomBar).any(bar_has_beer):
 				#beer_bar_todo.set_done()
 		#if not brewery_todo.is_done:
-			#if Global.Building.query.all_rooms_of_type(RoomBrewery).size() > 0:
+			#if Building.query.all_rooms_of_type(RoomBrewery).size() > 0:
 				#brewery_todo.set_done()
 		#if not storage_todo.is_done:
-			#if Global.Building.query.all_rooms_of_type(RoomStorage).size() > 0:
+			#if Building.query.all_rooms_of_type(RoomStorage).size() > 0:
 				#storage_todo.set_done()
 		#await end_of_frame()
 		#

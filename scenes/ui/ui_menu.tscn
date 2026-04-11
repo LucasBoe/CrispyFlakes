@@ -1,0 +1,525 @@
+[gd_scene load_steps=25 format=3 uid="uid://848oy1tnfobv"]
+
+[ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
+[ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
+[ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
+[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="19_v28my"]
+[ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/ui/menu_ui_handler.gd" id="20_wvm38"]
+[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
+[ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
+[ext_resource type="Texture2D" uid="uid://1dxspjogn75f" path="res://assets/sprites/ui/icon_people.png" id="22_4o78i"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="24_xsu8o"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
+[ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
+[ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
+[ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
+[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
+[ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
+[ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
+[ext_resource type="Texture2D" uid="uid://boj3ubhrup0n1" path="res://assets/sprites/ui/icon_structure.png" id="48_mejnj"]
+[ext_resource type="Texture2D" uid="uid://c13whab821fwk" path="res://assets/sprites/ui/icon_drinking.png" id="49_3ukob"]
+[ext_resource type="Texture2D" uid="uid://bar5420knrv4c" path="res://assets/sprites/ui/icon_comfort.png" id="50_em0su"]
+[ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
+[ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
+[ext_resource type="Texture2D" uid="uid://cpm3j0j8jebt6" path="res://assets/sprites/ui/room_table_icon.png" id="54_k504d"]
+[ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
+
+[node name="UIMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("20_wvm38")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 40
+
+[node name="UIWorkers" type="Control" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("19_6ravm")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIWorkers"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -102.0
+offset_bottom = 311.0
+grow_horizontal = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIWorkers/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIWorkers/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+value = 0.13
+show_percentage = false
+
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "69 $"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer"]
+layout_direction = 2
+layout_mode = 2
+script = ExtResource("41_pyam4")
+
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "name"
+
+[node name="ButtonFire" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("19_3ocru")
+icon_alignment = 1
+vertical_icon_alignment = 0
+
+[node name="WorkerUIAddRemove" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+script = ExtResource("26_fq3y7")
+
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "Cleaner"
+horizontal_alignment = 2
+
+[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "-"
+
+[node name="Label2" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = -3
+text = "0 / 0"
+
+[node name="Button2" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "+"
+
+[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Hire"
+
+[node name="UIBuild" type="MarginContainer" parent="MarginContainer"]
+visible = false
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 2
+script = ExtResource("9_60k3h")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild"]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = 1
+
+[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TabBar" type="TabBar" parent="MarginContainer/UIBuild/MarginContainer/GridContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
+theme = ExtResource("22_hpv7r")
+current_tab = 0
+tab_count = 4
+tab_0/tooltip = "Construction"
+tab_0/icon = ExtResource("48_mejnj")
+tab_1/tooltip = "Drinks"
+tab_1/icon = ExtResource("49_3ukob")
+tab_2/tooltip = "Comfort"
+tab_2/icon = ExtResource("50_em0su")
+tab_3/tooltip = "Night"
+tab_3/icon = ExtResource("51_kjajm")
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 3
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="BuildingTypeNameLabel" type="Label" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/CenterContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Rooms"
+
+[node name="RoomTierDummy" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer"]
+layout_mode = 2
+columns = 3
+
+[node name="ButtonDummy" type="Button" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(32, 16)
+layout_mode = 2
+size_flags_horizontal = 8
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("25_q3hll")
+theme_override_font_sizes/font_size = 11
+text = "1"
+icon = ExtResource("54_k504d")
+icon_alignment = 1
+
+[node name="LockedOverlay" type="Control" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer/VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("52_3ukob")
+stretch_mode = 3
+
+[node name="Label" type="Label" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/LockedOverlay/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "23 Guests"
+
+[node name="UIRoomHoverInfo" type="Control" parent="MarginContainer/UIBuild"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -114.0
+offset_bottom = 70.0
+grow_horizontal = 0
+theme_override_constants/margin_right = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="RoomBuildHoverInfoNameLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Room Name"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "This room is cool! "
+fit_content = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="RoomBuildHoverInfoConsumedTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+stretch_mode = 5
+
+[node name="RoomBuildHoverInfoArrowLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+text = ">"
+vertical_alignment = 2
+
+[node name="RoomBuildHoverInfoItemTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("19_v28my")
+stretch_mode = 5
+
+[node name="RoomBuildHoverInfoPriceLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+text = "300$"
+vertical_alignment = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = 1
+
+[node name="RoomBuildHoverInfoRoomPreviewTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("55_nmmsk")
+stretch_mode = 4
+
+[node name="PixelLine" type="Node2D" parent="MarginContainer/UIBuild/UIRoomHoverInfo"]
+visible = false
+script = ExtResource("24_xsu8o")
+metadata/_custom_type_script = "uid://4nwd5trg5nce"
+
+[node name="UISettings" type="Control" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("28_1jyyk")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -99.0
+offset_bottom = 101.0
+grow_horizontal = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UISettings/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("21_6ravm")
+region_rect = Rect2(16, 0, 8, 8)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UISettings/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LabelHeader" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 16
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Music Volume"
+horizontal_alignment = 1
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Label2" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Sound Volume"
+horizontal_alignment = 1
+
+[node name="HSlider2" type="HSlider" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -91.0
+offset_top = -33.0
+offset_right = -11.0
+offset_bottom = -9.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Button_Workers" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme = ExtResource("26_jj3vu")
+icon = ExtResource("22_4o78i")
+icon_alignment = 1
+
+[node name="Button_Build" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme = ExtResource("26_jj3vu")
+icon = ExtResource("21_hpv7r")
+icon_alignment = 1
+
+[node name="Button_Settings" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme = ExtResource("26_jj3vu")
+icon = ExtResource("31_pj0ys")
+icon_alignment = 1

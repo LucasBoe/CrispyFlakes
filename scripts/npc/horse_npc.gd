@@ -83,10 +83,10 @@ func _animate():
 
 func _get_building_left_edge() -> float:
 	var min_x = INF
-	if not Global.Building.floors.has(0):
+	if not Building.floors.has(0):
 		return 0.0
-	for x in Global.Building.floors[0]:
-		var room = Global.Building.floors[0][x]
+	for x in Building.floors[0]:
+		var room = Building.floors[0][x]
 		if room != null and room is not RoomEmpty:
 			min_x = minf(min_x, x)
 	if min_x == INF:

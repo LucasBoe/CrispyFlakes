@@ -2,7 +2,7 @@ extends Control
 class_name FullscreenDragable
 
 @onready var drag_button : Button = $ButtonDrag
-@onready var close_button : Button = $MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/ButtonClose
+@onready var close_button : Button = get_node_or_null("MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/ButtonClose")
 
 var drag_offset = Vector2.ZERO
 

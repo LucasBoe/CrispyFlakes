@@ -32,7 +32,7 @@ func get_fight_for_room(room : RoomBase):
 	return null
 
 func _create_fight(position):
-	var room = Global.Building.query.closest_room_of_type(RoomBase, position) as RoomBase
+	var room = Building.query.closest_room_of_type(RoomBase, position) as RoomBase
 	var fight = Fight.new()
 	active_fights.append(fight)
 	fight.start_fight(room)
@@ -60,7 +60,7 @@ func _end_fight(fight):
 	if fight.npc_won() and not fight.is_arrest_fight:
 		if _is_destructable_room(room):
 			GlobalEventHandler.on_room_deleted_signal.emit(room)
-			Global.Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
+			Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
 			room.destroy()
 
 	fight.end_fight()

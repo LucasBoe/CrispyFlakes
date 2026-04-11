@@ -1,6 +1,8 @@
 extends NPC
 class_name NPCGuest
 
+const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
+
 var manual_behaviour = false
 var pending_arrest: bool = false
 
@@ -100,15 +102,18 @@ func get_next_behaviour():
 	if Needs.drunkenness.strength > randf():
 		return FightBehaviour
 
+	if Needs.Energy.strength > randf():
+		return NeedSleepBehaviourScript
+
 	if needs_to_pee > randf():
 		return UseOuthouseBehaviour
 
-	return Behaviour.get_behaviour_from_available_rooms(Global.Building.query.all_rooms_of_type(RoomBase))
+	return Behaviour.get_behaviour_from_available_rooms(Building.query.all_rooms_of_type(RoomBase))
 
 func _refresh_arrest_highlight():
 	var in_fight = Behaviour.behaviour_instance is FightBehaviour
 	if pending_arrest and not in_fight:
-		var current_room = Global.Building.query.room_at_position(global_position)
+		var current_room = Building.query.room_at_position(global_position)
 		if current_room != _arrest_highlight_room:
 			_clear_arrest_highlight()
 			_arrest_highlight_room = current_room

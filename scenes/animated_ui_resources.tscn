@@ -1,0 +1,49 @@
+[gd_scene load_steps=7 format=3 uid="uid://animated_ui_autoload"]
+
+[ext_resource type="Script" uid="uid://b13wgbepedi75" path="res://scripts/animated_ui_resource_displayer.gd" id="1_aui"]
+[ext_resource type="Texture2D" uid="uid://c0ibpaimkooux" path="res://assets/sprites/coins-sprite-sheet.png" id="2_coins"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("2_coins")
+region = Rect2(0, 0, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2"]
+atlas = ExtResource("2_coins")
+region = Rect2(8, 0, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3"]
+atlas = ExtResource("2_coins")
+region = Rect2(16, 0, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4"]
+atlas = ExtResource("2_coins")
+region = Rect2(24, 0, 8, 8)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_coins"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="AnimatedUIResources" type="Node2D"]
+script = ExtResource("1_aui")
+
+[node name="Coin" type="AnimatedSprite2D" parent="."]
+z_index = 4096
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_coins")
+frame_progress = 0.8107657

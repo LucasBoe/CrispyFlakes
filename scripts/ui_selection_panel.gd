@@ -218,15 +218,13 @@ func _show_for_guest(guest: NPCGuest):
 	room_upgrade_hbox.get_parent().hide()
 
 	arrest_button.show()
-	Util.disconnect_all_pressed(arrest_button)
-	arrest_button.pressed.connect(func():
-		if is_instance_valid(guest) and not guest.pending_arrest:
-			guest.pending_arrest = true
-	)
+	_bind_guest_arrest_button(guest)
 
 	needs = guest.Needs
 	for need : Need in needs.needs:
-		if need.type != Enum.Need.SATISFACTION and need.type != Enum.Need.DRUNKENNESS:
+		if need.type != Enum.Need.SATISFACTION \
+		and need.type != Enum.Need.DRUNKENNESS \
+		and need.type != Enum.Need.ENERGY:
 			continue
 		var instance = need_ui_dummy.duplicate() as UINeedInfo
 		need_ui_dummy.get_parent().add_child(instance)
@@ -248,7 +246,7 @@ func _show_for_room(room: RoomBase):
 				"You are about to delete a room and won't get the money back.",
 				func():
 					if is_instance_valid(room):
-						Global.Building.delete_room(room)
+						Building.delete_room(room)
 			)
 		)
 	else:
@@ -348,7 +346,7 @@ func _show_bounty_board():
 		instance.show()
 	bounty_item_container.show()
 
-	var has_prison = Global.Building.count_rooms_by_data(Global.Building.room_data_prison) > 0
+	var has_prison = Building.count_rooms_by_data(Building.room_data_prison) > 0
 	call_sheriff_button.visible = not has_prison
 
 	Util.disconnect_all_pressed(call_sheriff_button)
@@ -451,13 +449,34 @@ func do_hide():
 
 	hide()
 
+func _bind_guest_arrest_button(guest: NPCGuest):
+	if not is_instance_valid(guest):
+		arrest_button.hide()
+		return
+
+	Util.disconnect_all_pressed(arrest_button)
+
+	if guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+		arrest_button.text = "Arrested"
+		arrest_button.disabled = true
+		return
+
+	arrest_button.disabled = false
+	arrest_button.text = "Unmark Arrest" if guest.pending_arrest else "Mark for Arrest"
+	arrest_button.pressed.connect(func():
+		if not is_instance_valid(guest):
+			return
+		guest.pending_arrest = not guest.pending_arrest
+		_bind_guest_arrest_button(guest)
+	)
+
 func _process(delta):
 	super._process(delta)
 
 	if not target:
 		return
 
-	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, %Camera)
+	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, Camera)
 	line.target_position = pos
 
 	if room_money_label.visible and target is RoomBase:
@@ -471,6 +490,9 @@ func _process(delta):
 		if labels != _current_status_labels:
 			_current_status_labels = labels
 			_rebuild_status_icons(entries)
+
+	if target is NPCGuest:
+		_bind_guest_arrest_button(target)
 
 	if target is NPCWorker:
 		var worker := target as NPCWorker

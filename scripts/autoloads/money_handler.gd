@@ -10,12 +10,12 @@ signal changed
 
 # Returns total money capacity from all currently live rooms.
 func total_capacity() -> float:
-	if not is_instance_valid(Global.Building):
+	if not is_instance_valid(Building):
 		return 100.0
 	var cap = 0.0
-	for y in Global.Building.floors:
-		for x in Global.Building.floors[y]:
-			var room = Global.Building.floors[y][x]
+	for y in Building.floors:
+		for x in Building.floors[y]:
+			var room = Building.floors[y][x]
 			if room is RoomBase and room.data != null:
 				cap += room.data.money_capacity
 	return cap

@@ -1,9 +1,9 @@
 extends Camera2D
 
-@export var zoomSpeed : float = 10;
-@export var minZoom: float = 0.5
-@export var maxZoom: float = 3.0
-@export var panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
+const zoomSpeed : float = 10
+const minZoom: float = 0.5
+const maxZoom: float = 3.0
+const panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
 
 
 var zoomTarget : float = 1

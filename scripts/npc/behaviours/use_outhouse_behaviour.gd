@@ -37,9 +37,9 @@ func loop():
 	npc.notify(UiNotifications.ICON_PLUS_2)
 
 func _pee_outside() -> void:
-	var npc_grid_x = Global.Building.round_room_index_from_global_position(npc.global_position).x
+	var npc_grid_x = Building.round_room_index_from_global_position(npc.global_position).x
 	var grid_offset = -1
-	while Global.Building.has_any_rooms_on_x(npc_grid_x + grid_offset):
+	while Building.has_any_rooms_on_x(npc_grid_x + grid_offset):
 		grid_offset = sign(grid_offset) * (abs(grid_offset) + 1) * -1
 	var target_x = (npc_grid_x + grid_offset) * 48 + 24 + randf_range(-24, 24)
 	await move(Vector2(target_x, 0))

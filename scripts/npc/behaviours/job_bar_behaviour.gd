@@ -13,7 +13,8 @@ func loop():
 	while true:
 		var drink = bar.drink_type
 
-		await move(bar.get_random_floor_position())
+		await pause(1)
+		await move(bar.get_center_floor_position())
 
 		if drinks_available < .1:
 
@@ -29,6 +30,7 @@ func loop():
 
 		else:
 
+			npc.Animator.set_z(-50)
 			await move(bar.get_center_floor_position())
 
 			if bar.drink_requests.size() > 0:
@@ -40,8 +42,11 @@ func loop():
 				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_module.item_cost if bar.current_module else 0, bar.get_center_position(), Vector2i(bar.x, bar.y))
 			else:
 				await move(bar.get_random_floor_position())
+			
+			npc.Animator.set_z(0)
 
 func stop_loop() -> BehaviourSaveData:
+	npc.Animator.set_z(0)
 	ocupied_bars.erase(bar)
 	if is_instance_valid(bar):
 		bar.worker = null
