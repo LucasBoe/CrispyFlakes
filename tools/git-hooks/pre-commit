@@ -5,5 +5,5 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-bash tools/sync_export_version.sh
+SYNC_FOR_NEXT_COMMIT=1 bash tools/sync_export_version.sh
 git add project.godot export_presets.cfg

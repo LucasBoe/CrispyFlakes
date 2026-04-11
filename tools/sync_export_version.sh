@@ -8,6 +8,7 @@ cd "$repo_root"
 mode="${1:-sync}"
 project_file="project.godot"
 export_file="export_presets.cfg"
+for_next_commit="${SYNC_FOR_NEXT_COMMIT:-0}"
 
 if [[ ! -f "$project_file" ]]; then
   echo "Missing $project_file" >&2
@@ -20,7 +21,7 @@ if [[ ! -f "$export_file" ]]; then
 fi
 
 derive_version() {
-  local exact_tag latest_tag commit_count short_hash distance base_version
+  local exact_tag latest_tag commit_count distance base_version
 
   exact_tag="$(git tag --points-at HEAD | rg '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
   if [[ -n "$exact_tag" ]]; then
@@ -29,17 +30,22 @@ derive_version() {
   fi
 
   latest_tag="$(git tag --sort=-version:refname | rg '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
-  short_hash="$(git rev-parse --short HEAD)"
 
   if [[ -n "$latest_tag" ]]; then
     base_version="${latest_tag#v}"
     distance="$(git rev-list "${latest_tag}..HEAD" --count)"
-    echo "${base_version}-dev.${distance}.g${short_hash}"
+    if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
+      distance="$((distance + 1))"
+    fi
+    echo "${base_version}-dev.${distance}"
     return
   fi
 
   commit_count="$(git rev-list --count HEAD)"
-  echo "0.0.0-dev.${commit_count}.g${short_hash}"
+  if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
+    commit_count="$((commit_count + 1))"
+  fi
+  echo "0.0.0-dev.${commit_count}"
 }
 
 version="$(derive_version)"
