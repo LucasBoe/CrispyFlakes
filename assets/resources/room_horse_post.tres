@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://room_horse_post_data"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://db78rpgkifewk"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_hpost"]
-[ext_resource type="PackedScene" uid="uid://room_horse_post_scene" path="res://scenes/rooms/room_horse_post.tscn" id="2_hpost"]
+[ext_resource type="PackedScene" uid="uid://bkvx7b7jvvpuw" path="res://scenes/rooms/room_horse_post.tscn" id="2_hpost"]
+[ext_resource type="Texture2D" uid="uid://brwttr6wd5f6q" path="res://assets/sprites/ui/room_horse_post_icon.png" id="2_meumb"]
+[ext_resource type="Texture2D" uid="uid://bt32mamx16q3c" path="res://assets/sprites/ui/room_horse_post_preview.png" id="3_ko88o"]
 
 [resource]
 script = ExtResource("1_hpost")
 packed_scene = ExtResource("2_hpost")
 room_name = "Horse Post"
 room_desc = "Guests arriving on horseback will tie their horses here."
-is_outdoor = true
+room_icon = ExtResource("2_meumb")
+room_preview = ExtResource("3_ko88o")
 construction_price = 20
+is_outdoor = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

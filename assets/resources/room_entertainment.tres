@@ -1,17 +1,17 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://chwjjtse0boci"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
-[ext_resource type="PackedScene" path="res://scenes/rooms/room_entertainment.tscn" id="1_roomscene"]
-[ext_resource type="Texture2D" path="res://assets/sprites/piano.png" id="2_roomicon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/piano.png" id="3_roompreview"]
+[ext_resource type="PackedScene" uid="uid://cg2swmkkvvrld" path="res://scenes/rooms/room_entertainment.tscn" id="1_roomscene"]
+[ext_resource type="Texture2D" uid="uid://drmcjont5yorb" path="res://assets/sprites/ui/room_entertainment_icon.png" id="2_7ctlq"]
+[ext_resource type="Texture2D" uid="uid://dpujeq5npusvb" path="res://assets/sprites/ui/room_entertainment_preview.png" id="3_80qpi"]
 
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
 room_name = "Entertainment"
 room_desc = "Assign a worker to perform here. Active entertainment periodically raises the satisfaction of all guests on the same floor."
-room_icon = ExtResource("2_roomicon")
-room_preview = ExtResource("3_roompreview")
+room_icon = ExtResource("2_7ctlq")
+room_preview = ExtResource("3_80qpi")
 construction_price = 30
 tier = 1
 money_capacity = 0

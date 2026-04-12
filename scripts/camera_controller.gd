@@ -33,7 +33,7 @@ func handle_zoom(delta):
 		zoomTarget *= 1.1
 		zoom_in_out();
 
-func _input(event):
+func _unhandled_input(event):
 
 	var delta = get_process_delta_time()
 
@@ -46,6 +46,8 @@ func _input(event):
 			#zoom_in_out();
 
 	if event is InputEventPanGesture:
+		if get_viewport().gui_get_hovered_control() != null:
+			return
 		if event.delta.y < 0:
 			zoomTarget *= 1.005
 			zoom_in_out();

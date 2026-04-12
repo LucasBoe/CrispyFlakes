@@ -161,7 +161,6 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="MarginContainer" parent="MarginContainer"]
-visible = false
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -418,6 +417,7 @@ script = ExtResource("24_xsu8o")
 metadata/_custom_type_script = "uid://4nwd5trg5nce"
 
 [node name="UISettings" type="Control" parent="MarginContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("28_1jyyk")

@@ -19,10 +19,10 @@ region_rect = Rect2(24, 0, 8, 8)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_trfhs"]
 texture = ExtResource("1_1wyd7")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
+texture_margin_left = 2.0
+texture_margin_top = 3.0
 texture_margin_right = 4.0
-texture_margin_bottom = 4.0
+texture_margin_bottom = 5.0
 region_rect = Rect2(8, 0, 8, 8)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ytpqb"]
@@ -33,10 +33,10 @@ region_rect = Rect2(8, 0, 8, 8)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5wple"]
 texture = ExtResource("1_1wyd7")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
+texture_margin_left = 2.0
+texture_margin_top = 3.0
 texture_margin_right = 4.0
-texture_margin_bottom = 4.0
+texture_margin_bottom = 5.0
 region_rect = Rect2(0, 0, 8, 8)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c80o7"]
@@ -86,6 +86,7 @@ Button/colors/font_hover_color = Color(1, 1, 1, 1)
 Button/colors/icon_focus_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
 Button/colors/icon_hover_color = Color(1, 1, 1, 1)
 Button/colors/icon_normal_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
+Button/constants/h_separation = 4
 Button/font_sizes/font_size = 9
 Button/fonts/font = ExtResource("1_5wple")
 Button/styles/disabled = SubResource("StyleBoxTexture_1wyd7")
