@@ -65,7 +65,10 @@ func _change_to_idle():
 
 func get_random_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
-	return Building.query.all_rooms_of_type(type, reachable).pick_random()
+	var rooms = Building.query.all_rooms_of_type(type, reachable)
+	if rooms.is_empty():
+		return null
+	return rooms.pick_random()
 
 func get_closest_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
@@ -188,7 +191,8 @@ func store_item(item: Item):
 			npc.Item.drop_current()
 	else:
 		var current_room = Building.query.room_at_position(npc.global_position) as RoomBase
-		await move(current_room.get_random_floor_position())
+		if current_room != null:
+			await move(current_room.get_random_floor_position())
 		npc.Item.drop_current()
 
 const _NPC_PROGRESS_BAR = preload("res://scenes/npc_progress_bar.tscn")
@@ -214,6 +218,19 @@ func progress(duration, bar: TextureProgressBar = null):
 
 	if is_instance_valid(owned_bar):
 		owned_bar.queue_free()
+
+func add_satisfaction(amount: float):
+	if npc != null and npc.has_method("add_satisfaction"):
+		npc.add_satisfaction(amount)
+		return
+
+	npc.Needs.satisfaction.strength += amount
+	if amount > 0.5:
+		npc.notify(UiNotifications.ICON_PLUS_3)
+	elif amount > 0.25:
+		npc.notify(UiNotifications.ICON_PLUS_2)
+	else:
+		npc.notify(UiNotifications.ICON_PLUS_1)
 
 func end_of_frame():
 	return Global.get_tree().process_frame

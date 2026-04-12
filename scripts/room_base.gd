@@ -10,7 +10,7 @@ var is_outside_room = false
 var has_upgrades = false
 var worker : NPCWorker = null
 
-@onready var back_wall_sprite_2d = $"Back-wall"
+@onready var back_wall_sprite_2d = get_node_or_null("Back-wall") as Sprite2D
 
 const backwallDefault = preload("res://assets/sprites/back-wall.png");
 const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");
@@ -22,7 +22,7 @@ func init_room(x : int, y : int):
 	self.y = y
 	is_basement = y < 0
 
-	if not is_outside_room:
+	if not is_outside_room and back_wall_sprite_2d != null:
 		back_wall_sprite_2d.texture = backwallBasement if is_basement else backwallDefault
 
 func set_outline(state):

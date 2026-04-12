@@ -64,7 +64,7 @@ func entertain_floor() -> int:
 		if not _is_guest_in_range(guest):
 			continue
 
-		guest.Needs.satisfaction.strength = minf(1.0, guest.Needs.satisfaction.strength + get_satisfaction_boost())
+		guest.add_satisfaction(get_satisfaction_boost())
 		boosted_guest_count += 1
 
 	return boosted_guest_count

@@ -19,6 +19,8 @@ func loop():
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
 			await move(brewery.get_random_floor_position())
 			var i = npc.Item.drop_current()
+			if not is_instance_valid(i):
+				continue
 			i.destroy()
 
 			_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()

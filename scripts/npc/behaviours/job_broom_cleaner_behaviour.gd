@@ -1,6 +1,8 @@
 extends Behaviour
 class_name JobBroomCleanerBehaviour
 
+const BROOM_PARTICLES_SCENE = preload("res://scenes/fight_particles.tscn")
+
 const CLEAN_DURATION := 1.5
 const BED_CLEAN_DURATION := 6.0
 const OUTHOUSE_CLEAN_DURATION := 8.0
@@ -57,13 +59,23 @@ func loop():
 			_narrative = ["Sweeping up the dirt...", "Getting every last bit...", "Tidying the floor..."].pick_random()
 		_reserve_room_target(target)
 		await move(_target_position(target))
-		
+
 		if not is_instance_valid(target):
 			_release_room_target(target)
 			continue
-			
+
+		var particles = BROOM_PARTICLES_SCENE.instantiate() as GPUParticles2D
+		npc.add_child(particles)
+		npc.Animator.is_brooming = true
+
 		await progress(_target_clean_duration(target))
-		
+
+		npc.Animator.is_brooming = false
+		if is_instance_valid(particles):
+			particles.emitting = false
+			await npc.get_tree().create_timer(1.0).timeout
+			particles.queue_free()
+
 		if not is_instance_valid(target):
 			_release_room_target(target)
 			continue
@@ -71,6 +83,7 @@ func loop():
 		_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
+	npc.Animator.is_brooming = false
 	if is_instance_valid(closet):
 		if closet.on_destroy_signal.is_connected(_change_to_idle):
 			closet.on_destroy_signal.disconnect(_change_to_idle)
@@ -123,14 +136,20 @@ func _ensure_broom() -> void:
 func _find_cleanup_target():
 	var closest_bed := _find_dirty_bed()
 	var closest_outhouse := _find_dirty_outhouse()
+
+	if closest_bed != null or closest_outhouse != null:
+		var priority = []
+		if closest_bed != null:
+			priority.append(closest_bed)
+		if closest_outhouse != null:
+			priority.append(closest_outhouse)
+		priority.sort_custom(func(a, b): return _target_position(a).distance_squared_to(npc.global_position) < _target_position(b).distance_squared_to(npc.global_position))
+		return priority[0]
+
 	var closest_dirt := DirtHandler.get_closest_to(npc.global_position)
 	var closest_puddle := PuddleHandler.get_closest_to(npc.global_position)
 	var candidates = []
 
-	if closest_bed != null:
-		candidates.append(closest_bed)
-	if closest_outhouse != null:
-		candidates.append(closest_outhouse)
 	if closest_dirt != null:
 		candidates.append(closest_dirt)
 	if closest_puddle != null:
@@ -143,6 +162,8 @@ func _find_cleanup_target():
 	return candidates[0]
 
 func _target_position(target) -> Vector2:
+	if not is_instance_valid(target):
+		return npc.global_position
 	if target is ColorRect:
 		return target.global_position + target.size * 0.5
 	if target is RoomOuthouse or target is RoomBed:
@@ -170,6 +191,8 @@ func _clean_target(target) -> void:
 		DirtHandler.clean_dirt(target)
 
 func _target_clean_duration(target) -> float:
+	if not is_instance_valid(target):
+		return CLEAN_DURATION
 	if target is RoomBed:
 		return BED_CLEAN_DURATION
 	if target is RoomOuthouse:

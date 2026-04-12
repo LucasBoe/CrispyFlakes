@@ -40,11 +40,13 @@ func notification_loop():
 			for r : RoomBase in rooms:
 				if r is RoomOuthouse:
 					if (r as RoomOuthouse).is_full() and not r.worker:
-						notify(r, "awaiting cleaner", Color.YELLOW)
+						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
+						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomBed:
 					if (r as RoomBed).needs_cleaning and not r.worker:
-						notify(r, "awaiting cleaner", Color.YELLOW)
+						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
+						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif not r.worker:
 					notify(r, "no worker", Color.ORANGE)

@@ -141,8 +141,16 @@ func try_drop_dirt():
 func clean():
 	is_dirty = false
 	Tint.remove_tint_for(self)
-	Needs.satisfaction.strength += 0.3
-	notify(UiNotifications.ICON_PLUS_2)
+	add_satisfaction(0.3)
+
+func add_satisfaction(amount: float):
+	Needs.satisfaction.strength += amount
+	if amount > 0.5:
+		notify(UiNotifications.ICON_PLUS_3)
+	elif amount > 0.25:
+		notify(UiNotifications.ICON_PLUS_2)
+	else:
+		notify(UiNotifications.ICON_PLUS_1)
 
 func notify(tex):
 	UiNotifications.create_npc_notification(self, tex)

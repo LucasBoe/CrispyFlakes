@@ -23,8 +23,9 @@ func loop():
 				_narrative = "Restocking the bar..."
 				await move(bar.get_random_floor_position())
 				var item = npc.Item.drop_current()
-				item.destroy()
-				drinks_available = 1.0
+				if is_instance_valid(item):
+					item.destroy()
+					drinks_available = 1.0
 			else:
 				RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
 

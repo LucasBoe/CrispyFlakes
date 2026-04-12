@@ -48,8 +48,7 @@ func loop():
 
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	npc.Needs.Energy.strength = maxf(0.0, npc.Needs.Energy.strength - 0.8)
-	npc.Needs.satisfaction.strength += 0.2
-	npc.notify(UiNotifications.ICON_PLUS_2)
+	add_satisfaction(0.2)
 
 func _find_available_bed() -> RoomBed:
 	for candidate: RoomBed in get_all_rooms_of_type_ordered_by_distance(RoomBed):

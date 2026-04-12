@@ -15,6 +15,8 @@ const WALK_ROTATION_STRENGTH = .15
 const FIGHT_ANIMATION_SPEED = 7.0
 const FIGHT_MOVE_DISTANCE = 8.0
 const FIGHT_ROTATION = 1.0
+const BROOM_ANIMATION_SPEED = 12.0
+const BROOM_ROTATION_STRENGTH = 0.7
 
 const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
 const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
@@ -28,6 +30,7 @@ var is_riding : bool = false
 var is_peeing : bool = false
 var is_puking : bool = false
 var is_sleeping : bool = false
+var is_brooming : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 
@@ -74,6 +77,8 @@ func _process(_delta):
 
 	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
 		target = fight_tween(time_in_seconds)
+	elif is_brooming:
+		target = broom_tween(time_in_seconds)
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript or is_sleeping:
 		target = knocked_out_tween()
 	elif is_peeing:
@@ -133,6 +138,10 @@ func fight_tween(time_in_seconds):
 	var x = clamp( sin(s) * sin(s + 1), 0, 1)
 	var scale = Vector2(1 if random_instance_offset < .5 else -1, 1)
 	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, scale)
+
+func broom_tween(time_in_seconds):
+	var rot = sin(time_in_seconds * BROOM_ANIMATION_SPEED) * BROOM_ROTATION_STRENGTH
+	return TweenTargetData.new(Vector2(0, 1), rot, Vector2(x_orientation, 1.0))
 
 func pee_tween(time_in_seconds):
 	# Lean sideways like a dog, with a small bob

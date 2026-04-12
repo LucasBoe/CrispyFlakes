@@ -274,7 +274,8 @@ func _show_for_room(room: RoomBase):
 		var outhouse := room as RoomOuthouse
 		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, RoomOuthouse.MAX_USES]
 		if outhouse.is_full() and not room.worker:
-			_show_status_row("Awaiting Cleaner", Color.YELLOW)
+			var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
+			_show_status_row("Awaiting Cleaner" if has_cleaners else "No Cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 		else:
 			var fill_color = Color.ORANGE if outhouse.is_full() else Color.TRANSPARENT
 			_show_status_row(fill_text, fill_color)
@@ -314,7 +315,8 @@ func _show_for_room(room: RoomBase):
 			if room.worker:
 				_show_status_row("Cleaning", Color.TRANSPARENT, room.worker, room.worker.character_name)
 			else:
-				_show_status_row("Awaiting Cleaner", Color.YELLOW)
+				var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
+				_show_status_row("Awaiting Cleaner" if has_cleaners else "No Cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 		else:
 			_show_status_row("Available", Color.TRANSPARENT)
 	elif room is RoomBroomCloset:

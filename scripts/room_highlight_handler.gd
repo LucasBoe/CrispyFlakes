@@ -21,7 +21,7 @@ const PRIORITY_Z_INDEX = {
 @onready var rect_texture_1px = preload("res://assets/sprites/room_highlight_slim.png")
 
 
-var active : Dictionary[RoomBase, Array] = {}
+var active = {}
 
 func _ready():
 	rect_dummy.visible = false
@@ -65,7 +65,8 @@ func _on_room_deleted(room):
 		return
 
 	for all in active[room]:
-		all.queue_free()
+		if is_instance_valid(all):
+			all.queue_free()
 
 	active.erase(room)
 
@@ -74,14 +75,20 @@ func dispose(highlight):
 	if not is_instance_valid(highlight):
 		return
 
+	var invalid_keys = []
 	for key in active.keys():
-
-		#TODO find reason why null rooms remain in dict in the first place
-		if key == null:
-			active.erase(key)
+		if key == null or not is_instance_valid(key):
+			invalid_keys.append(key)
 			continue
 
-		if active[key].has(highlight):
-			active[key].erase(highlight)
+		var highlights: Array = active[key]
+		if highlights.has(highlight):
+			highlights.erase(highlight)
+			if highlights.is_empty():
+				invalid_keys.append(key)
+
+	for key in invalid_keys:
+		if active.has(key):
+			active.erase(key)
 
 	highlight.queue_free()

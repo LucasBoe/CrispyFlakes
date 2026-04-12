@@ -14,6 +14,8 @@ func loop():
 		arrived_at_roon = true
 		npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)
 		await pause(2)
+		if not fight.is_over and randf() < 0.4:
+			PuddleHandler.create(npc.global_position, PuddleHandler.Type.BLOOD)
 
 func stop_loop():
 	npc.Tint.remove_tint_for(self)

@@ -67,19 +67,13 @@ func loop():
 		if not table:
 			satisfaction_increase /= 3
 
-		if satisfaction_increase > .5:
-			npc.notify(UiNotifications.ICON_PLUS_3)
-		elif satisfaction_increase > .25:
-			npc.notify(UiNotifications.ICON_PLUS_2)
-		else:
-			npc.notify(UiNotifications.ICON_PLUS_1)
-
 		var drink_duration = 10
 
 		for i in drink_duration:
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
-			npc.Needs.satisfaction.strength += satisfaction_increase / float(drink_duration)
+
+		add_satisfaction(satisfaction_increase)
 
 		if table:
 			table.stand_up(npc)

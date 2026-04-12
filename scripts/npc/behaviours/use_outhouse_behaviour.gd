@@ -36,8 +36,7 @@ func loop():
 			outhouse.uses += 1
 
 	npc.needs_to_pee = 0.0
-	npc.Needs.satisfaction.strength += .3
-	npc.notify(UiNotifications.ICON_PLUS_2)
+	add_satisfaction(0.3)
 
 func _pee_outside() -> void:
 	var bouncer_room := get_closest_room_of_type(RoomBouncer) as RoomBouncer

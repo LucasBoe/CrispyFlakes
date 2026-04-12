@@ -10,7 +10,7 @@ const COLORS = {
 
 const START_SIZE  = 8.0
 const END_SIZE    = 1.0
-const FADE_DURATION = 90.0  # seconds until fully gone
+const FADE_DURATION = 180.0  # seconds until fully gone
 
 var puddle_instances: Array[ColorRect] = []
 
@@ -42,7 +42,7 @@ func get_closest_to(global_pos: Vector2) -> ColorRect:
 
 	return closest
 
-func clean_puddle(puddle: ColorRect) -> void:
+func clean_puddle(puddle) -> void:
 	if puddle_instances.has(puddle):
 		puddle_instances.erase(puddle)
 	if is_instance_valid(puddle):

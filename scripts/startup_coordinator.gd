@@ -7,7 +7,7 @@ func _process(delta):
 		return
 
 	var b = Building
-	b.set_room(b.room_data_bounty_board, -4, 0, false)
+	b.set_room(b.room_data_bounty_board, -6, 0, false)
 	b.set_room(b.room_data_table, -2, 0, false)
 	b.set_room(b.room_data_bar, -1, 0, false)
 	b.set_room(b.room_data_stairs, 0, 0, false)
