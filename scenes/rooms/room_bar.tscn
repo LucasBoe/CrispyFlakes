@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dvvvnn4s5rhak"]
+[gd_scene load_steps=12 format=3 uid="uid://dvvvnn4s5rhak"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://djv63sd8uxt6f" path="res://assets/sprites/item_water-bucket.png" id="9_iwater"]
 [ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="10_ibeer"]
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="11_iwiskey"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/module_icon_faucet.png" id="12_ifaucet"]
 
 [node name="Room_Bar" type="Node2D"]
 texture_filter = 1
@@ -61,3 +62,12 @@ price = 50
 module_name = "Bottle Shelf"
 describtion = "Barkeep serves aged whiskey to guests"
 item_cost = 7
+
+[node name="Plumbing" type="Node2D" parent="ModulesRoot"]
+
+[node name="Faucet" type="Node2D" parent="ModulesRoot/Plumbing"]
+script = ExtResource("5_mod")
+icon = ExtResource("12_ifaucet")
+price = 40
+module_name = "Faucet"
+describtion = "Pipes water directly from a Water Tower. No need to fetch buckets."

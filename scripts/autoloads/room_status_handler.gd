@@ -20,7 +20,11 @@ func _on_room_created(room : RoomBase):
 	
 	if room is RoomWell: #not mandatory
 		return
-		
+
+	if room is RoomWaterTower:
+		rooms.append(room)
+		return
+
 	#only when people need to be arested
 	if room is RoomPrison\
 	and JobPrisonBehaviour.count_people_that_need_arrestment() == 0:
@@ -38,7 +42,11 @@ func notification_loop():
 			await pause(1)
 		else:
 			for r : RoomBase in rooms:
-				if r is RoomOuthouse:
+				if r is RoomWaterTower:
+					if not (r as RoomWaterTower).has_water() and not r.worker:
+						notify(r, "needs pumping", Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomOuthouse:
 					if (r as RoomOuthouse).is_full() and not r.worker:
 						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
 						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)

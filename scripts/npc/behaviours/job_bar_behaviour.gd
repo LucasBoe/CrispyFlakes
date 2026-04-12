@@ -15,19 +15,31 @@ func loop():
 
 		if drinks_available < .1:
 
-			_narrative = "Fetching drinks..."
-			npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
-			await fetch_item(drink)
-
-			if npc.Item.is_item(drink):
-				_narrative = "Restocking the bar..."
-				await move(bar.get_random_floor_position())
-				var item = npc.Item.drop_current()
-				if is_instance_valid(item):
-					item.destroy()
+			if bar.has_faucet and drink == Enum.Items.WATER_BUCKET:
+				var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
+				if tower != null and tower.has_water():
+					_narrative = ["Tapping the faucet...", "Drawing from the pipe...", "Filling up from the tower..."].pick_random()
+					await move(bar.get_center_floor_position())
+					tower.consume_water()
 					drinks_available = 1.0
+				else:
+					_narrative = ["Waiting for the water tower...", "Tower's dry...", "No water in the pipe..."].pick_random()
+					RoomStatusHandler.notify(bar, "no water", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
+					await pause(2)
 			else:
-				RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
+				_narrative = "Fetching drinks..."
+				npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+				await fetch_item(drink)
+
+				if npc.Item.is_item(drink):
+					_narrative = "Restocking the bar..."
+					await move(bar.get_random_floor_position())
+					var item = npc.Item.drop_current()
+					if is_instance_valid(item):
+						item.destroy()
+						drinks_available = 1.0
+				else:
+					RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
 
 		else:
 

@@ -12,12 +12,17 @@ class_name UIHolder
 @onready var selection :  = $UISelectionPanel
 @onready var hire : UIHire = $UIFullscreen/UIHire
 @onready var confirm : UIConfirm = $UIFullscreen/UIConfirm
-@onready var close_handler : UICloseHandler = $UICloseHandler
 #@onready var pause: UIPause = $UIPause
 
 
 func _init():
 	Global.UI = self
 
-func _ready():
-	close_handler.fullscreen_ui_close_signal.connect(menu._on_ui_close)
+func _unhandled_input(event):
+	if not event.is_action_pressed("click"):
+		return
+
+	if get_viewport().gui_get_hovered_control() != null:
+		return
+
+	menu._on_ui_close()

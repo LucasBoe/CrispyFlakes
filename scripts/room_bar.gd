@@ -4,6 +4,7 @@ class_name RoomBar
 var drink_requests = []
 var drink_type : Enum.Items = Enum.Items.WATER_BUCKET
 var current_module = null
+var has_faucet: bool = false
 
 const TIMEOUT_DURATION_IN_MSEC = 5000
 
@@ -23,11 +24,17 @@ func init_room(_x : int, _y : int):
 			for module in group.get_children():
 				module.bought_changed.connect(_on_module_bought)
 				if module.bought:
-					current_module = module
-					drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)
+					if module.name == "Faucet":
+						has_faucet = true
+					else:
+						current_module = module
+						drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)
 
 func _on_module_bought(module) -> void:
 	if not module.bought:
+		return
+	if module.name == "Faucet":
+		has_faucet = true
 		return
 	current_module = module
 	drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)

@@ -3,9 +3,9 @@ class_name JobBroomCleanerBehaviour
 
 const BROOM_PARTICLES_SCENE = preload("res://scenes/fight_particles.tscn")
 
-const CLEAN_DURATION := 1.5
-const BED_CLEAN_DURATION := 6.0
-const OUTHOUSE_CLEAN_DURATION := 8.0
+const CLEAN_DURATION := .5
+const BED_CLEAN_DURATION := 3.0
+const OUTHOUSE_CLEAN_DURATION := 4.0
 const IDLE_WAIT_DURATION := 2.0
 
 var closet: RoomBroomCloset

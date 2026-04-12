@@ -36,6 +36,7 @@ enum Jobs {
 	BED_CLEANER,
 	BROOM_CLEANER,
 	BOUNCER,
+	WATER_TOWER,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -81,6 +82,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.BOUNCER:
 			return JobBouncerBehaviour
+
+		Enum.Jobs.WATER_TOWER:
+			return JobWaterTowerBehaviour
 
 enum ZLayer {
 	NPC_OUTSIDE = -500,

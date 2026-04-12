@@ -142,7 +142,6 @@ fill_mode = 3
 show_percentage = false
 
 [node name="NPCNotificationDummy" type="MarginContainer" parent="."]
-visible = false
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -155,7 +154,6 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="TextureRect" type="TextureRect" parent="NPCNotificationDummy"]
-visible = false
 layout_mode = 2
 texture = ExtResource("7_nu268")
 stretch_mode = 2

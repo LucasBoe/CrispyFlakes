@@ -94,7 +94,7 @@ func _input(event):
 	if event is InputEventMouseButton \
 	and event.button_index == MOUSE_BUTTON_LEFT \
 	and not event.pressed \
-	and get_viewport().gui_get_hovered_control() is UICloseHandler:#bottom most ui used for checking click on none ui
+	and get_viewport().gui_get_hovered_control() == null:
 		if can_place:
 			SoundPlayer.construction_placed.play()
 			if room_at_location != null:

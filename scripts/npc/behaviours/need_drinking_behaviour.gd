@@ -72,8 +72,7 @@ func loop():
 		for i in drink_duration:
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
-
-		add_satisfaction(satisfaction_increase)
+			add_satisfaction(satisfaction_increase / float(drink_duration))
 
 		if table:
 			table.stand_up(npc)

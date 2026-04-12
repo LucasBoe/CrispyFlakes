@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://d05pc5605ime2"]
+
+[ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_mat"]
+[ext_resource type="Texture2D" uid="uid://cil3pe0hiys2k" path="res://assets/sprites/watertower.png" id="2_sprite"]
+[ext_resource type="Script" uid="uid://dkcadcxntbb6f" path="res://scripts/room_water_tower.gd" id="3_script"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="4_outline"]
+
+[node name="Room_WaterTower" type="Node2D"]
+texture_filter = 1
+material = ExtResource("1_mat")
+script = ExtResource("3_script")
+
+[node name="WaterTower" type="Sprite2D" parent="."]
+z_index = -200
+material = ExtResource("1_mat")
+position = Vector2(24, 1)
+texture = ExtResource("2_sprite")
+offset = Vector2(0, -47.5)
+
+[node name="ColorRectBackground" type="ColorRect" parent="WaterTower"]
+z_index = -150
+offset_left = -12.0
+offset_top = -84.0
+offset_right = 12.0
+offset_bottom = -58.0
+color = Color(0.22745098, 0.105882354, 0.10980392, 1)
+
+[node name="ColorRectFill" type="ColorRect" parent="WaterTower"]
+z_index = -100
+offset_left = -12.0
+offset_top = -58.0
+offset_right = 12.0
+offset_bottom = -58.0
+color = Color(0.34553567, 0.56236464, 0.962522, 1)
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("4_outline")
