@@ -6,6 +6,7 @@ var room: RoomEntertainment
 static var occupied_rooms = []
 
 func start_loop():
+	_narrative = ["Entertaining the crowd...", "Playing for the guests...", "On stage..."].pick_random()
 	room = try_get_room_if_not_occupied(data, RoomEntertainment, occupied_rooms)
 
 func loop():
@@ -15,7 +16,7 @@ func loop():
 	var pos = (room.get_center_floor_position() + room.global_position) / 2.0
 	
 	await move(pos)
-	npc.Animator.set_z(Enums.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
 
 	while true:
 		var duration := room.get_performance_interval()
@@ -37,7 +38,7 @@ func loop():
 			await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
-	npc.Animator.set_z(Enums.ZLayer.NPC_DEFAULT)
+	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	occupied_rooms.erase(room)
 	if is_instance_valid(room):
 		room.worker = null

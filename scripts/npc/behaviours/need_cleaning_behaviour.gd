@@ -8,7 +8,7 @@ static func get_probability_by_needs(needs : NeedsModule):
 	return (needs.Money.strength) * (needs.Mood.strength)
 	
 func loop():
-	
+	_narrative = ["In need of a bath...", "Feeling grimy...", "Smelling ripe..."].pick_random()
 	bath = get_random_room_of_type(RoomBath)
 	
 	if bath == null:

@@ -7,12 +7,14 @@ var arrest_target: NPCGuest = null
 var arrest_room: RoomPrison = null
 
 func loop():
+	_narrative = ["Responding to a fight!", "There's trouble!", "On my way!"].pick_random()
 	while fight == null:
 		await end_of_frame()
 
 	fight.participants.append(npc)
 	await move(fight.room)
 	arrived_at_room = true
+	_narrative = ["In the fight!", "Restoring order!", "Breaking it up!"].pick_random()
 
 	while not fight.is_over:
 		await end_of_frame()

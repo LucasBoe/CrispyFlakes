@@ -13,9 +13,11 @@ func loop():
 		var to_arrest := get_npc_to_arrest()
 		if to_arrest != null:
 			if to_arrest.pending_arrest:
+				_narrative = ["Going after them...", "Making an arrest...", "They're not getting away..."].pick_random()
 				var drunkenness = to_arrest.Needs.drunkenness.strength
 				await move(to_arrest)
 				if true:
+					_narrative = ["Subduing them...", "Putting up a fight...", "Bringing them in!"].pick_random()
 					var fight = FightHandler.create_arrest_fight(to_arrest, npc)
 					to_arrest.Behaviour.set_behaviour(FightBehaviour)
 					(to_arrest.Behaviour.behaviour_instance as FightBehaviour).fight = fight
@@ -30,15 +32,18 @@ func loop():
 
 			var behaviour = (to_arrest.Behaviour.behaviour_instance as ArrestedBehaviour)
 			if behaviour != null:
+				_narrative = ["Escorting to the cell...", "Taking them in...", "Putting them away..."].pick_random()
 				await move(to_arrest)
 				behaviour.cell = room
 				await move(room.get_center_floor_position())
 
 		elif room.prisoners.size() > 0:
+			_narrative = ["Guarding the cell...", "Keeping watch...", "Making sure no one escapes..."].pick_random()
 			await move(room.get_random_floor_position())
 			await pause(10)
 
 		else:
+			_narrative = ["Watching the cell...", "On duty...", "Waiting for a prisoner..."].pick_random()
 			await move(room.get_random_floor_position())
 			RoomStatusHandler.notify(room, "no prisoners", Color.ORANGE)
 			await pause(RoomStatusHandler.REFRESH_RATE - .5)

@@ -17,11 +17,13 @@ func loop():
 
 		if target_loc == Vector2i(-9999, -9999) or MoneyHandler.get_money_at(target_loc) < 1.0:
 			# Nothing to collect — idle at safe
+			_narrative = ["Watching the safe...", "Keeping an eye on things...", "Nothing to collect yet..."].pick_random()
 			await move(safe.get_random_floor_position())
 			await pause(2)
 			continue
 
 		# Walk to the target room location
+		_narrative = ["Collecting the take...", "Going to pick up the earnings...", "Making the rounds..."].pick_random()
 		var target_room = Building.get_room_from_index(target_loc)
 		if is_instance_valid(target_room):
 			await move(target_room.get_random_floor_position())
@@ -36,6 +38,7 @@ func loop():
 		MoneyHandler.collect_to(target_loc, safe_loc)
 
 		# Return to safe
+		_narrative = ["Returning to the safe...", "Securing the funds...", "Depositing the earnings..."].pick_random()
 		await move(safe.get_random_floor_position())
 
 func stop_loop() -> BehaviourSaveData:

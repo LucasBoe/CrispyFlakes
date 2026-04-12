@@ -9,6 +9,7 @@ static var occupied_rooms = []
 
 func loop():
 	while true:
+		_narrative = ["Looking for a dirty outhouse...", "Checking the facilities...", "On sanitation duty..."].pick_random()
 		room = _find_dirty_outhouse()
 
 		if room == null:
@@ -19,6 +20,7 @@ func loop():
 		room.worker = npc
 		room.on_destroy_signal.connect(_change_to_idle)
 
+		_narrative = ["Cleaning the outhouse...", "Sanitizing...", "Not the best job in town..."].pick_random()
 		await move(room.get_center_floor_position())
 		await progress(CLEAN_DURATION)
 

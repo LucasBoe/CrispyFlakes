@@ -12,17 +12,20 @@ func loop():
 	await move(bath.get_random_floor_position())
 
 	while true:
+		_narrative = ["Fetching water...", "Filling the bucket...", "Getting water for the bath..."].pick_random()
 		await fetch_item(Enum.Items.WATER_BUCKET)
 
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
 			await move(bath.get_random_floor_position())
 
 			if not bath.has_customer:
+				_narrative = ["Waiting for a customer...", "Ready for the next guest...", "Standing by..."].pick_random()
 				await bath.customer_arrive
 
 			var i = npc.Item.drop_current()
 			i.destroy()
 
+			_narrative = ["Running a bath...", "Giving them a scrub...", "Drawing the bath..."].pick_random()
 			await progress(6)
 
 			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position(), Vector2i(bath.x, bath.y))

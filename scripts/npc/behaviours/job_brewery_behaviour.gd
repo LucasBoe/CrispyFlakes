@@ -13,6 +13,7 @@ func loop():
 
 	while true:
 
+		_narrative = ["Fetching water...", "Going for water...", "Filling up the bucket..."].pick_random()
 		await fetch_item(Enum.Items.WATER_BUCKET)
 
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
@@ -20,11 +21,13 @@ func loop():
 			var i = npc.Item.drop_current()
 			i.destroy()
 
+			_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()
 			var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
 			await progress(duration)
 			var item_spawn_pos = brewery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.BEER_BARREL, item_spawn_pos)
 			npc.Item.pick_up(item)
+			_narrative = ["Lifting the beer...", "Hauling the barrels...", "Storing the kegs..."].pick_random()
 			await store_item(item)
 
 func custom_array_sort(a, b):

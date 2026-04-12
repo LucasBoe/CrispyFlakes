@@ -5,6 +5,7 @@ const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_slee
 
 var manual_behaviour = false
 var pending_arrest: bool = false
+var is_known_fugitive: bool = false
 
 var needs_to_pee: float = 0.0
 const PEE_RATE: float = 0.01
@@ -75,7 +76,7 @@ func _refresh_status_icon():
 		icon = UiNotifications.ICON_HANDCUFFS
 	elif b is ArrestedBehaviour:
 		icon = UiNotifications.ICON_HANDCUFFED
-	elif look_info != null and BountyHandler.npc_bounties.has(look_info):
+	elif is_known_fugitive:
 		icon = UiNotifications.ICON_FUGITIVE
 
 	if icon == _status_icon_texture:

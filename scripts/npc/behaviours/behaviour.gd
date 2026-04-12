@@ -4,6 +4,10 @@ class_name Behaviour
 var npc : NPC
 var data : BehaviourSaveData
 var stopped = false
+var _narrative: String = "Busy..."
+
+func get_narrative() -> String:
+	return _narrative
 
 func _init(_npc, _data : BehaviourSaveData):
 	npc = _npc
@@ -147,6 +151,18 @@ func fetch_item(item: Enum.Items):
 		well.consume_water()
 		source_item = Global.ItemSpawner.create(Enum.Items.WATER_BUCKET, well.get_center_position())
 		well.unregister(npc)
+
+	if source_item == null and item == Enum.Items.BROOM:
+		var broom = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.BROOM)
+		if broom != null:
+			await move(broom)
+			source_item = broom
+
+		if source_item == null:
+			var closet = get_closest_room_of_type(RoomBroomCloset) as RoomBroomCloset
+			if closet != null:
+				await move(closet.get_broom_pickup_position())
+				source_item = closet.issue_broom()
 
 	if source_item != null:
 		npc.Item.pick_up(source_item)

@@ -148,7 +148,7 @@ func knocked_out_tween():
 	var x = -1 if is_sleeping else x_orientation
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x, Vector2.ONE)
 
-func set_z(z : Enums.ZLayer):
+func set_z(z : Enum.ZLayer):
 	z_index = z
 
 class TweenTargetData:

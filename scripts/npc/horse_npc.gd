@@ -8,6 +8,8 @@ const TEX_HORSE = preload("res://assets/sprites/horse.png")
 const TIE_FEE = 5
 const WANDER_SPEED = 12.0
 const WANDER_RANGE_X = 80.0
+const FREE_DIRT_INTERVAL_MIN = 10.0
+const FREE_DIRT_INTERVAL_MAX = 22.0
 
 const SQUASH_STRENGTH = 0.06
 const IDLE_SPEED = 2.0
@@ -24,10 +26,12 @@ var _wander_timer: float = 0.0
 var _x_orientation: float = 1.0
 var _is_moving: bool = false
 var _random_offset: float = 0.0
+var _dirt_timer: float = 0.0
 
 func _ready():
 	sprite.texture = TEX_HORSE
 	_random_offset = randf()
+	_reset_dirt_timer()
 
 func _process(delta):
 	if not visible or owner_guest == null:
@@ -49,6 +53,11 @@ func _process(delta):
 		return
 
 	# Free: wander
+	_dirt_timer -= delta
+	if _dirt_timer <= 0.0:
+		DirtHandler.create_dirt_at(global_position)
+		_reset_dirt_timer()
+
 	_wander_timer -= delta
 	if _wander_timer <= 0.0 or global_position.distance_to(_wander_target) < 2.0:
 		_pick_wander_target()
@@ -106,6 +115,7 @@ func drop_at(pos: Vector2) -> void:
 	_home_x = pos.x
 	_home_y = pos.y
 	_wander_target = pos
+	_reset_dirt_timer()
 
 func tie_to(post: RoomHorsePost) -> void:
 	tied_post = post
@@ -118,6 +128,7 @@ func tie_to(post: RoomHorsePost) -> void:
 func on_post_destroyed() -> void:
 	tied_post = null
 	_home_x = global_position.x
+	_reset_dirt_timer()
 
 # Guest walks here, pays fee if still tied, mounts up.
 # Returns the fee paid (0 if post was gone).
@@ -128,3 +139,6 @@ func collect(_guest: NPCGuest) -> int:
 		tied_post.untie_horse(self)
 		tied_post = null
 	return fee
+
+func _reset_dirt_timer() -> void:
+	_dirt_timer = randf_range(FREE_DIRT_INTERVAL_MIN, FREE_DIRT_INTERVAL_MAX)

@@ -2,6 +2,7 @@ extends Behaviour
 class_name CollectBountiesBehaviour
 
 func loop():
+	_narrative = ["Rounding up the criminals...", "Here for the bounty...", "Looking for the arrested..."].pick_random()
 	#var prisoners = _get_all_prisoners()
 	var arrested = _get_all_arrested()
 
@@ -9,6 +10,7 @@ func loop():
 		if not is_instance_valid(to_take_away):
 			continue
 
+		_narrative = ["Collecting a bounty...", "Going to pick them up...", "Taking them in..."].pick_random()
 		await move(to_take_away)
 
 		if not is_instance_valid(to_take_away):
@@ -20,6 +22,7 @@ func loop():
 		follow_b.sheriff = npc
 
 	# Walk out
+	_narrative = ["Heading out...", "Job done.", "Taking them away..."].pick_random()
 	await move(Global.LEAVE_POSITION)
 
 	if is_instance_valid(npc):

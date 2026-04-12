@@ -9,6 +9,7 @@ func start_loop():
 	room = try_get_room_if_not_occupied(data, RoomJunk, occupied_rooms)
 	
 func loop():
+	_narrative = ["Clearing the junk...", "Hauling debris...", "Cleaning up the wreckage..."].pick_random()
 	await move(room.get_random_floor_position())
 	await progress(6)
 	

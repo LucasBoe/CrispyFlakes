@@ -85,7 +85,8 @@ func dig_deeper() -> bool:
 	var cost = get_dig_cost()
 	if not ResourceHandler.has_money(cost):
 		return false
-	ResourceHandler.change_resource(Enum.Resources.MONEY, -cost)
+	await ResourceHandler.spend_animated(cost, global_position)
+	SoundPlayer.construction_placed.play_random_pitch()
 	depth += 1
 	max_water += WATER_PER_DEPTH
 	current_water = minf(current_water + WATER_PER_DEPTH, max_water)

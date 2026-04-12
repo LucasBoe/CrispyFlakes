@@ -51,7 +51,9 @@ func spawn_new_guest():
 	add_child(guest)
 	
 	var available_bounties = BountyHandler.get_available_bounties()
-	if randf() < 0.1 and available_bounties.size() > 0:
+	var active_bounty_count = BountyHandler.active_looks.size()
+	var bounty_chance = 0.3 / (1.0 + active_bounty_count)
+	if randf() < bounty_chance and available_bounties.size() > 0:
 		var bounty_entry = available_bounties[randi_range(0, available_bounties.size() - 1)]
 		BountyHandler.activate(bounty_entry.look)
 		guest.init(bounty_entry.look)
@@ -64,8 +66,15 @@ func spawn_new_guest():
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
 	spawned_guest_signal.emit(guests.size())
 
+	var bouncer_room = Building.query.closest_room_of_type(RoomBouncer, guest.global_position) as RoomBouncer
+	var has_active_bouncer := bouncer_room != null and bouncer_room.has_active_bouncer()
+	if has_active_bouncer:
+		guest.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+
 	if randf() < 0.3:
 		guest.force_behaviour(ArriveOnHorseBehaviour)
+	elif has_active_bouncer:
+		guest.force_behaviour(ArriveThroughBouncerBehaviour)
 
 	return guest
 

@@ -1,10 +1,32 @@
-[gd_scene load_steps=6 format=3 uid="uid://cg2swmkkvvrld"]
+[gd_scene load_steps=9 format=3 uid="uid://cg2swmkkvvrld"]
 
 [ext_resource type="Script" uid="uid://bol2ol310lev1" path="res://scripts/room_entertainment.gd" id="1_roomscript"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="5_module"]
 [ext_resource type="Texture2D" uid="uid://b0kd2v4qy4nn6" path="res://assets/sprites/piano.png" id="6_piano"]
+[ext_resource type="Texture2D" uid="uid://0q8fforp5qs8" path="res://assets/sprites/music_notes.png" id="7_notes"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_notes"]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_notes"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(3, 4, 1)
+direction = Vector3(1, -0.15, 0)
+spread = 18.0
+initial_velocity_min = 10.0
+initial_velocity_max = 18.0
+gravity = Vector3(0, -6, 0)
+scale_max = 1.2
+color = Color(1, 0.717647, 0.32549, 1)
+hue_variation_min = -0.45
+hue_variation_max = 0.45
+anim_offset_max = 1.0
 
 [node name="Room_Entertainment" type="Node2D"]
 texture_filter = 1
@@ -20,6 +42,19 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_outline")
+
+[node name="MusicParticles" type="GPUParticles2D" parent="."]
+z_index = 120
+material = SubResource("CanvasItemMaterial_notes")
+position = Vector2(24, -24)
+amount = 2
+texture = ExtResource("7_notes")
+lifetime = 1.5
+preprocess = 0.4
+explosiveness = 0.15
+randomness = 0.35
+process_material = SubResource("ParticleProcessMaterial_notes")
+
 [node name="ModulesRoot" type="Node2D" parent="."]
 
 [node name="Acts" type="Node2D" parent="ModulesRoot"]

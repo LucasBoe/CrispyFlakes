@@ -49,6 +49,9 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 		Enum.Items.WATER_BUCKET:
 			tex = load("res://assets/sprites/item_water-bucket.png")
 
+		Enum.Items.BROOM:
+			tex = load("res://assets/sprites/item_broom.png")
+
 	var info = TextureInfo.new()
 	info.Tex = tex
 	info.Offset = offset

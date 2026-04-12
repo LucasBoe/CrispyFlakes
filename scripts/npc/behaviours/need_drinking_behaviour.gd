@@ -8,7 +8,7 @@ static func get_probability_by_needs(needs : NeedsModule):
 	return (needs.Money.strength) * (needs.Mood.strength)
 
 func loop():
-
+	_narrative = ["Thirsty...", "Parched...", "Craving a drink..."].pick_random()
 	bar = get_random_room_of_type(RoomBar)
 
 	if not bar:
@@ -20,6 +20,7 @@ func loop():
 	if not is_instance_valid(bar):
 		return
 
+	_narrative = ["Waiting for a drink...", "At the bar...", "Ready to order..."].pick_random()
 	var request = bar.request_drink(self)
 
 	var sent_notification = false
@@ -35,6 +36,7 @@ func loop():
 		await end_of_frame()
 
 	if request.status == Enum.RequestStatus.FULFILLED:
+		_narrative = ["Drinking...", "Enjoying the drink...", "Taking a sip..."].pick_random()
 		var drink_type = bar.drink_type
 
 		var item = Global.ItemSpawner.create(Enum.Items.DRINK, bar.get_random_floor_position())

@@ -41,6 +41,9 @@ var _status_row_instance = null
 var selected_room_highlight_instance
 var selected_npc_highlight_instance
 
+var _npc_base_description: String = ""
+var _npc_narrative_text: String = ""
+
 func _ready():
 	super._ready()
 	describtion_label.bbcode_enabled = true
@@ -108,6 +111,8 @@ func _clear_instances():
 	_status_row_instance = null
 
 	dig_deeper_button.hide()
+	_npc_base_description = ""
+	_npc_narrative_text = ""
 
 	room_money_label.hide()
 	room_recipe_row.hide()
@@ -202,7 +207,8 @@ func _show_status_row(text: String, color: Color, link_target = null, link_text:
 
 func _show_for_worker(worker: NPCWorker):
 	header_label.text = "Worker"
-	describtion_label.text = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
+	_npc_base_description = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
+	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	room_delete_button.hide()
 	arrest_button.hide()
@@ -216,7 +222,8 @@ func _show_for_worker(worker: NPCWorker):
 
 func _show_for_guest(guest: NPCGuest):
 	header_label.text = "Guest"
-	describtion_label.text = "This guest will stay around as long as he is satisfied with your saloons services.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(guest.strength * 100), int(guest.agility * 100), int(guest.intelligence * 100)]
+	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(guest.strength * 100), int(guest.agility * 100), int(guest.intelligence * 100)]
+	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	room_delete_button.hide()
 	room_upgrade_hbox.get_parent().hide()
@@ -266,8 +273,11 @@ func _show_for_room(room: RoomBase):
 	if room is RoomOuthouse:
 		var outhouse := room as RoomOuthouse
 		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, RoomOuthouse.MAX_USES]
-		var fill_color = Color.ORANGE if outhouse.is_full() else Color.TRANSPARENT
-		_show_status_row(fill_text, fill_color)
+		if outhouse.is_full() and not room.worker:
+			_show_status_row("Awaiting Cleaner", Color.YELLOW)
+		else:
+			var fill_color = Color.ORANGE if outhouse.is_full() else Color.TRANSPARENT
+			_show_status_row(fill_text, fill_color)
 	elif room is RoomEntertainment:
 		var entertainment := room as RoomEntertainment
 		if entertainment.worker:
@@ -285,11 +295,13 @@ func _show_for_room(room: RoomBase):
 		dig_deeper_button.show()
 		Util.disconnect_all_pressed(dig_deeper_button)
 		dig_deeper_button.pressed.connect(func():
-			if well.dig_deeper():
+			dig_deeper_button.disabled = true
+			if await well.dig_deeper():
 				dig_deeper_button.text = "Dig Deeper (%d$)" % well.get_dig_cost()
 			else:
 				var btn_center = dig_deeper_button.global_position + dig_deeper_button.size / 2
 				UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
+			dig_deeper_button.disabled = false
 		)
 	elif room is RoomBed:
 		var bed := room as RoomBed
@@ -302,9 +314,16 @@ func _show_for_room(room: RoomBase):
 			if room.worker:
 				_show_status_row("Cleaning", Color.TRANSPARENT, room.worker, room.worker.character_name)
 			else:
-				_show_status_row("Needs Cleaning", Color.ORANGE)
+				_show_status_row("Awaiting Cleaner", Color.YELLOW)
 		else:
 			_show_status_row("Available", Color.TRANSPARENT)
+	elif room is RoomBroomCloset:
+		var closet := room as RoomBroomCloset
+		var cleaners_text := "Cleaners %d/%d" % [closet.get_assigned_worker_count(), closet.get_job_capacity()]
+		var broom_text := "%d/%d brooms issued" % [closet.issued_broom_count, RoomBroomCloset.MAX_CLEANERS]
+		var status_text := "%s, %s" % [cleaners_text, broom_text]
+		var status_color := Color.ORANGE if closet.get_assigned_worker_count() == 0 else Color.TRANSPARENT
+		_show_status_row(status_text, status_color, closet.worker if closet.worker else null, closet.worker.character_name if closet.worker else "")
 	elif room.associated_job != null:
 		if room.worker:
 			_show_status_row("Worker", Color.TRANSPARENT, room.worker, room.worker.character_name)
@@ -538,6 +557,12 @@ func _process(delta):
 		if labels != _current_status_labels:
 			_current_status_labels = labels
 			_rebuild_status_icons(entries)
+
+		var b = (target as NPC).Behaviour.behaviour_instance
+		var narrative := b.get_narrative() if b != null else "..."
+		if narrative != _npc_narrative_text:
+			_npc_narrative_text = narrative
+			describtion_label.text = _npc_base_description + "\n\n[color=#888888]" + narrative + "[/color]"
 
 	if target is NPCGuest:
 		_bind_guest_arrest_button(target)

@@ -48,7 +48,7 @@ func sit(guest : NPC):
 			break
 
 	guest.Animator.set_sitting(true)
-	guest.Animator.set_z(Enums.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
 
 	show_guest_count_notification()
 
@@ -56,7 +56,7 @@ func sit(guest : NPC):
 
 func stand_up(guest : NPC):
 	guest.Animator.set_sitting(false)
-	guest.Animator.set_z(Enums.ZLayer.NPC_DEFAULT)
+	guest.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	for i in max_guest_count:
 		if guests[i] == guest:
 			guests[i] = null

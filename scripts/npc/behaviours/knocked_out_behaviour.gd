@@ -7,6 +7,7 @@ var notification_instance
 var time_remaining: float = DURATION
 
 func start_loop():
+	_narrative = ["Down for the count...", "Out cold...", "Seeing stars..."].pick_random()
 	notification_instance = UiNotifications.create_npc_notification(npc, UiNotifications.ICON_KNOCKED_OUT, true)
 
 func loop():

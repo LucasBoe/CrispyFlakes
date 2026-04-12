@@ -4,6 +4,7 @@ class_name FollowSheriffBehaviour
 var sheriff: NPC = null
 
 func loop():
+	_narrative = ["Following the sheriff...", "Being escorted out...", "Going quietly..."].pick_random()
 	npc.Animator.handcuffs.show()
 
 	while is_instance_valid(sheriff):

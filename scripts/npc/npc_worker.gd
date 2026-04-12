@@ -207,7 +207,7 @@ func _activate_drag():
 		if room.associated_job == null:
 			continue
 
-		if room.worker != null:
+		if not room.can_accept_worker(room.associated_job):
 			continue
 
 		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
@@ -320,6 +320,10 @@ func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
 
 func try_change_job_based_on_room(room : RoomBase):
 	var new_job = room.associated_job
+
+	if new_job != null and current_job_room != room and not room.can_accept_worker(new_job):
+		return
+
 	current_job_room = room
 
 	if new_job == null:

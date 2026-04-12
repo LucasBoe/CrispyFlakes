@@ -40,11 +40,11 @@ func notification_loop():
 			for r : RoomBase in rooms:
 				if r is RoomOuthouse:
 					if (r as RoomOuthouse).is_full() and not r.worker:
-						notify(r, "outhouse full", Color.ORANGE)
+						notify(r, "awaiting cleaner", Color.YELLOW)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomBed:
 					if (r as RoomBed).needs_cleaning and not r.worker:
-						notify(r, "bed dirty", Color.ORANGE)
+						notify(r, "awaiting cleaner", Color.YELLOW)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif not r.worker:
 					notify(r, "no worker", Color.ORANGE)

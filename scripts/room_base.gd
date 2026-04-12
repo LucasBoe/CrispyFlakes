@@ -51,6 +51,25 @@ func get_center_floor_position():
 func get_notification_position():
 	return global_position + Vector2(2, -32)
 
+func get_job_capacity(job = null) -> int:
+	if job == null:
+		job = associated_job
+	if associated_job == null or job != associated_job:
+		return 0
+	return 1
+
+func get_assigned_worker_count(job = null) -> int:
+	if job == null:
+		job = associated_job
+	if associated_job == null or job != associated_job:
+		return 0
+	return 1 if worker != null else 0
+
+func can_accept_worker(job = null) -> bool:
+	if job == null:
+		job = associated_job
+	return get_assigned_worker_count(job) < get_job_capacity(job)
+
 func destroy():
 	on_destroy_signal.emit()
 	queue_free()

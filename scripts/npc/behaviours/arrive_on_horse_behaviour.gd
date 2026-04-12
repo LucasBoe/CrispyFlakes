@@ -6,6 +6,7 @@ const HorseScene = preload("res://scenes/npcs/horse_npc.tscn")
 var horse: Node2D = null  # HorseNPC
 
 func loop():
+	_narrative = ["Riding in...", "Arriving on horseback...", "Coming in from the range..."].pick_random()
 	var horse_post = Building.query.closest_room_of_type(RoomHorsePost, npc.global_position) as RoomHorsePost
 
 	# Spawn the HorseNPC alongside the guest
@@ -32,6 +33,11 @@ func loop():
 		horse.tie_to(horse_post)
 	else:
 		horse.drop_at(npc.global_position)
+
+	var bouncer_room := Building.query.closest_room_of_type(RoomBouncer, npc.global_position) as RoomBouncer
+	if bouncer_room != null and bouncer_room.has_active_bouncer():
+		npc.force_behaviour(ArriveThroughBouncerBehaviour)
+		return
 
 # Returns the world x of the leftmost ground-floor room's left pixel edge.
 func _get_entrance_x() -> float:

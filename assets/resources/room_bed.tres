@@ -8,8 +8,8 @@
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_bedscene")
-room_name = "Bed"
-room_desc = "Guests can recover energy here. After sleeping, the bed needs to be cleaned before it can be used again."
+room_name = "Bunkhouse"
+room_desc = "Guests can recover energy here. After sleeping, the bunkhouse needs to be cleaned before it can be used again."
 room_icon = ExtResource("2_iluox")
 room_preview = ExtResource("3_ibbrn")
 construction_price = 25

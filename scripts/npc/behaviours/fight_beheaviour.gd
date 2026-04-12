@@ -6,6 +6,7 @@ var fight : Fight = null
 var arrived_at_roon = false
 
 func loop():
+	_narrative = ["Starting a brawl!", "Looking for trouble!", "Throwing punches!"].pick_random()
 	if fight == null:
 		fight = FightHandler.get_or_create_fight(npc)
 	while not fight.is_over:

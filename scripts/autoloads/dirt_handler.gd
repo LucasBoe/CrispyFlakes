@@ -12,3 +12,26 @@ func create_dirt_at(position_in_global_space):
 	new_dirt_instance.region_rect = Rect2i(0 if randf() < .5 else 8, 0, 8, 2)
 	add_child(new_dirt_instance)
 	dirt_instances.append(new_dirt_instance) # add to list
+
+func get_closest_to(global_pos: Vector2) -> Sprite2D:
+	var closest: Sprite2D = null
+	var best_dist := INF
+
+	for i in range(dirt_instances.size() - 1, -1, -1):
+		var dirt = dirt_instances[i]
+		if not is_instance_valid(dirt):
+			dirt_instances.remove_at(i)
+			continue
+
+		var d = dirt.global_position.distance_squared_to(global_pos)
+		if d < best_dist:
+			best_dist = d
+			closest = dirt
+
+	return closest
+
+func clean_dirt(dirt: Sprite2D) -> void:
+	if dirt_instances.has(dirt):
+		dirt_instances.erase(dirt)
+	if is_instance_valid(dirt):
+		dirt.queue_free()

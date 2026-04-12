@@ -12,7 +12,8 @@ enum Items {
 	WISKEY_BOX,
 	DRINK,
 	WATER_BUCKET,
-	WISKEY_BOX_RAW
+	WISKEY_BOX_RAW,
+	BROOM
 }
 
 enum Resources {
@@ -33,6 +34,8 @@ enum Jobs {
 	SAFE,
 	OUTHOUSE_CLEANER,
 	BED_CLEANER,
+	BROOM_CLEANER,
+	BOUNCER,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -72,6 +75,24 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.BED_CLEANER:
 			return JobBedBehaviour
+
+		Enum.Jobs.BROOM_CLEANER:
+			return JobBroomCleanerBehaviour
+
+		Enum.Jobs.BOUNCER:
+			return JobBouncerBehaviour
+
+enum ZLayer {
+	NPC_OUTSIDE = -500,
+	NPC_BEHIND_ROOM_DEEP = -150,
+	NPC_BEHIND_ROOM_CONTENT = -50,
+	ROOM_CONTENT_BACK = -10,
+	ROOM_CONTENT_DEFAULT = 0,
+	ROOM_CONTENT_FRONT = 10,
+	NPC_DEFAULT = 0,
+	PUDDLE = 100,
+	DEBUG_OVERLAY = 1000,
+}
 
 enum RequestStatus {
 	OPEN,

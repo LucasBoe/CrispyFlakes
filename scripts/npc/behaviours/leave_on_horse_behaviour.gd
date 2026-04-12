@@ -2,6 +2,7 @@ extends Behaviour
 class_name LeaveOnHorseBehaviour
 
 func loop():
+	_narrative = ["Riding off...", "Galloping away...", "Heading back to the range..."].pick_random()
 	if npc is NPCGuest:
 		Global.NPCSpawner.on_guest_destroy(npc)
 
@@ -14,7 +15,7 @@ func loop():
 		# Pay tying fee if it was on a post
 		var fee = horse.collect(npc)
 		if fee > 0:
-			ResourceHandler.change_resource(Enum.Resources.MONEY, fee)
+			await ResourceHandler.add_animated(Enum.Resources.MONEY, fee, horse.global_position)
 
 	# Mount and ride off — bypass room pathfinder
 	npc.Animator.set_riding(true)

@@ -13,6 +13,7 @@ func loop():
 
 	while true:
 
+		_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
 		await fetch_item(Enum.Items.WATER_BUCKET)
 
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
@@ -21,10 +22,12 @@ func loop():
 			if is_instance_valid(i):
 				i.destroy()
 
+			_narrative = ["Working the still...", "Distilling the whiskey...", "Checking the proof..."].pick_random()
 			await progress(5)
 			var item_spawn_pos = destillery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.WISKEY_BOX_RAW, item_spawn_pos)
 			npc.Item.pick_up(item)
+			_narrative = ["Storing the whiskey...", "Getting it to the cellar...", "Hauling the crates..."].pick_random()
 			await store_item(item)
 
 func stop_loop():

@@ -12,6 +12,8 @@ const START_SIZE  = 8.0
 const END_SIZE    = 1.0
 const FADE_DURATION = 90.0  # seconds until fully gone
 
+var puddle_instances: Array[ColorRect] = []
+
 func create(world_position: Vector2, type: Type) -> void:
 	var rect := ColorRect.new()
 	rect.color = COLORS[type]
@@ -19,7 +21,32 @@ func create(world_position: Vector2, type: Type) -> void:
 	rect.position = world_position - rect.size * 0.5
 	rect.z_index = 100
 	add_child(rect)
+	puddle_instances.append(rect)
 	_fade(rect)
+
+func get_closest_to(global_pos: Vector2) -> ColorRect:
+	var closest: ColorRect = null
+	var best_dist := INF
+
+	for i in range(puddle_instances.size() - 1, -1, -1):
+		var puddle := puddle_instances[i]
+		if not is_instance_valid(puddle):
+			puddle_instances.remove_at(i)
+			continue
+
+		var puddle_center := puddle.global_position + puddle.size * 0.5
+		var d := puddle_center.distance_squared_to(global_pos)
+		if d < best_dist:
+			best_dist = d
+			closest = puddle
+
+	return closest
+
+func clean_puddle(puddle: ColorRect) -> void:
+	if puddle_instances.has(puddle):
+		puddle_instances.erase(puddle)
+	if is_instance_valid(puddle):
+		puddle.queue_free()
 
 func _fade(rect: ColorRect) -> void:
 	var tween = create_tween()
@@ -27,4 +54,4 @@ func _fade(rect: ColorRect) -> void:
 	#tween.tween_property(rect, "size", Vector2(END_SIZE, END_SIZE), FADE_DURATION)
 	tween.tween_property(rect, "color:a", 0.0, FADE_DURATION)
 	tween.set_parallel(false)
-	tween.tween_callback(rect.queue_free)
+	tween.tween_callback(clean_puddle.bind(rect))

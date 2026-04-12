@@ -6,6 +6,7 @@ const DEFAULT_SATISFACTION_BOOST := 0.08
 const PERFORMANCE_RANGE := 2
 
 var current_module = null
+@onready var music_particles: GPUParticles2D = $MusicParticles
 
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.ENTERTAINMENT
@@ -38,6 +39,11 @@ func get_satisfaction_boost() -> float:
 
 func has_active_performance() -> bool:
 	return current_module != null and worker != null
+
+func _process(_delta):
+	if music_particles == null:
+		return
+	music_particles.emitting = has_active_performance()
 
 func count_guests_in_range() -> int:
 	if Global.NPCSpawner == null:
