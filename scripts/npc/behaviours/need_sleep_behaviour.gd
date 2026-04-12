@@ -31,9 +31,9 @@ func loop():
 	bed.occupy(npc)
 	npc.Animator.set_sleeping(true)
 	npc.Animator.set_z(Enums.ZLayer.NPC_BEHIND_ROOM_CONTENT)
-	npc.global_position = bed.get_sleep_position()
+	npc.global_position = bed.get_sleep_position_for(npc)
 
-	await progress(RoomBed.SLEEP_DURATION, bed.progressBar)
+	await progress(RoomBed.SLEEP_DURATION)
 
 	if is_instance_valid(npc):
 		npc.Animator.set_sleeping(false)
@@ -58,6 +58,6 @@ func stop_loop() -> BehaviourSaveData:
 	if is_instance_valid(npc):
 		npc.Animator.set_sleeping(false)
 		npc.Animator.set_z(Enums.ZLayer.NPC_DEFAULT)
-	if is_instance_valid(bed) and bed.current_guest == npc:
+	if is_instance_valid(bed) and npc in bed.current_guests:
 		bed.release(npc)
 	return super.stop_loop()

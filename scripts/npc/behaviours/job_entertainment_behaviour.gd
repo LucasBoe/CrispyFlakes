@@ -19,7 +19,7 @@ func loop():
 
 	while true:
 		var duration := room.get_performance_interval()
-		await progress(duration, room.progressBar)
+		await progress(duration)
 
 		if not is_instance_valid(room):
 			return

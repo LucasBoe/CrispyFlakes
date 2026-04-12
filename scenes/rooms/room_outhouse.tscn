@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtr2utu3u6oo2"]
+[gd_scene load_steps=5 format=3 uid="uid://dtr2utu3u6oo2"]
 
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_56m3a"]
 [ext_resource type="Texture2D" uid="uid://dc8r04ou7ufdb" path="res://assets/sprites/outhouse.png" id="1_e2ofu"]
 [ext_resource type="Script" uid="uid://b1ivckdqe5b31" path="res://scripts/room_outhouse.gd" id="1_h1euw"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7sxp2"]
-[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="4_ysmtu"]
 
 [node name="Room_Outhouse" type="Node2D"]
 texture_filter = 1
@@ -23,9 +22,3 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_7sxp2")
-
-[node name="ProgressBar" parent="." instance=ExtResource("4_ysmtu")]
-z_index = 4096
-offset_top = -41.0
-offset_bottom = -37.0
-pivot_offset = Vector2(14, 2)

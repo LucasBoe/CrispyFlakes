@@ -7,12 +7,9 @@ const PERFORMANCE_RANGE := 2
 
 var current_module = null
 
-@onready var progressBar: TextureProgressBar = $ProgressBar
-
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.ENTERTAINMENT
 	super.init_room(_x, _y)
-	progressBar.visible = false
 
 	var modules_root = get_node_or_null("ModulesRoot")
 	if modules_root:

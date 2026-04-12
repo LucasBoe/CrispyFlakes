@@ -10,6 +10,7 @@ extends Node2D
 @export var brew_duration : float = 20.0
 @export var effect_interval : float = 10.0
 @export var satisfaction_boost : float = 0.1
+@export var action_duration : float = 1.0
 
 @export var bought: bool = false
 

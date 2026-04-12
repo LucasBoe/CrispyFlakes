@@ -1,8 +1,6 @@
 extends RoomBase
 class_name RoomBath
 
-@onready var progressBar : TextureProgressBar = $ProgressBar
-
 var customers = []
 var has_customer
 signal customer_arrive
@@ -11,7 +9,6 @@ var wash_requests = []
 
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
-	progressBar.visible = false
 	associated_job = Enum.Jobs.BATH
 
 func clean_customer():

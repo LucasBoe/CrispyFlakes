@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://ck008utf6gacd"]
+
+[ext_resource type="Texture2D" uid="uid://d3dxpn3qrk6ox" path="res://assets/sprites/progressbar/under.png" id="1_under"]
+[ext_resource type="Texture2D" uid="uid://bvusfbh02tyaq" path="res://assets/sprites/progressbar/bar.png" id="2_bar"]
+
+[node name="NPCProgressBar" type="TextureProgressBar"]
+z_index = 4096
+offset_left = -14.0
+offset_top = -32.0
+offset_right = 14.0
+offset_bottom = -27.0
+scale = Vector2(1, 0.5)
+pivot_offset = Vector2(14, 2.5)
+value = 25.0
+texture_under = ExtResource("1_under")
+texture_over = ExtResource("2_bar")
+texture_progress = ExtResource("1_under")
+tint_under = Color(0, 0, 0, 0.88235295)
+tint_over = Color(1, 1, 1, 0)
+tint_progress = Color(0.14607036, 0.50235903, 0.9999997, 1)

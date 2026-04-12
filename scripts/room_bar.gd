@@ -1,7 +1,6 @@
 extends RoomBase
 class_name RoomBar
 
-@onready var progressBar : TextureProgressBar = $ProgressBar
 var drink_requests = []
 var drink_type : Enum.Items = Enum.Items.WATER_BUCKET
 var current_module = null
@@ -17,7 +16,6 @@ const _MODULE_DRINK_MAP = {
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.BAR
-	progressBar.visible = false
 
 	var modules_root = get_node_or_null("ModulesRoot")
 	if modules_root:

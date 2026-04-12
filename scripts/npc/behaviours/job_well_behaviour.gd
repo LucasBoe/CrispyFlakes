@@ -16,7 +16,7 @@ func loop():
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
-		await progress(1, well.progressBar)
+		await progress(well.get_draw_duration())
 		well.consume_water()
 		well.unregister(npc)
 		var item_spawn_pos = well.get_random_floor_position()

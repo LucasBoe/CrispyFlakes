@@ -29,9 +29,9 @@
 [ext_resource type="Script" uid="uid://b0amasqnb3qge" path="res://scripts/ui/button_idles.gd" id="63_ggyeh"]
 [ext_resource type="Texture2D" uid="uid://pstb0wurhta1" path="res://assets/sprites/ui/icon_idle_workers.png" id="63_pd6sg"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
+[ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
+[ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v28my"]
 

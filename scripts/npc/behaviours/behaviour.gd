@@ -143,7 +143,7 @@ func fetch_item(item: Enum.Items):
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
-		await progress(1, well.progressBar)
+		await progress(well.get_draw_duration())
 		well.consume_water()
 		source_item = Global.ItemSpawner.create(Enum.Items.WATER_BUCKET, well.get_center_position())
 		well.unregister(npc)
@@ -175,18 +175,29 @@ func store_item(item: Item):
 		await move(current_room.get_random_floor_position())
 		npc.Item.drop_current()
 
-func progress(duration, bar: TextureProgressBar):
+const _NPC_PROGRESS_BAR = preload("res://scenes/npc_progress_bar.tscn")
+
+func progress(duration, bar: TextureProgressBar = null):
+	var owned_bar: TextureProgressBar = null
+	if bar == null:
+		owned_bar = _NPC_PROGRESS_BAR.instantiate() as TextureProgressBar
+		npc.add_child(owned_bar)
+		bar = owned_bar
+
 	var t = float(duration)
 	if is_instance_valid(bar):
 		bar.visible = true
 	while t > 0:
-		t -= npc.get_process_delta_time() #error
+		t -= npc.get_process_delta_time()
 		if not is_instance_valid(bar):
 			return
 		bar.value = (1.0 - (t / duration)) * 100
 		await end_of_frame()
 	if is_instance_valid(bar):
 		bar.visible = false
+
+	if is_instance_valid(owned_bar):
+		owned_bar.queue_free()
 
 func end_of_frame():
 	return Global.get_tree().process_frame

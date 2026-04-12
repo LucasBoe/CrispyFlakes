@@ -10,7 +10,7 @@ func start_loop():
 	
 func loop():
 	await move(room.get_random_floor_position())
-	await progress(6, room.progressBar)
+	await progress(6)
 	
 	occupied_rooms.erase(room)
 	Building.delete_room(room)

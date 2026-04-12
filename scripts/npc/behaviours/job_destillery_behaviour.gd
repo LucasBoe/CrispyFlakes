@@ -21,7 +21,7 @@ func loop():
 			if is_instance_valid(i):
 				i.destroy()
 
-			await progress(5, destillery.progressBar)
+			await progress(5)
 			var item_spawn_pos = destillery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.WISKEY_BOX_RAW, item_spawn_pos)
 			npc.Item.pick_up(item)

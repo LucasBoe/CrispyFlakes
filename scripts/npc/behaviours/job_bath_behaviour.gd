@@ -23,7 +23,7 @@ func loop():
 			var i = npc.Item.drop_current()
 			i.destroy()
 
-			await progress(6, bath.progressBar)
+			await progress(6)
 
 			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position(), Vector2i(bath.x, bath.y))
 			bath.clean_customer()

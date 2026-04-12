@@ -25,7 +25,7 @@ func loop():
 	if is_instance_valid(outhouse):
 		npc.Animator.hide()
 		outhouse.user = npc
-		await progress(3, outhouse.progressBar)
+		await progress(3)
 		npc.Animator.show()
 
 		if is_instance_valid(outhouse):

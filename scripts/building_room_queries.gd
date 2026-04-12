@@ -74,6 +74,9 @@ func closest_on_floor(type, global_pos: Vector2, y):
 	var closest_room = null
 	var shortest_distance: float = INF
 
+	if not _building.floors.has(y):
+		return null
+
 	for x in _building.floors[y]:
 		var room = _building.floors[y][x]
 		if room is not RoomBase or not is_instance_of(room, type):

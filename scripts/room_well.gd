@@ -1,7 +1,8 @@
 extends RoomOutsideBase
 class_name RoomWell
 
-@onready var progressBar: TextureProgressBar = $ProgressBar
+const DEFAULT_DRAW_DURATION := 1.0
+
 @onready var underground_bg: NinePatchRect = $Underground/Background
 @onready var underground_fg: NinePatchRect = $Underground/Foreground
 @onready var water_rect: ColorRect = $Underground/WaterLevelRect
@@ -20,12 +21,36 @@ var current_water := 32.0
 
 var current_user
 var registered_users = []
+var current_module = null
 
 func init_room(_x: int, _y: int):
 	super.init_room(_x, _y)
-	progressBar.visible = false
 	associated_job = Enum.Jobs.WELL
+	_init_modules()
 	_update_visuals()
+
+func _init_modules() -> void:
+	var modules_root = get_node_or_null("ModulesRoot")
+	if modules_root == null:
+		return
+
+	for group in modules_root.get_children():
+		for module in group.get_children():
+			if not module.has_method("set_bought"):
+				continue
+			module.bought_changed.connect(_on_module_bought)
+			if module.bought:
+				current_module = module
+
+func _on_module_bought(module) -> void:
+	if not module.bought:
+		return
+	current_module = module
+
+func get_draw_duration() -> float:
+	if current_module and current_module.action_duration > 0.0:
+		return current_module.action_duration
+	return DEFAULT_DRAW_DURATION
 
 func _process(delta):
 	if current_water < max_water:

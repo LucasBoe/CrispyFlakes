@@ -293,8 +293,11 @@ func _show_for_room(room: RoomBase):
 		)
 	elif room is RoomBed:
 		var bed := room as RoomBed
-		if bed.current_guest != null:
-			_show_status_row("Occupied", Color.TRANSPARENT, bed.current_guest, "Guest")
+		if bed.current_guests.size() > 0:
+			var count = bed.current_guests.size()
+			var capacity = bed._active_beds.size()
+			var label = "Occupied (%d/%d)" % [count, capacity]
+			_show_status_row(label, Color.TRANSPARENT, bed.current_guests[0], "Guest")
 		elif bed.needs_cleaning:
 			if room.worker:
 				_show_status_row("Cleaning", Color.TRANSPARENT, room.worker, room.worker.character_name)

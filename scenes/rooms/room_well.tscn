@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://ds54o420pb2t7"]
+[gd_scene load_steps=9 format=3 uid="uid://ds54o420pb2t7"]
 
 [ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scripts/room_well.gd" id="1_bkap1"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_dw1fm"]
 [ext_resource type="Texture2D" uid="uid://dkygfkyxds8yp" path="res://assets/sprites/well.png" id="2_d5ivy"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_6d42y"]
-[ext_resource type="PackedScene" uid="uid://g7bl2gw0ev3i" path="res://scenes/progress_bar.tscn" id="3_bkap1"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="4_module"]
+[ext_resource type="Texture2D" uid="uid://b3uoqpxje1kn2" path="res://assets/sprites/ui/room_well_icon.png" id="5_well_icon"]
 [ext_resource type="Texture2D" uid="uid://buyglaurncwbt" path="res://assets/sprites/well_sheet_back.png" id="6_3vav0"]
 [ext_resource type="Texture2D" uid="uid://d18uy6yfwjagu" path="res://assets/sprites/well_sheet_front.png" id="7_ghqru"]
 
@@ -25,11 +26,47 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_6d42y")
+[node name="ModulesRoot" type="Node2D" parent="."]
 
-[node name="ProgressBar" parent="." instance=ExtResource("3_bkap1")]
-z_index = 4096
-offset_bottom = -35.0
-pivot_offset = Vector2(14, 2)
+[node name="DrawMethod" type="Node2D" parent="ModulesRoot"]
+
+[node name="Simple" type="Node2D" parent="ModulesRoot/DrawMethod"]
+script = ExtResource("4_module")
+icon = ExtResource("5_well_icon")
+module_name = "Simple Well"
+describtion = "A basic rope-and-bucket setup. Drawing water takes longer."
+action_duration = 1.2
+bought = true
+
+[node name="Crank" type="Node2D" parent="ModulesRoot/DrawMethod"]
+visible = false
+script = ExtResource("4_module")
+icon = ExtResource("5_well_icon")
+price = 20
+module_name = "Crank Well"
+describtion = "A hand crank makes drawing water quicker."
+action_duration = 0.65
+
+[node name="Post" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
+z_index = 50
+position = Vector2(31, -28)
+width = 2.0
+default_color = Color(0.313726, 0.196078, 0.0784314, 1)
+points = PackedVector2Array(0, 8, 0, -8)
+
+[node name="Arm" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
+z_index = 51
+position = Vector2(31, -32)
+width = 2.0
+default_color = Color(0.376471, 0.376471, 0.376471, 1)
+points = PackedVector2Array(-4, 0, 4, 0)
+
+[node name="Handle" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
+z_index = 52
+position = Vector2(35, -32)
+width = 2.0
+default_color = Color(0.376471, 0.376471, 0.376471, 1)
+points = PackedVector2Array(0, 0, 0, 5)
 
 [node name="Underground" type="Node2D" parent="."]
 

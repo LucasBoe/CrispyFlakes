@@ -20,7 +20,7 @@ func loop():
 		room.on_destroy_signal.connect(_change_to_idle)
 
 		await move(room.get_center_floor_position())
-		await progress(CLEAN_DURATION, room.progressBar)
+		await progress(CLEAN_DURATION)
 
 		if is_instance_valid(room):
 			room.uses = 0

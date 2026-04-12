@@ -32,7 +32,7 @@ func loop():
 			await move(bar.get_center_floor_position())
 
 			if bar.drink_requests.size() > 0:
-				await progress(.5, bar.progressBar)
+				await progress(.5)
 
 				bar.fullfill_next_request()
 				drinks_available -= .25
