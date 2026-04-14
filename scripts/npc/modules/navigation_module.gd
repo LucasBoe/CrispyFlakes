@@ -120,7 +120,13 @@ func refresh_target_path() -> void:
 	target_path.clear()
 
 	var final_target: Vector2
-	if target_final is Node2D:
+	if target_final is NPC:
+		# Navigate to the room the target NPC is currently in rather than their
+		# exact position — room centers are stable, so path refreshes mid-stair
+		# don't cause oscillation.
+		var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
+		final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
+	elif target_final is Node2D:
 		final_target = (target_final as Node2D).global_position + Vector2(24, 0)
 	else:
 		final_target = target_final
@@ -177,11 +183,14 @@ func _find_room_path(start_room: RoomBase, goal_room: RoomBase) -> Array[RoomBas
 func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 	var result: Array[RoomBase] = []
 
+	if not is_instance_valid(room):
+		return result
+
 	# 1. Ground floor rooms are all mutually reachable
 	if room.y == 0:
 		var all_rooms = Building.query.all_rooms_of_type(RoomBase)
 		for other in all_rooms:
-			if other != room and other.y == 0:
+			if is_instance_valid(other) and other != room and other.y == 0:
 				result.append(other)
 
 	# 2. Horizontal adjacency — skip over the room's own footprint

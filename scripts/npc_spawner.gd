@@ -25,6 +25,7 @@ func _ready():
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)
 	Console.add_command("worker", console_spawn_worker)
 	Console.add_command("workers", console_spawn_workers, ["amount"])
+	Console.add_command("follow_test", console_follow_test)
 
 func _process(delta):
 	if not Global.should_auto_spawn_guests:
@@ -112,3 +113,14 @@ func console_spawn_workers(amount):
 	print("spawn_workers ", amount)
 	for i in amount.to_int():
 		console_spawn_worker()
+
+func console_follow_test():
+	if workers.is_empty():
+		print("follow_test: no workers to follow")
+		return
+	for guest: NPCGuest in guests.duplicate():
+		if not is_instance_valid(guest):
+			continue
+		var target_worker: NPCWorker = workers.pick_random()
+		var follow_b := guest.force_behaviour(FollowSheriffBehaviour) as FollowSheriffBehaviour
+		follow_b.sheriff = target_worker

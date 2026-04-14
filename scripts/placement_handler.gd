@@ -85,8 +85,9 @@ func _input(event):
 
 	has_valid_target = has_valid_target && has_adjacent_room_or_is_ground_floor
 
-	# Indoor rooms cannot be placed in a column where y=0 is an outdoor room
-	if not building_data.is_outdoor:
+	# Above-ground indoor rooms cannot be placed in a column where y=0 is an outdoor room.
+	# Basement rooms live below that surface slot, so they should still be placeable there.
+	if not building_data.is_outdoor and location.y >= 0:
 		for col in building_data.width:
 			var ground_room = Building.get_room_from_index(Vector2i(location.x + col, 0))
 			if ground_room is RoomOutsideBase:

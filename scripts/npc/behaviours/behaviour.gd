@@ -94,7 +94,10 @@ func move(target, custom_speed = -1):
 	npc.Navigation.set_target(target, custom_speed)
 	if target is NPC:
 		while is_instance_valid(target) and npc.Navigation.is_moving:
-			npc.Navigation.refresh_target_path()
+			var npc_index = Building.round_room_index_from_global_position(npc.global_position)
+			var npc_room := Building.query.closest_on_floor(RoomBase, npc.global_position, npc_index.y) as RoomBase
+			if not npc_room is RoomStairs:
+				npc.Navigation.refresh_target_path()
 			await end_of_frame()
 	else:
 		while npc.Navigation.is_moving:

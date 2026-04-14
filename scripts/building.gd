@@ -69,7 +69,7 @@ func delete_room(room: RoomBase):
 	else:
 		for col in room.data.width:
 			for row in room.data.height:
-				set_room(room_data_empty, room.x + col, room.y + row, false)
+				set_room(room_data_empty, room.x + col, room.y + row)
 	room.destroy()
 
 func update_foreground_tiles():
