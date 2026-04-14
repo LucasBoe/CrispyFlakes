@@ -27,25 +27,27 @@ position = Vector2(48, -24)
 texture = ExtResource("3_4sg5j")
 
 [node name="Safe_Back" type="Sprite2D" parent="."]
+z_index = -195
 position = Vector2(48, -23.5)
 texture = ExtResource("4_vchdp")
 offset = Vector2(0, 0.5)
 
 [node name="Safe_Money_Back" type="Sprite2D" parent="."]
+z_index = -190
 position = Vector2(48, -23.5)
 texture = ExtResource("5_utb6s")
 offset = Vector2(0, 0.5)
 hframes = 10
-frame = 2
 
 [node name="Safe_Money_Front" type="Sprite2D" parent="."]
+z_index = -10
 position = Vector2(48, -23.5)
 texture = ExtResource("6_p7o24")
 offset = Vector2(0, 0.5)
 hframes = 10
-frame = 2
 
 [node name="Safe_Front" type="Sprite2D" parent="."]
+z_index = -10
 position = Vector2(48, -23.5)
 texture = ExtResource("7_pa5dr")
 offset = Vector2(0, 0.5)

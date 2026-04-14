@@ -26,10 +26,19 @@ func loop():
 	_narrative = ["Taking care of business...", "Doing what they gotta do...", "Finally made it..."].pick_random()
 	await move(outhouse.get_center_floor_position())
 	if is_instance_valid(outhouse):
+		await outhouse.play_open_animation()
 		npc.Animator.hide()
+		await outhouse.play_close_animation()
+		
 		outhouse.user = npc
 		await progress(3)
+		
+		if is_instance_valid(outhouse):
+			await outhouse.play_open_animation()
 		npc.Animator.show()
+		
+		if is_instance_valid(outhouse):
+			await outhouse.play_close_animation()
 
 		if is_instance_valid(outhouse):
 			outhouse.user = null
