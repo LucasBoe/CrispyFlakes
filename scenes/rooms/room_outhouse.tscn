@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://dtr2utu3u6oo2"]
 
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_56m3a"]
-[ext_resource type="Texture2D" uid="uid://dc8r04ou7ufdb" path="res://assets/sprites/outhouse.png" id="1_e2ofu"]
 [ext_resource type="Script" uid="uid://b1ivckdqe5b31" path="res://scripts/room_outhouse.gd" id="1_h1euw"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7sxp2"]
+[ext_resource type="Texture2D" uid="uid://bx26803iwlrp3" path="res://assets/sprites/outhouse_sheet.png" id="3_h1euw"]
 
 [node name="Room_Outhouse" type="Node2D"]
 texture_filter = 1
@@ -14,8 +14,9 @@ script = ExtResource("1_h1euw")
 z_index = -200
 material = ExtResource("1_56m3a")
 position = Vector2(24, -1)
-texture = ExtResource("1_e2ofu")
+texture = ExtResource("3_h1euw")
 offset = Vector2(0, -16.5)
+hframes = 4
 
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false
