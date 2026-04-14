@@ -326,6 +326,10 @@ func _show_for_room(room: RoomBase):
 		var status_text := "%s, %s" % [cleaners_text, broom_text]
 		var status_color := Color.ORANGE if closet.get_assigned_worker_count() == 0 else Color.TRANSPARENT
 		_show_status_row(status_text, status_color, closet.worker if closet.worker else null, closet.worker.character_name if closet.worker else "")
+	elif room is RoomHorsePost:
+		var post := room as RoomHorsePost
+		var horse_text := "Horses %d/%d" % [post.get_horse_count(), RoomHorsePost.MAX_HORSES]
+		_show_status_row(horse_text, Color.TRANSPARENT)
 	elif room.associated_job != null:
 		if room.worker:
 			_show_status_row("Worker", Color.TRANSPARENT, room.worker, room.worker.character_name)
@@ -359,7 +363,7 @@ func _show_for_room(room: RoomBase):
 func _show_storage_filter(room: RoomBase):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values():
+	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM):
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed

@@ -15,4 +15,5 @@ room_preview = ExtResource("3_icon")
 construction_price = 75
 tier = 1
 is_outdoor = true
+height = 2
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

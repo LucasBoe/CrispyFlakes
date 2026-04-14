@@ -7,7 +7,7 @@ var horse: Node2D = null  # HorseNPC
 
 func loop():
 	_narrative = ["Riding in...", "Arriving on horseback...", "Coming in from the range..."].pick_random()
-	var horse_post = Building.query.closest_room_of_type(RoomHorsePost, npc.global_position) as RoomHorsePost
+	var horse_post := _find_available_horse_post()
 
 	# Spawn the HorseNPC alongside the guest
 	horse = HorseScene.instantiate()
@@ -64,3 +64,9 @@ func _ride_to(target: Vector2) -> void:
 		await end_of_frame()
 	npc.Animator.direction = Vector2.ZERO
 	npc.Navigation.is_moving = false
+
+func _find_available_horse_post() -> RoomHorsePost:
+	for post: RoomHorsePost in get_all_rooms_of_type_ordered_by_distance(RoomHorsePost):
+		if post.can_accept_horse():
+			return post
+	return null

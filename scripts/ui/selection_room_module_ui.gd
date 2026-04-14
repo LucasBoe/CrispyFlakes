@@ -166,6 +166,11 @@ func _on_buy_pressed() -> void:
 		UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		return
 
+	details_window_button.hide()
+	details_window_describtion.text = _selected_module.describtion + "\nbought ([color=#ffe432]" + str(_selected_module.price) + "$[/color])"
+	if _module_buttons.has(_selected_module):
+		_apply_button_style(_module_buttons[_selected_module], true)
+
 	# Update buttons immediately
 	var group = _selected_module.get_parent()
 	for module in group.get_children():
@@ -176,7 +181,6 @@ func _on_buy_pressed() -> void:
 				_apply_button_style(_module_buttons[module], false)
 	if _module_buttons.has(_selected_module):
 		_apply_button_style(_module_buttons[_selected_module], true)
-	_refresh_buy_button()
 
 	# Wait for animation, then update room visuals
 	var purchased = _selected_module
