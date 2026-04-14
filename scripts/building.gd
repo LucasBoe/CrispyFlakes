@@ -41,12 +41,13 @@ func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	add_child(instance)
 	instance.position = Vector2(x * 48, y * -48)
 
-	if floors.is_empty():
-		floors = { y: { x: instance } }
-	elif not floors.has(y):
-		floors[y] = { x: instance }
-	else:
-		floors[y][x] = instance
+	for col in data.width:
+		for row in data.height:
+			var fx = x + col
+			var fy = y + row
+			if not floors.has(fy):
+				floors[fy] = {}
+			floors[fy][fx] = instance
 
 	if auto_initialize:
 		instance.init_room(x, y)
@@ -61,9 +62,14 @@ func initialize_all_rooms():
 func delete_room(room: RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	if room.data != null and room.data.is_outdoor:
-		floors[room.y].erase(room.x)
+		for col in room.data.width:
+			for row in room.data.height:
+				if floors.has(room.y + row):
+					floors[room.y + row].erase(room.x + col)
 	else:
-		set_room(room_data_empty, room.x, room.y)
+		for col in room.data.width:
+			for row in room.data.height:
+				set_room(room_data_empty, room.x + col, room.y + row, false)
 	room.destroy()
 
 func update_foreground_tiles():

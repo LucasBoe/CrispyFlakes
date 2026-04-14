@@ -184,9 +184,10 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 			if other != room and other.y == 0:
 				result.append(other)
 
-	# 2. Horizontal adjacency only
+	# 2. Horizontal adjacency — skip over the room's own footprint
+	var w = room.data.width if room.data != null else 1
 	var left_room = Building.get_room_from_index(Vector2i(room.x - 1, room.y))
-	var right_room = Building.get_room_from_index(Vector2i(room.x + 1, room.y))
+	var right_room = Building.get_room_from_index(Vector2i(room.x + w, room.y))
 	if left_room is RoomBase:
 		result.append(left_room)
 	if right_room is RoomBase:

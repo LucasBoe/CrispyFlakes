@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://lppwt5wtasri"]
+[gd_scene load_steps=9 format=3 uid="uid://lppwt5wtasri"]
 
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_mdimi"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_tjrrh"]
 [ext_resource type="PackedScene" uid="uid://sh54sspowbno" path="res://scenes/bed.tscn" id="4_67a5o"]
 [ext_resource type="Script" uid="uid://dqsj34bxaqkj5" path="res://scripts/room_bed.gd" id="4_mdimi"]
+[ext_resource type="Texture2D" uid="uid://b6fgao1rvxfv5" path="res://assets/sprites/ui/module_icon_bed1.png" id="5_mdimi"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="6_module"]
+[ext_resource type="Texture2D" uid="uid://cgysmtgqxm6dv" path="res://assets/sprites/ui/module_icon_bed2.png" id="7_tjrrh"]
+[ext_resource type="Texture2D" uid="uid://b3gn8gupyqjac" path="res://assets/sprites/ui/module_icon_bed3.png" id="8_5scsy"]
 
 [node name="Room_Bed" type="Node2D"]
 texture_filter = 1
@@ -28,6 +31,7 @@ texture = ExtResource("3_tjrrh")
 [node name="SingleBed" type="Node2D" parent="ModulesRoot/Beds"]
 visible = false
 script = ExtResource("6_module")
+icon = ExtResource("5_mdimi")
 module_name = "Single Bed"
 describtion = "A single bed for one guest"
 bought = true
@@ -37,7 +41,8 @@ position = Vector2(24, -6)
 
 [node name="BunkBed" type="Node2D" parent="ModulesRoot/Beds"]
 script = ExtResource("6_module")
-price = 50
+icon = ExtResource("7_tjrrh")
+price = 10
 module_name = "Bunk Bed"
 describtion = "Stacked beds for two guests"
 
@@ -49,7 +54,8 @@ position = Vector2(24, -16)
 
 [node name="DoubleBunkBed" type="Node2D" parent="ModulesRoot/Beds"]
 script = ExtResource("6_module")
-price = 120
+icon = ExtResource("8_5scsy")
+price = 20
 module_name = "Double Bunk Bed"
 describtion = "Stacked beds for three guests"
 

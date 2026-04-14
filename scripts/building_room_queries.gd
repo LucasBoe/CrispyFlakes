@@ -89,15 +89,5 @@ func closest_on_floor(type, global_pos: Vector2, y):
 	return closest_room
 
 func room_at_position(global_pos: Vector2):
-	var closest_room = null
-	var shortest_distance: float = sqrt(pow(24, 2) * 2)
-
-	for y in _building.floors.keys():
-		for x in _building.floors[y]:
-			var room = _building.floors[y][x]
-			var distance = room.get_center_position().distance_to(global_pos)
-			if distance < shortest_distance:
-				shortest_distance = distance
-				closest_room = room
-
-	return closest_room
+	var index = _building.round_room_index_from_global_position(global_pos + Vector2(24, 0))
+	return _building.get_room_from_index(index)

@@ -4,7 +4,7 @@ var is_placing = false
 var has_valid_target = false
 var building_data : RoomData
 var location : Vector2i
-var highlight : Sprite2D = null
+var highlights : Array = []
 var custom_placement_check = null
 
 var previous_notification = null
@@ -15,14 +15,16 @@ func start_building(data : RoomData, check):
 	self.custom_placement_check = check
 	is_placing = true
 
-	if not highlight:
-		highlight = RoomHighlighter.request_rect(Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
+	if highlights.is_empty():
+		for _i in building_data.width * building_data.height:
+			highlights.append(RoomHighlighter.request_rect(Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION))
 
 func stop_building():
-	if highlight:
+	if not highlights.is_empty():
 		is_placing = false
-		RoomHighlighter.dispose(highlight)
-		highlight = null
+		for h in highlights:
+			RoomHighlighter.dispose(h)
+		highlights.clear()
 
 # Returns the lowest free y in column x (Tetris gravity for above-ground rooms).
 func _get_tetris_y(x: int) -> int:
@@ -45,39 +47,50 @@ func _input(event):
 	# Basement rooms (y < 0) use raw location — adjacency rules apply instead of gravity.
 	# Above-ground indoor rooms snap highlight to the lowest free slot in the column.
 	if _raw_location.y >= 0 and not building_data.is_outdoor:
-		location = Vector2i(_raw_location.x, _get_tetris_y(_raw_location.x))
+		var base_y = 0
+		for col in building_data.width:
+			base_y = max(base_y, _get_tetris_y(_raw_location.x + col))
+		location = Vector2i(_raw_location.x, base_y)
 	else:
 		location = _raw_location
 
-	var room_at_location = Building.get_room_from_index(location)
-	has_valid_target = room_at_location == null or room_at_location is RoomEmpty
+	has_valid_target = true
+	for col in building_data.width:
+		for row in building_data.height:
+			var cell = Building.get_room_from_index(location + Vector2i(col, row))
+			if cell != null and not cell is RoomEmpty:
+				has_valid_target = false
 	var has_money = ResourceHandler.has_money(building_data.construction_price)
 
-	# Adjacency check
+	# Adjacency check — any cell in the footprint satisfies it
 	var has_adjacent_room_or_is_ground_floor = false
 
 	if location.y < 0:
-		# Basement: require adjacency in all 4 directions (left, right, up, down)
-		for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-			if Building.get_room_from_index(location + dir):
-				has_adjacent_room_or_is_ground_floor = true
-				break
+		# Basement: require at least one neighbour in any direction from any footprint cell
+		for col in building_data.width:
+			for row in building_data.height:
+				var cell = location + Vector2i(col, row)
+				for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+					if Building.get_room_from_index(cell + dir):
+						has_adjacent_room_or_is_ground_floor = true
 	else:
-		# Above ground: require a room above or below, or be on ground floor
-		if Building.get_room_from_index(location + Vector2i.UP):
-			has_adjacent_room_or_is_ground_floor = true
-		if Building.get_room_from_index(location + Vector2i.DOWN):
-			has_adjacent_room_or_is_ground_floor = true
-		if location.y == 0:
-			has_adjacent_room_or_is_ground_floor = true
+		# Above ground: a room above/below the footprint, or any footprint cell is on y==0
+		for col in building_data.width:
+			if Building.get_room_from_index(location + Vector2i(col, building_data.height)):
+				has_adjacent_room_or_is_ground_floor = true
+			if Building.get_room_from_index(location + Vector2i(col, -1)):
+				has_adjacent_room_or_is_ground_floor = true
+			if location.y == 0:
+				has_adjacent_room_or_is_ground_floor = true
 
 	has_valid_target = has_valid_target && has_adjacent_room_or_is_ground_floor
 
 	# Indoor rooms cannot be placed in a column where y=0 is an outdoor room
 	if not building_data.is_outdoor:
-		var ground_room = Building.get_room_from_index(Vector2i(location.x, 0))
-		if ground_room is RoomOutsideBase:
-			has_valid_target = false
+		for col in building_data.width:
+			var ground_room = Building.get_room_from_index(Vector2i(location.x + col, 0))
+			if ground_room is RoomOutsideBase:
+				has_valid_target = false
 
 	# check custom
 	if custom_placement_check:
@@ -97,8 +110,11 @@ func _input(event):
 	and get_viewport().gui_get_hovered_control() == null:
 		if can_place:
 			SoundPlayer.construction_placed.play()
-			if room_at_location != null:
-				room_at_location.queue_free()
+			for col in building_data.width:
+				for row in building_data.height:
+					var existing = Building.get_room_from_index(location + Vector2i(col, row))
+					if existing != null:
+						existing.queue_free()
 			Building.set_room(building_data, location.x, location.y)
 			Building.update_foreground_tiles()
 
@@ -128,7 +144,10 @@ func _input(event):
 				previous_notification = UiNotifications.create_notification_static("not enough money", mouse, null,  Color.ORANGE)
 				print("not enough money")
 
-	if highlight:
-		var highlight_target_pos = Building.global_position_from_room_index(_raw_location) + Vector2(0,-24)
-		highlight.global_position = highlight_target_pos
-		highlight.modulate = Color.GREEN if can_place else Color.YELLOW if has_valid_target else Color.RED
+	var h_color = Color.GREEN if can_place else Color.YELLOW if has_valid_target else Color.RED
+	var idx = 0
+	for row in building_data.height:
+		for col in building_data.width:
+			highlights[idx].global_position = Building.global_position_from_room_index(location + Vector2i(col, row)) + Vector2(0, -24)
+			highlights[idx].modulate = h_color
+			idx += 1

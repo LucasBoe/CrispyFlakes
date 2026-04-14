@@ -11,6 +11,18 @@ func loop():
 	await move(well)
 
 	while true:
+
+		var loose = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.WATER_BUCKET)
+		if loose != null:
+			_narrative = ["Picking up a stray bucket...", "Grabbing that loose water...", "Collecting spilled water..."].pick_random()
+			await move(loose.global_position)
+			if is_instance_valid(loose):
+				npc.Item.pick_up(loose)
+				_narrative = ["Storing the bucket...", "Delivering water...", "Taking it where it's needed..."].pick_random()
+				await store_item(npc.Item.current_item)
+			await move(well)
+			continue
+
 		_narrative = "Waiting for water..."
 		while not well.has_water():
 			await end_of_frame()

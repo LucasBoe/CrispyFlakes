@@ -17,3 +17,5 @@ class_name RoomData
 @export var produced_item_type : Enum.Items
 @export var produced_item_name : String
 @export var produces_money : bool = false
+@export var width : int = 1
+@export var height : int = 1

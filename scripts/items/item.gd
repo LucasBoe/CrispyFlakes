@@ -52,6 +52,9 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 		Enum.Items.BROOM:
 			tex = load("res://assets/sprites/item_broom.png")
 
+		Enum.Items.MONEY:
+			tex = get_money_texture()
+
 	var info = TextureInfo.new()
 	info.Tex = tex
 	info.Offset = offset

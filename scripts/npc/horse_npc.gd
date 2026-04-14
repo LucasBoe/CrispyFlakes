@@ -118,8 +118,10 @@ func drop_at(pos: Vector2) -> void:
 	_reset_dirt_timer()
 
 func tie_to(post: RoomHorsePost) -> void:
+	if not post.tie_horse(self):
+		drop_at(global_position)
+		return
 	tied_post = post
-	post.tie_horse(self)
 	global_position = post.get_random_floor_position()
 	_home_x = global_position.x
 	_home_y = global_position.y
