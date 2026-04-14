@@ -13,7 +13,8 @@ enum Items {
 	DRINK,
 	WATER_BUCKET,
 	WISKEY_BOX_RAW,
-	BROOM
+	BROOM,
+	MONEY
 }
 
 enum Resources {
