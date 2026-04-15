@@ -170,6 +170,7 @@ func _ready():
 	character_name = possible_names.pick_random()
 
 func _process(delta):
+	super._process(delta)
 
 	if picked_up_npc == self:
 		global_position = get_global_mouse_position()

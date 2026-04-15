@@ -10,9 +10,6 @@ var is_known_fugitive: bool = false
 var needs_to_pee: float = 0.0
 const PEE_RATE: float = 0.01
 
-var _status_icon_instance = null
-var _status_icon_texture = null
-
 var _arrest_highlight = null
 var _arrest_highlight_room = null
 
@@ -45,13 +42,14 @@ func apply_look(custom_look = null):
 	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
 
 func _exit_tree():
+	super._exit_tree()
 	_clear_arrest_highlight()
 
 func _process(_delta):
+	super._process(_delta)
 
 	needs_to_pee = minf(needs_to_pee + PEE_RATE * _delta, 1.0)
 	dirt.get_child(0).visible = is_dirty and Navigation.is_moving
-	_refresh_status_icon()
 	_refresh_arrest_highlight()
 
 	if Behaviour.has_behaviour:
@@ -64,30 +62,22 @@ func _process(_delta):
 
 	Behaviour.set_behaviour(new_behaviour)
 
-func _refresh_status_icon():
+func _append_state_icon_entries(entries: Array) -> void:
 	var b = Behaviour.behaviour_instance
-	var icon = null
+	var bounty = BountyHandler.get_bounty_for(self)
+	var bounty_info = " 0$" if bounty == null else str(" ", bounty, "$")
+	var is_arrested = b is ArrestedBehaviour
+	var has_bounty = bounty != null
 
-	if b is KnockedOutBehaviour:
-		icon = UiNotifications.ICON_KNOCKED_OUT
-	elif b is FightBehaviour:
-		icon = UiNotifications.ICON_FIGHT
-	elif pending_arrest:
-		icon = UiNotifications.ICON_HANDCUFFS
-	elif b is ArrestedBehaviour:
-		icon = UiNotifications.ICON_HANDCUFFED
-	elif is_known_fugitive:
-		icon = UiNotifications.ICON_FUGITIVE
-
-	if icon == _status_icon_texture:
-		return
-
-	UiNotifications.try_kill(_status_icon_instance)
-	_status_icon_instance = null
-	_status_icon_texture = icon
-
-	if icon != null:
-		_status_icon_instance = UiNotifications.create_npc_notification(self, icon, true)
+	if pending_arrest:
+		entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest (Drop Worker)"})
+	if is_arrested:
+		entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = "Arrested (Call Sherrif)"})
+	if has_bounty or is_known_fugitive:
+		var bounty_label = str("Has Bounty (", bounty_info, ")") if has_bounty else "Known Fugitive"
+		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = bounty_label})
+	elif pending_arrest or is_arrested:
+		entries.append({label = "Has No Bounty or Fine"})
 
 func get_next_behaviour():
 
@@ -112,7 +102,7 @@ func get_next_behaviour():
 	return Behaviour.get_behaviour_from_available_rooms(Building.query.all_rooms_of_type(RoomBase))
 
 func _refresh_arrest_highlight():
-	var in_fight = Behaviour.behaviour_instance is FightBehaviour
+	var in_fight = is_in_fight_state()
 	if pending_arrest and not in_fight:
 		var current_room = Building.query.room_at_position(global_position)
 		if current_room != _arrest_highlight_room:

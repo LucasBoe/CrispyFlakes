@@ -135,32 +135,7 @@ func _clear_instances():
 	prisoner_item_instances.clear()
 
 func _get_status_icon_entries(npc: NPC) -> Array:
-	var entries = []
-	var b = npc.Behaviour.behaviour_instance
-	if b is KnockedOutBehaviour:
-		var secs = int((b as KnockedOutBehaviour).time_remaining)
-		entries.append({icon = UiNotifications.ICON_KNOCKED_OUT, label = "Knocked out (%ds)" % secs})
-	if b is FightBehaviour or b is StopFightBehaviour:
-		entries.append({icon = UiNotifications.ICON_FIGHT, label = "Fighting"})
-	if npc is NPCGuest:
-		var guest := npc as NPCGuest
-		
-		var bounty = BountyHandler.get_bounty_for(guest)
-		var bounty_info = " 0$" if bounty == null else str(" ",bounty,"$")
-
-		var pending_arrest = guest.pending_arrest
-		var is_arrested = b is ArrestedBehaviour
-		var has_bounty = bounty != null
-		
-		if pending_arrest:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = str("Marked for Arrest (Drop Worker)")})
-		if is_arrested:
-			entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = str("Arrested (Call Sherrif)")})
-		if has_bounty:
-			entries.append({icon = UiNotifications.ICON_FUGITIVE, label =  str("Has Bounty (",bounty_info, ")")})
-		elif pending_arrest or is_arrested:
-			entries.append({label = "Has No Bounty or Fine"})
-	return entries
+	return npc.get_state_icon_entries()
 
 func _rebuild_status_icons(entries: Array):
 	if is_instance_valid(status_icon_row):
