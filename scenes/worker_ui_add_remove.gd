@@ -24,11 +24,11 @@ func init(job):
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
 	
 func _try_add_worker():
-	SoundPlayer.mouse_click_down.play()
+	SoundPlayer.play_ui_click_down()
 	JobHandler.add_more_people_to_job(associated_job)
 	
 func _try_remove_worker():
-	SoundPlayer.mouse_click_down.play()
+	SoundPlayer.play_ui_click_down()
 	JobHandler.remove_people_from_job(associated_job)
 
 func _on_jobs_changed():

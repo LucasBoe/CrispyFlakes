@@ -29,7 +29,7 @@ func create_button(speed, path):
 	instance.iconTexture.texture = load(path)
 	
 func set_selected_button(b):
-	SoundPlayer.mouse_click_down.play()
+	SoundPlayer.play_ui_click_down()
 	for button : TimeButton in buttons:
 		button.selected = button == b
 

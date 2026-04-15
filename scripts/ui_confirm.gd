@@ -18,12 +18,12 @@ func show_dialogue(text, action_if_yes):
 	show()
 	
 func click_yes():
-	SoundPlayer.mouse_click_up.play()
+	SoundPlayer.play_ui_click_up()
 	hide()
 	
 	if (_action_if_yes):
 		_action_if_yes.call()
 	
 func click_no():
-	SoundPlayer.mouse_click_up.play()
+	SoundPlayer.play_ui_click_up()
 	hide()

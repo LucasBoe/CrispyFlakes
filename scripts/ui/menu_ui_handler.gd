@@ -28,7 +28,10 @@ func bind_slot(button, tab):
 	button.pressed.connect(set_tab.bind(tab))
 
 func set_tab(tab):
-	(SoundPlayer.mouse_click_down if visible else SoundPlayer.mouse_click_up).play()
+	if visible:
+		SoundPlayer.play_ui_click_down()
+	else:
+		SoundPlayer.play_ui_click_up()
 	
 	if tab != null and tab == visible_tab:
 		tab.visible = not tab.visible

@@ -14,11 +14,11 @@ func _ready() -> void:
 	music_slider.value_changed.connect(_on_music_slider_value_changed)
 	sfx_slider.value_changed.connect(_on_sfx_slider_value_changed)
 	
-	music_slider.drag_started.connect(SoundPlayer.mouse_click_down.play)
-	music_slider.drag_ended.connect(SoundPlayer.mouse_click_up.play)
+	music_slider.drag_started.connect(SoundPlayer.play_ui_click_down)
+	music_slider.drag_ended.connect(SoundPlayer.play_ui_click_up)
 		
-	sfx_slider.drag_started.connect(SoundPlayer.mouse_click_down.play)
-	sfx_slider.drag_ended.connect(SoundPlayer.mouse_click_up.play)
+	sfx_slider.drag_started.connect(SoundPlayer.play_ui_click_down)
+	sfx_slider.drag_ended.connect(SoundPlayer.play_ui_click_up)
 
 	# Initialize sliders from current bus volumes
 	var music_bus := AudioServer.get_bus_index(MUSIC_BUS_NAME)

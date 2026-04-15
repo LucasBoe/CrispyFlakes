@@ -86,7 +86,7 @@ func dig_deeper() -> bool:
 	if not ResourceHandler.has_money(cost):
 		return false
 	await ResourceHandler.spend_animated(cost, global_position)
-	SoundPlayer.construction_placed.play_random_pitch()
+	SoundPlayer.play_construction_placed()
 	depth += 1
 	max_water += WATER_PER_DEPTH
 	current_water = minf(current_water + WATER_PER_DEPTH, max_water)

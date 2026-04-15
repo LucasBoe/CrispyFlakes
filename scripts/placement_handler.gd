@@ -107,11 +107,11 @@ func _input(event):
 
 	if event is InputEventMouseButton \
 	and event.button_index == MOUSE_BUTTON_LEFT \
-	and not event.pressed \
-	and get_viewport().gui_get_hovered_control() == null:
+		and not event.pressed \
+		and get_viewport().gui_get_hovered_control() == null:
 		if can_place:
 			var had_horse_post_before_build = Building.count_rooms_by_data(Building.room_data_horse_post) > 0
-			SoundPlayer.construction_placed.play()
+			SoundPlayer.play_construction_placed()
 			for col in building_data.width:
 				for row in building_data.height:
 					var existing = Building.get_room_from_index(location + Vector2i(col, row))

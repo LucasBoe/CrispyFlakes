@@ -67,7 +67,7 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	instance.icon = data.room_icon
 	instance.text = str(Building.count_rooms_by_data(data))
 	instance.button_down.connect(PlacementHandler.start_building.bind(data, custom_placement_check))
-	instance.button_down.connect(SoundPlayer.mouse_click_down.play)
+	instance.button_down.connect(SoundPlayer.play_ui_click_down)
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))
 	instance.mouse_exited.connect(_on_hover_exit.bind(instance, data))
 	instance.show()
@@ -112,7 +112,7 @@ func _on_hover_exit(button : Button, data : RoomData):
 
 func _on_tab_changed(tab):
 
-	SoundPlayer.mouse_click_down.play()
+	SoundPlayer.play_ui_click_down()
 
 	var group = groups[tab]
 

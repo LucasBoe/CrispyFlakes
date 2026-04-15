@@ -1,5 +1,5 @@
-extends AudioStreamPlayer
-class_name CustomAudioStreamPlayer
+extends AudioStreamPlayer2D
+class_name CustomAudioStreamPlayer2D
 
 @export var random_pitch_min := 0.8
 @export var random_pitch_max := 1.2

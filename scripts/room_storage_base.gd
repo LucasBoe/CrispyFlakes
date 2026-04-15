@@ -21,6 +21,7 @@ func try_receive(item : Item) -> bool:
 		item.scale = Vector2.ONE
 		item.z_index = -(max_x * max_y) + free_slot_index
 		items[free_slot_index] = item
+		item.play_spawn_sound()
 		return true
 	else:
 		return false
@@ -30,6 +31,7 @@ func take(itemType : Enum.Items) -> Item:
 		if items[i] && (items[i] as Item).itemType == itemType:
 			var item = items[i]
 			items[i] = null
+			item.play_spawn_sound()
 			return item
 
 	return null
