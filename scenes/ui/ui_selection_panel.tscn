@@ -410,7 +410,7 @@ theme_override_constants/separation = 6
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
-stretch_mode = 1
+stretch_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
 layout_mode = 2

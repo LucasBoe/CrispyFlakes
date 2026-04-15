@@ -70,7 +70,7 @@ func loop():
 		var drink_duration = 10
 
 		for i in drink_duration:
-			if randf() < 0.1:
+			if randf() < 0.3:
 				SoundPlayer.play_talk(npc.global_position)
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
