@@ -30,6 +30,21 @@ func get_closest_to(global_pos: Vector2) -> Sprite2D:
 
 	return closest
 
+func get_all_in_range(global_pos: Vector2, range: float) -> Array[Sprite2D]:
+	var dirt_in_range: Array[Sprite2D] = []
+	var range_squared := range * range
+
+	for i in range(dirt_instances.size() - 1, -1, -1):
+		var dirt := dirt_instances[i] as Sprite2D
+		if not is_instance_valid(dirt):
+			dirt_instances.remove_at(i)
+			continue
+
+		if dirt.global_position.distance_squared_to(global_pos) <= range_squared:
+			dirt_in_range.append(dirt)
+
+	return dirt_in_range
+
 func clean_dirt(dirt: Sprite2D) -> void:
 	if dirt_instances.has(dirt):
 		dirt_instances.erase(dirt)

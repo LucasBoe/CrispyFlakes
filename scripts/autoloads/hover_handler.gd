@@ -48,8 +48,13 @@ func _set_outline(node, state) -> void:
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
-		
-		click_hovered_node_signal.emit(currently_hovered)
-		
 		if currently_hovered is NPC:
-			currently_hovered.click_on()	
+			currently_hovered.click_on()
+
+		# For NPCWorker: defer selection to release so we can tell if it was a drag
+		if not (currently_hovered is NPCWorker) and NPCWorker.picked_up_npc == null:
+			click_hovered_node_signal.emit(currently_hovered)
+
+	elif event.is_action_released("click"):
+		if currently_hovered is NPCWorker and not NPCWorker.was_dragging:
+			click_hovered_node_signal.emit(currently_hovered)

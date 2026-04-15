@@ -4,14 +4,14 @@ class_name NeedSleepBehaviour
 var bed: RoomBed
 
 static func get_probability_by_needs(needs: NeedsModule):
-	return needs.Energy.strength
+	return 1.0 - needs.Energy.strength
 
 func loop():
 	_narrative = ["Dead tired...", "Can barely keep their eyes open...", "Exhausted..."].pick_random()
 	bed = _find_available_bed()
 
 	if bed == null:
-		npc.Needs.satisfaction.strength -= 0.1
+		npc.Needs.satisfaction.strength -= 0.3
 		npc.notify(UiNotifications.ICON_MINUS_1)
 		await pause(2)
 		return
@@ -47,8 +47,8 @@ func loop():
 		ResourceHandler.add_animated(Enum.Resources.MONEY, RoomBed.SLEEP_PRICE, bed.get_center_position(), Vector2i(bed.x, bed.y))
 
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
-	npc.Needs.Energy.strength = maxf(0.0, npc.Needs.Energy.strength - 0.8)
-	add_satisfaction(0.2)
+	npc.Needs.Energy.strength = minf(1.0, npc.Needs.Energy.strength + 0.8)
+	npc.Needs.satisfaction.strength = 0.7
 
 func _find_available_bed() -> RoomBed:
 	for candidate: RoomBed in get_all_rooms_of_type_ordered_by_distance(RoomBed):

@@ -5,6 +5,8 @@ var npc : NPC
 var data : BehaviourSaveData
 var stopped = false
 var _narrative: String = "Busy..."
+var _active_progress_bars: Array[TextureProgressBar] = []
+var _owned_progress_bars: Array[TextureProgressBar] = []
 
 func get_narrative() -> String:
 	return _narrative
@@ -40,6 +42,7 @@ func loop():
 
 #optional override
 func stop_loop() -> BehaviourSaveData:
+	_cleanup_progress_bars()
 	return BehaviourSaveData.new(get_script())
 
 func try_get_room_if_not_occupied(saved_data, type, ocupied):
@@ -69,6 +72,23 @@ func get_random_room_of_type(type):
 	if rooms.is_empty():
 		return null
 	return rooms.pick_random()
+
+func get_guest_allowed_random_floor_position(drunkenness: float) -> Vector2:
+	var reachable = npc.Navigation.get_reachable_rooms()
+	var allowed: Array[RoomBase] = []
+	for room: RoomBase in reachable:
+		if drunkenness < 0.3:
+			if room.is_outside_room or room.is_basement:
+				continue
+			if room is RoomBrewery or room is RoomDestillery or room is RoomAgingCellar or room is RoomWell or room is RoomStorage or room is RoomBroomCloset:
+				continue
+		elif drunkenness < 0.7:
+			if room.is_outside_room or room.is_basement:
+				continue
+		allowed.append(room)
+	if allowed.is_empty():
+		allowed = reachable
+	return allowed.pick_random().get_random_floor_position()
 
 func get_closest_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
@@ -208,13 +228,20 @@ func progress(duration, bar: TextureProgressBar = null):
 		owned_bar = _NPC_PROGRESS_BAR.instantiate() as TextureProgressBar
 		npc.add_child(owned_bar)
 		bar = owned_bar
+		_owned_progress_bars.append(owned_bar)
+
+	_register_progress_bar(bar)
 
 	var t = float(duration)
 	if is_instance_valid(bar):
 		bar.visible = true
 	while t > 0:
+		if stopped:
+			break
 		t -= npc.get_process_delta_time()
 		if not is_instance_valid(bar):
+			_unregister_progress_bar(bar)
+			_unregister_owned_progress_bar(owned_bar)
 			return
 		bar.value = (1.0 - (t / duration)) * 100
 		await end_of_frame()
@@ -223,6 +250,33 @@ func progress(duration, bar: TextureProgressBar = null):
 
 	if is_instance_valid(owned_bar):
 		owned_bar.queue_free()
+
+	_unregister_progress_bar(bar)
+	_unregister_owned_progress_bar(owned_bar)
+
+func _register_progress_bar(bar: TextureProgressBar) -> void:
+	if is_instance_valid(bar) and not _active_progress_bars.has(bar):
+		_active_progress_bars.append(bar)
+
+func _unregister_progress_bar(bar: TextureProgressBar) -> void:
+	if bar != null:
+		_active_progress_bars.erase(bar)
+
+func _unregister_owned_progress_bar(bar: TextureProgressBar) -> void:
+	if bar != null:
+		_owned_progress_bars.erase(bar)
+
+func _cleanup_progress_bars() -> void:
+	for bar in _active_progress_bars:
+		if is_instance_valid(bar):
+			bar.visible = false
+
+	for bar in _owned_progress_bars:
+		if is_instance_valid(bar):
+			bar.queue_free()
+
+	_active_progress_bars.clear()
+	_owned_progress_bars.clear()
 
 func add_satisfaction(amount: float):
 	if npc != null and npc.has_method("add_satisfaction"):

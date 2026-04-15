@@ -103,7 +103,7 @@ func get_next_behaviour():
 	if Needs.drunkenness.strength > randf():
 		return FightBehaviour
 
-	if Needs.Energy.strength > randf():
+	if (1.0 - Needs.Energy.strength) > randf():
 		return NeedSleepBehaviourScript
 
 	if needs_to_pee > randf():

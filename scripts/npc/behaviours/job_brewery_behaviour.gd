@@ -30,17 +30,17 @@ func loop():
 				continue
 			i.destroy()
 
-			_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()
-			var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
-			_brewery_sound = SoundPlayer.play_brewery_loop(brewery.global_position)
-			await progress(duration)
-			_brewery_sound.queue_free()
-			_brewery_sound = null
-			var item_spawn_pos = brewery.get_random_floor_position()
-			var item = Global.ItemSpawner.create(Enum.Items.BEER_BARREL, item_spawn_pos)
-			npc.Item.pick_up(item)
-			_narrative = ["Lifting the beer...", "Hauling the barrels...", "Storing the kegs..."].pick_random()
-			await store_item(item)
+		_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()
+		var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
+		_brewery_sound = SoundPlayer.play_brewery_loop(brewery.global_position)
+		await progress(duration)
+		_brewery_sound.queue_free()
+		_brewery_sound = null
+		var item_spawn_pos = brewery.get_random_floor_position()
+		var item = Global.ItemSpawner.create(Enum.Items.BEER_BARREL, item_spawn_pos)
+		npc.Item.pick_up(item)
+		_narrative = ["Lifting the beer...", "Hauling the barrels...", "Storing the kegs..."].pick_random()
+		await store_item(item)
 
 func custom_array_sort(a, b):
 		return a[1] < b[1]

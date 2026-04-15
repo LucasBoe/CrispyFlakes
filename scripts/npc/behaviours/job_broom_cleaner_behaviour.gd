@@ -7,6 +7,7 @@ const CLEAN_DURATION := .5
 const BED_CLEAN_DURATION := 3.0
 const OUTHOUSE_CLEAN_DURATION := 4.0
 const IDLE_WAIT_DURATION := 2.0
+const FLOOR_MESS_CLEAN_RADIUS := 16.0
 
 var closet: RoomBroomCloset
 var active_room_target: RoomBase
@@ -76,10 +77,10 @@ func loop():
 			await npc.get_tree().create_timer(1.0).timeout
 			particles.queue_free()
 
-		if not is_instance_valid(target):
-			_release_room_target(target)
-			continue
-		_clean_target(target)
+		if target is ColorRect or target is Sprite2D:
+			_clean_floor_mess_in_range(npc.global_position)
+		elif is_instance_valid(target):
+			_clean_target(target)
 		_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
@@ -189,6 +190,13 @@ func _clean_target(target) -> void:
 		PuddleHandler.clean_puddle(target)
 	elif target is Sprite2D:
 		DirtHandler.clean_dirt(target)
+
+func _clean_floor_mess_in_range(center: Vector2) -> void:
+	for puddle in PuddleHandler.get_all_in_range(center, FLOOR_MESS_CLEAN_RADIUS):
+		PuddleHandler.clean_puddle(puddle)
+
+	for dirt in DirtHandler.get_all_in_range(center, FLOOR_MESS_CLEAN_RADIUS):
+		DirtHandler.clean_dirt(dirt)
 
 func _target_clean_duration(target) -> float:
 	if not is_instance_valid(target):

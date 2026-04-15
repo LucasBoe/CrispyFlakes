@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=45 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
@@ -8,7 +8,6 @@
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
-[ext_resource type="Script" uid="uid://bl4pb0o8i1jn7" path="res://scripts/ui/ui_close_handler.gd" id="16_kjajm"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Script" uid="uid://bpm87gr3dy543" path="res://scripts/ui_tutorial_item.gd" id="19_duoqm"]
 [ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="19_mwcfc"]

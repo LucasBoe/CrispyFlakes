@@ -159,6 +159,7 @@ const possible_names = [
 @onready var anim : Sprite2D = $AnimationModule
 
 static var picked_up_npc : NPC = null
+static var was_dragging = false
 
 const DRAG_THRESHOLD = 8.0
 var _drag_pending = false
@@ -194,11 +195,13 @@ func click_on():
 	if picked_up_npc != null:
 		return;
 
+	was_dragging = false
 	_drag_pending = true
 	_drag_start_mouse = get_global_mouse_position()
 	pick_up_origin = global_position
 
 func _activate_drag():
+	was_dragging = true
 	picked_up_npc = self
 	_drag_pending = false
 	Navigation.set_process(false)

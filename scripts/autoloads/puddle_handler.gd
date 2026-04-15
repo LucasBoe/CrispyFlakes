@@ -42,6 +42,22 @@ func get_closest_to(global_pos: Vector2) -> ColorRect:
 
 	return closest
 
+func get_all_in_range(global_pos: Vector2, range: float) -> Array[ColorRect]:
+	var puddles_in_range: Array[ColorRect] = []
+	var range_squared := range * range
+
+	for i in range(puddle_instances.size() - 1, -1, -1):
+		var puddle := puddle_instances[i]
+		if not is_instance_valid(puddle):
+			puddle_instances.remove_at(i)
+			continue
+
+		var puddle_center := puddle.global_position + puddle.size * 0.5
+		if puddle_center.distance_squared_to(global_pos) <= range_squared:
+			puddles_in_range.append(puddle)
+
+	return puddles_in_range
+
 func clean_puddle(puddle) -> void:
 	if puddle_instances.has(puddle):
 		puddle_instances.erase(puddle)

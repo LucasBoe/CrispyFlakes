@@ -248,8 +248,12 @@ func _show_for_room(room: RoomBase):
 
 	arrest_button.hide()
 	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
+	room_delete_button.disabled = false
 
-	if room is not RoomJunk and room is not RoomWell:
+	if room is RoomEmpty:
+		room_delete_button.show()
+		room_delete_button.disabled = true
+	elif room is not RoomJunk and room is not RoomWell:
 		room_delete_button.show()
 		Util.disconnect_all_pressed(room_delete_button)
 		room_delete_button.pressed.connect(func():

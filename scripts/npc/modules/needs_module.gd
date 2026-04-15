@@ -16,7 +16,7 @@ func _ready():
 	stay_duration = new_need(Enum.Need.STAY_DURATION, 0.0)
 	passive_satisfaction_loss = new_need(Enum.Need.PASSIVE_SATISFACTION_LOSS, 0.0)
 	drunkenness = new_need(Enum.Need.DRUNKENNESS, 0.0)
-	Energy = new_need(Enum.Need.ENERGY, randf_range(0.05, 0.35))
+	Energy = new_need(Enum.Need.ENERGY, randf_range(0.65, 0.95))
 	
 	npc = get_parent() as NPCGuest
 	if npc:
@@ -56,10 +56,10 @@ func _process(delta):
 	stay_duration.strength += delta_minute
 
 	var max_loss := 2.0        # cap (per minute)
-	var ramp := 0.25        # how fast it approaches the cap
+	var ramp := 0.15        # how fast it approaches the cap
 
 	# diminishing returns: grows fast at first, then slows as it gets higher
 	passive_satisfaction_loss.strength += (max_loss - passive_satisfaction_loss.strength) * ramp * delta_minute
-	Energy.strength = minf(1.0, Energy.strength + (0.45 + drunkenness.strength * 0.35) * delta_minute)
+	Energy.strength = maxf(0.0, Energy.strength - (0.45 + drunkenness.strength * 0.35) * delta_minute)
 
 	satisfaction.strength -= passive_satisfaction_loss.strength * delta_minute
