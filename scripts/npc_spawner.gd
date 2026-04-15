@@ -85,6 +85,42 @@ func spawn_sheriff():
 	add_child(sheriff)
 	return sheriff
 
+func assign_loose_horse_to_post(post: RoomHorsePost) -> HorseNPC:
+	if post == null or not is_instance_valid(post) or not post.can_accept_horse():
+		return null
+
+	var assigned_horse: HorseNPC = null
+	while post.can_accept_horse():
+		var closest_horse: HorseNPC = null
+		var closest_distance := INF
+		var post_position = post.get_center_floor_position()
+
+		for child in get_children():
+			if child is not HorseNPC:
+				continue
+
+			var horse := child as HorseNPC
+			if not is_instance_valid(horse):
+				continue
+			if horse.tied_post != null:
+				continue
+			if is_instance_valid(horse.owner_guest) and horse.owner_guest.Animator.is_riding:
+				continue
+
+			var distance := horse.global_position.distance_squared_to(post_position)
+			if distance < closest_distance:
+				closest_distance = distance
+				closest_horse = horse
+
+		if closest_horse == null:
+			break
+
+		closest_horse.tie_to(post)
+		if assigned_horse == null:
+			assigned_horse = closest_horse
+
+	return assigned_horse
+
 func on_guest_destroy(guest):
 	guests.erase(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, -1)

@@ -328,7 +328,7 @@ func _show_for_room(room: RoomBase):
 		_show_status_row(status_text, status_color, closet.worker if closet.worker else null, closet.worker.character_name if closet.worker else "")
 	elif room is RoomHorsePost:
 		var post := room as RoomHorsePost
-		var horse_text := "Horses %d/%d" % [post.get_horse_count(), RoomHorsePost.MAX_HORSES]
+		var horse_text := "Horses %d/%d" % [post.get_horse_count(), post.get_max_horse_count()]
 		_show_status_row(horse_text, Color.TRANSPARENT)
 	elif room.associated_job != null:
 		if room.worker:

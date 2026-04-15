@@ -186,6 +186,7 @@ func change_job(new):
 	if new == 0:
 		return
 
+	SoundPlayer.play_talk(global_position)
 	UiNotifications.create_notification_dynamic(str("New Job: ", Enum.Jobs.keys()[new]), self, Vector2(0,-32))
 
 func click_on():

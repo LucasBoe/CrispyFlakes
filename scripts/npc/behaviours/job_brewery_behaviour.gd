@@ -2,6 +2,7 @@ extends Behaviour
 class_name JobBreweryBehaviour
 
 var brewery
+var _brewery_sound : AudioStreamPlayer2D
 
 static var occupied_breweries = []
 
@@ -31,7 +32,10 @@ func loop():
 
 			_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()
 			var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
+			_brewery_sound = SoundPlayer.play_brewery_loop(brewery.global_position)
 			await progress(duration)
+			_brewery_sound.queue_free()
+			_brewery_sound = null
 			var item_spawn_pos = brewery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.BEER_BARREL, item_spawn_pos)
 			npc.Item.pick_up(item)
@@ -42,6 +46,9 @@ func custom_array_sort(a, b):
 		return a[1] < b[1]
 
 func stop_loop():
+	if is_instance_valid(_brewery_sound):
+		_brewery_sound.queue_free()
+		_brewery_sound = null
 	if brewery:
 		brewery.worker = null
 	occupied_breweries.erase(brewery)

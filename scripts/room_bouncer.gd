@@ -11,6 +11,9 @@ func init_room(_x: int, _y: int):
 	back_wall_sprite_2d.texture = BOUNCER_BACKWALL
 	associated_job = Enum.Jobs.BOUNCER
 
+static func custom_placement_check(location: Vector2i) -> bool:
+	return location.y == 0
+
 func get_job_capacity(job = null) -> int:
 	if job == null:
 		job = associated_job

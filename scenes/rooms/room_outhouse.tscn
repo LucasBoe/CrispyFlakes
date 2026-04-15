@@ -17,6 +17,7 @@ position = Vector2(24, -1)
 texture = ExtResource("3_h1euw")
 offset = Vector2(0, -16.5)
 hframes = 4
+frame = 2
 
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false

@@ -2,6 +2,7 @@ extends Behaviour
 class_name JobEntertainmentBehaviour
 
 var room: RoomEntertainment
+var _piano_sound : AudioStreamPlayer2D
 
 static var occupied_rooms = []
 
@@ -17,27 +18,32 @@ func loop():
 	
 	await move(pos)
 	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	_piano_sound = SoundPlayer.play_piano_loop(room.global_position)
 
 	while true:
 		var duration := room.get_performance_interval()
+
 		await progress(duration)
 
 		if not is_instance_valid(room):
 			return
 
 		var boosted_guest_count := room.entertain_floor()
-		if boosted_guest_count > 0:
-			UiNotifications.create_notification_static(
-				"+%d mood" % boosted_guest_count,
-				room.get_notification_position(),
-				room.current_module.icon if room.current_module else null,
-				Color.WHITE,
-				1.2
-			)
-		else:
-			await pause(1)
+		#if boosted_guest_count > 0:
+			#UiNotifications.create_notification_static(
+				#"+%d mood" % boosted_guest_count,
+				#room.get_notification_position(),
+				#room.current_module.icon if room.current_module else null,
+				#Color.WHITE,
+				#1.2
+			#)
+		#else:
+			#await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
+	if is_instance_valid(_piano_sound):
+		_piano_sound.queue_free()
+		_piano_sound = null
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	occupied_rooms.erase(room)
 	if is_instance_valid(room):

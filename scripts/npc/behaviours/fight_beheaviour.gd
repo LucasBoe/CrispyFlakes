@@ -10,6 +10,7 @@ func loop():
 	if fight == null:
 		fight = FightHandler.get_or_create_fight(npc)
 	while not fight.is_over:
+		SoundPlayer.play_punch(npc.global_position)
 		await move(fight.room.get_random_floor_position())
 		arrived_at_roon = true
 		npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)

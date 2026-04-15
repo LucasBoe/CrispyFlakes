@@ -20,9 +20,9 @@ func loop():
 	if not is_instance_valid(bar):
 		return
 
+	SoundPlayer.play_talk(npc.global_position)
 	_narrative = ["Waiting for a drink...", "At the bar...", "Ready to order..."].pick_random()
 	var request = bar.request_drink(self)
-
 	var sent_notification = false
 	var notification_start_check_time = Global.time_now
 
@@ -70,6 +70,8 @@ func loop():
 		var drink_duration = 10
 
 		for i in drink_duration:
+			if randf() < 0.1:
+				SoundPlayer.play_talk(npc.global_position)
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
 			add_satisfaction(satisfaction_increase / float(drink_duration))

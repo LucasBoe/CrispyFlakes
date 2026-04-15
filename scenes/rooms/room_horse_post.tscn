@@ -16,6 +16,14 @@ position = Vector2(24, -8)
 texture = ExtResource("3_gt1gr")
 offset = Vector2(0.5, -0.5)
 
+[node name="Slots" type="Node2D" parent="."]
+
+[node name="SlotLeft" type="Node2D" parent="Slots"]
+position = Vector2(14, 0)
+
+[node name="SlotRight" type="Node2D" parent="Slots"]
+position = Vector2(34, 0)
+
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false
 z_index = 4000

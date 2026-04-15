@@ -122,7 +122,7 @@ func tie_to(post: RoomHorsePost) -> void:
 		drop_at(global_position)
 		return
 	tied_post = post
-	global_position = post.get_random_floor_position()
+	global_position = post.get_tie_position(self)
 	_home_x = global_position.x
 	_home_y = global_position.y
 

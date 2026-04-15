@@ -17,4 +17,5 @@ func create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
 	items.append(instance)
 	add_child(instance)
 	instance.position = pos
+	instance.play_spawn_sound()
 	return instance

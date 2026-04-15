@@ -67,7 +67,7 @@ func loop():
 		var particles = BROOM_PARTICLES_SCENE.instantiate() as GPUParticles2D
 		npc.add_child(particles)
 		npc.Animator.is_brooming = true
-
+		SoundPlayer.play_broom(npc.global_position)
 		await progress(_target_clean_duration(target))
 
 		npc.Animator.is_brooming = false

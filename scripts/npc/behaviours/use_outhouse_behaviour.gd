@@ -26,14 +26,16 @@ func loop():
 	_narrative = ["Taking care of business...", "Doing what they gotta do...", "Finally made it..."].pick_random()
 	await move(outhouse.get_center_floor_position())
 	if is_instance_valid(outhouse):
+		SoundPlayer.play_outhouse_door(outhouse.global_position)
 		await outhouse.play_open_animation()
 		npc.Animator.hide()
 		await outhouse.play_close_animation()
-		
+
 		outhouse.user = npc
 		await progress(3)
-		
+
 		if is_instance_valid(outhouse):
+			SoundPlayer.play_outhouse_door(outhouse.global_position)
 			await outhouse.play_open_animation()
 		npc.Animator.show()
 		
@@ -63,6 +65,7 @@ func _pee_outside() -> void:
 	await move(Vector2(target_x, 0))
 	_narrative = ["Relieving themselves outside...", "Taking care of it behind the bushes...", "Nature's calling answered..."].pick_random()
 	npc.Animator.is_peeing = true
+	SoundPlayer.play_piss(npc.global_position)
 	await pause(2)
 	npc.Animator.is_peeing = false
 	PuddleHandler.create(npc.global_position, PuddleHandler.Type.PEE)

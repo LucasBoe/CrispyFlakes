@@ -153,6 +153,8 @@ func fetch_item(item: Enum.Items):
 		well.register(npc)
 		while well.current_user != npc:
 			await end_of_frame()
+		
+		SoundPlayer.play_use_well(well.global_position)
 		await progress(well.get_draw_duration())
 		well.consume_water()
 		source_item = Global.ItemSpawner.create(Enum.Items.WATER_BUCKET, well.get_center_position())

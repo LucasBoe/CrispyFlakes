@@ -47,6 +47,7 @@ func loop():
 			await move(bar.get_center_floor_position())
 
 			if bar.drink_requests.size() > 0:
+				SoundPlayer.play_serve_drink(npc.global_position)
 				_narrative = "Serving drinks..."
 				await progress(.5)
 

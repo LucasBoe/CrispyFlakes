@@ -110,6 +110,7 @@ func _input(event):
 	and not event.pressed \
 	and get_viewport().gui_get_hovered_control() == null:
 		if can_place:
+			var had_horse_post_before_build = Building.count_rooms_by_data(Building.room_data_horse_post) > 0
 			SoundPlayer.construction_placed.play()
 			for col in building_data.width:
 				for row in building_data.height:
@@ -129,6 +130,11 @@ func _input(event):
 					var tween = placed_room.create_tween()
 					tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
 						.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+
+			if building_data == Building.room_data_horse_post and not had_horse_post_before_build:
+				var placed_post := Building.get_room_from_index(location) as RoomHorsePost
+				if placed_post != null:
+					Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
 
 			stop_building()
 			ResourceHandler.change_resource(Enum.Resources.MONEY, -building_data.construction_price)

@@ -17,6 +17,7 @@ func _process(delta):
 
 func init(itemType : Enum.Items) -> Item:
 	self.itemType = itemType
+
 	refresh_texture()
 	return self
 
@@ -66,7 +67,13 @@ static func get_money_texture() -> AtlasTexture:
 	tex.region = Rect2(0, 0, 8, 8)
 	return tex
 
+func play_spawn_sound() -> void:
+	if itemType == Enum.Items.WATER_BUCKET:
+		SoundPlayer.play_water(global_position)
+
 func destroy():
+	play_spawn_sound()
+
 	# preventive
 	LooseItemHandler.unregister_loose_item_instance(self)
 	queue_free()
