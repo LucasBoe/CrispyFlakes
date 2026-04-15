@@ -77,11 +77,13 @@ func loop():
 			await npc.get_tree().create_timer(1.0).timeout
 			particles.queue_free()
 
-		if target is ColorRect or target is Sprite2D:
-			_clean_floor_mess_in_range(npc.global_position)
-		elif is_instance_valid(target):
-			_clean_target(target)
-		_release_room_target(target)
+		if is_instance_valid(target):
+			if target is ColorRect or target is Sprite2D:
+				_clean_floor_mess_in_range(npc.global_position)
+			else:
+				_clean_target(target)
+				
+			_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
 	npc.Animator.is_brooming = false

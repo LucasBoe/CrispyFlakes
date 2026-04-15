@@ -10,6 +10,7 @@ var target_final
 
 var has_target = false
 var is_moving = false
+var _stair_waypoints_remaining: int = 0
 
 const DEFAULT_MOVE_SPEED = 32
 var move_speed = DEFAULT_MOVE_SPEED
@@ -28,6 +29,8 @@ func _process(delta):
 
 	if global_position.distance_to(target_path[0]) < 1:
 		target_path.remove_at(0)
+		if _stair_waypoints_remaining > 0:
+			_stair_waypoints_remaining -= 1
 		if target_path.is_empty():
 			stop_navigation()
 			target_reached_signal.emit()
@@ -41,6 +44,10 @@ func stop_navigation():
 	target_final = null
 	has_target = false
 	is_moving = false
+	_stair_waypoints_remaining = 0
+
+func is_on_stair_path() -> bool:
+	return _stair_waypoints_remaining > 0
 
 
 func set_target(target, custom_speed):
@@ -118,6 +125,7 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 
 func refresh_target_path() -> void:
 	target_path.clear()
+	_stair_waypoints_remaining = 0
 
 	var final_target: Vector2
 	if target_final is NPC:
@@ -254,6 +262,7 @@ func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -
 
 
 func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
+	_stair_waypoints_remaining += 4
 	if go_downwards:
 		target_path.append(stairs.global_position + Vector2(8, 0))
 		target_path.append(stairs.global_position + Vector2(28, 24))
