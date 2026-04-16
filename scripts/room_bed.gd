@@ -2,7 +2,7 @@ extends RoomBase
 class_name RoomBed
 
 const SLEEP_DURATION := 60.0
-const SLEEP_PRICE := 6
+const SLEEP_PRICE := 14
 
 const BED_EMPTY := preload("res://assets/sprites/bed_empty_back.png")
 const BED_EMPTY_DIRTY := preload("res://assets/sprites/bed_empty_back_dirty.png")
@@ -101,6 +101,9 @@ func clean_bed():
 		return
 	_dirty_beds.remove_at(0)
 	_refresh_visual()
+
+func get_sleep_price() -> int:
+	return SLEEP_PRICE
 
 func _refresh_visual():
 	for i in _active_beds.size():

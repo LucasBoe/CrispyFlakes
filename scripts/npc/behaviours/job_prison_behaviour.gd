@@ -34,6 +34,7 @@ func loop():
 			if behaviour != null:
 				_narrative = ["Escorting to the cell...", "Taking them in...", "Putting them away..."].pick_random()
 				await move(to_arrest)
+				to_arrest.Animator.set_escort_target(npc)
 				behaviour.cell = room
 				await move(room.get_center_floor_position())
 

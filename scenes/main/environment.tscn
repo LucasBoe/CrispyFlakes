@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=4 uid="uid://brd7wfwl3sv5n"]
+[gd_scene load_steps=8 format=4 uid="uid://brd7wfwl3sv5n"]
 
+[ext_resource type="Script" uid="uid://bkgkn0gd61g4x" path="res://scenes/main/environment_paralax_handler.gd" id="1_58wo2"]
 [ext_resource type="Texture2D" uid="uid://ulsbt763ecmh" path="res://assets/sprites/sky.png" id="2_golqe"]
 [ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="5_0aorq"]
 [ext_resource type="Texture2D" uid="uid://5bdykruptoea" path="res://assets/sprites/montains.png" id="5_mo382"]
@@ -12,6 +13,7 @@ size_override = Vector2(64, 64)
 
 [node name="Environment" type="Node2D"]
 texture_filter = 1
+script = ExtResource("1_58wo2")
 
 [node name="Ground" type="Sprite2D" parent="."]
 z_index = -2000
@@ -51,7 +53,7 @@ color = Color(0, 0, 0, 1)
 z_index = -4096
 texture_filter = 1
 position = Vector2(4.76837e-07, -54.5)
-scale = Vector2(320, 1.697)
+scale = Vector2(1000, 1.697)
 texture = ExtResource("2_golqe")
 
 [node name="ColorRect" type="ColorRect" parent="Sky"]
@@ -62,27 +64,37 @@ offset_right = 16.0
 offset_bottom = -180.0
 color = Color(0.274806, 0.476909, 0.669251, 1)
 
-[node name="Montains" type="Sprite2D" parent="."]
-z_index = -3000
-texture_filter = 1
-position = Vector2(-363, 0)
-texture = ExtResource("5_mo382")
-offset = Vector2(0, -40.5)
-
-[node name="Montains2" type="Sprite2D" parent="."]
-z_index = -3000
-texture_filter = 1
-position = Vector2(271, 22)
-texture = ExtResource("5_mo382")
-offset = Vector2(0, -40.5)
+[node name="ColorRect2" type="ColorRect" parent="Sky"]
+z_index = -4096
+offset_left = -16.0
+offset_top = 180.02357
+offset_right = 16.0
+offset_bottom = 2228.0237
+color = Color(0.7137255, 0.78431374, 0.83137256, 1)
 
 [node name="CloudHandler" type="Node2D" parent="."]
+position = Vector2(2.842171e-14, -7.6293945e-06)
+scale = Vector2(0.99999994, 0.9999999)
 script = ExtResource("8_owwh3")
 
 [node name="Cloud" type="Sprite2D" parent="CloudHandler"]
 z_index = -3100
 position = Vector2(0, -123)
 texture = ExtResource("9_lj14v")
+
+[node name="Montains" type="Sprite2D" parent="."]
+z_index = -3000
+texture_filter = 1
+position = Vector2(-362, 48)
+texture = ExtResource("5_mo382")
+offset = Vector2(0, -40.5)
+
+[node name="Montains2" type="Sprite2D" parent="."]
+z_index = -3000
+texture_filter = 1
+position = Vector2(272, 52)
+texture = ExtResource("5_mo382")
+offset = Vector2(0, -40.5)
 
 [node name="Signpost" type="Sprite2D" parent="."]
 position = Vector2(-320, -12)

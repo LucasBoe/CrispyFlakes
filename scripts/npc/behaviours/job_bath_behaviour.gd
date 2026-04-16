@@ -44,7 +44,7 @@ func loop():
 			_narrative = ["Running a bath...", "Giving them a scrub...", "Drawing the bath..."].pick_random()
 			await progress(6)
 
-			ResourceHandler.add_animated(Enum.Resources.MONEY, 4, bath.get_center_position(), Vector2i(bath.x, bath.y))
+			ResourceHandler.add_animated(Enum.Resources.MONEY, bath.get_service_price(), bath.get_center_position(), Vector2i(bath.x, bath.y))
 			bath.clean_customer()
 
 func stop_loop():

@@ -613,6 +613,12 @@ theme = ExtResource("22_hpv7r")
 icon = ExtResource("19_3ocru")
 icon_alignment = 1
 
+[node name="HireGuestButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Hire for 5$"
+
 [node name="ArrestButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2

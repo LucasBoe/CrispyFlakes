@@ -25,7 +25,7 @@ func refresh_tier(tier_index):
 
 func _process(delta):
 	
-	count_label.text = str(Global.NPCSpawner.guests.size())
+	count_label.text = str(Global.NPCSpawner.get_active_guest_count())
 	if Global.should_auto_spawn_guests:
 		progression_bar.value = Global.NPCSpawner.next_guest_progression
 		progression_label.text = str(Global.NPCSpawner.guests_per_day_rate,"/D")

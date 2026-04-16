@@ -128,14 +128,16 @@ func refresh_target_path() -> void:
 	_stair_waypoints_remaining = 0
 
 	var final_target: Vector2
-	if target_final is NPC:
+	#if target_final is NPC:
 		# Navigate to the room the target NPC is currently in rather than their
 		# exact position — room centers are stable, so path refreshes mid-stair
 		# don't cause oscillation.
-		var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
-		final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
+		#var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
+		#final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
+	if target_final is RoomBase:
+		final_target = (target_final as RoomBase).get_center_floor_position()
 	elif target_final is Node2D:
-		final_target = (target_final as Node2D).global_position + Vector2(24, 0)
+		final_target = (target_final as Node2D).global_position
 	else:
 		final_target = target_final
 

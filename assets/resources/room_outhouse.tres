@@ -13,6 +13,7 @@ room_desc = "Cowboys do Nr1 and Nr2 here."
 room_icon = ExtResource("2_3tmfp")
 room_preview = ExtResource("2_ayx33")
 construction_price = 10
+tier = 1
 is_outdoor = true
 money_capacity = 20
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

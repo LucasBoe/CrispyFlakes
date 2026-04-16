@@ -44,7 +44,7 @@ func loop():
 	if is_instance_valid(bed):
 		bed.release(npc)
 		npc.global_position = bed.get_center_floor_position()
-		ResourceHandler.add_animated(Enum.Resources.MONEY, RoomBed.SLEEP_PRICE, bed.get_center_position(), Vector2i(bed.x, bed.y))
+		ResourceHandler.add_animated(Enum.Resources.MONEY, bed.get_sleep_price(), bed.get_center_position(), Vector2i(bed.x, bed.y))
 
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	npc.Needs.Energy.strength = minf(1.0, npc.Needs.Energy.strength + 0.8)

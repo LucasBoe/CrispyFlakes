@@ -23,6 +23,7 @@ func loop():
 		if arrest_target != null and arrest_room != null and is_instance_valid(arrest_target):
 			var behaviour = arrest_target.Behaviour.behaviour_instance as ArrestedBehaviour
 			if behaviour != null:
+				arrest_target.Animator.set_escort_target(npc)
 				behaviour.cell = arrest_room
 				await move(arrest_room.get_center_floor_position())
 		npc.Behaviour.restore_previous_behaviour()

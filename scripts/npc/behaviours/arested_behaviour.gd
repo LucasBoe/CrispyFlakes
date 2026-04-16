@@ -13,6 +13,7 @@ func loop():
 
 	_narrative = ["Heading to the cell...", "Being marched over...", "On their way to lockup..."].pick_random()
 	await move(cell.get_center_floor_position())
+	npc.Animator.clear_escort_target()
 	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_DEEP)
 	is_in_cell = true
 	cell.prisoners.append(npc)
@@ -24,6 +25,7 @@ func loop():
 
 func stop_loop():
 	npc.Animator.handcuffs.hide()
+	npc.Animator.clear_escort_target()
 	if is_instance_valid(cell):
 		cell.prisoners.erase(npc)
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)

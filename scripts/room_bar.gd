@@ -71,6 +71,11 @@ func fullfill_next_request():
 	req.status = Enum.RequestStatus.FULFILLED
 	drink_requests.erase(req)
 
+func get_sale_price() -> int:
+	if current_module == null:
+		return 0
+	return ceili(float(current_module.item_cost) * 1.5)
+
 func _process(delta):
 	if not Global.should_auto_spawn_guests:
 		return

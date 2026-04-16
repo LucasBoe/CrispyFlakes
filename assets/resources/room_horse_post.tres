@@ -13,5 +13,6 @@ room_desc = "Guests arriving on horseback will tie their horses here."
 room_icon = ExtResource("2_meumb")
 room_preview = ExtResource("3_ko88o")
 construction_price = 20
+tier = 1
 is_outdoor = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

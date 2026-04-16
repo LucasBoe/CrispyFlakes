@@ -79,6 +79,10 @@ func _append_state_icon_entries(entries: Array) -> void:
 	elif pending_arrest or is_arrested:
 		entries.append({label = "Has No Bounty or Fine"})
 
+func counts_towards_guest_total() -> bool:
+	var behaviour = Behaviour.behaviour_instance
+	return not (behaviour is ArrestedBehaviour or behaviour is FollowSheriffBehaviour)
+
 func get_next_behaviour():
 
 	if pending_arrest:

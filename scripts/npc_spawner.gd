@@ -44,6 +44,45 @@ func spawn_new_worker(opt_spawn_position = Vector2(-320,0)):
 	workers.append(worker)
 	return worker
 
+func get_active_guest_count() -> int:
+	var count := 0
+	for guest: NPCGuest in guests:
+		if not is_instance_valid(guest):
+			continue
+		if guest.counts_towards_guest_total():
+			count += 1
+	return count
+
+func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
+	if not is_instance_valid(guest):
+		return null
+
+	var worker := spawn_new_worker(guest.global_position) as NPCWorker
+	worker.strength = guest.strength
+	worker.agility = guest.agility
+	worker.intelligence = guest.intelligence
+	worker.stamina = guest.stamina
+	worker.health = guest.health
+
+	if guest.look_info != null:
+		var worker_look := NPCLookInfo.new()
+		worker_look.head_index = guest.look_info.head_index
+		worker_look.color_offsets = guest.look_info.color_offsets
+		worker.look_info = worker_look
+
+		var animation_module := worker.get_node("AnimationModule") as Sprite2D
+		var mat: ShaderMaterial = null
+		if animation_module != null:
+			mat = animation_module.material as ShaderMaterial
+		if mat != null:
+			mat.set_shader_parameter("base_hue_offset", worker_look.color_offsets)
+			mat.set_shader_parameter("sprite_index", Vector2(worker_look.head_index.x, worker_look.head_index.y))
+
+	on_guest_destroy(guest)
+	guest.destroy()
+
+	return worker
+
 func spawn_new_guest():
 	print("spawn_new_guest")
 
@@ -65,7 +104,7 @@ func spawn_new_guest():
 
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
-	spawned_guest_signal.emit(guests.size())
+	spawned_guest_signal.emit(get_active_guest_count())
 
 	var bouncer_room = Building.query.closest_room_of_type(RoomBouncer, guest.global_position) as RoomBouncer
 	var has_active_bouncer := bouncer_room != null and bouncer_room.has_active_bouncer()

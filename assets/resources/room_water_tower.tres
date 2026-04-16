@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://d05pc5605ime2" path="res://scenes/rooms/room_water_tower.tscn" id="1_scene"]
 [ext_resource type="Texture2D" uid="uid://nmvdi1x55hwq" path="res://assets/sprites/ui/room_watertower_icon.png" id="2_h0jvj"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="2_roomdata"]
-[ext_resource type="Texture2D" uid="uid://cil3pe0hiys2k" path="res://assets/sprites/watertower.png" id="3_icon"]
+[ext_resource type="Texture2D" uid="uid://1mwq403tgjqp" path="res://assets/sprites/water_tower_preview.png" id="3_h0jvj"]
 
 [resource]
 script = ExtResource("2_roomdata")
@@ -11,9 +11,9 @@ packed_scene = ExtResource("1_scene")
 room_name = "Water Tower"
 room_desc = "A large elevated tank that stores water. Workers draw buckets from it continuously. Refills over time. Upgrade your Bar with a Faucet to pipe water directly without fetching."
 room_icon = ExtResource("2_h0jvj")
-room_preview = ExtResource("3_icon")
+room_preview = ExtResource("3_h0jvj")
 construction_price = 75
-tier = 1
+tier = 2
 is_outdoor = true
 height = 2
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

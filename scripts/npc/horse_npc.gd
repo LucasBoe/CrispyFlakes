@@ -5,9 +5,8 @@ var owner_guest: NPCGuest = null
 var tied_post: RoomHorsePost = null
 
 const TEX_HORSE = preload("res://assets/sprites/horse.png")
-const TIE_FEE = 5
+const TIE_FEE = 8
 const WANDER_SPEED = 12.0
-const WANDER_RANGE_X = 80.0
 const FREE_DIRT_INTERVAL_MIN = 10.0
 const FREE_DIRT_INTERVAL_MAX = 22.0
 
@@ -90,25 +89,33 @@ func _animate():
 	sprite.position = lerp(sprite.position, target_pos, LERP_SPEED)
 	sprite.scale = lerp(sprite.scale, target_scale, LERP_SPEED)
 
-func _get_building_left_edge() -> float:
-	var min_x = INF
-	if not Building.floors.has(0):
-		return 0.0
-	for x in Building.floors[0]:
-		var room = Building.floors[0][x]
-		if room != null and room is not RoomEmpty:
-			min_x = minf(min_x, x)
-	if min_x == INF:
-		return 0.0
-	# left pixel edge of that room cell
-	return min_x * 48.0 - 4.0
-
 func _pick_wander_target():
 	_wander_timer = randf_range(2.0, 5.0)
-	var offset_x = randf_range(-WANDER_RANGE_X * 0.5, WANDER_RANGE_X * 0.5)
-	var max_x = _get_building_left_edge()
-	var candidate_x = minf(_home_x + offset_x, max_x)
-	_wander_target = Vector2(candidate_x, _home_y)
+	var current_index: Vector2i = Building.round_room_index_from_global_position(global_position)
+	var candidate_indexes: Array[Vector2i] = []
+	var directions: Array[Vector2i] = [
+		Vector2i.LEFT,
+		Vector2i.RIGHT,
+	]
+
+	for direction in directions:
+		var candidate_index := current_index + direction
+		if _can_wander_to_index(candidate_index):
+			candidate_indexes.append(candidate_index)
+
+	if candidate_indexes.is_empty():
+		_wander_target = global_position
+		return
+
+	var next_index: Vector2i = candidate_indexes.pick_random()
+	_wander_target = Building.global_position_from_room_index(next_index)
+	SoundPlayer.play_horse(global_position)
+
+func _can_wander_to_index(room_index: Vector2i) -> bool:
+	var room := Building.get_room_from_index(room_index) as RoomBase
+	if room == null:
+		return true
+	return room.is_outside_room
 
 func drop_at(pos: Vector2) -> void:
 	global_position = pos
@@ -125,6 +132,7 @@ func tie_to(post: RoomHorsePost) -> void:
 	global_position = post.get_tie_position(self)
 	_home_x = global_position.x
 	_home_y = global_position.y
+	SoundPlayer.play_horse(global_position)
 
 # Called when the post is deleted — horse stays and starts wandering freely.
 func on_post_destroyed() -> void:
@@ -138,6 +146,7 @@ func collect(_guest: NPCGuest) -> int:
 	var fee = 0
 	if is_instance_valid(tied_post):
 		fee = TIE_FEE
+		SoundPlayer.play_horse(global_position)
 		tied_post.untie_horse(self)
 		tied_post = null
 	return fee

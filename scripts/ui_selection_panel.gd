@@ -9,6 +9,7 @@ class_name UISelectionPanel
 @onready var status_row_dummy: MarginContainer = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status
 @onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
+@onready var hire_guest_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HireGuestButton
 @onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
 @onready var bounty_item_container = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer
 @onready var bounty_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer/MarginContainer
@@ -62,6 +63,7 @@ func _ready():
 	call_sheriff_button.hide()
 	dig_deeper_button.hide()
 	storage_filter_button_dummy.hide()
+	hire_guest_button.hide()
 	arrest_button.hide()
 
 func manually_select(node):
@@ -111,6 +113,7 @@ func _clear_instances():
 	_status_row_instance = null
 
 	dig_deeper_button.hide()
+	hire_guest_button.hide()
 	_npc_base_description = ""
 	_npc_narrative_text = ""
 
@@ -133,6 +136,7 @@ func _clear_instances():
 		if is_instance_valid(p):
 			p.queue_free()
 	prisoner_item_instances.clear()
+	storage_filter_container.hide()
 
 func _get_status_icon_entries(npc: NPC) -> Array:
 	return npc.get_state_icon_entries()
@@ -186,6 +190,7 @@ func _show_for_worker(worker: NPCWorker):
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	room_delete_button.hide()
+	hire_guest_button.hide()
 	arrest_button.hide()
 	room_upgrade_hbox.get_parent().hide()
 	needs = null
@@ -203,6 +208,8 @@ func _show_for_guest(guest: NPCGuest):
 	room_delete_button.hide()
 	room_upgrade_hbox.get_parent().hide()
 
+	hire_guest_button.show()
+	_bind_guest_hire_button(guest)
 	arrest_button.show()
 	_bind_guest_arrest_button(guest)
 
@@ -221,6 +228,7 @@ func _show_for_guest(guest: NPCGuest):
 func _show_for_room(room: RoomBase):
 	#needs = null
 
+	hire_guest_button.hide()
 	arrest_button.hide()
 	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
 	room_delete_button.disabled = false
@@ -342,7 +350,7 @@ func _show_for_room(room: RoomBase):
 func _show_storage_filter(room: RoomBase):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM):
+	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY):
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed
@@ -515,6 +523,29 @@ func _bind_guest_arrest_button(guest: NPCGuest):
 		_bind_guest_arrest_button(guest)
 	)
 
+func _bind_guest_hire_button(guest: NPCGuest):
+	if not is_instance_valid(guest):
+		hire_guest_button.hide()
+		return
+
+	Util.disconnect_all_pressed(hire_guest_button)
+	hire_guest_button.disabled = false
+	hire_guest_button.text = "Hire for 5$"
+	hire_guest_button.pressed.connect(func():
+		if not is_instance_valid(guest):
+			return
+		if not ResourceHandler.has_money(5):
+			var btn_center = hire_guest_button.global_position + hire_guest_button.size / 2
+			UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
+			return
+
+		hire_guest_button.disabled = true
+		ResourceHandler.change_money(-5)
+		var worker := Global.NPCSpawner.hire_guest_as_worker(guest)
+		if is_instance_valid(worker):
+			manually_select(worker)
+	)
+
 func _process(delta):
 	super._process(delta)
 
@@ -550,6 +581,7 @@ func _process(delta):
 			describtion_label.text = _npc_base_description + "\n\n[color=#888888]" + narrative + "[/color]"
 
 	if target is NPCGuest:
+		_bind_guest_hire_button(target)
 		_bind_guest_arrest_button(target)
 
 	if target is NPCWorker:

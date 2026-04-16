@@ -1,15 +1,19 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://cw83oadaibc2i"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://cw83oadaibc2i"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_safe"]
+[ext_resource type="Texture2D" uid="uid://c73nmavy8xpbp" path="res://assets/sprites/room_safe_icon.png" id="2_33fqc"]
 [ext_resource type="PackedScene" uid="uid://cm20no2kr7t3b" path="res://scenes/rooms/room_safe.tscn" id="2_safe"]
+[ext_resource type="Texture2D" uid="uid://cpm4w50enrvca" path="res://assets/sprites/room_safe_preview.png" id="3_lmm1q"]
 
 [resource]
 script = ExtResource("1_safe")
 packed_scene = ExtResource("2_safe")
 room_name = "Safe"
 room_desc = "Keeps your earnings secure. A worker will collect money from all rooms and store it here."
+room_icon = ExtResource("2_33fqc")
+room_preview = ExtResource("3_lmm1q")
 construction_price = 150
-tier = 1
+tier = 2
 money_capacity = 1000
 width = 2
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

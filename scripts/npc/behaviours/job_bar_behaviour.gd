@@ -54,7 +54,7 @@ func loop():
 				bar.fullfill_next_request()
 				drinks_available -= .25
 
-				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.current_module.item_cost if bar.current_module else 0, bar.get_center_position(), Vector2i(bar.x, bar.y))
+				ResourceHandler.add_animated(Enum.Resources.MONEY, bar.get_sale_price(), bar.get_center_position(), Vector2i(bar.x, bar.y))
 			else:
 				_narrative = "Waiting for orders..."
 				await pause(1)

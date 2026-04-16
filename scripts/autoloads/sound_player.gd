@@ -23,6 +23,11 @@ const _PUKE_STREAMS : Array[AudioStream] = [
 	preload("res://assets/sounds/sounds/puke2.wav"),
 	preload("res://assets/sounds/sounds/puke3.wav"),
 ]
+const _HORSE_STREAMS : Array[AudioStream] = [
+	preload("res://assets/sounds/sounds/horse1.wav"),
+	preload("res://assets/sounds/sounds/horse2.wav"),
+	preload("res://assets/sounds/sounds/horse3.wav"),
+]
 const _TALK_STREAMS : Array[AudioStream] = [
 	preload("res://assets/sounds/sounds/talk1.wav"),
 	preload("res://assets/sounds/sounds/talk2.wav"),
@@ -64,6 +69,9 @@ func play_piss(world_position: Vector2) -> void:
 
 func play_puke(world_position: Vector2) -> void:
 	_play_2d(_PUKE_STREAMS.pick_random(), world_position, -10.0, 0.8, 1.2)
+
+func play_horse(world_position: Vector2) -> void:
+	_play_2d(_HORSE_STREAMS.pick_random(), world_position, -10.0, 0.9, 1.1)
 
 func play_ui_click_down(_value = null) -> void:
 	_mouse_click_down.play_random_pitch()
