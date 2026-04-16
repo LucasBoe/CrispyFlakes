@@ -18,7 +18,7 @@ func loop():
 func _frisk(bouncer_room: RoomBouncer) -> void:
 	await progress(1.0)
 
-	var bounty = BountyHandler.get_bounty_for(npc)
+	var bounty = BountyHandler.get_official_bounty_for(npc)
 	if bounty == null:
 		return
 

@@ -20,6 +20,7 @@ var is_dirty = true
 
 func init(custom_look = null):
 	needs_to_pee = randf()
+	is_known_fugitive = false
 	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()
@@ -64,19 +65,20 @@ func _process(_delta):
 
 func _append_state_icon_entries(entries: Array) -> void:
 	var b = Behaviour.behaviour_instance
-	var bounty = BountyHandler.get_bounty_for(self)
-	var bounty_info = " 0$" if bounty == null else str(" ", bounty, "$")
+	var bounty = BountyHandler.get_official_bounty_for(self)
+	var fine = BountyHandler.get_fight_fine_for(self)
 	var is_arrested = b is ArrestedBehaviour
-	var has_bounty = bounty != null
+	var has_visible_bounty = bounty != null and is_known_fugitive
 
 	if pending_arrest:
 		entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest (Drop Worker)"})
 	if is_arrested:
 		entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = "Arrested (Call Sherrif)"})
-	if has_bounty or is_known_fugitive:
-		var bounty_label = str("Has Bounty (", bounty_info, ")") if has_bounty else "Known Fugitive"
-		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = bounty_label})
-	elif pending_arrest or is_arrested:
+	if has_visible_bounty:
+		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = str("Known Fugitive (", bounty, "$)")})
+	if fine != null:
+		entries.append({label = str("Outstanding Fine (", fine, "$)")})
+	elif (pending_arrest or is_arrested) and bounty == null:
 		entries.append({label = "Has No Bounty or Fine"})
 
 func counts_towards_guest_total() -> bool:

@@ -26,12 +26,24 @@ func get_all_bounties() -> Array:
 	for look in npc_bounties:
 		result.append({"look": look, "bounty": npc_bounties[look]})
 	return result
-	
-func get_bounty_for(npc : NPC):
+
+func get_official_bounty_for(npc: NPC):
+	if npc != null and npc_bounties.has(npc.look_info):
+		return npc_bounties[npc.look_info]
+	return null
+
+func get_fight_fine_for(npc: NPC):
 	if npc_fight_fines.has(npc):
 		return npc_fight_fines[npc]
-	elif npc_bounties.has(npc.look_info):
-		return npc_bounties[npc.look_info]
+	return null
+
+func get_bounty_for(npc : NPC):
+	var fine = get_fight_fine_for(npc)
+	if fine != null:
+		return fine
+	var official_bounty = get_official_bounty_for(npc)
+	if official_bounty != null:
+		return official_bounty
 	else:
 		return null
 
