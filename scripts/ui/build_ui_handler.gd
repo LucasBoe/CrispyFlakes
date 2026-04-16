@@ -24,9 +24,12 @@ var storage_button;
 var brewery_button;
 
 var last_hover = null
+var data_to_button : Dictionary = {}
 
 func _ready():
 	tab_cointainer.tab_changed.connect(_on_tab_changed)
+	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_created)
 
 	var group = room_group.new(groups)
 
@@ -64,7 +67,8 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	button_dummy.get_parent().add_child(instance)
 	instance.visible = true
 	instance.icon = data.room_icon
-	instance.text = str(Building.count_rooms_by_data(data))
+	var _initial_count: int = Building.count_rooms_by_data(data)
+	instance.text = "" if _initial_count == 0 else str(_initial_count)
 	instance.button_down.connect(PlacementHandler.start_building.bind(data, custom_placement_check))
 	instance.button_down.connect(SoundPlayer.play_ui_click_down)
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))
@@ -75,12 +79,24 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 		group.button_instances[tier] = []
 
 	group.button_instances[tier].append(instance)
+	data_to_button[data] = instance
 
 	return instance
 
+func _on_room_created(_room : RoomBase):
+	for data: RoomData in data_to_button:
+		var count: int = Building.count_rooms_by_data(data)
+		data_to_button[data].text = "" if count == 0 else str(count)
+	if last_hover != null:
+		_refresh_desc(last_hover)
+
+func _refresh_desc(data : RoomData):
+	var count: int = Building.count_rooms_by_data(data)
+	hover_info_room_desc_label.text = data.room_desc + "\nhas: " + str(count)
+
 func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_name_label.text = data.room_name
-	hover_info_room_desc_label.text = data.room_desc
+	_refresh_desc(data)
 	hover_info_room_price_label.text = str(data.construction_price, "$")
 	hover_info_room_preview_texture_rect.texture = data.room_preview
 
