@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=17 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="4_cyq43"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_n6wgk"]
 [ext_resource type="Texture2D" uid="uid://hyt8nvqdaup7" path="res://assets/sprites/cowboy_dirty_overlayt.png" id="4_p1iho"]
+[ext_resource type="Script" path="res://scripts/npc/modules/escort_chain.gd" id="4_xchain"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_482k3"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_cyq43"]
 [ext_resource type="Texture2D" uid="uid://dyupopynhn884" path="res://assets/sprites/handcuffs.png" id="7_482k3"]
@@ -46,6 +47,9 @@ script = ExtResource("1_sa74h")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -11)
 shape = SubResource("CapsuleShape2D_hvbcb")
+
+[node name="EscortChain" type="Node2D" parent="."]
+script = ExtResource("4_xchain")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_482k3")
