@@ -9,7 +9,7 @@
 script = ExtResource("4_4hwfa")
 packed_scene = ExtResource("1_ussxi")
 room_name = "Aging Cellar"
-room_desc = "Fresh wiskey is stored here until it's aged."
+room_desc = "age whiskey for the bar"
 room_icon = ExtResource("2_dvik4")
 room_preview = ExtResource("3_2t72g")
 construction_price = 30

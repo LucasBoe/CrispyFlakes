@@ -33,7 +33,7 @@ visible = false
 script = ExtResource("6_module")
 icon = ExtResource("5_mdimi")
 module_name = "Single Bed"
-describtion = "A single bed for one guest"
+describtion = "1 guest"
 bought = true
 
 [node name="Bed" parent="ModulesRoot/Beds/SingleBed" instance=ExtResource("4_67a5o")]
@@ -44,7 +44,7 @@ script = ExtResource("6_module")
 icon = ExtResource("7_tjrrh")
 price = 10
 module_name = "Bunk Bed"
-describtion = "Stacked beds for two guests"
+describtion = "2 guests"
 
 [node name="Bed" parent="ModulesRoot/Beds/BunkBed" instance=ExtResource("4_67a5o")]
 position = Vector2(24, -6)
@@ -57,7 +57,7 @@ script = ExtResource("6_module")
 icon = ExtResource("8_5scsy")
 price = 20
 module_name = "Double Bunk Bed"
-describtion = "Stacked beds for three guests"
+describtion = "3 guests"
 
 [node name="Bed" parent="ModulesRoot/Beds/DoubleBunkBed" instance=ExtResource("4_67a5o")]
 position = Vector2(24, -6)

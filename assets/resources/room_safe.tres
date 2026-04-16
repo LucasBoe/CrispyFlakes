@@ -9,7 +9,7 @@
 script = ExtResource("1_safe")
 packed_scene = ExtResource("2_safe")
 room_name = "Safe"
-room_desc = "Keeps your earnings secure. A worker will collect money from all rooms and store it here."
+room_desc = "stores money from your rooms"
 room_icon = ExtResource("2_33fqc")
 room_preview = ExtResource("3_lmm1q")
 construction_price = 150

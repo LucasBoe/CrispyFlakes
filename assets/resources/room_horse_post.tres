@@ -9,7 +9,7 @@
 script = ExtResource("1_hpost")
 packed_scene = ExtResource("2_hpost")
 room_name = "Horse Post"
-room_desc = "Guests arriving on horseback will tie their horses here."
+room_desc = "tie up guest horses"
 room_icon = ExtResource("2_meumb")
 room_preview = ExtResource("3_ko88o")
 construction_price = 20

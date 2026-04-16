@@ -9,7 +9,7 @@
 script = ExtResource("2_t8pn5")
 packed_scene = ExtResource("1_ger4k")
 room_name = "Well"
-room_desc = "People can fetch water here."
+room_desc = "fetch water here"
 room_icon = ExtResource("2_60cnm")
 room_preview = ExtResource("3_60cnm")
 construction_price = 20

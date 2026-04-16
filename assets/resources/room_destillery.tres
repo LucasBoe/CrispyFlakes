@@ -9,7 +9,7 @@
 script = ExtResource("4_f5lxu")
 packed_scene = ExtResource("1_hax0f")
 room_name = "Destillery"
-room_desc = "Asigned workers will take water to make wiskey here, that can be sold at the bar."
+room_desc = "distill whiskey from water"
 room_icon = ExtResource("2_hax0f")
 room_preview = ExtResource("3_fjh5f")
 construction_price = 70

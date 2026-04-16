@@ -9,7 +9,7 @@
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
 room_name = "Entertainment"
-room_desc = "Assign a worker to perform here. Active entertainment periodically raises the satisfaction of all guests on the same floor."
+room_desc = "keeps guests happy on this floor"
 room_icon = ExtResource("2_7ctlq")
 room_preview = ExtResource("3_80qpi")
 construction_price = 30

@@ -41,7 +41,7 @@ script = ExtResource("6_pec21")
 icon = ExtResource("7_kmbao")
 price = 20
 module_name = "Small Brewer"
-describtion = "A small brewer that produces one barrel a day"
+describtion = "1 barrel per day"
 bought = true
 
 [node name="Big" type="Sprite2D" parent="ModulesRoot/Brewer"]
@@ -54,7 +54,7 @@ script = ExtResource("6_pec21")
 icon = ExtResource("9_hpnid")
 price = 50
 module_name = "Big Brewer"
-describtion = "A big brewer that produces three barrels a day"
+describtion = "3 barrels per day"
 brew_duration = 6.667
 
 [node name="Water" type="Node2D" parent="ModulesRoot"]
@@ -69,4 +69,4 @@ region_rect = Rect2(8.96, 0, 27, 16)
 script = ExtResource("6_pec21")
 icon = SubResource("PortableCompressedTexture2D_kmbao")
 price = 10
-describtion = "Works in this room don't need to fetch water"
+describtion = "no bucket fetching"

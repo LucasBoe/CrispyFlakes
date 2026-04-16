@@ -9,7 +9,7 @@
 script = ExtResource("1_0mqtw")
 packed_scene = ExtResource("1_ncpyh")
 room_name = "Storage"
-room_desc = "This room stores all kinds of items."
+room_desc = "stores items"
 room_icon = ExtResource("2_ot1c6")
 room_preview = ExtResource("3_tfq55")
 construction_price = 20

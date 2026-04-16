@@ -10,7 +10,7 @@
 [node name="Room_Bath" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_hw732")
-describtion = "Dirty cowboys will come here to get cleaned by your workers."
+describtion = "clean dirty guests"
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200
@@ -32,7 +32,7 @@ script = ExtResource("4_mod")
 icon = ExtResource("5_ifaucet")
 price = 40
 module_name = "Faucet"
-describtion = "Pipes water directly from a Water Tower. Bath workers no longer need to fetch buckets."
+describtion = "pipe water from a water tower"
 
 [node name="Bath" type="Sprite2D" parent="."]
 z_index = -100

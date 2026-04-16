@@ -37,7 +37,7 @@ texture = ExtResource("6_water")
 script = ExtResource("5_mod")
 icon = ExtResource("9_iwater")
 module_name = "Service Table"
-describtion = "Barkeep serves water to guests"
+describtion = "serve water"
 item_cost = 2
 bought = true
 
@@ -49,7 +49,7 @@ script = ExtResource("5_mod")
 icon = ExtResource("10_ibeer")
 price = 15
 module_name = "Barrel Holder"
-describtion = "Barkeep serves beer to guests"
+describtion = "serve beer"
 item_cost = 4
 
 [node name="Whiskey" type="Sprite2D" parent="ModulesRoot/Drinks"]
@@ -60,7 +60,7 @@ script = ExtResource("5_mod")
 icon = ExtResource("11_iwiskey")
 price = 50
 module_name = "Bottle Shelf"
-describtion = "Barkeep serves aged whiskey to guests"
+describtion = "serve aged whiskey"
 item_cost = 7
 
 [node name="Plumbing" type="Node2D" parent="ModulesRoot"]
@@ -70,4 +70,4 @@ script = ExtResource("5_mod")
 icon = ExtResource("12_ifaucet")
 price = 40
 module_name = "Faucet"
-describtion = "Pipes water directly from a Water Tower. No need to fetch buckets."
+describtion = "pipe water from a water tower"

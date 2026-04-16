@@ -9,7 +9,7 @@
 script = ExtResource("2_38wrn")
 packed_scene = ExtResource("1_cmppg")
 room_name = "Prison"
-room_desc = "Arested people can be put here."
+room_desc = "holds arrested troublemakers"
 room_icon = ExtResource("2_68ty7")
 room_preview = ExtResource("3_qm158")
 construction_price = 40

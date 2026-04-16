@@ -18,13 +18,7 @@ func init(p: NPCGuest, b: int, f: int = 0) -> void:
 	fine = f
 	var total = bounty + fine
 	fill_duration = total / 10.0
-
-	var parts = []
-	if bounty > 0:
-		parts.append("Bounty: %d$" % bounty)
-	if fine > 0:
-		parts.append("Fine: %d$" % fine)
-	bounty_label.text = "  |  ".join(parts) if parts.size() > 0 else "0$"
+	bounty_label.text = str(bounty + fine, "$")
 
 	var mat := npc_texture.material as ShaderMaterial
 	if mat != null and prisoner.look_info != null:

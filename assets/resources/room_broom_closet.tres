@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://ctkcra1n0qb53"]
 
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
-[ext_resource type="PackedScene" path="res://scenes/rooms/room_broom_closet.tscn" id="1_roomscene"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_broom_closet_icon.png" id="2_roomicon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_broom_closet_preview.png" id="3_roompreview"]
+[ext_resource type="PackedScene" uid="uid://c13h2momkfw53" path="res://scenes/rooms/room_broom_closet.tscn" id="1_roomscene"]
+[ext_resource type="Texture2D" uid="uid://ben3mi3xwbh45" path="res://assets/sprites/ui/room_broom_closet_icon.png" id="2_roomicon"]
+[ext_resource type="Texture2D" uid="uid://0pi2csafv326" path="res://assets/sprites/ui/room_broom_closet_preview.png" id="3_roompreview"]
 
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
 room_name = "Broom Closet"
-room_desc = "Stores brooms for floor cleaners. One closet supports up to five cleaners."
+room_desc = "stores brooms for cleaners"
 room_icon = ExtResource("2_roomicon")
 room_preview = ExtResource("3_roompreview")
 construction_price = 20

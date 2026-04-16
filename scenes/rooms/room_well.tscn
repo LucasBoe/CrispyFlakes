@@ -34,7 +34,7 @@ texture = ExtResource("3_6d42y")
 script = ExtResource("4_module")
 icon = ExtResource("5_well_icon")
 module_name = "Simple Well"
-describtion = "A basic rope-and-bucket setup. Drawing water takes longer."
+describtion = "slow water draw"
 action_duration = 1.2
 bought = true
 
@@ -44,7 +44,7 @@ script = ExtResource("4_module")
 icon = ExtResource("5_well_icon")
 price = 20
 module_name = "Crank Well"
-describtion = "A hand crank makes drawing water quicker."
+describtion = "faster water draw"
 action_duration = 0.65
 
 [node name="Post" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]

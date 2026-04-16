@@ -7,6 +7,6 @@
 script = ExtResource("2_ajxjt")
 packed_scene = ExtResource("1_gn2nc")
 room_name = "Junk"
-room_desc = "This room needs a worker to get cleaned up and free."
+room_desc = "clear this room for use"
 money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

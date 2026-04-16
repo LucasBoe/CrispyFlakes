@@ -315,7 +315,6 @@ horizontal_alignment = 1
 
 [node name="PrisonerItemDummy" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/BountyContainer"]
 process_mode = 4
-visible = false
 custom_minimum_size = Vector2(40, 48)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")

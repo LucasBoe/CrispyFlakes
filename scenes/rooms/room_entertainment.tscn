@@ -67,6 +67,6 @@ texture = ExtResource("6_piano")
 script = ExtResource("5_module")
 icon = ExtResource("6_piano")
 module_name = "Piano"
-describtion = "A pianist keeps the whole floor entertained."
+describtion = "keep this floor entertained"
 satisfaction_boost = 0.08
 bought = true

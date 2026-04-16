@@ -9,7 +9,7 @@
 script = ExtResource("1_ad3do")
 packed_scene = ExtResource("1_00vvr")
 room_name = "Stairs"
-room_desc = "Allows people to reach this floor from stairs above / below."
+room_desc = "connects floors"
 room_icon = ExtResource("2_vfoni")
 room_preview = ExtResource("3_s7fj4")
 construction_price = 15

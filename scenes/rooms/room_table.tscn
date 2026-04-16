@@ -35,7 +35,7 @@ script = ExtResource("4_l2ikg")
 icon = ExtResource("5_q16sl")
 price = 5
 module_name = "Small Table"
-describtion = "Can host up to 3 people."
+describtion = "seats 3 guests"
 max_guests = 3
 seat_positions = Array[Vector2]([Vector2(27, 0), Vector2(10, 0), Vector2(37, 0)])
 bought = true
@@ -70,7 +70,7 @@ script = ExtResource("4_l2ikg")
 icon = ExtResource("8_q16sl")
 price = 15
 module_name = "Big Table"
-describtion = "Can host up to 5 people."
+describtion = "seats 5 guests"
 max_guests = 5
 seat_positions = Array[Vector2]([Vector2(8, 0), Vector2(41, 0), Vector2(16, 0), Vector2(24, 0), Vector2(32, 0)])
 
