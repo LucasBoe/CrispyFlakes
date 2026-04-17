@@ -47,7 +47,7 @@ func _on_jobs_changed():
 			clone.button_fire.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to fire a Worker.", JobHandler.fire_worker.bind(worker)))
 			clone.show()
 	
-	payment_height_label.text = str("-", JobHandler.payment_total, "$ / D")
+	payment_height_label.text = str("-", JobHandler.payment_total, "$/M")
 
 func _process(delta):
 	payment_progress_bar.value = JobHandler.payment_cycle_progression

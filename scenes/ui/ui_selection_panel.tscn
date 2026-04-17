@@ -180,6 +180,21 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = ">"
 
+[node name="WorkerFightResponseRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ConflictLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/WorkerFightResponseRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "in conflict I"
+
+[node name="ConflictButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/WorkerFightResponseRow"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "[fight]"
+
 [node name="DescribtionLabel" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2

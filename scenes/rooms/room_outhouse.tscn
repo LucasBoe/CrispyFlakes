@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtr2utu3u6oo2"]
+[gd_scene load_steps=8 format=3 uid="uid://dtr2utu3u6oo2"]
 
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_56m3a"]
 [ext_resource type="Script" uid="uid://b1ivckdqe5b31" path="res://scripts/room_outhouse.gd" id="1_h1euw"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_7sxp2"]
 [ext_resource type="Texture2D" uid="uid://bx26803iwlrp3" path="res://assets/sprites/outhouse_sheet.png" id="3_h1euw"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="4_tomup"]
+[ext_resource type="Texture2D" uid="uid://bxolxgmbv3jhu" path="res://assets/sprites/bucket_small.png" id="6_ysmtu"]
+[ext_resource type="Texture2D" uid="uid://qygubqhe2j2" path="res://assets/sprites/bucket_big.png" id="7_ysmtu"]
 
 [node name="Room_Outhouse" type="Node2D"]
 texture_filter = 1
@@ -11,7 +14,7 @@ material = ExtResource("1_56m3a")
 script = ExtResource("1_h1euw")
 
 [node name="Outhouse" type="Sprite2D" parent="."]
-z_index = -200
+z_index = -600
 material = ExtResource("1_56m3a")
 position = Vector2(24, -1)
 texture = ExtResource("3_h1euw")
@@ -24,3 +27,24 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_7sxp2")
+
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Bucket" type="Node2D" parent="ModulesRoot"]
+
+[node name="SmallBucket" type="Node2D" parent="ModulesRoot/Bucket"]
+script = ExtResource("4_tomup")
+icon = ExtResource("6_ysmtu")
+module_name = "Small Bucket"
+describtion = "Needs cleaning after 10 uses."
+max_guests = 10
+bought = true
+
+[node name="BigBucket" type="Node2D" parent="ModulesRoot/Bucket"]
+visible = false
+script = ExtResource("4_tomup")
+icon = ExtResource("7_ysmtu")
+price = 20
+module_name = "Big Bucket"
+describtion = "Needs cleaning after 30 uses."
+max_guests = 30

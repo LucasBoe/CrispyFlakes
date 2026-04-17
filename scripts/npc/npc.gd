@@ -54,7 +54,15 @@ func _exit_tree():
 	_status_icon_texture = null
 
 func is_in_fight_state() -> bool:
-	return Behaviour != null and (Behaviour.behaviour_instance is FightBehaviour or Behaviour.behaviour_instance is StopFightBehaviour)
+	if Behaviour == null:
+		return false
+
+	var behaviour = Behaviour.behaviour_instance
+	if behaviour is FightBehaviour:
+		return true
+	if behaviour is StopFightBehaviour:
+		return (behaviour as StopFightBehaviour).is_actively_fighting()
+	return false
 
 func get_state_icon_entries() -> Array:
 	var entries := []

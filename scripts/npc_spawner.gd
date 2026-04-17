@@ -106,14 +106,12 @@ func spawn_new_guest():
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
 	spawned_guest_signal.emit(get_active_guest_count())
 
-	var bouncer_room = Building.query.closest_room_of_type(RoomBouncer, guest.global_position) as RoomBouncer
-	var has_active_bouncer := bouncer_room != null and bouncer_room.has_active_bouncer()
-	if has_active_bouncer:
-		guest.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+	guest.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
+	var bouncer_room = Building.query.closest_room_of_type(RoomBouncer, guest.global_position) as RoomBouncer
 	if randf() < 0.3:
 		guest.force_behaviour(ArriveOnHorseBehaviour)
-	elif has_active_bouncer:
+	elif bouncer_room != null:
 		guest.force_behaviour(ArriveThroughBouncerBehaviour)
 
 	return guest

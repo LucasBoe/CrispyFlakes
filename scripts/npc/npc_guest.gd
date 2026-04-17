@@ -95,8 +95,11 @@ func get_next_behaviour():
 
 	if Needs.drunkenness.strength > randf():
 		return PukeBehaviour
+		
+	if Needs.drunkenness.strength / 2 > randf():
+		return KnockedOutBehaviour
 
-	if Needs.drunkenness.strength > randf():
+	if (Needs.drunkenness.strength / 2) > randf():
 		return FightBehaviour
 
 	if (1.0 - Needs.Energy.strength) > randf():

@@ -111,7 +111,7 @@ func count_rooms_by_data(data: RoomData):
 	return count
 
 func round_room_index_from_global_position(global_pos: Vector2):
-	var x = floor((global_pos.x - 24) / 48)
+	var x = floor(global_pos.x / 48)
 	var y = floor(global_pos.y / -48)
 	return Vector2i(x, y)
 

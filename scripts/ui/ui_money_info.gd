@@ -17,7 +17,7 @@ func _on_room_changed(_room = null):
 	
 func _on_jobs_changed():
 	var worker_payments_daily = JobHandler.payment_total
-	minus_label.text = str("-",roundi(worker_payments_daily), "/D")
+	minus_label.text = str("-",roundi(worker_payments_daily), "/M")
 	
 func _on_money_changed():
 	var total_money = ResourceHandler.resources[Enum.Resources.MONEY]
@@ -28,7 +28,7 @@ func _on_money_changed():
 			continue
 		added_money += change
 
-	plus_label.text = str("+", roundi(added_money), "/D")
+	plus_label.text = str("+", roundi(added_money), "/M")
 	var cap = MoneyHandler.total_capacity()
 	count_label.text = str(roundi(total_money), "/", roundi(cap))
 	

@@ -41,7 +41,7 @@ func _input(event):
 		return
 
 	var mouse = get_global_mouse_position()
-	_raw_location = Building.round_room_index_from_global_position(mouse + Vector2(24,0))
+	_raw_location = Building.round_room_index_from_global_position(mouse)
 
 	# Outdoor rooms always use the raw mouse location (custom_placement_check enforces y==0).
 	# Basement rooms (y < 0) use raw location — adjacency rules apply instead of gravity.

@@ -11,6 +11,9 @@ class_name UISelectionPanel
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
 @onready var hire_guest_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HireGuestButton
 @onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
+@onready var worker_fight_response_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/WorkerFightResponseRow
+@onready var worker_conflict_label: Label = $MarginContainer/MarginContainer/VBoxContainer/WorkerFightResponseRow/ConflictLabel
+@onready var worker_conflict_button: Button = $MarginContainer/MarginContainer/VBoxContainer/WorkerFightResponseRow/ConflictButton
 @onready var bounty_item_container = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer
 @onready var bounty_item_dummy = $MarginContainer/MarginContainer/VBoxContainer/BountyContainer/MarginContainer
 @onready var storage_filter_container = $MarginContainer/MarginContainer/VBoxContainer/StorageFilterContainer
@@ -65,6 +68,7 @@ func _ready():
 	storage_filter_button_dummy.hide()
 	hire_guest_button.hide()
 	arrest_button.hide()
+	worker_fight_response_row.hide()
 
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
@@ -185,13 +189,15 @@ func _show_status_row(text: String, color: Color, link_target = null, link_text:
 	_status_row_instance = instance
 
 func _show_for_worker(worker: NPCWorker):
-	header_label.text = "Worker"
-	_npc_base_description = str(worker.character_name, "\nThis worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
+	header_label.text = worker.character_name
+	_npc_base_description = str("This worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	room_delete_button.hide()
 	hire_guest_button.hide()
 	arrest_button.hide()
+	worker_fight_response_row.show()
+	_bind_worker_fight_response(worker)
 	room_upgrade_hbox.get_parent().hide()
 	needs = null
 	var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
@@ -212,6 +218,7 @@ func _show_for_guest(guest: NPCGuest):
 	_bind_guest_hire_button(guest)
 	arrest_button.show()
 	_bind_guest_arrest_button(guest)
+	worker_fight_response_row.hide()
 
 	needs = guest.Needs
 	for need : Need in needs.needs:
@@ -230,6 +237,7 @@ func _show_for_room(room: RoomBase):
 
 	hire_guest_button.hide()
 	arrest_button.hide()
+	worker_fight_response_row.hide()
 	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
 	room_delete_button.disabled = false
 
@@ -259,7 +267,7 @@ func _show_for_room(room: RoomBase):
 
 	if room is RoomOuthouse:
 		var outhouse := room as RoomOuthouse
-		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, RoomOuthouse.MAX_USES]
+		var fill_text = "Outhouse (%d/%d)" % [outhouse.uses, outhouse.get_max_uses()]
 		if outhouse.is_full() and not room.worker:
 			var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
 			_show_status_row("Awaiting Cleaner" if has_cleaners else "No Cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
@@ -520,7 +528,26 @@ func _bind_guest_arrest_button(guest: NPCGuest):
 		if not is_instance_valid(guest):
 			return
 		guest.pending_arrest = not guest.pending_arrest
+		if guest.pending_arrest:
+			FightHandler.try_start_auto_arrest(guest)
 		_bind_guest_arrest_button(guest)
+	)
+
+func _bind_worker_fight_response(worker: NPCWorker) -> void:
+	if not is_instance_valid(worker):
+		worker_fight_response_row.hide()
+		return
+
+	Util.disconnect_all_pressed(worker_conflict_button)
+
+	var is_fight := worker.saloon_fight_response == NPCWorker.SaloonFightResponse.FIGHT
+	worker_conflict_label.text = "in conflict I"
+	worker_conflict_button.text = "fight" if is_fight else "flee"
+	worker_conflict_button.pressed.connect(func():
+		if not is_instance_valid(worker):
+			return
+		worker.saloon_fight_response = NPCWorker.SaloonFightResponse.FLEE if is_fight else NPCWorker.SaloonFightResponse.FIGHT
+		_bind_worker_fight_response(worker)
 	)
 
 func _bind_guest_hire_button(guest: NPCGuest):
@@ -586,6 +613,7 @@ func _process(delta):
 
 	if target is NPCWorker:
 		var worker := target as NPCWorker
+		_bind_worker_fight_response(worker)
 		var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
 		if is_instance_valid(_status_row_instance):
 			var lbl := _status_row_instance.get_node("HBoxContainer/Label") as Label

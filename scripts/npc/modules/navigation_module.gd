@@ -11,6 +11,12 @@ var target_final
 var has_target = false
 var is_moving = false
 var _stair_waypoints_remaining: int = 0
+var _is_inside: bool = false
+var _last_known_room: RoomBase = null
+var _has_enter_gate: bool = false
+var _enter_gate_position: Vector2 = Vector2.ZERO
+var _has_leave_gate: bool = false
+var _leave_gate_position: Vector2 = Vector2.ZERO
 
 const DEFAULT_MOVE_SPEED = 32
 var move_speed = DEFAULT_MOVE_SPEED
@@ -28,6 +34,7 @@ func _process(delta):
 	npc.Animator.direction = Vector2.ZERO
 
 	if global_position.distance_to(target_path[0]) < 1:
+		_on_waypoint_arrived(target_path[0])
 		target_path.remove_at(0)
 		if _stair_waypoints_remaining > 0:
 			_stair_waypoints_remaining -= 1
@@ -38,6 +45,7 @@ func _process(delta):
 
 	npc.Animator.direction = target_path[0] - npc.global_position
 	npc.global_position = npc.global_position.move_toward(target_path[0], delta * move_speed)
+	_check_inside_outside_transition()
 
 
 func stop_navigation():
@@ -45,6 +53,11 @@ func stop_navigation():
 	has_target = false
 	is_moving = false
 	_stair_waypoints_remaining = 0
+	if _has_enter_gate:
+		_has_enter_gate = false
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	_has_leave_gate = false
+	_check_inside_outside_transition()
 
 func is_on_stair_path() -> bool:
 	return _stair_waypoints_remaining > 0
@@ -126,6 +139,8 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 func refresh_target_path() -> void:
 	target_path.clear()
 	_stair_waypoints_remaining = 0
+	_has_enter_gate = false
+	_has_leave_gate = false
 
 	var final_target: Vector2
 	#if target_final is NPC:
@@ -149,6 +164,32 @@ func refresh_target_path() -> void:
 	if start_room == null or goal_room == null:
 		_fail_target_path()
 		return
+
+	if npc is NPCGuest and not _is_inside and not _is_outside_target(final_target):
+		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
+		if bouncer_room != null:
+			var path_from_bouncer: Array[RoomBase] = _find_room_path(bouncer_room, goal_room)
+			if not path_from_bouncer.is_empty():
+				target_path.append(bouncer_room.get_center_floor_position())
+				for i in range(path_from_bouncer.size() - 1):
+					_append_transition_to_target_path(path_from_bouncer[i], path_from_bouncer[i + 1], i == path_from_bouncer.size() - 2)
+				target_path.append(final_target)
+				_has_enter_gate = true
+				_enter_gate_position = bouncer_room.get_center_floor_position()
+				return
+
+	if npc is NPCGuest and _is_inside and _is_outside_target(final_target):
+		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
+		if bouncer_room != null:
+			var path_to_bouncer: Array[RoomBase] = _find_room_path(start_room, bouncer_room)
+			if not path_to_bouncer.is_empty():
+				for i in range(path_to_bouncer.size() - 1):
+					_append_transition_to_target_path(path_to_bouncer[i], path_to_bouncer[i + 1], i == path_to_bouncer.size() - 2)
+				target_path.append(bouncer_room.get_center_floor_position())
+				target_path.append(final_target)
+				_has_leave_gate = true
+				_leave_gate_position = bouncer_room.get_center_floor_position()
+				return
 
 	var room_path := _find_room_path(start_room, goal_room)
 	if room_path.is_empty():
@@ -300,6 +341,39 @@ func _draw_room_path(path: Array[RoomBase], valid: bool, start_pos: Vector2, goa
 		return
 	for i in range(path.size() - 1):
 		DebugDraw2D.line(path[i].get_center_position(), path[i + 1].get_center_position(), color)
+
+
+func _on_waypoint_arrived(pos: Vector2) -> void:
+	if _has_enter_gate and pos.distance_to(_enter_gate_position) < 2.0:
+		_has_enter_gate = false
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	if _has_leave_gate and pos.distance_to(_leave_gate_position) < 2.0:
+		_has_leave_gate = false
+		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+
+
+func _is_outside_target(pos: Vector2) -> bool:
+	var idx: Vector2i = Building.round_room_index_from_global_position(pos)
+	var room: RoomBase = Building.get_room_from_index(idx) as RoomBase
+	return room == null or room.is_outside_room
+
+
+func _check_inside_outside_transition() -> void:
+	var idx: Vector2i = Building.round_room_index_from_global_position(global_position)
+	var current_room: RoomBase = Building.get_room_from_index(idx) as RoomBase
+	if current_room == _last_known_room:
+		return
+	var prev_room: RoomBase = _last_known_room
+	_last_known_room = current_room
+	var entering: bool = (prev_room == null or prev_room.is_outside_room) and (current_room != null and not current_room.is_outside_room)
+	var leaving: bool = (prev_room != null and not prev_room.is_outside_room) and (current_room == null or current_room.is_outside_room)
+	if entering:
+		_is_inside = true
+		if not _has_enter_gate:
+			npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	elif leaving:
+		_is_inside = false
+		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
 
 func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:

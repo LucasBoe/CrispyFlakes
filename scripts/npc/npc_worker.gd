@@ -1,6 +1,11 @@
 extends NPC
 class_name NPCWorker
 
+enum SaloonFightResponse {
+	FIGHT,
+	FLEE,
+}
+
 var current_job = Enum.Jobs.IDLE
 var current_job_room = null
 var pick_up_origin
@@ -12,6 +17,7 @@ var new_room_highlight = null
 
 var salary = 6
 var character_name = ""
+var saloon_fight_response: SaloonFightResponse = SaloonFightResponse.FIGHT
 
 const possible_names = [
 "Wyatt McGraw",
@@ -162,6 +168,7 @@ static var picked_up_npc : NPC = null
 static var was_dragging = false
 
 const DRAG_THRESHOLD = 8.0
+const MELEE_CONFLICT_ENGAGE_RANGE := 24.0
 var _drag_pending = false
 var _drag_start_mouse = Vector2.ZERO
 
@@ -314,11 +321,73 @@ func try_arrest_in_room(room: RoomBase) -> bool:
 	stop.arrest_room = prison
 	return true
 
+func get_conflict_engage_range() -> float:
+	return MELEE_CONFLICT_ENGAGE_RANGE
+
+func is_within_conflict_engage_range(target_position: Vector2) -> bool:
+	return global_position.distance_to(target_position) <= get_conflict_engage_range()
+
+func should_auto_join_saloon_fight(room: RoomBase, target_position: Vector2 = Vector2.INF) -> bool:
+	if saloon_fight_response != SaloonFightResponse.FIGHT:
+		return false
+	if room == null or current_job_room != room:
+		return false
+	if picked_up_npc == self:
+		return false
+
+	var behaviour = Behaviour.behaviour_instance
+	if behaviour is StopFightBehaviour or behaviour is FightBehaviour or behaviour is RespondToArrestBehaviour:
+		return false
+	if target_position != Vector2.INF and not is_within_conflict_engage_range(target_position):
+		return false
+	return true
+
+func should_auto_respond_to_arrest(room: RoomBase) -> bool:
+	if saloon_fight_response != SaloonFightResponse.FIGHT:
+		return false
+	if room == null or current_job_room != room:
+		return false
+	if picked_up_npc == self:
+		return false
+
+	var behaviour = Behaviour.behaviour_instance
+	return not (behaviour is StopFightBehaviour or behaviour is FightBehaviour)
+
+func begin_auto_arrest_response(target: NPCGuest) -> bool:
+	if target == null or not is_instance_valid(target):
+		return false
+
+	var room := Building.query.closest_room_of_type(RoomBase, target.global_position) as RoomBase
+	if not should_auto_respond_to_arrest(room):
+		return false
+
+	var behaviour = Behaviour.behaviour_instance
+	if behaviour is RespondToArrestBehaviour:
+		(behaviour as RespondToArrestBehaviour).arrest_target = target
+		return true
+
+	var respond := force_behaviour(RespondToArrestBehaviour) as RespondToArrestBehaviour
+	respond.arrest_target = target
+	return true
+
+func resume_job_behaviour() -> void:
+	Behaviour.set_behaviour_from_job(current_job)
+
+func auto_join_saloon_fight(fight: Fight, arrest_target: NPCGuest = null, arrest_room: RoomPrison = null, target_position: Vector2 = Vector2.INF) -> bool:
+	if fight == null or not should_auto_join_saloon_fight(fight.room, target_position):
+		return false
+
+	var stop := force_behaviour(StopFightBehaviour) as StopFightBehaviour
+	stop.fight = fight
+	stop.arrest_target = arrest_target
+	stop.arrest_room = arrest_room
+	return true
+
 func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
 	for guest: NPCGuest in Global.NPCSpawner.guests:
 		if not guest.pending_arrest:
 			continue
-		var guest_room = Building.query.room_at_position(guest.global_position) as RoomBase
+		var guest_room = Building.query.closest_room_of_type(RoomBase, guest.global_position) as RoomBase
 		if guest_room == room:
 			return guest
 	return null
