@@ -1,31 +1,80 @@
-[gd_scene load_steps=5 format=3 uid="uid://bkvx7b7jvvpuw"]
+[gd_scene load_steps=9 format=3 uid="uid://bkvx7b7jvvpuw"]
 
 [ext_resource type="Script" uid="uid://bhorbtt0y1qwj" path="res://scripts/room_horse_post.gd" id="1_hpost"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="2_gt1gr"]
 [ext_resource type="Texture2D" uid="uid://b6rjcdrtjxyot" path="res://assets/sprites/horse_pole.png" id="3_gt1gr"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_hpost"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="4_module"]
+[ext_resource type="Texture2D" uid="uid://dksaqrpf4lcv" path="res://assets/sprites/stable.png" id="5_stable"]
+[ext_resource type="Texture2D" uid="uid://bi7hj6rebg8gs" path="res://assets/sprites/ui/module_icon_fence.png" id="6_fence_icon"]
+[ext_resource type="Texture2D" uid="uid://dejsnku83yplf" path="res://assets/sprites/ui/module_icon_stable.png" id="7_stable_icon"]
 
 [node name="Room_HorsePost" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_hpost")
 
-[node name="Pole" type="Sprite2D" parent="."]
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Structure" type="Node2D" parent="ModulesRoot"]
+
+[node name="Fence" type="Node2D" parent="ModulesRoot/Structure"]
+visible = false
+script = ExtResource("4_module")
+icon = ExtResource("6_fence_icon")
+price = 20
+module_name = "Fence"
+describtion = "Adds a fenced hitching rail for one more horse."
+bought = true
+
+[node name="Pole" type="Sprite2D" parent="ModulesRoot/Structure/Fence"]
 z_index = -100
 material = ExtResource("2_gt1gr")
 position = Vector2(24, -8)
 texture = ExtResource("3_gt1gr")
 offset = Vector2(0.5, -0.5)
 
-[node name="Slots" type="Node2D" parent="."]
+[node name="Slots" type="Node2D" parent="ModulesRoot/Structure/Fence"]
 
-[node name="SlotLeft" type="Node2D" parent="Slots"]
+[node name="SlotLeft" type="Node2D" parent="ModulesRoot/Structure/Fence/Slots"]
 position = Vector2(14, 0)
 
-[node name="SlotCenter" type="Node2D" parent="Slots"]
+[node name="SlotCenter" type="Node2D" parent="ModulesRoot/Structure/Fence/Slots"]
 position = Vector2(24, 0)
 
-[node name="SlotRight" type="Node2D" parent="Slots"]
+[node name="SlotRight" type="Node2D" parent="ModulesRoot/Structure/Fence/Slots"]
 position = Vector2(34, 0)
+
+[node name="Stable" type="Node2D" parent="ModulesRoot/Structure"]
+visible = false
+script = ExtResource("4_module")
+icon = ExtResource("7_stable_icon")
+price = 40
+module_name = "Stable"
+describtion = "Shelter up to five guest horses."
+
+[node name="StableSprite" type="Sprite2D" parent="ModulesRoot/Structure/Stable"]
+z_index = -100
+material = ExtResource("2_gt1gr")
+position = Vector2(24, 0)
+texture = ExtResource("5_stable")
+offset = Vector2(0.5, -21)
+
+[node name="Slots" type="Node2D" parent="ModulesRoot/Structure/Stable"]
+
+[node name="SlotFarLeft" type="Node2D" parent="ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(6, 0)
+
+[node name="SlotLeft" type="Node2D" parent="ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(14, 0)
+
+[node name="SlotCenter" type="Node2D" parent="ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(24, 0)
+
+[node name="SlotRight" type="Node2D" parent="ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(34, 0)
+
+[node name="SlotFarRight" type="Node2D" parent="ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(42, 0)
 
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false
