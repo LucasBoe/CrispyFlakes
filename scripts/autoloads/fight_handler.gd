@@ -31,6 +31,26 @@ func create_arrest_fight(guest: NPC, _worker: NPC) -> Fight:
 	_dispatch_saloon_workers(fight, guest)
 	return fight
 
+func create_robbery_fight(npc: NPC, room: RoomBase) -> Fight:
+	var existing = get_fight_for_room(room)
+	if existing != null:
+		if not existing.participants.has(npc):
+			existing.participants.append(npc)
+		return existing
+
+	var fight = Fight.new()
+	active_fights.append(fight)
+	fight.start_fight(room)
+
+	var particle_scene = fight_particle_scene.instantiate() as GPUParticles2D
+	add_child(particle_scene)
+	particle_scene.global_position = room.get_center_position()
+	fight_particles[fight] = particle_scene
+
+	fight.participants.append(npc)
+	_dispatch_saloon_workers(fight)
+	return fight
+
 func get_fight_for_room(room : RoomBase):
 	for a in active_fights:
 		if a.room == room:

@@ -62,6 +62,14 @@ func spend(amount: float) -> void:
 func get_money_at(location: Vector2i) -> float:
 	return location_money.get(location, 0.0)
 
+func steal(location: Vector2i) -> int:
+	var amount: int = int(location_money.get(location, 0.0))
+	if amount <= 0:
+		return 0
+	location_money[location] = 0.0
+	changed.emit()
+	return amount
+
 # Returns the location with the most stored money, optionally excluding one location.
 func richest_location(exclude: Vector2i = Vector2i(-9999, -9999)) -> Vector2i:
 	var best_loc = Vector2i(-9999, -9999)

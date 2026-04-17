@@ -2,10 +2,12 @@ extends NPC
 class_name NPCGuest
 
 const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
+const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 
 var manual_behaviour = false
 var pending_arrest: bool = false
 var is_known_fugitive: bool = false
+var is_robber: bool = false
 
 var needs_to_pee: float = 0.0
 const PEE_RATE: float = 0.01
@@ -21,6 +23,7 @@ var is_dirty = true
 func init(custom_look = null):
 	needs_to_pee = randf()
 	is_known_fugitive = false
+	is_robber = randf() < 0.1
 	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()
@@ -89,6 +92,9 @@ func get_next_behaviour():
 
 	if pending_arrest:
 		return IdleBehaviour
+
+	if is_robber:
+		return RobBehaviour
 
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
 		return NeedLeaveBehaviour

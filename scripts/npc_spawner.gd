@@ -169,6 +169,8 @@ func console_spawn_guest(adj):
 			guest.Needs.drunkenness.strength = .5
 		elif adj == "horse":
 			guest.force_behaviour(ArriveOnHorseBehaviour)
+		elif adj == "robber":
+			guest.is_robber = true
 
 func console_spawn_guests(amount, adj):
 	print("spawn_guests", amount)
