@@ -108,11 +108,8 @@ func spawn_new_guest():
 
 	guest.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
-	var bouncer_room = Building.query.closest_room_of_type(RoomBouncer, guest.global_position) as RoomBouncer
 	if randf() < 0.3:
 		guest.force_behaviour(ArriveOnHorseBehaviour)
-	elif bouncer_room != null:
-		guest.force_behaviour(ArriveThroughBouncerBehaviour)
 
 	return guest
 

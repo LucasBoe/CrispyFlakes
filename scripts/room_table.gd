@@ -48,7 +48,7 @@ func sit(guest : NPC):
 			break
 
 	guest.Animator.set_sitting(true)
-	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 
 	show_guest_count_notification()
 

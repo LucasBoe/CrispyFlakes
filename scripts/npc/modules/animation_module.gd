@@ -159,6 +159,7 @@ func knocked_out_tween():
 
 func set_z(z : Enum.ZLayer):
 	z_index = z
+	#UiNotifications.create_notification_dynamic(Enum.ZLayer.find_key(z), get_parent() as Node2D, Vector2(0, -48), null, Color.SADDLE_BROWN, 1.5)
 
 class TweenTargetData:
 	@export var position : Vector2

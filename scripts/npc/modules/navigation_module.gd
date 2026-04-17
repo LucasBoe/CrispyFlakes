@@ -347,9 +347,29 @@ func _on_waypoint_arrived(pos: Vector2) -> void:
 	if _has_enter_gate and pos.distance_to(_enter_gate_position) < 2.0:
 		_has_enter_gate = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+		_try_frisk_at_bouncer()
 	if _has_leave_gate and pos.distance_to(_leave_gate_position) < 2.0:
 		_has_leave_gate = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+
+
+func _try_frisk_at_bouncer() -> void:
+	if not npc is NPCGuest:
+		return
+	var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
+	if bouncer_room == null or not bouncer_room.has_active_bouncer():
+		return
+	var bounty = BountyHandler.get_official_bounty_for(npc)
+	if bounty == null:
+		return
+	var best_intelligence := 0.0
+	for bouncer in bouncer_room.assigned_bouncers:
+		if is_instance_valid(bouncer):
+			best_intelligence = maxf(best_intelligence, bouncer.intelligence)
+	if best_intelligence == 0.0:
+		return
+	if randf() < best_intelligence:
+		(npc as NPCGuest).is_known_fugitive = true
 
 
 func _is_outside_target(pos: Vector2) -> bool:

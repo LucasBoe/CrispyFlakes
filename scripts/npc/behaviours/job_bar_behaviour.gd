@@ -43,7 +43,7 @@ func loop():
 
 		else:
 
-			npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+			npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 			await move(bar.get_center_floor_position())
 
 			if bar.drink_requests.size() > 0:
@@ -60,7 +60,8 @@ func loop():
 				await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
-	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	if bar != null:
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	ocupied_bars.erase(bar)
 	if is_instance_valid(bar):
 		bar.worker = null

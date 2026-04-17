@@ -50,12 +50,6 @@ func loop():
 	add_satisfaction(0.3)
 
 func _pee_outside() -> void:
-	var bouncer_room := get_closest_room_of_type(RoomBouncer) as RoomBouncer
-	if bouncer_room != null:
-		_narrative = ["Stepping outside...", "Heading for the exit...", "Slipping out..."].pick_random()
-		await move(bouncer_room.get_center_floor_position())
-		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
-
 	_narrative = ["Finding a spot outside...", "Looking for some privacy...", "Sneaking behind the building..."].pick_random()
 	var npc_grid_x = Building.round_room_index_from_global_position(npc.global_position).x
 	var grid_offset = -1
@@ -70,7 +64,3 @@ func _pee_outside() -> void:
 	npc.Animator.is_peeing = false
 	PuddleHandler.create(npc.global_position, PuddleHandler.Type.PEE)
 	npc.needs_to_pee = 0.0
-
-	if bouncer_room != null and is_instance_valid(bouncer_room):
-		await move(bouncer_room.get_center_floor_position())
-		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)

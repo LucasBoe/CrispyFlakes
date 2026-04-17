@@ -33,7 +33,7 @@ func loop():
 	_narrative = ["Sleeping...", "Out like a light...", "Snoring away..."].pick_random()
 	bed.occupy(npc)
 	npc.Animator.set_sleeping(true)
-	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	npc.global_position = bed.get_sleep_position_for(npc)
 
 	await progress(RoomBed.SLEEP_DURATION)
@@ -57,7 +57,7 @@ func _find_available_bed() -> RoomBed:
 	return null
 
 func stop_loop() -> BehaviourSaveData:
-	if is_instance_valid(npc):
+	if is_instance_valid(npc) and npc.Animator.is_sleeping:
 		npc.Animator.set_sleeping(false)
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	if is_instance_valid(bed) and npc in bed.current_guests:

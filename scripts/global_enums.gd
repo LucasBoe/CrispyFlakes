@@ -89,14 +89,9 @@ static func job_to_behaviour(job : Jobs):
 
 enum ZLayer {
 	NPC_OUTSIDE = -500,
-	NPC_BEHIND_ROOM_DEEP = -150,
-	NPC_BEHIND_ROOM_CONTENT = -50,
-	ROOM_CONTENT_BACK = -10,
-	ROOM_CONTENT_DEFAULT = 0,
-	ROOM_CONTENT_FRONT = 10,
+	NPC_FAR_BACK = -150,
+	NPC_BEHIND_CONTENT = -50,
 	NPC_DEFAULT = 0,
-	PUDDLE = 100,
-	DEBUG_OVERLAY = 1000,
 }
 
 enum RequestStatus {

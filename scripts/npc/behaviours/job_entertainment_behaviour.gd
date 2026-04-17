@@ -17,7 +17,7 @@ func loop():
 	var pos = (room.get_center_floor_position() + room.global_position) / 2.0
 	
 	await move(pos)
-	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_ROOM_CONTENT)
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	_piano_sound = SoundPlayer.play_piano_loop(room.global_position)
 
 	while true:
@@ -44,7 +44,8 @@ func stop_loop() -> BehaviourSaveData:
 	if is_instance_valid(_piano_sound):
 		_piano_sound.queue_free()
 		_piano_sound = null
-	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	if room != null:
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	occupied_rooms.erase(room)
 	if is_instance_valid(room):
 		room.worker = null

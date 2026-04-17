@@ -13,10 +13,5 @@ func loop():
 	if npc is NPCGuest:
 		Global.NPCSpawner.on_guest_destroy(npc)
 
-	var bouncer_room := get_closest_room_of_type(RoomBouncer) as RoomBouncer
-	if bouncer_room != null:
-		await move(bouncer_room.get_center_floor_position())
-		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
-
 	await move(Global.LEAVE_POSITION)
 	npc.destroy()
