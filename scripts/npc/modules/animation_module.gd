@@ -56,7 +56,7 @@ func set_sleeping(value : bool):
 func _update_texture():
 	if is_riding:
 		texture = TEX_RIDE
-	elif npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
+	elif npc.is_in_fight_state():
 		texture = TEX_FIGHT
 	elif is_sleeping:
 		texture = TEX_STAND
@@ -75,7 +75,7 @@ func _process(_delta):
 
 	var target = null
 
-	if npc.Behaviour.behaviour_instance is FightBehaviour or npc.Behaviour.behaviour_instance is StopFightBehaviour:
+	if npc.is_in_fight_state():
 		target = fight_tween(time_in_seconds)
 	elif is_brooming:
 		target = broom_tween(time_in_seconds)

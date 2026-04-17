@@ -324,6 +324,12 @@ func try_arrest_in_room(room: RoomBase) -> bool:
 func get_conflict_engage_range() -> float:
 	return MELEE_CONFLICT_ENGAGE_RANGE
 
+func get_current_room() -> RoomBase:
+	var exact := Building.query.room_at_position(global_position) as RoomBase
+	if exact != null:
+		return exact
+	return Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
+
 func is_within_conflict_engage_range(target_position: Vector2) -> bool:
 	return global_position.distance_to(target_position) <= get_conflict_engage_range()
 
@@ -333,6 +339,10 @@ func should_auto_join_saloon_fight(room: RoomBase, target_position: Vector2 = Ve
 	if room == null or current_job_room != room:
 		return false
 	if picked_up_npc == self:
+		return false
+
+	var current_room := get_current_room()
+	if current_room != null and current_room.is_outside_room != room.is_outside_room:
 		return false
 
 	var behaviour = Behaviour.behaviour_instance
@@ -350,6 +360,10 @@ func should_auto_respond_to_arrest(room: RoomBase) -> bool:
 	if picked_up_npc == self:
 		return false
 
+	var current_room := get_current_room()
+	if current_room != null and current_room.is_outside_room != room.is_outside_room:
+		return false
+
 	var behaviour = Behaviour.behaviour_instance
 	return not (behaviour is StopFightBehaviour or behaviour is FightBehaviour)
 
@@ -357,7 +371,7 @@ func begin_auto_arrest_response(target: NPCGuest) -> bool:
 	if target == null or not is_instance_valid(target):
 		return false
 
-	var room := Building.query.closest_room_of_type(RoomBase, target.global_position) as RoomBase
+	var room := FightHandler._get_actor_room(target)
 	if not should_auto_respond_to_arrest(room):
 		return false
 
@@ -387,7 +401,7 @@ func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
 	for guest: NPCGuest in Global.NPCSpawner.guests:
 		if not guest.pending_arrest:
 			continue
-		var guest_room = Building.query.closest_room_of_type(RoomBase, guest.global_position) as RoomBase
+		var guest_room = FightHandler._get_actor_room(guest)
 		if guest_room == room:
 			return guest
 	return null

@@ -9,13 +9,18 @@ var npc_health_bars = {}  # NPC -> instance_info
 
 func get_or_create_fight(npc : NPC) -> Fight:
 	var fight = null
+	var created := false
 
 	if active_fights.size() > 0:
 		fight = active_fights[0]
 	else:
 		fight = _create_fight(npc.global_position)
+		created = true
 
-	fight.participants.append(npc)
+	if not fight.participants.has(npc):
+		fight.participants.append(npc)
+	if created:
+		_dispatch_saloon_workers(fight)
 	return fight
 
 func create_arrest_fight(guest: NPC, _worker: NPC) -> Fight:
@@ -23,6 +28,7 @@ func create_arrest_fight(guest: NPC, _worker: NPC) -> Fight:
 	fight.is_arrest_fight = true
 	fight.participants.append(guest)
 	# worker is appended by StopFightBehaviour when it starts
+	_dispatch_saloon_workers(fight, guest)
 	return fight
 
 func get_fight_for_room(room : RoomBase):
@@ -43,6 +49,103 @@ func _create_fight(position):
 	fight_particles[fight] = particle_scene
 
 	return fight
+
+func try_start_auto_arrest(guest: NPCGuest, initiating_worker: NPCWorker = null) -> bool:
+	if guest == null or not is_instance_valid(guest):
+		return false
+	if guest.is_in_fight_state():
+		return false
+
+	var room := _get_actor_room(guest)
+	if room == null:
+		return false
+	if get_fight_for_room(room) != null:
+		return false
+
+	var responders: Array = []
+	if is_instance_valid(initiating_worker):
+		if not initiating_worker.should_auto_respond_to_arrest(room):
+			return false
+		if not initiating_worker.is_within_conflict_engage_range(guest.global_position):
+			return false
+		responders.append(initiating_worker)
+
+	for worker: NPCWorker in _get_saloon_workers_for_room(room, guest.global_position):
+		if worker != initiating_worker:
+			responders.append(worker)
+	if responders.is_empty():
+		return false
+
+	var fight = _create_fight(guest.global_position)
+	fight.is_arrest_fight = true
+	fight.participants.append(guest)
+	guest.Behaviour.set_behaviour(FightBehaviour)
+	(guest.Behaviour.behaviour_instance as FightBehaviour).fight = fight
+	_dispatch_saloon_workers(fight, guest, responders)
+	return true
+
+func _dispatch_saloon_workers(fight: Fight, arrest_target: NPCGuest = null, responders: Array = []) -> void:
+	if fight == null or fight.room == null:
+		return
+
+	var engage_position := _get_conflict_engage_position(fight, arrest_target)
+
+	if responders.is_empty():
+		responders = _get_saloon_workers_for_room(fight.room, engage_position)
+	if responders.is_empty():
+		return
+
+	var arrest_room: RoomPrison = null
+	if arrest_target != null:
+		arrest_room = Building.query.closest_room_of_type(RoomPrison, fight.room.get_center_position()) as RoomPrison
+
+	var lead_assigned := arrest_target == null
+	for worker: NPCWorker in responders:
+		if not is_instance_valid(worker):
+			continue
+		if not lead_assigned:
+			lead_assigned = worker.auto_join_saloon_fight(fight, arrest_target, arrest_room, engage_position)
+		else:
+			worker.auto_join_saloon_fight(fight, null, null, engage_position)
+
+func _get_saloon_workers_for_room(room: RoomBase, target_position: Vector2 = Vector2.INF) -> Array:
+	var responders: Array = []
+	if Global.NPCSpawner == null:
+		return responders
+
+	for worker: NPCWorker in Global.NPCSpawner.workers:
+		if is_instance_valid(worker) and worker.should_auto_join_saloon_fight(room, target_position):
+			responders.append(worker)
+	return responders
+
+func _get_saloon_arrest_responders(room: RoomBase) -> Array:
+	var responders: Array = []
+	if Global.NPCSpawner == null:
+		return responders
+
+	for worker: NPCWorker in Global.NPCSpawner.workers:
+		if is_instance_valid(worker) and worker.should_auto_respond_to_arrest(room):
+			responders.append(worker)
+	return responders
+
+func _get_actor_room(actor: Node2D) -> RoomBase:
+	if actor == null or not is_instance_valid(actor):
+		return null
+
+	var exact := Building.query.room_at_position(actor.global_position) as RoomBase
+	if exact != null:
+		return exact
+	return Building.query.closest_room_of_type(RoomBase, actor.global_position) as RoomBase
+
+func _get_conflict_engage_position(fight: Fight, arrest_target: NPCGuest = null) -> Vector2:
+	if arrest_target != null and is_instance_valid(arrest_target):
+		return arrest_target.global_position
+
+	for participant in fight.participants:
+		if is_instance_valid(participant):
+			return participant.global_position
+
+	return fight.room.get_center_position()
 
 func _end_fight(fight):
 	_destroy_particles(fight_particles[fight])
@@ -90,7 +193,14 @@ func _get_valid_participant_positions(fight: Fight) -> Array:
 	return positions
 
 func _process(delta):
+	_update_auto_arrests()
+
 	for f : Fight in active_fights:
+		if f.is_arrest_fight:
+			var arrest_target := _get_arrest_target_for_fight(f)
+			if arrest_target != null:
+				_dispatch_saloon_workers(f, arrest_target)
+
 		var arrived_workers = []
 		var arrived_guests = []
 
@@ -178,3 +288,27 @@ func _process(delta):
 					sum += pos
 				particles.global_position = sum / positions.size()
 				particles.emitting = true
+
+func _update_auto_arrests() -> void:
+	if Global.NPCSpawner == null:
+		return
+
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		if not is_instance_valid(guest) or not guest.pending_arrest:
+			continue
+		if guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+			continue
+		var room := _get_actor_room(guest)
+		if room == null:
+			continue
+		for worker: NPCWorker in _get_saloon_arrest_responders(room):
+			worker.begin_auto_arrest_response(guest)
+
+func _get_arrest_target_for_fight(fight: Fight) -> NPCGuest:
+	if fight == null or not fight.is_arrest_fight:
+		return null
+
+	for participant in fight.participants:
+		if participant is NPCGuest and is_instance_valid(participant):
+			return participant
+	return null

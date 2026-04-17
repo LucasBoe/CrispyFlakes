@@ -32,7 +32,7 @@ func loop():
 		await outhouse.play_close_animation()
 
 		outhouse.user = npc
-		await progress(3)
+		await progress(7)
 
 		if is_instance_valid(outhouse):
 			SoundPlayer.play_outhouse_door(outhouse.global_position)
