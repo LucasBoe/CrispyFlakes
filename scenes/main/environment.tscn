@@ -47,6 +47,7 @@ offset_left = -5120.0
 offset_top = 32.0
 offset_right = 5120.0
 offset_bottom = 5152.0
+mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
 [node name="Sky" type="Sprite2D" parent="."]
@@ -62,6 +63,7 @@ offset_left = -16.0
 offset_top = -2228.0
 offset_right = 16.0
 offset_bottom = -180.0
+mouse_filter = 2
 color = Color(0.274806, 0.476909, 0.669251, 1)
 
 [node name="ColorRect2" type="ColorRect" parent="Sky"]
@@ -70,6 +72,7 @@ offset_left = -16.0
 offset_top = 180.02357
 offset_right = 16.0
 offset_bottom = 2228.0237
+mouse_filter = 2
 color = Color(0.7137255, 0.78431374, 0.83137256, 1)
 
 [node name="CloudHandler" type="Node2D" parent="."]
