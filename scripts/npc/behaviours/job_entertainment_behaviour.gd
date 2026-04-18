@@ -19,6 +19,7 @@ func loop():
 	await move(pos)
 	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	_piano_sound = SoundPlayer.play_piano_loop(room.global_position)
+	room.set_guests_swaying(true)
 
 	while true:
 		var duration := room.get_performance_interval()
@@ -28,7 +29,8 @@ func loop():
 		if not is_instance_valid(room):
 			return
 
-		var boosted_guest_count := room.entertain_floor()
+		room.set_guests_swaying(true)
+		var boosted_guest_count := room.entertain_guests()
 		#if boosted_guest_count > 0:
 			#UiNotifications.create_notification_static(
 				#"+%d mood" % boosted_guest_count,
@@ -48,6 +50,7 @@ func stop_loop() -> BehaviourSaveData:
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	occupied_rooms.erase(room)
 	if is_instance_valid(room):
+		room.set_guests_swaying(false)
 		room.worker = null
 
 	var save = super.stop_loop()

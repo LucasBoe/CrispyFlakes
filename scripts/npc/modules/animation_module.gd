@@ -17,6 +17,8 @@ const FIGHT_MOVE_DISTANCE = 8.0
 const FIGHT_ROTATION = 1.0
 const BROOM_ANIMATION_SPEED = 12.0
 const BROOM_ROTATION_STRENGTH = 0.7
+const SWAY_ANIMATION_SPEED = 12.0
+const SWAY_ROTATION_STRENGTH = 0.12
 
 const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
 const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
@@ -33,6 +35,7 @@ var is_sleeping : bool = false
 var is_brooming : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
+static var should_sway_to_musik = false
 
 func _ready():
 	material = material.duplicate(true)
@@ -74,6 +77,7 @@ func _process(_delta):
 	_update_texture()
 
 	var target = null
+	var is_walking = direction.length() > 0
 
 	if npc.is_in_fight_state():
 		target = fight_tween(time_in_seconds)
@@ -85,10 +89,12 @@ func _process(_delta):
 		target = pee_tween(time_in_seconds)
 	elif is_puking:
 		target = puke_tween(time_in_seconds)
+	elif not is_walking and should_sway_to_musik:
+		target = sway_tween(time_in_seconds - random_instance_offset)
 	else:
 		target = idle_tween(time_in_seconds)
 
-	if direction.length() > 0:
+	if is_walking:
 		target = walk_tween(time_in_seconds)
 
 	var lerp_speed = .2
@@ -152,6 +158,10 @@ func puke_tween(time_in_seconds):
 	# Hunch forward with a heaving bob
 	var bob = abs(sin(time_in_seconds * 5.0)) * 2.0
 	return TweenTargetData.new(Vector2(0, bob), PI / 4.0 * x_orientation, Vector2(x_orientation, 1.0))
+
+func sway_tween(time_in_seconds):
+	var rot = sin(time_in_seconds * SWAY_ANIMATION_SPEED) * SWAY_ROTATION_STRENGTH
+	return TweenTargetData.new(Vector2.ZERO, rot, Vector2(x_orientation, 1.0))
 
 func knocked_out_tween():
 	var x = -1 if is_sleeping else x_orientation

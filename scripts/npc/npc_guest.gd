@@ -23,7 +23,6 @@ var is_dirty = true
 func init(custom_look = null):
 	needs_to_pee = randf()
 	is_known_fugitive = false
-	is_robber = randf() < 0.1
 	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()

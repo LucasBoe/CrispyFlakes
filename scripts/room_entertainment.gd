@@ -55,15 +55,15 @@ func count_guests_in_range() -> int:
 			count += 1
 	return count
 
-func entertain_floor() -> int:
+func set_guests_swaying(value: bool) -> void:
+	AnimationModule.should_sway_to_musik = true
+
+func entertain_guests() -> int:
 	if Global.NPCSpawner == null:
 		return 0
 
 	var boosted_guest_count := 0
 	for guest in Global.NPCSpawner.guests:
-		if not _is_guest_in_range(guest):
-			continue
-
 		guest.add_satisfaction(get_satisfaction_boost())
 		boosted_guest_count += 1
 

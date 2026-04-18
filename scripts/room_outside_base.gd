@@ -5,10 +5,13 @@ var mat : ShaderMaterial
 
 func init_room(_x : int, _y : int):
 	is_outside_room = true
+	_init_outline()
+	super.init_room(_x, _y)
+	
+func _init_outline():
 	var canvas_item = get_child(0) as CanvasItem
 	mat = canvas_item.material.duplicate(true)
 	canvas_item.material = mat
-	super.init_room(_x, _y)
 	
 func set_outline(state):
 	if mat == null:
