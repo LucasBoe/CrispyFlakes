@@ -89,7 +89,13 @@ func spawn_new_guest():
 	var guest = guestScene.instantiate() as NPCGuest
 	guest.global_position = Vector2(-320,0)
 	add_child(guest)
-	
+
+	#robber stuff
+	if guests.size() > 10 and workers.size() > 2:
+		if randf() < 0.1:
+			guest.is_robber = true
+
+	# bounty stuff
 	var available_bounties = BountyHandler.get_available_bounties()
 	var active_bounty_count = BountyHandler.active_looks.size()
 	var bounty_chance = 0.3 / (1.0 + active_bounty_count)

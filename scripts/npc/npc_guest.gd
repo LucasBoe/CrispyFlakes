@@ -11,12 +11,16 @@ var is_robber: bool = false
 
 var needs_to_pee: float = 0.0
 const PEE_RATE: float = 0.01
+const MAX_STAY_DURATION = 20.0
 
 var _arrest_highlight = null
 var _arrest_highlight_room = null
 
 var Needs : NeedsModule
 var is_dirty = true
+
+const MAX_SATISFACTION_LOG = 15
+var satisfaction_log: Array = []
 
 @onready var dirt = $AnimationModule/Dirt
 
@@ -95,16 +99,16 @@ func get_next_behaviour():
 	if is_robber:
 		return RobBehaviour
 
-	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > 10.0:
+	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
 		return NeedLeaveBehaviour
 
 	if Needs.drunkenness.strength > randf():
 		return PukeBehaviour
 		
-	if Needs.drunkenness.strength / 2 > randf():
+	if Needs.drunkenness.strength / 4 > randf():
 		return KnockedOutBehaviour
 
-	if (Needs.drunkenness.strength / 2) > randf():
+	if (Needs.drunkenness.strength / 4) > randf():
 		return FightBehaviour
 
 	if (1.0 - Needs.Energy.strength) > randf():
@@ -145,10 +149,15 @@ func try_drop_dirt():
 func clean():
 	is_dirty = false
 	Tint.remove_tint_for(self)
-	add_satisfaction(0.3)
+	add_satisfaction(0.3, "Cleaned")
 
-func add_satisfaction(amount: float):
+func add_satisfaction(amount: float, reason: String = ""):
 	Needs.satisfaction.strength += amount
+	satisfaction_log.append({amount = amount, reason = reason})
+	if satisfaction_log.size() > MAX_SATISFACTION_LOG:
+		satisfaction_log.pop_front()
+	if amount <= 0:
+		return
 	if amount > 0.5:
 		notify(UiNotifications.ICON_PLUS_3)
 	elif amount > 0.25:

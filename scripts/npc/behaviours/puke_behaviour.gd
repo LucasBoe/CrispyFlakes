@@ -10,5 +10,3 @@ func loop():
 	SoundPlayer.play_puke(npc.global_position)
 	PuddleHandler.create(npc.global_position, PuddleHandler.Type.PUKE)
 	npc.Needs.drunkenness.strength -= 0.2
-	npc.Needs.satisfaction.strength -= 0.1
-	npc.notify(UiNotifications.ICON_MINUS_2)

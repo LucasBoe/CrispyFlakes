@@ -206,17 +206,18 @@ func store_item(item: Item):
 				npc.Item.drop_current()
 		return
 
-	var storage = get_closest_room_of_type(RoomStorage)
-	if storage != null:
+	var source_room = Building.query.room_at_position(npc.global_position) as RoomBase
+	for storage: RoomStorage in get_all_rooms_of_type_ordered_by_distance(RoomStorage):
+		if not storage.can_receive(item):
+			continue
+
 		await move(storage)
-		if not npc.Item.try_put_to(storage):
-			await move(storage.get_random_floor_position())
-			npc.Item.drop_current()
-	else:
-		var current_room = Building.query.room_at_position(npc.global_position) as RoomBase
-		if current_room != null:
-			await move(current_room.get_random_floor_position())
-		npc.Item.drop_current()
+		if npc.Item.try_put_to(storage):
+			return
+
+	if source_room != null:
+		await move(source_room.get_random_floor_position())
+	npc.Item.drop_current()
 
 const _NPC_PROGRESS_BAR = preload("res://scenes/npc_progress_bar.tscn")
 
@@ -276,9 +277,9 @@ func _cleanup_progress_bars() -> void:
 	_active_progress_bars.clear()
 	_owned_progress_bars.clear()
 
-func add_satisfaction(amount: float):
+func add_satisfaction(amount: float, reason: String = ""):
 	if npc != null and npc.has_method("add_satisfaction"):
-		npc.add_satisfaction(amount)
+		npc.add_satisfaction(amount, reason)
 		return
 
 	npc.Needs.satisfaction.strength += amount

@@ -333,22 +333,25 @@ func get_current_room() -> RoomBase:
 func is_within_conflict_engage_range(target_position: Vector2) -> bool:
 	return global_position.distance_to(target_position) <= get_conflict_engage_range()
 
+func _can_join_fight_in_room(room: RoomBase) -> bool:
+	if room == null or current_job_room == null:
+		return false
+	if current_job_room == room:
+		return true
+	if Navigation == null:
+		return false
+	return Navigation.get_connected_rooms(current_job_room).has(room)
+
 func should_auto_join_saloon_fight(room: RoomBase, target_position: Vector2 = Vector2.INF) -> bool:
 	if saloon_fight_response != SaloonFightResponse.FIGHT:
 		return false
-	if room == null or current_job_room != room:
+	if not _can_join_fight_in_room(room):
 		return false
 	if picked_up_npc == self:
 		return false
 
-	var current_room := get_current_room()
-	if current_room != null and current_room.is_outside_room != room.is_outside_room:
-		return false
-
 	var behaviour = Behaviour.behaviour_instance
 	if behaviour is StopFightBehaviour or behaviour is FightBehaviour or behaviour is RespondToArrestBehaviour:
-		return false
-	if target_position != Vector2.INF and not is_within_conflict_engage_range(target_position):
 		return false
 	return true
 

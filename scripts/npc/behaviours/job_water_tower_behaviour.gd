@@ -12,9 +12,8 @@ func loop():
 
 	while true:
 		if tower.is_full():
-			_narrative = ["Tank is full.", "Standing by...", "Watching the tower..."].pick_random()
-			await pause(2)
-			continue
+			_change_to_idle()
+			return
 
 		_narrative = ["Pumping water...", "Filling the tank...", "Working the pump..."].pick_random()
 		await progress(RoomWaterTower.PUMP_DURATION)

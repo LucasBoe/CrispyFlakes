@@ -11,16 +11,20 @@ func loop():
 	bed = _find_available_bed()
 
 	if bed == null:
-		npc.Needs.satisfaction.strength -= 0.3
+		npc.add_satisfaction(-0.05, "No Bed")
 		npc.notify(UiNotifications.ICON_MINUS_1)
-		await pause(2)
+		await pause(1)
 		return
 
 	_narrative = ["Looking for a bed...", "Searching for somewhere to sleep...", "Heading to the bunkhouse..."].pick_random()
 	await move(bed.get_random_floor_position())
 
+	var wait_frames: int = 0
 	while is_instance_valid(bed) and bed.is_used_by_other_then(npc):
 		await end_of_frame()
+		wait_frames += 1
+		if wait_frames > 180:
+			return
 
 	if not is_instance_valid(bed) or bed.needs_cleaning:
 		return
@@ -46,9 +50,10 @@ func loop():
 		npc.global_position = bed.get_center_floor_position()
 		ResourceHandler.add_animated(Enum.Resources.MONEY, bed.get_sleep_price(), bed.get_center_position(), Vector2i(bed.x, bed.y))
 
+	UiNotifications.create_notification_dynamic("sleep_done", npc, Vector2(0, -64), null, Color.ORANGE_RED, 1.5)
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	npc.Needs.Energy.strength = minf(1.0, npc.Needs.Energy.strength + 0.8)
-	npc.Needs.satisfaction.strength = 0.7
+	add_satisfaction(0.7 - npc.Needs.satisfaction.strength, "Slept")
 
 func _find_available_bed() -> RoomBed:
 	for candidate: RoomBed in get_all_rooms_of_type_ordered_by_distance(RoomBed):
@@ -59,6 +64,7 @@ func _find_available_bed() -> RoomBed:
 func stop_loop() -> BehaviourSaveData:
 	if is_instance_valid(npc) and npc.Animator.is_sleeping:
 		npc.Animator.set_sleeping(false)
+		UiNotifications.create_notification_dynamic("sleep_stop", npc, Vector2(0, -64), null, Color.ORANGE_RED, 1.5)
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	if is_instance_valid(bed) and npc in bed.current_guests:
 		bed.release(npc)

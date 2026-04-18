@@ -117,6 +117,10 @@ func is_room_reachable(room: RoomBase) -> bool:
 	return path.size() > 0
 
 
+func get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
+	return _get_connected_rooms(room)
+
+
 func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 	var start_index = Building.round_room_index_from_global_position(start_pos)
 	var start_room := Building.query.closest_on_floor(RoomBase, start_pos, start_index.y) as RoomBase
@@ -165,7 +169,7 @@ func refresh_target_path() -> void:
 		_fail_target_path()
 		return
 
-	if npc is NPCGuest and not _is_inside and not _is_outside_target(final_target):
+	if not (npc is NPCWorker) and not _is_inside and not _is_outside_target(final_target):
 		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
 		if bouncer_room != null:
 			var path_from_bouncer: Array[RoomBase] = _find_room_path(bouncer_room, goal_room)
@@ -178,7 +182,7 @@ func refresh_target_path() -> void:
 				_enter_gate_position = bouncer_room.get_center_floor_position()
 				return
 
-	if npc is NPCGuest and _is_inside and _is_outside_target(final_target):
+	if not (npc is NPCWorker) and _is_inside and _is_outside_target(final_target):
 		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
 		if bouncer_room != null:
 			var path_to_bouncer: Array[RoomBase] = _find_room_path(start_room, bouncer_room)
@@ -370,7 +374,6 @@ func _try_frisk_at_bouncer() -> void:
 		return
 	if randf() < best_intelligence:
 		(npc as NPCGuest).is_known_fugitive = true
-
 
 func _is_outside_target(pos: Vector2) -> bool:
 	var idx: Vector2i = Building.round_room_index_from_global_position(pos)

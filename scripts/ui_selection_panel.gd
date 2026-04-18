@@ -47,6 +47,8 @@ var selected_npc_highlight_instance
 
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
+var _satisfaction_log_container: VBoxContainer = null
+var _satisfaction_log_size: int = -1
 
 func _ready():
 	super._ready()
@@ -142,6 +144,11 @@ func _clear_instances():
 	prisoner_item_instances.clear()
 	storage_filter_container.hide()
 
+	if is_instance_valid(_satisfaction_log_container):
+		_satisfaction_log_container.queue_free()
+	_satisfaction_log_container = null
+	_satisfaction_log_size = -1
+
 func _get_status_icon_entries(npc: NPC) -> Array:
 	return npc.get_state_icon_entries()
 
@@ -221,16 +228,50 @@ func _show_for_guest(guest: NPCGuest):
 	worker_fight_response_row.hide()
 
 	needs = guest.Needs
+	_rebuild_satisfaction_log(guest)
 	for need : Need in needs.needs:
 		if need.type != Enum.Need.SATISFACTION \
 		and need.type != Enum.Need.DRUNKENNESS \
-		and need.type != Enum.Need.ENERGY:
+		and need.type != Enum.Need.ENERGY \
+		and need.type != Enum.Need.STAY_DURATION:
 			continue
 		var instance = need_ui_dummy.duplicate() as UINeedInfo
 		need_ui_dummy.get_parent().add_child(instance)
 		need_ui_instances.append(instance)
 		instance.bind_instance(need)
 		instance.show()
+
+func _rebuild_satisfaction_log(guest: NPCGuest):
+	if is_instance_valid(_satisfaction_log_container):
+		_satisfaction_log_container.queue_free()
+	_satisfaction_log_container = VBoxContainer.new()
+	need_ui_dummy.get_parent().add_child(_satisfaction_log_container)
+	_satisfaction_log_size = guest.satisfaction_log.size()
+
+	var title := status_icon_label_dummy.duplicate() as Label
+	title.text = "Satisfaction Log"
+	title.show()
+	_satisfaction_log_container.add_child(title)
+
+	var by_reason: Dictionary = {}
+	for entry in guest.satisfaction_log:
+		var key: String = entry.reason if entry.reason != "" else "?"
+		if by_reason.has(key):
+			by_reason[key].amount += entry.amount
+			by_reason[key].count += 1
+		else:
+			by_reason[key] = {amount = entry.amount, reason = key, count = 1}
+	var collapsed: Array = by_reason.values()
+
+	for entry in collapsed:
+		var amount: float = entry.amount
+		var lbl := status_icon_label_dummy.duplicate() as Label
+		var sign_str: String = "+" if amount >= 0 else ""
+		var count_str: String = " x%d" % entry.count if entry.count > 1 else ""
+		lbl.text = "  %s%.2f  %s%s" % [sign_str, amount, entry.reason, count_str]
+		lbl.add_theme_color_override("font_color", Color.LIGHT_GREEN if amount >= 0 else Color.SALMON)
+		lbl.show()
+		_satisfaction_log_container.add_child(lbl)
 
 func _show_for_room(room: RoomBase):
 	#needs = null
@@ -610,6 +651,9 @@ func _process(delta):
 	if target is NPCGuest:
 		_bind_guest_hire_button(target)
 		_bind_guest_arrest_button(target)
+		var guest := target as NPCGuest
+		if guest.satisfaction_log.size() != _satisfaction_log_size:
+			_rebuild_satisfaction_log(guest)
 
 	if target is NPCWorker:
 		var worker := target as NPCWorker

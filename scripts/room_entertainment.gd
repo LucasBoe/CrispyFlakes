@@ -6,6 +6,7 @@ const DEFAULT_SATISFACTION_BOOST := 0.08
 const PERFORMANCE_RANGE := 2
 
 var current_module = null
+var _guests_swaying_enabled := false
 @onready var music_particles: GPUParticles2D = $MusicParticles
 
 func init_room(_x: int, _y: int):
@@ -45,6 +46,9 @@ func _process(_delta):
 		return
 	music_particles.emitting = has_active_performance()
 
+func _exit_tree() -> void:
+	set_guests_swaying(false)
+
 func count_guests_in_range() -> int:
 	if Global.NPCSpawner == null:
 		return 0
@@ -56,7 +60,11 @@ func count_guests_in_range() -> int:
 	return count
 
 func set_guests_swaying(value: bool) -> void:
-	AnimationModule.should_sway_to_musik = true
+	if _guests_swaying_enabled == value:
+		return
+
+	_guests_swaying_enabled = value
+	AnimationModule.set_music_sway_enabled(value)
 
 func entertain_guests() -> int:
 	if Global.NPCSpawner == null:
@@ -64,7 +72,7 @@ func entertain_guests() -> int:
 
 	var boosted_guest_count := 0
 	for guest in Global.NPCSpawner.guests:
-		guest.add_satisfaction(get_satisfaction_boost())
+		guest.add_satisfaction(get_satisfaction_boost(), "Entertainment")
 		boosted_guest_count += 1
 
 	return boosted_guest_count

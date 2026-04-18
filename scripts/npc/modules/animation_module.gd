@@ -35,6 +35,7 @@ var is_sleeping : bool = false
 var is_brooming : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
+static var _music_sway_sources := 0
 static var should_sway_to_musik = false
 
 func _ready():
@@ -170,6 +171,14 @@ func knocked_out_tween():
 func set_z(z : Enum.ZLayer):
 	z_index = z
 	#UiNotifications.create_notification_dynamic(Enum.ZLayer.find_key(z), get_parent() as Node2D, Vector2(0, -48), null, Color.SADDLE_BROWN, 1.5)
+
+static func set_music_sway_enabled(value: bool) -> void:
+	if value:
+		_music_sway_sources += 1
+	else:
+		_music_sway_sources = maxi(0, _music_sway_sources - 1)
+
+	should_sway_to_musik = _music_sway_sources > 0
 
 class TweenTargetData:
 	@export var position : Vector2

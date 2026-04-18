@@ -18,4 +18,7 @@ func _process(delta):
 		
 	progress_bar.value = associated_need_instance.strength
 	
+	if associated_need_instance.type == Enum.Need.STAY_DURATION:
+		progress_bar.value = associated_need_instance.strength / NPCGuest.MAX_STAY_DURATION
+	
 	

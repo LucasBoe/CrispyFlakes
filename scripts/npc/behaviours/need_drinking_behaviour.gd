@@ -54,18 +54,18 @@ func loop():
 			await move(get_guest_allowed_random_floor_position(npc.Needs.drunkenness.strength))
 
 		var drunkenenes_increase = 0.0
-		var satisfaction_increase = 0.15
+		var satisfaction_increase = 0.2
 
 		if drink_type == Enum.Items.BEER_BARREL:
-			drunkenenes_increase = .3
-			satisfaction_increase = .5
-
-		elif drink_type == Enum.Items.WISKEY_BOX:
-			drunkenenes_increase = .6
+			drunkenenes_increase = .1
 			satisfaction_increase = .7
 
+		elif drink_type == Enum.Items.WISKEY_BOX:
+			drunkenenes_increase = .3
+			satisfaction_increase = 1.0
+
 		if not table:
-			satisfaction_increase /= 3
+			satisfaction_increase /= 4
 
 		var drink_duration = 10
 
@@ -74,7 +74,7 @@ func loop():
 				SoundPlayer.play_talk(npc.global_position)
 			await pause(i)
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
-			add_satisfaction(satisfaction_increase / float(drink_duration))
+			add_satisfaction(satisfaction_increase / float(drink_duration), "Drinking")
 
 		if table:
 			table.stand_up(npc)
@@ -82,5 +82,5 @@ func loop():
 		npc.Item.drop_current().destroy()
 	else:
 		#UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
-		npc.Needs.satisfaction.strength -= .1
+		npc.add_satisfaction(-0.1, "No Drink")
 		npc.notify(UiNotifications.ICON_MINUS_1)

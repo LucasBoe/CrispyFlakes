@@ -11,7 +11,13 @@ func init_room(_x : int, _y : int):
 	items.resize(max_x * max_y)
 	items.fill(null)
 
+func can_receive(item: Item) -> bool:
+	return item != null and get_next_free_slot() >= 0
+
 func try_receive(item : Item) -> bool:
+	if not can_receive(item):
+		return false
+
 	var free_slot_index = get_next_free_slot()
 
 	if free_slot_index >= 0:

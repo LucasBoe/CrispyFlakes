@@ -4,7 +4,7 @@ class_name RobBehaviour
 var _target_location: Vector2i = Vector2i(-9999, -9999)
 
 func start_loop():
-	UiNotifications.create_notification_dynamic("I love robbing", npc, Vector2(0,-32), null, Color.RED, INF)
+	#UiNotifications.create_notification_dynamic("I love robbing", npc, Vector2(0,-32), null, Color.RED, INF)
 	super.start_loop()
 
 func loop():
@@ -43,6 +43,6 @@ func loop():
 
 func stop_loop():
 	print_debug("stop rob!");
-	UiNotifications.create_notification_dynamic("I'm done robbing", npc, Vector2(0,-32), null, Color.RED, INF)
+	#UiNotifications.create_notification_dynamic("I'm done robbing", npc, Vector2(0,-32), null, Color.RED, INF)
 	(npc as NPCGuest).is_robber = false
 	return super.stop_loop()

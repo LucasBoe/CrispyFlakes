@@ -12,7 +12,7 @@ func loop():
 		return
 
 	if outhouse.is_full():
-		npc.Needs.satisfaction.strength -= .3
+		npc.add_satisfaction(-0.3, "Outhouse Full")
 		npc.notify(UiNotifications.ICON_MINUS_2)
 		return
 
@@ -47,7 +47,7 @@ func loop():
 			outhouse.uses += 1
 
 	npc.needs_to_pee = 0.0
-	add_satisfaction(0.3)
+	add_satisfaction(0.3, "Used Outhouse")
 
 func _pee_outside() -> void:
 	_narrative = ["Finding a spot outside...", "Looking for some privacy...", "Sneaking behind the building..."].pick_random()

@@ -10,10 +10,12 @@ var npc_health_bars = {}  # NPC -> instance_info
 func get_or_create_fight(npc : NPC) -> Fight:
 	var fight = null
 	var created := false
+	var room := _get_actor_room(npc)
 
-	if active_fights.size() > 0:
-		fight = active_fights[0]
-	else:
+	if room != null:
+		fight = get_fight_for_floor(room.y)
+
+	if fight == null:
 		fight = _create_fight(npc.global_position)
 		created = true
 
@@ -55,6 +57,12 @@ func get_fight_for_room(room : RoomBase):
 	for a in active_fights:
 		if a.room == room:
 			return a
+	return null
+
+func get_fight_for_floor(floor_y: int):
+	for fight: Fight in active_fights:
+		if fight.room != null and fight.room.y == floor_y:
+			return fight
 	return null
 
 func _create_fight(position):

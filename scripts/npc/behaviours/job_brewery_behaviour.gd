@@ -3,6 +3,7 @@ class_name JobBreweryBehaviour
 
 var brewery
 var _brewery_sound : AudioStreamPlayer2D
+var _brews_since_water: int = 0
 
 static var occupied_breweries = []
 
@@ -14,21 +15,23 @@ func loop():
 
 	while true:
 
-		var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
-		if tower != null and tower.has_water():
-			_narrative = ["Drawing from the tower...", "Tapping the water supply...", "Filling up from the pipe..."].pick_random()
-			await move(brewery.get_random_floor_position())
-			tower.consume_water()
-		else:
-			_narrative = ["Fetching water...", "Going for water...", "Filling up the bucket..."].pick_random()
-			await fetch_item(Enum.Items.WATER_BUCKET)
-			if not npc.Item.is_item(Enum.Items.WATER_BUCKET):
-				continue
-			await move(brewery.get_random_floor_position())
-			var i = npc.Item.drop_current()
-			if not is_instance_valid(i):
-				continue
-			i.destroy()
+		var brews_per_water: int = brewery.current_module.brews_per_water if brewery.current_module else 1
+		if _brews_since_water == 0:
+			var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
+			if tower != null and tower.has_water():
+				_narrative = ["Drawing from the tower...", "Tapping the water supply...", "Filling up from the pipe..."].pick_random()
+				await move(brewery.get_random_floor_position())
+				tower.consume_water()
+			else:
+				_narrative = ["Fetching water...", "Going for water...", "Filling up the bucket..."].pick_random()
+				await fetch_item(Enum.Items.WATER_BUCKET)
+				if not npc.Item.is_item(Enum.Items.WATER_BUCKET):
+					continue
+				await move(brewery.get_random_floor_position())
+				var i = npc.Item.drop_current()
+				if not is_instance_valid(i):
+					continue
+				i.destroy()
 
 		_narrative = ["Brewing...", "Watching the ferment...", "Tending the kettle..."].pick_random()
 		var duration = brewery.current_module.brew_duration if brewery.current_module else 20.0
@@ -41,6 +44,8 @@ func loop():
 		npc.Item.pick_up(item)
 		_narrative = ["Lifting the beer...", "Hauling the barrels...", "Storing the kegs..."].pick_random()
 		await store_item(item)
+
+		_brews_since_water = (_brews_since_water + 1) % brews_per_water
 
 func custom_array_sort(a, b):
 		return a[1] < b[1]
