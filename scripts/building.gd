@@ -64,16 +64,24 @@ func delete_room(room: RoomBase):
 	if room.data != null and room.data.is_outdoor:
 		for col in room.data.width:
 			for row in room.data.height:
-				if floors.has(room.y + row):
-					floors[room.y + row].erase(room.x + col)
+				_erase_room_cell(room.x + col, room.y + row)
 	else:
 		for col in room.data.width:
 			for row in room.data.height:
 				set_room(room_data_empty, room.x + col, room.y + row)
+	update_foreground_tiles()
 	room.destroy()
 
 func update_foreground_tiles():
 	_tile_renderer.update(floors)
+
+func _erase_room_cell(x: int, y: int) -> void:
+	if not floors.has(y):
+		return
+
+	floors[y].erase(x)
+	if floors[y].is_empty():
+		floors.erase(y)
 
 func get_room_from_index(index: Vector2i):
 	if floors.has(index.y):

@@ -9,7 +9,8 @@ const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 var guests = []
 var workers = []
 
-var guests_per_day_rate = 3.0
+func guests_per_day_rate() -> float:
+	return 3.0 + get_active_guest_count() * 0.1
 var next_guest_progression = 0.0
 
 signal spawned_guest_signal
@@ -31,7 +32,7 @@ func _process(delta):
 	if not Global.should_auto_spawn_guests:
 		return
 
-	next_guest_progression += delta * (guests_per_day_rate / Global.DAY_DURATION)
+	next_guest_progression += delta * (guests_per_day_rate() / Global.DAY_DURATION)
 	if next_guest_progression > 1.0:
 		spawn_new_guest()
 		next_guest_progression = 0.0

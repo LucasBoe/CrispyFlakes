@@ -84,11 +84,18 @@ func _on_click_hovered_node_signal(node):
 
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
+	selected_room_highlight_instance = null
 
 	if is_instance_valid(selected_npc_highlight_instance):
 		selected_npc_highlight_instance.destroy()
+	selected_npc_highlight_instance = null
 
-	for npc : NPC in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
+	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
+		if not is_instance_valid(npc_ref):
+			continue
+		var npc := npc_ref as NPC
+		if npc == null:
+			continue
 		npc.Tint.remove_outline_for(self)
 
 	target = node
@@ -542,11 +549,18 @@ func _on_potential_target_deleted(room):
 func do_hide():
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
+	selected_room_highlight_instance = null
 
 	if is_instance_valid(selected_npc_highlight_instance):
 		selected_npc_highlight_instance.destroy()
+	selected_npc_highlight_instance = null
 
-	for npc : NPC in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
+	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
+		if not is_instance_valid(npc_ref):
+			continue
+		var npc := npc_ref as NPC
+		if npc == null:
+			continue
 		npc.Tint.remove_outline_for(self)
 
 	hide()

@@ -141,8 +141,13 @@ func _get_saloon_workers_for_room(room: RoomBase, target_position: Vector2 = Vec
 	if Global.NPCSpawner == null:
 		return responders
 
-	for worker: NPCWorker in Global.NPCSpawner.workers:
-		if is_instance_valid(worker) and worker.should_auto_join_saloon_fight(room, target_position):
+	for worker_ref in Global.NPCSpawner.workers:
+		if not is_instance_valid(worker_ref):
+			continue
+		var worker := worker_ref as NPCWorker
+		if worker == null:
+			continue
+		if worker.should_auto_join_saloon_fight(room, target_position):
 			responders.append(worker)
 	return responders
 
@@ -151,8 +156,13 @@ func _get_saloon_arrest_responders(room: RoomBase) -> Array:
 	if Global.NPCSpawner == null:
 		return responders
 
-	for worker: NPCWorker in Global.NPCSpawner.workers:
-		if is_instance_valid(worker) and worker.should_auto_respond_to_arrest(room):
+	for worker_ref in Global.NPCSpawner.workers:
+		if not is_instance_valid(worker_ref):
+			continue
+		var worker := worker_ref as NPCWorker
+		if worker == null:
+			continue
+		if worker.should_auto_respond_to_arrest(room):
 			responders.append(worker)
 	return responders
 
@@ -190,9 +200,13 @@ func _end_fight(fight):
 
 	if fight.npc_won() and not fight.is_arrest_fight:
 		if _is_destructable_room(room):
-			GlobalEventHandler.on_room_deleted_signal.emit(room)
-			Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
-			room.destroy()
+			if room.data != null and room.data.is_outdoor:
+				Building.delete_room(room)
+			else:
+				GlobalEventHandler.on_room_deleted_signal.emit(room)
+				Building.set_room(load("res://assets/resources/room_junk.tres"), room.x, room.y)
+				Building.update_foreground_tiles()
+				room.destroy()
 
 	fight.end_fight()
 	active_fights.erase(fight)
