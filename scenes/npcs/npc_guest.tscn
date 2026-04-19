@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=18 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="4_cyq43"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_n6wgk"]
 [ext_resource type="Texture2D" uid="uid://hyt8nvqdaup7" path="res://assets/sprites/cowboy_dirty_overlayt.png" id="4_p1iho"]
-[ext_resource type="Script" path="res://scripts/npc/modules/escort_chain.gd" id="4_xchain"]
+[ext_resource type="Script" uid="uid://eelj4w13vl0a" path="res://scripts/npc/modules/escort_chain.gd" id="4_xchain"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_482k3"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_cyq43"]
 [ext_resource type="Texture2D" uid="uid://dyupopynhn884" path="res://assets/sprites/handcuffs.png" id="7_482k3"]
@@ -15,7 +15,10 @@
 [ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="8_horse"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
-radius = 7.0
+height = 28.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
+radius = 6.0
 height = 24.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_482k3"]
@@ -45,7 +48,7 @@ hue_variation_max = -2.2351742e-08
 script = ExtResource("1_sa74h")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -11)
+position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="EscortChain" type="Node2D" parent="."]
@@ -92,3 +95,10 @@ script = ExtResource("6_cyq43")
 
 [node name="NeedsModule" type="Node" parent="."]
 script = ExtResource("7_prewa")
+
+[node name="PreciseHover" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PreciseHover"]
+position = Vector2(0, -12)
+shape = SubResource("CapsuleShape2D_precise")

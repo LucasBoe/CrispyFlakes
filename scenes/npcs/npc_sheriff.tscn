@@ -11,8 +11,7 @@
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="8_sheriff"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_sheriff"]
-radius = 7.0
-height = 24.0
+height = 28.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sheriff"]
 shader = ExtResource("2_sheriff")
@@ -29,7 +28,7 @@ shader_parameter/use_apron = false
 script = ExtResource("1_sheriff")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -11)
+position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_sheriff")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]

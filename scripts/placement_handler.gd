@@ -126,10 +126,16 @@ func _input(event):
 				var placed_room = Building.get_room_from_index(location)
 				if placed_room:
 					var final_y = placed_room.position.y
+					var impact_strength := 4.0 + float(min(drop_distance, 3))
 					placed_room.position.y = _raw_location.y * -48.0
 					var tween = placed_room.create_tween()
 					tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
 						.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+					tween.finished.connect(Camera.add_shake.bind(impact_strength, 0.12), CONNECT_ONE_SHOT)
+				else:
+					Camera.add_shake()
+			else:
+				Camera.add_shake()
 
 			if building_data == Building.room_data_horse_post and not had_horse_post_before_build:
 				var placed_post := Building.get_room_from_index(location) as RoomHorsePost

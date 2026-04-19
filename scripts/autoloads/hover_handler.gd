@@ -5,21 +5,43 @@ var currently_hovered = null
 
 signal click_hovered_node_signal
 
-func notify_hover_enter(npc):
-	if currently_hovered is NPCWorker and npc is NPCGuest:
-		return
-		
-	change_hover(npc)
-	
-func notify_hover_exit(npc):
-	if currently_hovered == npc:
-		change_hover(null)
-	
-func _process(delta):
-	
-	if not currently_hovered or currently_hovered is not NPC:
-		var mouse_position = get_global_mouse_position()
-		change_hover(Building.query.room_at_position(mouse_position))
+func _process(_delta):
+	var mouse_pos = get_global_mouse_position()
+
+	var query = PhysicsPointQueryParameters2D.new()
+	query.position = mouse_pos
+	query.collide_with_areas = true
+	query.collide_with_bodies = false
+
+	var hits = get_world_2d().direct_space_state.intersect_point(query)
+
+	var precise: Array = []
+	var buffer: Array = []
+	for hit in hits:
+		var collider = hit.collider
+		if collider is NPC:
+			buffer.append(collider)
+		elif collider.name == "PreciseHover" and collider.get_parent() is NPC:
+			precise.append(collider.get_parent())
+
+	var candidates: Array = precise if not precise.is_empty() else buffer
+
+	var best_worker: NPCWorker = null
+	var best_guest: NPCGuest = null
+	for npc in candidates:
+		if npc is NPCWorker:
+			if best_worker == null or npc.global_position.distance_squared_to(mouse_pos) < best_worker.global_position.distance_squared_to(mouse_pos):
+				best_worker = npc
+		elif npc is NPCGuest:
+			if best_guest == null or npc.global_position.distance_squared_to(mouse_pos) < best_guest.global_position.distance_squared_to(mouse_pos):
+				best_guest = npc
+
+	if best_guest != null and best_worker == null:
+		change_hover(best_guest)
+	elif best_worker != null:
+		change_hover(best_worker)
+	else:
+		change_hover(Building.query.room_at_position(mouse_pos))
 
 func change_hover(new_hover):
 	previously_hovered = currently_hovered

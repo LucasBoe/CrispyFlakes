@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dexn3jgkl81oo"]
+[gd_scene load_steps=13 format=3 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_dc1yn"]
@@ -11,8 +11,11 @@
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
-radius = 11.0
-height = 32.0
+height = 28.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
+radius = 6.0
+height = 24.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_escwn"]
 shader = ExtResource("2_dc1yn")
@@ -30,7 +33,7 @@ z_index = 1
 script = ExtResource("1_d0f16")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -11)
+position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
 [node name="AnimationModule" type="Sprite2D" parent="."]
@@ -69,3 +72,10 @@ script = ExtResource("5_aq4br")
 script = ExtResource("6_lmhvm")
 
 [node name="Host" type="Node" parent="BehaviourModule"]
+
+[node name="PreciseHover" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PreciseHover"]
+position = Vector2(0, -12)
+shape = SubResource("CapsuleShape2D_precise")

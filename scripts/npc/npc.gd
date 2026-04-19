@@ -31,15 +31,7 @@ func _ready():
 	strength = randf_range(0.3, 1.0)
 	agility = randf_range(0.3, 1.0)
 	intelligence = randf_range(0.3, 1.0)
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-		
-func _on_mouse_entered():
-	HoverHandler.notify_hover_enter(self)
-	
-func _on_mouse_exited():
-	HoverHandler.notify_hover_exit(self)
-		
+
 func _process(delta):
 	var in_fight = is_in_fight_state()
 	if in_fight:
