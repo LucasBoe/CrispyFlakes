@@ -17,10 +17,6 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 height = 28.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
-radius = 6.0
-height = 24.0
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_482k3"]
 shader = ExtResource("2_cyq43")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
@@ -43,6 +39,10 @@ gravity = Vector3(0, 89, 0)
 color = Color(0.45830244, 0.28495386, 0.22045866, 1)
 hue_variation_min = -0.07000002
 hue_variation_max = -2.2351742e-08
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
+radius = 6.0
+height = 24.0
 
 [node name="NPCGuest" type="Area2D"]
 script = ExtResource("1_sa74h")

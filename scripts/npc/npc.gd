@@ -11,6 +11,8 @@ var Behaviour : BehaviourModule
 var Item : ItemModule
 
 
+var Equipment: EquipmentModule
+
 var look_info : NPCLookInfo
 var strength: float = 0.5
 var agility: float = 0.5
@@ -26,6 +28,7 @@ const STAMINA_REGEN = 0.05
 
 func _init():
 	Tint = TintModule.new(self)
+	Equipment = EquipmentModule.new(self)
 
 func _ready():
 	strength = randf_range(0.3, 1.0)

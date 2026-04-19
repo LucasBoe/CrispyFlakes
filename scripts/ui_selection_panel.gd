@@ -49,6 +49,7 @@ var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
 var _satisfaction_log_container: VBoxContainer = null
 var _satisfaction_log_size: int = -1
+var _equipment_container: VBoxContainer = null
 
 func _ready():
 	super._ready()
@@ -156,6 +157,10 @@ func _clear_instances():
 	_satisfaction_log_container = null
 	_satisfaction_log_size = -1
 
+	if is_instance_valid(_equipment_container):
+		_equipment_container.queue_free()
+	_equipment_container = null
+
 func _get_status_icon_entries(npc: NPC) -> Array:
 	return npc.get_state_icon_entries()
 
@@ -214,6 +219,7 @@ func _show_for_worker(worker: NPCWorker):
 	_bind_worker_fight_response(worker)
 	room_upgrade_hbox.get_parent().hide()
 	needs = null
+	_rebuild_equipment_ui(worker)
 	var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
 	var job_color = Color.TRANSPARENT if has_job else Color.ORANGE
 	var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
@@ -235,6 +241,7 @@ func _show_for_guest(guest: NPCGuest):
 	worker_fight_response_row.hide()
 
 	needs = guest.Needs
+	_rebuild_equipment_ui(guest)
 	_rebuild_satisfaction_log(guest)
 	for need : Need in needs.needs:
 		if need.type != Enum.Need.SATISFACTION \
@@ -604,6 +611,77 @@ func _bind_worker_fight_response(worker: NPCWorker) -> void:
 		worker.saloon_fight_response = NPCWorker.SaloonFightResponse.FLEE if is_fight else NPCWorker.SaloonFightResponse.FIGHT
 		_bind_worker_fight_response(worker)
 	)
+
+func _rebuild_equipment_ui(npc: NPC) -> void:
+	if is_instance_valid(_equipment_container):
+		_equipment_container.queue_free()
+	_equipment_container = null
+
+	if npc.Equipment == null:
+		return
+
+	var parent: VBoxContainer = need_ui_dummy.get_parent()
+	var container := VBoxContainer.new()
+	parent.add_child(container)
+	_equipment_container = container
+
+	# WEAPON — inventory-backed, workers only
+	if npc is NPCWorker:
+		_add_weapon_inventory_row(container, npc as NPCWorker)
+
+func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> void:
+	var inv: Node = get_node("/root/WeaponInventory")
+	if inv == null:
+		return
+
+	var row := HBoxContainer.new()
+	container.add_child(row)
+
+	var lbl := status_icon_label_dummy.duplicate() as Label
+	lbl.text = "Weapon:"
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl.show()
+	row.add_child(lbl)
+
+	var opt := OptionButton.new()
+	opt.theme = hire_guest_button.theme
+	opt.add_item("None")
+
+	var current_inst = inv.get_equipped_by(worker)
+
+	for inst in inv.instances:
+		var entry_label: String = inst.data.weapon_name
+		if inst == current_inst:
+			entry_label += " *"
+		elif not inst.is_available():
+			entry_label += " (%s)" % inst.equipped_by.character_name
+		opt.add_item(entry_label)
+
+	if current_inst != null:
+		var idx: int = inv.instances.find(current_inst)
+		if idx >= 0:
+			opt.selected = idx + 1
+
+	opt.item_selected.connect(func(idx: int):
+		if not is_instance_valid(worker):
+			return
+		var inv2: Node = get_node("/root/WeaponInventory")
+		if inv2 == null:
+			return
+		if idx == 0:
+			inv2.unequip(worker)
+		else:
+			inv2.equip(worker, inv2.instances[idx - 1])
+		_rebuild_equipment_ui(worker)
+	)
+	row.add_child(opt)
+
+	# Compact stats line for the equipped weapon
+	if current_inst != null:
+		var stats_lbl := status_icon_label_dummy.duplicate() as Label
+		stats_lbl.text = "  " + current_inst.data.get_compact_stats()
+		stats_lbl.show()
+		container.add_child(stats_lbl)
 
 func _bind_guest_hire_button(guest: NPCGuest):
 	if not is_instance_valid(guest):

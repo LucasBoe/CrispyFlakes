@@ -107,6 +107,16 @@ enum Need {
 	DRUNKENNESS,
 	ENERGY,
 }
+
+enum EquipmentSlot {
+	WEAPON,
+}
+
+enum FireRate {
+	SLOW,
+	MEDIUM,
+	FAST,
+}
 static func need_to_icon(need : Enum.Need) -> Texture:
 	match need:
 		Enum.Need.ENERGY:
