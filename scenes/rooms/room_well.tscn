@@ -1,13 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://ds54o420pb2t7"]
+[gd_scene load_steps=11 format=3 uid="uid://ds54o420pb2t7"]
 
 [ext_resource type="Script" uid="uid://d24cq0phm8es1" path="res://scripts/room_well.gd" id="1_bkap1"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_dw1fm"]
 [ext_resource type="Texture2D" uid="uid://dkygfkyxds8yp" path="res://assets/sprites/well.png" id="2_d5ivy"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_6d42y"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="4_module"]
-[ext_resource type="Texture2D" uid="uid://b3uoqpxje1kn2" path="res://assets/sprites/ui/room_well_icon.png" id="5_well_icon"]
+[ext_resource type="Texture2D" uid="uid://bxolxgmbv3jhu" path="res://assets/sprites/bucket_small.png" id="5_wma58"]
+[ext_resource type="Texture2D" uid="uid://bgjasdt1lfkyv" path="res://assets/sprites/well_simple.png" id="6_0i7x7"]
 [ext_resource type="Texture2D" uid="uid://buyglaurncwbt" path="res://assets/sprites/well_sheet_back.png" id="6_3vav0"]
 [ext_resource type="Texture2D" uid="uid://d18uy6yfwjagu" path="res://assets/sprites/well_sheet_front.png" id="7_ghqru"]
+[ext_resource type="Texture2D" uid="uid://cybskoaa44wxo" path="res://assets/sprites/ui/module_icon_crank.png" id="7_wma58"]
 
 [node name="Room_Well" type="Node2D"]
 texture_filter = 1
@@ -26,7 +28,7 @@ texture = ExtResource("3_6d42y")
 
 [node name="Simple" type="Node2D" parent="ModulesRoot/Upgrades"]
 script = ExtResource("4_module")
-icon = ExtResource("5_well_icon")
+icon = ExtResource("5_wma58")
 module_name = "Simple Well"
 describtion = "slow water draw"
 action_duration = 1.2
@@ -35,13 +37,13 @@ bought = true
 [node name="Well" type="Sprite2D" parent="ModulesRoot/Upgrades/Simple"]
 z_index = -200
 material = ExtResource("1_dw1fm")
-position = Vector2(24, 0)
-texture = ExtResource("2_d5ivy")
-offset = Vector2(0, -16.5)
+position = Vector2(25, 2)
+texture = ExtResource("6_0i7x7")
+offset = Vector2(0.5, -16)
 
 [node name="Crank" type="Node2D" parent="ModulesRoot/Upgrades"]
 script = ExtResource("4_module")
-icon = ExtResource("5_well_icon")
+icon = ExtResource("7_wma58")
 price = 20
 module_name = "Crank Well"
 describtion = "faster water draw"

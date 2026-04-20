@@ -161,6 +161,6 @@ func _input(event):
 	var idx = 0
 	for row in building_data.height:
 		for col in building_data.width:
-			highlights[idx].global_position = Building.global_position_from_room_index(location + Vector2i(col, row)) + Vector2(0, -24)
+			highlights[idx].global_position = Building.global_position_from_room_index(location + Vector2i(col, row)) + Vector2(-24, -48)
 			highlights[idx].modulate = h_color
 			idx += 1

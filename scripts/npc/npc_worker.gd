@@ -255,7 +255,7 @@ func _input(event):
 		new_room_highlight = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
 	if target_pos && new_room_highlight:
-		new_room_highlight.global_position = room.get_center_position()
+		new_room_highlight.global_position = Vector2(room.global_position.x, room.global_position.y - room.data.height * 48)
 
 	if room and new_room_highlight and current_job_room != room:
 		new_room_highlight.modulate = Color.GREEN if room.associated_job else Color.WHITE

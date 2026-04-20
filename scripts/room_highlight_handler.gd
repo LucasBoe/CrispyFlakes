@@ -30,9 +30,21 @@ func _ready():
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 
 func request_rect(room, color = Color.WHITE, size = 2, priority = Priority.STATUS):
-	var inst = create(rect_dummy, room, priority)
+	var inst: NinePatchRect = create(rect_dummy, room, priority)
+
 	inst.modulate = color
 	inst.texture = texture_from_size(size)
+
+	const TILE_PX: int = 48
+	var w: float = room.data.width * TILE_PX
+	var h: float = room.data.height * TILE_PX
+	inst.anchor_left = 0.0
+	inst.anchor_top = 0.0
+	inst.anchor_right = 0.0
+	inst.anchor_bottom = 0.0
+	inst.size = Vector2(w, h)
+	inst.position = Vector2(room.global_position.x, room.global_position.y - h)
+
 	return inst
 
 func texture_from_size(size):
