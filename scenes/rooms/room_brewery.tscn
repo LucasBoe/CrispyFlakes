@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://y7ent6yu2agy"]
+[gd_scene load_steps=11 format=3 uid="uid://y7ent6yu2agy"]
 
 [ext_resource type="Script" uid="uid://bo5d5mtcgiq1p" path="res://scripts/room_brewery.gd" id="1_i7va0"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_7sj4r"]
@@ -6,14 +6,10 @@
 [ext_resource type="Texture2D" uid="uid://d4akkgimciem6" path="res://assets/sprites/beer_brewery_big.png" id="4_7sj4r"]
 [ext_resource type="Texture2D" uid="uid://dbr6bj7g0ld33" path="res://assets/sprites/beer_brewery_small.png" id="5_o8qhr"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="6_pec21"]
-[ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/destillery.png" id="7_4elfk"]
 [ext_resource type="Texture2D" uid="uid://bl8kmj3c14iqo" path="res://assets/sprites/ui/module_icon_brewer_small.png" id="7_kmbao"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/module_icon_faucet.png" id="8_ifaucet"]
+[ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="8_ifaucet"]
 [ext_resource type="Texture2D" uid="uid://bn4uqddeax11d" path="res://assets/sprites/ui/module_icon_brewer_big.png" id="9_hpnid"]
-
-[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_kmbao"]
-_data = PackedByteArray("AAADAAUAAAABAAAACAAAAAkAAABWAAAAUklGRk4AAABXRUJQVlA4TEEAAAAvBwACEB8gECD8x7iR40NAQvj/xQbLlJCA8P+ibIf5D8A/Y4JC2Lai+7cgIgjiwyWzU2WSRkT/42lnlFtpXJJPAgA=")
-size_override = Vector2(8, 9)
+[ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="9_kmbao"]
 
 [node name="Room_Brewery" type="Node2D"]
 texture_filter = 1
@@ -29,6 +25,7 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_7sj4r")
+
 [node name="ModulesRoot" type="Node2D" parent="."]
 
 [node name="Brewer" type="Node2D" parent="ModulesRoot"]
@@ -62,12 +59,8 @@ brews_per_water = 2
 [node name="Water" type="Node2D" parent="ModulesRoot"]
 
 [node name="Faucet" type="Sprite2D" parent="ModulesRoot/Water"]
-visible = false
-position = Vector2(11, -30.5)
-rotation = 1.5707964
-texture = ExtResource("7_4elfk")
-region_enabled = true
-region_rect = Rect2(8.96, 0, 27, 16)
+position = Vector2(24, -18.5)
+texture = ExtResource("9_kmbao")
 script = ExtResource("6_pec21")
 icon = ExtResource("8_ifaucet")
 price = 10

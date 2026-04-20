@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dvvvnn4s5rhak"]
+[gd_scene load_steps=13 format=3 uid="uid://dvvvnn4s5rhak"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
@@ -10,7 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://djv63sd8uxt6f" path="res://assets/sprites/item_water-bucket.png" id="9_iwater"]
 [ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="10_ibeer"]
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="11_iwiskey"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/module_icon_faucet.png" id="12_ifaucet"]
+[ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="11_kyvij"]
+[ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="12_ifaucet"]
 
 [node name="Room_Bar" type="Node2D"]
 texture_filter = 1
@@ -26,6 +27,7 @@ visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_gvxdr")
+
 [node name="ModulesRoot" type="Node2D" parent="."]
 
 [node name="Drinks" type="Node2D" parent="ModulesRoot"]
@@ -65,7 +67,9 @@ item_cost = 7
 
 [node name="Plumbing" type="Node2D" parent="ModulesRoot"]
 
-[node name="Faucet" type="Node2D" parent="ModulesRoot/Plumbing"]
+[node name="Faucet" type="Sprite2D" parent="ModulesRoot/Plumbing"]
+position = Vector2(24, -18.5)
+texture = ExtResource("11_kyvij")
 script = ExtResource("5_mod")
 icon = ExtResource("12_ifaucet")
 price = 40
