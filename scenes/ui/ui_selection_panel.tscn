@@ -1,5 +1,9 @@
-[gd_scene load_steps=31 format=3 uid="uid://d06nvgemi5ivv"]
+[gd_scene load_steps=32 format=3 uid="uid://d06nvgemi5ivv"]
 
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="3_qtqix"]
+[ext_resource type="Texture2D" uid="uid://bfeiyyg0t6k4v" path="res://assets/sprites/ui/2x/ui_rect_base_open_left.png" id="7_jtsrp"]
+[ext_resource type="Texture2D" uid="uid://b01gv73kbgmqf" path="res://assets/sprites/ui/2x/module_inactive.png" id="8_jtsrp"]
+[ext_resource type="Texture2D" uid="uid://1jfwilqc3pm7" path="res://assets/sprites/ui/2x/module_active.png" id="9_qtqix"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://cel32774pgclg" path="res://assets/sprites/ui/icon_drink.png" id="23_42hm2"]
@@ -9,15 +13,12 @@
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="26_7e0oe"]
 [ext_resource type="Script" uid="uid://cdvg4ouo30fuo" path="res://scripts/ui/bounty_element.gd" id="26_wanb0"]
 [ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="27_wanb0"]
-[ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
 [ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="28_b52we"]
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="28_peq8b"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="29_x63bv"]
 [ext_resource type="Script" uid="uid://bylm6fts7jdun" path="res://scripts/ui/selection_room_module_ui.gd" id="33_3qqvy"]
-[ext_resource type="Texture2D" uid="uid://dn16dvqbbmpks" path="res://assets/sprites/ui/module_inactive.png" id="34_bfe7r"]
 [ext_resource type="Texture2D" uid="uid://bl8kmj3c14iqo" path="res://assets/sprites/ui/module_icon_brewer_small.png" id="35_cm1h5"]
-[ext_resource type="Texture2D" uid="uid://b30u56pch7l0u" path="res://assets/sprites/ui/module_active.png" id="35_tlefx"]
 [ext_resource type="Texture2D" uid="uid://dc2hanvpmpkab" path="res://assets/sprites/ui/module_connector_active.png" id="36_bfe7r"]
 [ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="70_prisui"]
 [ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/handel_8x8.png" id="71_filter"]
@@ -26,33 +27,17 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ydpv1"]
-texture = ExtResource("34_bfe7r")
-texture_margin_left = 1.0
-texture_margin_top = 1.0
-texture_margin_right = 1.0
-texture_margin_bottom = 1.0
+texture = ExtResource("8_jtsrp")
 modulate_color = Color(0.5019608, 0.4862745, 0.45882353, 1)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ynify"]
-texture = ExtResource("34_bfe7r")
-texture_margin_left = 1.0
-texture_margin_top = 1.0
-texture_margin_right = 1.0
-texture_margin_bottom = 1.0
+texture = ExtResource("8_jtsrp")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dkmmk"]
-texture = ExtResource("34_bfe7r")
-texture_margin_left = 1.0
-texture_margin_top = 1.0
-texture_margin_right = 1.0
-texture_margin_bottom = 1.0
+texture = ExtResource("8_jtsrp")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cm1h5"]
-texture = ExtResource("35_tlefx")
-texture_margin_left = 1.0
-texture_margin_top = 1.0
-texture_margin_right = 1.0
-texture_margin_bottom = 1.0
+texture = ExtResource("9_qtqix")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v46vo"]
 shader = ExtResource("26_7e0oe")
@@ -122,20 +107,19 @@ mouse_filter = 2
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
 layout_mode = 2
-texture = ExtResource("28_3ou18")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("3_qtqix")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
@@ -154,9 +138,9 @@ mouse_filter = 2
 
 [node name="MarginContainer_Status" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 0
+theme_override_constants/margin_left = -4
 theme_override_constants/margin_top = 0
-theme_override_constants/margin_right = 0
+theme_override_constants/margin_right = -4
 theme_override_constants/margin_bottom = 0
 
 [node name="ColorRect" type="ColorRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status"]
@@ -204,6 +188,10 @@ fit_content = true
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 script = ExtResource("33_3qqvy")
 
 [node name="Control" type="Control" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
@@ -214,24 +202,22 @@ size_flags_horizontal = 8
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_right = 8
+theme_override_constants/margin_left = 16
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("28_3ou18")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("7_jtsrp")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer"]
 layout_mode = 2
@@ -263,7 +249,7 @@ layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="TextureButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(13, 13)
+custom_minimum_size = Vector2(33, 33)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxTexture_ydpv1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_ynify")

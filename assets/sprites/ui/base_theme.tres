@@ -1,29 +1,36 @@
-[gd_resource type="Theme" load_steps=21 format=3 uid="uid://cqa0uge758fkj"]
+[gd_resource type="Theme" load_steps=20 format=3 uid="uid://cqa0uge758fkj"]
 
-[ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="1_1wyd7"]
 [ext_resource type="FontFile" uid="uid://7am1h57ldd6" path="res://examples_dd3d/PixelatedElegance.ttf" id="1_5wple"]
-[ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/handel_8x8.png" id="3_trfhs"]
-[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="3_ytpqb"]
+[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="2_ytpqb"]
+[ext_resource type="FontFile" uid="uid://bl72taieefbw1" path="res://assets/fonts/Cubix.ttf" id="3_trfhs"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1wyd7"]
-texture = ExtResource("1_1wyd7")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-region_rect = Rect2(24, 0, 8, 8)
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("2_ytpqb")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(48, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_5wple"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_28jni"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_trfhs"]
-texture = ExtResource("1_1wyd7")
-texture_margin_left = 2.0
-texture_margin_top = 3.0
-texture_margin_right = 4.0
-texture_margin_bottom = 5.0
-region_rect = Rect2(8, 0, 8, 8)
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 7.0
+content_margin_bottom = 7.0
+texture = ExtResource("2_ytpqb")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(16, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ytpqb"]
 
@@ -32,22 +39,30 @@ region_rect = Rect2(8, 0, 8, 8)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7qa4f"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5wple"]
-texture = ExtResource("1_1wyd7")
-texture_margin_left = 2.0
-texture_margin_top = 3.0
-texture_margin_right = 4.0
-texture_margin_bottom = 5.0
-region_rect = Rect2(0, 0, 8, 8)
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 7.0
+content_margin_bottom = 7.0
+texture = ExtResource("2_ytpqb")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(0, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c80o7"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7qa4f"]
-texture = ExtResource("1_1wyd7")
-texture_margin_left = 4.0
-texture_margin_top = 4.0
-texture_margin_right = 4.0
-texture_margin_bottom = 4.0
-region_rect = Rect2(16, 0, 8, 8)
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = ExtResource("2_ytpqb")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(32, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vly6k"]
 
@@ -100,19 +115,19 @@ Button/styles/normal = SubResource("StyleBoxTexture_5wple")
 Button/styles/normal_mirrored = SubResource("StyleBoxEmpty_c80o7")
 Button/styles/pressed = SubResource("StyleBoxTexture_7qa4f")
 Button/styles/pressed_mirrored = SubResource("StyleBoxEmpty_vly6k")
-HSlider/icons/grabber = ExtResource("3_trfhs")
-HSlider/icons/grabber_highlight = ExtResource("3_trfhs")
+HSlider/icons/grabber = null
+HSlider/icons/grabber_highlight = null
 HSlider/styles/grabber_area = SubResource("StyleBoxLine_7qa4f")
 HSlider/styles/grabber_area_highlight = SubResource("StyleBoxLine_7qa4f")
 HSlider/styles/slider = SubResource("StyleBoxLine_qfkch")
 Label/constants/line_spacing = -3
 Label/font_sizes/font_size = 11
-Label/fonts/font = ExtResource("3_ytpqb")
+Label/fonts/font = ExtResource("3_trfhs")
 ProgressBar/styles/background = SubResource("StyleBoxFlat_ytpqb")
 ProgressBar/styles/fill = SubResource("StyleBoxFlat_trfhs")
 RichTextLabel/constants/line_separation = -4
 RichTextLabel/font_sizes/normal_font_size = 11
-RichTextLabel/fonts/normal_font = ExtResource("3_ytpqb")
+RichTextLabel/fonts/normal_font = ExtResource("3_trfhs")
 TabBar/constants/h_separation = 2
 TabBar/constants/tab_separation = -1
 TabBar/styles/tab_focus = SubResource("StyleBoxEmpty_s6nds")

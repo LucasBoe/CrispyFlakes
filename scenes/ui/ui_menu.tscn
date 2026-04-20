@@ -1,6 +1,9 @@
-[gd_scene load_steps=25 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=27 format=3 uid="uid://848oy1tnfobv"]
 
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
+[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
+[ext_resource type="Texture2D" uid="uid://br2d8r00vl7bg" path="res://assets/sprites/ui/2x/ui_rect_base_open_right.png" id="18_p76uh"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
 [ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="19_v28my"]
@@ -12,7 +15,6 @@
 [ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="24_xsu8o"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
 [ext_resource type="Script" uid="uid://bui2advnykuy0" path="res://scenes/worker_ui_add_remove.gd" id="26_fq3y7"]
-[ext_resource type="Theme" uid="uid://besvdfvw6exll" path="res://assets/button.tres" id="26_jj3vu"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
@@ -46,7 +48,7 @@ mouse_filter = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 40
+theme_override_constants/margin_bottom = 48
 
 [node name="UIWorkers" type="Control" parent="MarginContainer"]
 layout_mode = 2
@@ -64,12 +66,11 @@ grow_horizontal = 0
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIWorkers/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("9_xsf2i")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIWorkers/MarginContainer"]
 layout_mode = 2
@@ -161,7 +162,8 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="MarginContainer" parent="MarginContainer"]
-custom_minimum_size = Vector2(100, 0)
+visible = false
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 mouse_filter = 2
@@ -169,19 +171,18 @@ script = ExtResource("9_60k3h")
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild"]
 layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(17, 1, 6, 6)
-patch_margin_left = 3
-patch_margin_top = 3
-patch_margin_right = 3
-patch_margin_bottom = 3
+texture = ExtResource("9_xsf2i")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild"]
 layout_mode = 2
-theme_override_constants/margin_left = 1
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_right = 1
-theme_override_constants/margin_bottom = 1
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
 
 [node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/MarginContainer"]
 layout_mode = 2
@@ -230,7 +231,7 @@ theme_override_constants/margin_bottom = 3
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = 4
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("14_p76uh")
 theme_override_font_sizes/font_size = 16
 text = "Rooms"
 
@@ -239,17 +240,17 @@ layout_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
 layout_mode = 2
-theme_override_constants/margin_left = 2
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 2
-theme_override_constants/margin_bottom = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 5
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer"]
 layout_mode = 2
 columns = 3
 
 [node name="ButtonDummy" type="Button" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(32, 16)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
@@ -258,6 +259,7 @@ theme_override_font_sizes/font_size = 11
 text = "1"
 icon = ExtResource("54_k504d")
 icon_alignment = 1
+expand_icon = true
 
 [node name="LockedOverlay" type="Control" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
 layout_mode = 2
@@ -306,23 +308,22 @@ anchor_right = 1.0
 offset_left = -114.0
 offset_bottom = 70.0
 grow_horizontal = 0
-theme_override_constants/margin_right = 4
+theme_override_constants/margin_top = 8
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(17, 1, 6, 6)
-patch_margin_left = 3
-patch_margin_top = 3
-patch_margin_right = 3
-patch_margin_bottom = 3
+texture = ExtResource("18_p76uh")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer"]
 layout_mode = 2
@@ -424,21 +425,23 @@ script = ExtResource("28_1jyyk")
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings"]
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 3
 anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = -99.0
-offset_bottom = 101.0
+offset_top = -101.0
 grow_horizontal = 0
+grow_vertical = 0
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UISettings/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("9_xsf2i")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings/MarginContainer"]
 layout_mode = 2
@@ -496,30 +499,30 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -91.0
-offset_top = -33.0
-offset_right = -11.0
+offset_left = -112.0
+offset_top = -41.0
+offset_right = -8.0
 offset_bottom = -9.0
 grow_horizontal = 0
 grow_vertical = 0
 
 [node name="Button_Workers" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-theme = ExtResource("26_jj3vu")
+theme = ExtResource("22_hpv7r")
 icon = ExtResource("22_4o78i")
 icon_alignment = 1
 
 [node name="Button_Build" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-theme = ExtResource("26_jj3vu")
+theme = ExtResource("22_hpv7r")
 icon = ExtResource("21_hpv7r")
 icon_alignment = 1
 
 [node name="Button_Settings" type="Button" parent="HBoxContainer"]
-custom_minimum_size = Vector2(24, 24)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-theme = ExtResource("26_jj3vu")
+theme = ExtResource("22_hpv7r")
 icon = ExtResource("31_pj0ys")
 icon_alignment = 1

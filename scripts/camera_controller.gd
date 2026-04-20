@@ -2,7 +2,7 @@ extends Camera2D
 
 const zoomSpeed : float = 10
 const minZoom: float = 0.5
-const maxZoom: float = 3.0
+const maxZoom: float = 6.0
 const panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
 
 
@@ -30,10 +30,9 @@ func _ready():
 	_rng.randomize()
 	camera_offset_base = offset
 	
-	zoomTarget = 1.5
-	zoom_in_out()
-	await get_tree().process_frame
-	global_position = Vector2(78,32)
+	zoomTarget = 3
+	zoom = Vector2(3,3)
+	global_position = Vector2(0,0)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
