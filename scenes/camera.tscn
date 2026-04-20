@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://camera_autoload"]
+[gd_scene load_steps=2 format=3 uid="uid://bm73jwnwktncr"]
 
 [ext_resource type="Script" uid="uid://dbwwkb77a0n0p" path="res://scripts/camera_controller.gd" id="1_cam"]
 

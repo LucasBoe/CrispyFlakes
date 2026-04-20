@@ -33,6 +33,7 @@ icon = ExtResource("5_ifaucet")
 price = 40
 module_name = "Faucet"
 describtion = "pipe water from a water tower"
+requires_water_tower = true
 
 [node name="Bath" type="Sprite2D" parent="."]
 z_index = -100

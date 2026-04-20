@@ -9,6 +9,7 @@ var associated_job = null
 var is_outside_room = false
 var has_upgrades = false
 var worker : NPCWorker = null
+var current_module = null
 
 @onready var back_wall_sprite_2d = get_node_or_null("Back-wall") as Sprite2D
 
@@ -24,6 +25,21 @@ func init_room(x : int, y : int):
 
 	if not is_outside_room and back_wall_sprite_2d != null:
 		back_wall_sprite_2d.texture = backwallBasement if is_basement else backwallDefault
+
+	var modules_root: Node = get_node_or_null("ModulesRoot")
+	if modules_root:
+		for group in modules_root.get_children():
+			for module in group.get_children():
+				if not module.has_method("set_bought"):
+					continue
+				module.bought_changed.connect(_on_module_bought)
+				if module.bought:
+					_on_module_bought(module)
+
+func _on_module_bought(module) -> void:
+	if not module.bought:
+		return
+	current_module = module
 
 func set_outline(state):
 	

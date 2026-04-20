@@ -3,8 +3,8 @@ class_name RoomBar
 
 var drink_requests = []
 var drink_type : Enum.Items = Enum.Items.WATER_BUCKET
-var current_module = null
 var has_faucet: bool = false
+var faucet_module = null
 
 const TIMEOUT_DURATION_IN_MSEC = 5000
 
@@ -17,24 +17,16 @@ const _MODULE_DRINK_MAP = {
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.BAR
-
-	var modules_root = get_node_or_null("ModulesRoot")
-	if modules_root:
-		for group in modules_root.get_children():
-			for module in group.get_children():
-				module.bought_changed.connect(_on_module_bought)
-				if module.bought:
-					if module.name == "Faucet":
-						has_faucet = true
-					else:
-						current_module = module
-						drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)
+	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
+	_refresh_faucet_state()
 
 func _on_module_bought(module) -> void:
-	if not module.bought:
-		return
 	if module.name == "Faucet":
-		has_faucet = true
+		faucet_module = module
+		_refresh_faucet_state()
+		return
+	if not module.bought:
 		return
 	current_module = module
 	drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)
@@ -47,6 +39,19 @@ func _on_module_bought(module) -> void:
 			var bar_job = behaviour.behaviour_instance as JobBarBehaviour
 			if bar_job.bar == self:
 				bar_job.drinks_available = 0.0
+
+func _on_room_created(room: RoomBase) -> void:
+	if room is not RoomWaterTower:
+		return
+	_refresh_faucet_state()
+
+func _on_room_deleted(room: RoomBase) -> void:
+	if room is not RoomWaterTower:
+		return
+	call_deferred("_refresh_faucet_state")
+
+func _refresh_faucet_state() -> void:
+	has_faucet = faucet_module != null and faucet_module.bought and faucet_module.is_dependency_met()
 
 func try_receive(item) -> bool:
 	item.destroy()

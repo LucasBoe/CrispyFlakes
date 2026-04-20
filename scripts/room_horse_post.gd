@@ -1,52 +1,16 @@
 extends RoomOutsideBase
 class_name RoomHorsePost
 
-@onready var modules_root: Node2D = $ModulesRoot
-
-var current_module = null
 var tied_horses := {}
-var _outlined_sprites: Array[Sprite2D] = []
 
 func init_room(_x: int, _y: int):
 	super.init_room(_x, _y)
-	_init_modules()
-
-func _init_modules() -> void:
-	if modules_root == null:
-		return
-
-	for group in modules_root.get_children():
-		for module in group.get_children():
-			if not module.has_method("set_bought"):
-				continue
-			module.bought_changed.connect(_on_module_bought)
-			if module.bought:
-				current_module = module
-
 	_refresh_visuals()
 
-func _init_outline() -> void:
-	_outlined_sprites.clear()
-
-	if modules_root == null:
-		return
-
-	for group in modules_root.get_children():
-		for module in group.get_children():
-			for child in module.get_children():
-				if child is Sprite2D:
-					_register_outlined_sprite(child as Sprite2D)
-
-func _register_outlined_sprite(sprite: Sprite2D) -> void:
-	if sprite == null or not sprite.material is ShaderMaterial:
-		return
-	sprite.material = (sprite.material as ShaderMaterial).duplicate(true)
-	_outlined_sprites.append(sprite)
-
 func _on_module_bought(module) -> void:
+	super._on_module_bought(module)
 	if not module.bought:
 		return
-	current_module = module
 	_refresh_visuals()
 	show_horse_count_notification()
 
@@ -119,12 +83,6 @@ func _cleanup_tied_horses() -> void:
 func show_horse_count_notification() -> void:
 	var txt = str(get_horse_count(), "/", get_max_horse_count())
 	UiNotifications.create_notification_static(txt, get_center_position(), null, Color.BLACK if can_accept_horse() else Color.RED)
-
-func set_outline(state):
-	var color = Color.WHITE if state else Color.BLACK
-	for sprite in _outlined_sprites:
-		if is_instance_valid(sprite) and sprite.material is ShaderMaterial:
-			(sprite.material as ShaderMaterial).set_shader_parameter("outline_color", color)
 
 func _notification(what):
 	if what == NOTIFICATION_PREDELETE:

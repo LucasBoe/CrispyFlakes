@@ -13,15 +13,6 @@ texture_filter = 1
 material = ExtResource("1_56m3a")
 script = ExtResource("1_h1euw")
 
-[node name="Outhouse" type="Sprite2D" parent="."]
-z_index = -600
-material = ExtResource("1_56m3a")
-position = Vector2(24, -1)
-texture = ExtResource("3_h1euw")
-offset = Vector2(0, -16.5)
-hframes = 4
-frame = 2
-
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false
 z_index = 4000
@@ -39,6 +30,15 @@ module_name = "Small Bucket"
 describtion = "Needs cleaning after 10 uses."
 max_guests = 10
 bought = true
+
+[node name="Outhouse" type="Sprite2D" parent="ModulesRoot/Bucket/SmallBucket"]
+z_index = -600
+material = ExtResource("1_56m3a")
+position = Vector2(24, -1)
+texture = ExtResource("3_h1euw")
+offset = Vector2(0, -16.5)
+hframes = 4
+frame = 2
 
 [node name="BigBucket" type="Node2D" parent="ModulesRoot/Bucket"]
 visible = false

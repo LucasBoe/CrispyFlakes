@@ -29,7 +29,11 @@ var zoom_tween: Tween
 func _ready():
 	_rng.randomize()
 	camera_offset_base = offset
-	global_position = Vector2(-24,-48)
+	
+	zoomTarget = 1.5
+	zoom_in_out()
+	await get_tree().process_frame
+	global_position = Vector2(78,32)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

@@ -17,6 +17,7 @@ var _selected_module = null
 var _current_room: RoomBase = null
 var _branch_instances: Array = []
 var _module_buttons: Dictionary = {}  # module node -> Button
+var _hovered_module = null
 
 func _ready() -> void:
 	branch_dummy.hide()
@@ -24,6 +25,8 @@ func _ready() -> void:
 	details_window_describtion.bbcode_enabled = true
 	hide()
 	details_window_button.pressed.connect(_on_buy_pressed)
+	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 
 func populate(room: Node2D) -> void:
 	_clear()
@@ -107,11 +110,14 @@ func _make_style(tex: Texture2D) -> StyleBoxTexture:
 	return style
 
 func _module_text(module) -> String:
+	var dependency_text = module.get_unmet_dependency_text() if module.has_method("get_unmet_dependency_text") else ""
 	var price = "[color=#ffe432]" + str(module.price) + "$[/color]"
 	var price_line = "\nbought (" + price + ")" if module.bought else "\n" + price
-	return module.describtion + price_line
+	var dependency_line = "\n" + dependency_text if dependency_text != "" else ""
+	return module.describtion + dependency_line + price_line
 
 func _on_module_hover(module) -> void:
+	_hovered_module = module
 	details_window.show()
 	details_window_describtion.text = _module_text(module)
 	details_window_header.text = module.module_name
@@ -123,6 +129,7 @@ func _on_module_hover(module) -> void:
 		details_window_button.hide()
 
 func _on_module_hover_exit() -> void:
+	_hovered_module = null
 	if _selected_module != null:
 		_show_selected()
 	else:
@@ -155,6 +162,10 @@ func _refresh_buy_button() -> void:
 		details_window_button.hide()
 	else:
 		details_window_button.show()
+		if _selected_module.has_method("is_dependency_met") and not _selected_module.is_dependency_met():
+			details_window_button.text = "Needs Water Tower"
+			details_window_button.disabled = true
+			return
 		details_window_button.text = _get_buy_label()
 		details_window_button.disabled = false
 
@@ -197,9 +208,26 @@ func _on_buy_pressed() -> void:
 func _clear() -> void:
 	_selected_module = null
 	_current_room = null
+	_hovered_module = null
 	_module_buttons.clear()
 	for branch in _branch_instances:
 		if is_instance_valid(branch):
 			branch.queue_free()
 	_branch_instances.clear()
 	details_window.hide()
+
+func _on_room_created(room: RoomBase) -> void:
+	if room is not RoomWaterTower:
+		return
+	_refresh_dependency_state()
+
+func _on_room_deleted(room: RoomBase) -> void:
+	if room is not RoomWaterTower:
+		return
+	call_deferred("_refresh_dependency_state")
+
+func _refresh_dependency_state() -> void:
+	if _selected_module != null:
+		_show_selected()
+	elif _hovered_module != null:
+		_on_module_hover(_hovered_module)

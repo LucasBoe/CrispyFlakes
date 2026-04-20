@@ -1,23 +1,42 @@
-[gd_scene load_steps=5 format=3 uid="uid://d05pc5605ime2"]
+[gd_scene load_steps=7 format=3 uid="uid://d05pc5605ime2"]
 
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="1_mat"]
 [ext_resource type="Texture2D" uid="uid://cil3pe0hiys2k" path="res://assets/sprites/watertower.png" id="2_sprite"]
+[ext_resource type="Texture2D" uid="uid://c3igaq668wmq6" path="res://assets/sprites/room_highlight_slim_2x1.png" id="3_r2fwd"]
 [ext_resource type="Script" uid="uid://dkcadcxntbb6f" path="res://scripts/room_water_tower.gd" id="3_script"]
-[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="4_outline"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="5_pjwhn"]
+[ext_resource type="Texture2D" uid="uid://nmvdi1x55hwq" path="res://assets/sprites/ui/room_watertower_icon.png" id="5_r2fwd"]
 
 [node name="Room_WaterTower" type="Node2D"]
 texture_filter = 1
 material = ExtResource("1_mat")
 script = ExtResource("3_script")
 
-[node name="WaterTower" type="Sprite2D" parent="."]
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -48)
+rotation = 1.5707964
+texture = ExtResource("3_r2fwd")
+
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Tower" type="Node2D" parent="ModulesRoot"]
+
+[node name="Basic" type="Node2D" parent="ModulesRoot/Tower"]
+script = ExtResource("5_pjwhn")
+icon = ExtResource("5_r2fwd")
+module_name = "Simple Tower"
+bought = true
+
+[node name="WaterTower" type="Sprite2D" parent="ModulesRoot/Tower/Basic"]
 z_index = -200
 material = ExtResource("1_mat")
 position = Vector2(24, 1)
 texture = ExtResource("2_sprite")
 offset = Vector2(0, -47.5)
 
-[node name="ColorRectBackground" type="ColorRect" parent="WaterTower"]
+[node name="ColorRectBackground" type="ColorRect" parent="ModulesRoot/Tower/Basic/WaterTower"]
 z_index = -150
 offset_left = -12.0
 offset_top = -84.0
@@ -25,16 +44,10 @@ offset_right = 12.0
 offset_bottom = -58.0
 color = Color(0.22745098, 0.105882354, 0.10980392, 1)
 
-[node name="ColorRectFill" type="ColorRect" parent="WaterTower"]
+[node name="ColorRectFill" type="ColorRect" parent="ModulesRoot/Tower/Basic/WaterTower"]
 z_index = -100
 offset_left = -12.0
 offset_top = -58.0
 offset_right = 12.0
 offset_bottom = -58.0
 color = Color(0.34553567, 0.56236464, 0.962522, 1)
-
-[node name="Outline" type="Sprite2D" parent="."]
-visible = false
-z_index = 4000
-position = Vector2(24, -24)
-texture = ExtResource("4_outline")

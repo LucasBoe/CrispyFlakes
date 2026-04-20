@@ -5,23 +5,12 @@ const DEFAULT_EFFECT_INTERVAL := 10.0
 const DEFAULT_SATISFACTION_BOOST := 0.08
 const PERFORMANCE_RANGE := 2
 
-var current_module = null
 var _guests_swaying_enabled := false
 @onready var music_particles: GPUParticles2D = $MusicParticles
 
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.ENTERTAINMENT
 	super.init_room(_x, _y)
-
-	var modules_root = get_node_or_null("ModulesRoot")
-	if modules_root:
-		for group in modules_root.get_children():
-			for module in group.get_children():
-				if not module.has_method("set_bought"):
-					continue
-				module.bought_changed.connect(_on_module_bought)
-				if module.bought:
-					current_module = module
 
 func _on_module_bought(module) -> void:
 	if not module.bought:

@@ -3,20 +3,9 @@ class_name RoomTable
 
 var guests = {}
 var max_guest_count = 0
-var current_module = null
 
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
-
-	var modules_root = get_node_or_null("ModulesRoot")
-	if modules_root:
-		for group in modules_root.get_children():
-			for module in group.get_children():
-				if not module.has_method("set_bought"):
-					continue
-				module.bought_changed.connect(_on_module_bought)
-				if module.bought:
-					_apply_module(module)
 
 func _on_module_bought(module) -> void:
 	if module.bought:

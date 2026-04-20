@@ -72,11 +72,11 @@ func set_target(target, custom_speed):
 		move_speed = DEFAULT_MOVE_SPEED * (0.75 + npc.agility * 0.5) if custom_speed < 0 else custom_speed
 
 func get_random_target():
-	var random_floor = Util.get_random_element(Building.floors)
-	var rooms = []
-	for room: RoomBase in random_floor.values():
-		if not room.is_outside_room:
-			rooms.append(room)
+	var rooms: Array = []
+	for floor_rooms in Building.floors.values():
+		for room: RoomBase in floor_rooms.values():
+			if not room.is_outside_room:
+				rooms.append(room)
 	return rooms.pick_random()
 
 

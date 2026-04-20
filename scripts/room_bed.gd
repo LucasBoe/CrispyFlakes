@@ -11,7 +11,6 @@ const BED_FULL := preload("res://assets/sprites/bed_full_back.png")
 var current_guests: Array[NPCGuest] = []
 var _bed_occupants: Dictionary = {}  # NPCGuest -> bed index
 var _dirty_beds: Array[int] = []     # bed indices that need cleaning
-var current_module = null
 var _active_beds: Array[Sprite2D] = []
 
 # keep needs_cleaning as a computed property for the cleaner job
@@ -21,14 +20,6 @@ var needs_cleaning: bool:
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.BED_CLEANER
 	super.init_room(_x, _y)
-
-	var modules_root = get_node_or_null("ModulesRoot")
-	if modules_root:
-		for group in modules_root.get_children():
-			for module in group.get_children():
-				module.bought_changed.connect(_on_module_bought)
-				if module.bought:
-					_set_active_module(module)
 
 func _on_module_bought(module) -> void:
 	if module.bought:

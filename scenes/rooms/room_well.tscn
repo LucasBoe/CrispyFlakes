@@ -14,23 +14,17 @@ texture_filter = 1
 material = ExtResource("1_dw1fm")
 script = ExtResource("1_bkap1")
 
-[node name="Well" type="Sprite2D" parent="."]
-z_index = -200
-material = ExtResource("1_dw1fm")
-position = Vector2(24, 0)
-texture = ExtResource("2_d5ivy")
-offset = Vector2(0, -16.5)
-
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false
 z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_6d42y")
+
 [node name="ModulesRoot" type="Node2D" parent="."]
 
-[node name="DrawMethod" type="Node2D" parent="ModulesRoot"]
+[node name="Upgrades" type="Node2D" parent="ModulesRoot"]
 
-[node name="Simple" type="Node2D" parent="ModulesRoot/DrawMethod"]
+[node name="Simple" type="Node2D" parent="ModulesRoot/Upgrades"]
 script = ExtResource("4_module")
 icon = ExtResource("5_well_icon")
 module_name = "Simple Well"
@@ -38,8 +32,14 @@ describtion = "slow water draw"
 action_duration = 1.2
 bought = true
 
-[node name="Crank" type="Node2D" parent="ModulesRoot/DrawMethod"]
-visible = false
+[node name="Well" type="Sprite2D" parent="ModulesRoot/Upgrades/Simple"]
+z_index = -200
+material = ExtResource("1_dw1fm")
+position = Vector2(24, 0)
+texture = ExtResource("2_d5ivy")
+offset = Vector2(0, -16.5)
+
+[node name="Crank" type="Node2D" parent="ModulesRoot/Upgrades"]
 script = ExtResource("4_module")
 icon = ExtResource("5_well_icon")
 price = 20
@@ -47,26 +47,12 @@ module_name = "Crank Well"
 describtion = "faster water draw"
 action_duration = 0.65
 
-[node name="Post" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
-z_index = 50
-position = Vector2(31, -28)
-width = 2.0
-default_color = Color(0.313726, 0.196078, 0.0784314, 1)
-points = PackedVector2Array(0, 8, 0, -8)
-
-[node name="Arm" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
-z_index = 51
-position = Vector2(31, -32)
-width = 2.0
-default_color = Color(0.376471, 0.376471, 0.376471, 1)
-points = PackedVector2Array(-4, 0, 4, 0)
-
-[node name="Handle" type="Line2D" parent="ModulesRoot/DrawMethod/Crank"]
-z_index = 52
-position = Vector2(35, -32)
-width = 2.0
-default_color = Color(0.376471, 0.376471, 0.376471, 1)
-points = PackedVector2Array(0, 0, 0, 5)
+[node name="Well" type="Sprite2D" parent="ModulesRoot/Upgrades/Crank"]
+z_index = -200
+material = ExtResource("1_dw1fm")
+position = Vector2(24, 0)
+texture = ExtResource("2_d5ivy")
+offset = Vector2(0, -16.5)
 
 [node name="Underground" type="Node2D" parent="."]
 

@@ -5,7 +5,7 @@ const MAX_WATER := 96.0
 const PUMP_AMOUNT := 8.0
 const PUMP_DURATION := 3.0
 
-@onready var fill_rect: ColorRect = $WaterTower/ColorRectFill
+@onready var fill_rect: ColorRect = $ModulesRoot/Tower/Basic/WaterTower/ColorRectFill
 
 var current_water := 0.0
 
