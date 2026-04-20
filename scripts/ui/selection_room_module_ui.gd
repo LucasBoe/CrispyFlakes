@@ -10,8 +10,8 @@ class_name UISelectionRoomModules
 # child 0 is button: child 1 is connector
 # for each new module, duplicate both until last, there no connector is needed
 
-@onready var module_button_base_active = preload("res://assets/sprites/ui/module_active.png") # base used for modules bought
-@onready var module_button_base_inactive = preload("res://assets/sprites/ui/module_inactive.png") # base for inactive modules
+@onready var module_button_base_active = preload("res://assets/sprites/ui/2x/module_active.png") # base used for modules bought
+@onready var module_button_base_inactive = preload("res://assets/sprites/ui/2x/module_inactive.png") # base for inactive modules
 
 var _selected_module = null
 var _current_room: RoomBase = null
