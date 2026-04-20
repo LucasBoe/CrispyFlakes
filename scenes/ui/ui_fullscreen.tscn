@@ -1,19 +1,13 @@
-[gd_scene load_steps=8 format=4]
+[gd_scene load_steps=8 format=3 uid="uid://ldop7rnr2opr"]
 
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
-
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
-
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
-
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
-
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
-
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
-
 
 [node name="UIFullscreen" type="Control"]
 layout_mode = 3
@@ -27,7 +21,6 @@ offset_bottom = -1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
 
 [node name="UIHire" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -44,7 +37,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("28_1f2rr")
 
-
 [node name="ButtonDrag" type="Button" parent="UIHire"]
 visible = false
 layout_mode = 2
@@ -55,11 +47,9 @@ theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
 
-
 [node name="MarginContainer" type="MarginContainer" parent="UIHire"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UIHire/MarginContainer"]
 layout_mode = 2
@@ -70,7 +60,6 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
-
 [node name="MarginContainer" type="MarginContainer" parent="UIHire/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
@@ -79,28 +68,23 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
-
 [node name="VBoxContainer" type="VBoxContainer" parent="UIHire/MarginContainer/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="Label" type="Label" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("29_1f2rr")
 text = "Hire more people"
 
-
 [node name="ColorRect" type="ColorRect" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 mouse_filter = 2
 
-
 [node name="VBoxContainer" type="VBoxContainer" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="Button" type="Button" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 16)
@@ -108,7 +92,6 @@ layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("22_hpv7r")
 script = ExtResource("31_fcesb")
-
 
 [node name="MarginContainer" type="MarginContainer" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button"]
 layout_mode = 1
@@ -121,17 +104,14 @@ mouse_filter = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_right = 4
 
-
 [node name="HBoxContainer" type="HBoxContainer" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="Label" type="Label" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Name"
-
 
 [node name="Label2" type="Label" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/Button/MarginContainer/HBoxContainer"]
 layout_mode = 2
@@ -140,19 +120,16 @@ theme = ExtResource("22_hpv7r")
 text = "12$ / D"
 horizontal_alignment = 2
 
-
 [node name="HBoxContainer" type="HBoxContainer" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-
 [node name="ButtonClose" type="Button" parent="UIHire/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Back"
-
 
 [node name="UIConfirm" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -169,7 +146,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("50_n6nxc")
 
-
 [node name="ButtonDrag" type="Button" parent="UIConfirm"]
 visible = false
 layout_mode = 2
@@ -180,11 +156,9 @@ theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/disabled = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
 
-
 [node name="MarginContainer" type="MarginContainer" parent="UIConfirm"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UIConfirm/MarginContainer"]
 layout_mode = 2
@@ -195,7 +169,6 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
-
 [node name="MarginContainer" type="MarginContainer" parent="UIConfirm/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
@@ -204,11 +177,9 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
-
 [node name="VBoxContainer" type="VBoxContainer" parent="UIConfirm/MarginContainer/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="Label" type="Label" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -216,12 +187,10 @@ theme_override_fonts/font = ExtResource("29_1f2rr")
 text = "Are you sure?"
 horizontal_alignment = 1
 
-
 [node name="ColorRect" type="ColorRect" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
 mouse_filter = 2
-
 
 [node name="RichTextLabel" type="RichTextLabel" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -229,19 +198,16 @@ theme = ExtResource("22_hpv7r")
 text = "You are about to do something... This is your chance to not do it."
 fit_content = true
 
-
 [node name="HBoxContainer" type="HBoxContainer" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-
 [node name="ButtonYes" type="Button" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Continue"
-
 
 [node name="ButtonNo" type="Button" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2

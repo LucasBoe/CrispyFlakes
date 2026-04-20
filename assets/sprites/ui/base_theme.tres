@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=20 format=3 uid="uid://cqa0uge758fkj"]
 
 [ext_resource type="FontFile" uid="uid://7am1h57ldd6" path="res://examples_dd3d/PixelatedElegance.ttf" id="1_5wple"]
-[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="2_ytpqb"]
+[ext_resource type="Texture2D" uid="uid://ti7l0mjtd7hl" path="res://assets/sprites/ui/2x/button-sheet.png" id="2_trfhs"]
 [ext_resource type="FontFile" uid="uid://bl72taieefbw1" path="res://assets/fonts/Cubix.ttf" id="3_trfhs"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1wyd7"]
@@ -9,7 +9,7 @@ content_margin_left = 5.0
 content_margin_top = 5.0
 content_margin_right = 5.0
 content_margin_bottom = 5.0
-texture = ExtResource("2_ytpqb")
+texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
@@ -25,7 +25,7 @@ content_margin_left = 3.0
 content_margin_top = 3.0
 content_margin_right = 7.0
 content_margin_bottom = 7.0
-texture = ExtResource("2_ytpqb")
+texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
@@ -43,7 +43,7 @@ content_margin_left = 3.0
 content_margin_top = 3.0
 content_margin_right = 7.0
 content_margin_bottom = 7.0
-texture = ExtResource("2_ytpqb")
+texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
@@ -57,7 +57,7 @@ content_margin_left = 5.0
 content_margin_top = 5.0
 content_margin_right = 5.0
 content_margin_bottom = 5.0
-texture = ExtResource("2_ytpqb")
+texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
