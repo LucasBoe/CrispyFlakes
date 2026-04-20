@@ -20,5 +20,5 @@ func _process(delta):
 		background_rect.position = Vector2.ZERO
 		iconTexture.position = Vector2.ZERO
 	else:
-		background_rect.position = Vector2.ONE
-		iconTexture.position = -Vector2.ONE
+		background_rect.position = Vector2(0,2)
+		iconTexture.position = Vector2(0,-2)

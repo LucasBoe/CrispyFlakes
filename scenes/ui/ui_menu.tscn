@@ -76,21 +76,25 @@ patch_margin_bottom = 8
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
+theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 8
 
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer"]
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 8
+
+[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
+[node name="ProgressBar" type="ProgressBar" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer"]
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -99,26 +103,26 @@ max_value = 1.0
 value = 0.13
 show_percentage = false
 
-[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
 text = "69 $"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer"]
 layout_direction = 2
 layout_mode = 2
 script = ExtResource("41_pyam4")
 
-[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "name"
 
-[node name="ButtonFire" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer"]
+[node name="ButtonFire" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(22, 22)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
@@ -126,11 +130,11 @@ icon = ExtResource("19_3ocru")
 icon_alignment = 1
 vertical_icon_alignment = 0
 
-[node name="WorkerUIAddRemove" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+[node name="WorkerUIAddRemove" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 script = ExtResource("26_fq3y7")
 
-[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Label" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("22_hpv7r")
@@ -138,25 +142,25 @@ theme_override_constants/line_spacing = -3
 text = "Cleaner"
 horizontal_alignment = 2
 
-[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
-custom_minimum_size = Vector2(16, 16)
+[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "-"
 
-[node name="Label2" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
+[node name="Label2" type="Label" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_constants/line_spacing = -3
 text = "0 / 0"
 
-[node name="Button2" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove"]
-custom_minimum_size = Vector2(16, 16)
+[node name="Button2" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "+"
 
-[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/GridContainer"]
+[node name="Button" type="Button" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Hire"
@@ -457,7 +461,7 @@ mouse_filter = 2
 [node name="LabelHeader" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("14_p76uh")
 theme_override_font_sizes/font_size = 16
 text = "Settings"
 horizontal_alignment = 1

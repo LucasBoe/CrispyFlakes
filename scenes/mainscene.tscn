@@ -1,11 +1,12 @@
-[gd_scene load_steps=43 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=45 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
 [ext_resource type="Script" uid="uid://b7bo83wpu73wu" path="res://scripts/time_button.gd" id="6_4amiu"]
-[ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/time/time-button_play.png" id="6_lj14v"]
 [ext_resource type="Script" uid="uid://drqq0is6by4ae" path="res://scripts/time_ui_handler.gd" id="6_rt53s"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
+[ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="12_gejso"]
+[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
@@ -14,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/2x/time/time-button_play.png" id="25_3ou18"]
 [ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
 [ext_resource type="FontFile" uid="uid://lqh04fcpwlab" path="res://assets/fonts/Cubix_Mystical.ttf" id="26_lbk5b"]
 [ext_resource type="Texture2D" uid="uid://ckpjxsbbfx781" path="res://assets/sprites/ui/icon_dialogue_skip.png" id="27_8145v"]
@@ -33,11 +35,9 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_v28my"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3ocru"]
-texture = ExtResource("19_wkmvq")
-texture_margin_left = 6.0
-texture_margin_top = 6.0
-texture_margin_right = 6.0
-texture_margin_bottom = 6.0
+texture = ExtResource("12_gejso")
+texture_margin_left = 16.0
+texture_margin_right = 16.0
 modulate_color = Color(18.892157, 18.892157, 18.892157, 0.3764706)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
@@ -165,7 +165,7 @@ offset_bottom = 24.0
 grow_horizontal = 2
 
 [node name="UIVisitorInfo" type="Control" parent="UI/UIResources/HBoxContainer"]
-custom_minimum_size = Vector2(52, 16)
+custom_minimum_size = Vector2(76, 32)
 layout_mode = 2
 script = ExtResource("15_jtb7t")
 
@@ -178,9 +178,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("19_wkmvq")
-patch_margin_left = 8
-patch_margin_right = 8
+texture = ExtResource("12_gejso")
+patch_margin_left = 16
+patch_margin_right = 16
 
 [node name="ProgressBar" type="ProgressBar" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
 layout_mode = 1
@@ -201,10 +201,10 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 6.0
-offset_top = -11.0
-offset_right = 30.0
-offset_bottom = 13.0
+offset_left = 10.0
+offset_top = -15.5
+offset_right = 50.0
+offset_bottom = 24.5
 grow_vertical = 2
 texture = ExtResource("17_1jyyk")
 expand_mode = 2
@@ -217,13 +217,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -6.0
-offset_top = -7.0
-offset_right = 22.0
-offset_bottom = 3.0
+offset_left = -5.0
+offset_top = -12.0
+offset_right = 23.0
+offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("14_3ou18")
 text = "123"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -235,10 +235,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -6.0
-offset_top = -12.0
-offset_right = 22.0
-offset_bottom = 3.0
+offset_left = -5.0
+offset_top = -19.0
+offset_right = 23.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("22_hpv7r")
@@ -280,17 +280,17 @@ mouse_filter = 2
 script = ExtResource("37_u4j4d")
 
 [node name="MarginContainer" type="Control" parent="UI/UIMoney"]
-custom_minimum_size = Vector2(112, 16)
+custom_minimum_size = Vector2(150, 32)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -37.0
-offset_top = -24.0
-offset_right = 37.0
-offset_bottom = -8.0
+offset_left = -75.0
+offset_top = -44.0
+offset_right = 75.0
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 0
 
@@ -303,9 +303,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("19_wkmvq")
-patch_margin_left = 8
-patch_margin_right = 8
+texture = ExtResource("12_gejso")
+patch_margin_left = 16
+patch_margin_right = 16
 
 [node name="CountLabel" type="Label" parent="UI/UIMoney/MarginContainer"]
 modulate = Color(1, 0.89411765, 0.19607843, 1)
@@ -315,13 +315,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -16.0
-offset_top = -7.0
-offset_right = 48.0
-offset_bottom = 8.0
+offset_left = -5.0
+offset_top = -7.5
+offset_right = 59.0
+offset_bottom = 8.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("14_3ou18")
 text = "100/100"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -334,10 +334,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -61.0
-offset_top = -19.0
-offset_right = -35.0
-offset_bottom = -5.0
+offset_left = -71.0
+offset_top = -29.0
+offset_right = -45.0
+offset_bottom = -15.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("22_hpv7r")
@@ -353,10 +353,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -61.0
-offset_top = -12.0
-offset_right = -35.0
-offset_bottom = 2.0
+offset_left = -71.0
+offset_top = -18.0
+offset_right = -45.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("22_hpv7r")
@@ -370,10 +370,10 @@ layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
-offset_left = 23.0
-offset_top = -12.0
-offset_right = 48.0
-offset_bottom = 12.0
+offset_left = 36.0
+offset_top = -24.0
+offset_right = 86.0
+offset_bottom = 24.0
 grow_vertical = 2
 texture = ExtResource("38_wm4va")
 expand_mode = 2
@@ -463,9 +463,10 @@ offset_top = 8.0
 offset_right = 40.0
 offset_bottom = 24.0
 grow_horizontal = 2
+theme_override_constants/separation = 5
 
 [node name="Button" type="Button" parent="UI/UITime/HBoxContainer"]
-custom_minimum_size = Vector2(16, 0)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 theme_type_variation = &"FlatButton"
 theme_override_styles/normal = SubResource("StyleBoxEmpty_q3hll")
@@ -483,10 +484,10 @@ script = ExtResource("6_4amiu")
 
 [node name="Background" type="ColorRect" parent="UI/UITime/HBoxContainer/Button"]
 layout_mode = 1
-offset_left = 1.0
-offset_top = 1.0
-offset_right = 17.0
-offset_bottom = 17.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 33.0
+offset_bottom = 33.0
 color = Color(0, 0, 0, 1)
 
 [node name="Texture" type="TextureRect" parent="UI/UITime/HBoxContainer/Button"]
@@ -495,10 +496,9 @@ offset_left = -1.0
 offset_top = -1.0
 offset_right = 15.0
 offset_bottom = 15.0
-texture = ExtResource("6_lj14v")
+texture = ExtResource("25_3ou18")
 
 [node name="TextureProgressBar" type="TextureProgressBar" parent="UI/UITime"]
-visible = false
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -523,10 +523,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -12.0
-offset_top = 33.0
-offset_right = 12.0
-offset_bottom = 57.0
+offset_left = -16.0
+offset_top = 45.0
+offset_right = 16.0
+offset_bottom = 77.0
 grow_horizontal = 2
 theme = ExtResource("22_hpv7r")
 text = "0"

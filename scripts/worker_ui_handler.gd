@@ -1,11 +1,11 @@
 extends MenuUITab
 
-@onready var hire_button = $MarginContainer/MarginContainer/ScrollContainer/GridContainer/Button
-@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer/ProgressBar
-@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/GridContainer/HBoxContainer/Label
+@onready var hire_button = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/Button
+@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/ProgressBar
+@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/Label
 
-@onready var worker_info_dummy : WorkerUIInfo = $MarginContainer/MarginContainer/ScrollContainer/GridContainer/VBoxContainer/HBoxContainer
-@onready var worker_ui_add_remove_dummy : WorkerUIAddRemove = $MarginContainer/MarginContainer/ScrollContainer/GridContainer/WorkerUIAddRemove
+@onready var worker_info_dummy : WorkerUIInfo = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer
+@onready var worker_ui_add_remove_dummy : WorkerUIAddRemove = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove
 
 func _ready():
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)

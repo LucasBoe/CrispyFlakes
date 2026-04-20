@@ -6,10 +6,10 @@ var buttons = []
 
 func _ready():
 	dummy.visible = false
-	create_button(0, "res://assets/sprites/ui/time/time-button_pause.png")
-	create_button(1, "res://assets/sprites/ui/time/time-button_play.png")
-	create_button(3, "res://assets/sprites/ui/time/time-button_faster.png")
-	create_button(9, "res://assets/sprites/ui/time/time-button_fastest.png")
+	create_button(0, "res://assets/sprites/ui/2x/time/time-button_pause.png")
+	create_button(1, "res://assets/sprites/ui/2x/time/time-button_play.png")
+	create_button(3, "res://assets/sprites/ui/2x/time/time-button_faster.png")
+	create_button(9, "res://assets/sprites/ui/2x/time/time-button_fastest.png")
 	
 	set_selected_button(buttons[1])
 	
