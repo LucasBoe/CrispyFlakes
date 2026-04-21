@@ -18,11 +18,11 @@ func loop():
 		if destillery.has_faucet:
 			got_water = await try_fetch_from_tower(destillery.get_random_floor_position())
 		if not got_water:
-		_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
-		await fetch_item(Enum.Items.WATER_BUCKET)
+			_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
+			await fetch_item(Enum.Items.WATER_BUCKET)
 
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
-				got_water = true
+			got_water = true
 			await move(destillery.get_random_floor_position())
 			var i = npc.Item.drop_current()
 			if is_instance_valid(i):
