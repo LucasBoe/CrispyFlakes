@@ -8,8 +8,8 @@
 [node name="Room_AgingCellar" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_vtr20")
-offsetX = 12
-maxX = 3
+offset_x = 12
+max_x = 3
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200

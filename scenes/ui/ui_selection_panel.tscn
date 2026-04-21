@@ -173,7 +173,7 @@ text = "in conflict I"
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "[fight]"
+text = "fight"
 
 [node name="DescribtionLabel" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

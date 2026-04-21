@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dvvvnn4s5rhak"]
+[gd_scene load_steps=10 format=3 uid="uid://dvvvnn4s5rhak"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
@@ -7,9 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://dofp0dlo4es73" path="res://assets/sprites/bar_water.png" id="6_water"]
 [ext_resource type="Texture2D" uid="uid://cim07ui8dh1tq" path="res://assets/sprites/bar_beer.png" id="7_beer"]
 [ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="8_wiskey"]
-[ext_resource type="Texture2D" uid="uid://djv63sd8uxt6f" path="res://assets/sprites/item_water-bucket.png" id="9_iwater"]
-[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="10_ibeer"]
-[ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="11_iwiskey"]
 [ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="11_kyvij"]
 [ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="12_ifaucet"]
 
@@ -37,7 +34,7 @@ z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("6_water")
 script = ExtResource("5_mod")
-icon = ExtResource("9_iwater")
+icon = ExtResource("6_water")
 module_name = "Service Table"
 describtion = "serve water"
 item_cost = 2
@@ -48,7 +45,7 @@ z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("7_beer")
 script = ExtResource("5_mod")
-icon = ExtResource("10_ibeer")
+icon = ExtResource("7_beer")
 price = 15
 module_name = "Barrel Holder"
 describtion = "serve beer"
@@ -59,7 +56,7 @@ z_index = -10
 position = Vector2(24, -17.5)
 texture = ExtResource("8_wiskey")
 script = ExtResource("5_mod")
-icon = ExtResource("11_iwiskey")
+icon = ExtResource("8_wiskey")
 price = 50
 module_name = "Bottle Shelf"
 describtion = "serve aged whiskey"

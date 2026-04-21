@@ -94,6 +94,15 @@ func get_closest_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
 	return Building.query.closest_room_of_type(type, npc.global_position, null, Vector2.ZERO, reachable)
 
+func try_fetch_from_tower(move_target: Vector2) -> bool:
+	var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
+	if tower == null or not tower.has_water():
+		return false
+	_narrative = ["Drawing from the tower...", "Tapping the water supply...", "Filling up from the pipe..."].pick_random()
+	await move(move_target)
+	tower.consume_water()
+	return true
+
 func get_all_rooms_of_type_ordered_by_distance(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
 	return Building.query.rooms_of_type_ordered_by_distance(type, npc.global_position, null, reachable)

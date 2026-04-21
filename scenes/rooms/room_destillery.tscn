@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://csfct040ranu"]
+[gd_scene load_steps=8 format=3 uid="uid://csfct040ranu"]
 
 [ext_resource type="Script" uid="uid://c2hbo8h51lq42" path="res://scripts/room_destillery.gd" id="1_41dyw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_axy2o"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_ulrm7"]
 [ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/destillery.png" id="4_41dyw"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="5_axy2o"]
+[ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="6_ulrm7"]
+[ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="7_e2yd8"]
 
 [node name="Room_Destillery" type="Node2D"]
 texture_filter = 1
@@ -20,8 +23,29 @@ z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_ulrm7")
 
-[node name="Brewery" type="Sprite2D" parent="."]
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Destiller" type="Node2D" parent="ModulesRoot"]
+
+[node name="Default" type="Sprite2D" parent="ModulesRoot/Destiller"]
 z_index = -100
 position = Vector2(21, -19.5)
 texture = ExtResource("4_41dyw")
 region_rect = Rect2(0, 48, 48, 48)
+script = ExtResource("5_axy2o")
+icon = ExtResource("4_41dyw")
+module_name = "Destiller"
+describtion = "Used to make Wiskey"
+bought = true
+
+[node name="Water" type="Node2D" parent="ModulesRoot"]
+
+[node name="Faucet" type="Sprite2D" parent="ModulesRoot/Water"]
+position = Vector2(24, -18.5)
+texture = ExtResource("6_ulrm7")
+script = ExtResource("5_axy2o")
+icon = ExtResource("7_e2yd8")
+price = 10
+module_name = "Faucet"
+describtion = "no bucket fetching"
+requires_water_tower = true

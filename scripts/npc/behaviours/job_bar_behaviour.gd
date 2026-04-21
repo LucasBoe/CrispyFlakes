@@ -16,11 +16,7 @@ func loop():
 		if drinks_available < .1:
 
 			if bar.has_faucet and drink == Enum.Items.WATER_BUCKET:
-				var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
-				if tower != null and tower.has_water():
-					_narrative = ["Tapping the faucet...", "Drawing from the pipe...", "Filling up from the tower..."].pick_random()
-					await move(bar.get_center_floor_position())
-					tower.consume_water()
+				if await try_fetch_from_tower(bar.get_center_floor_position()):
 					drinks_available = 1.0
 				else:
 					_narrative = ["Waiting for the water tower...", "Tower's dry...", "No water in the pipe..."].pick_random()

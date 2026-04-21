@@ -25,7 +25,6 @@ border_color = Color(0, 0, 0, 1)
 script = ExtResource("1_q2bjm")
 
 [node name="SpeechbubbleDummy" type="PanelContainer" parent="."]
-visible = false
 z_index = 4000
 anchors_preset = 2
 anchor_top = 1.0
