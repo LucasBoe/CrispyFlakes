@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cyry6y4riv0v3"
-path="res://.godot/imported/item_Colts _double-action.png-2965d4d8b7ab8e8336a4bd4c2d1b3bad.ctex"
+uid="uid://cdwlqv0s782n2"
+path="res://.godot/imported/item_colt22.png-ec4a0d766a1e11163dcd1224ed80e0fd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/item_Colts _double-action.png"
-dest_files=["res://.godot/imported/item_Colts _double-action.png-2965d4d8b7ab8e8336a4bd4c2d1b3bad.ctex"]
+source_file="res://assets/sprites/guns/item_colt22.png"
+dest_files=["res://.godot/imported/item_colt22.png-ec4a0d766a1e11163dcd1224ed80e0fd.ctex"]
 
 [params]
 
@@ -27,6 +27,10 @@ mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false
