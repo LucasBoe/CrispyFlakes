@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://lmw513jmjj4n"
-path="res://.godot/imported/item_SharpsOldReliable.png-b431ff90827bb711f75a6892ca0c04e0.ctex"
+uid="uid://2uukj1qmtfld"
+path="res://.godot/imported/weapon_messenger_shotgun.png-7ddbc0eb51c2c04c804606a9a4d09e5b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/item_SharpsOldReliable.png"
-dest_files=["res://.godot/imported/item_SharpsOldReliable.png-b431ff90827bb711f75a6892ca0c04e0.ctex"]
+source_file="res://assets/sprites/guns/weapon_messenger_shotgun.png"
+dest_files=["res://.godot/imported/weapon_messenger_shotgun.png-7ddbc0eb51c2c04c804606a9a4d09e5b.ctex"]
 
 [params]
 
@@ -27,6 +27,10 @@ mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
+process/channel_remap/red=0
+process/channel_remap/green=1
+process/channel_remap/blue=2
+process/channel_remap/alpha=3
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false

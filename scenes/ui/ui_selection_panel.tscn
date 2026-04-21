@@ -88,9 +88,7 @@ round_precision = 1
 
 [node name="Line" type="Node2D" parent="LineAnchor"]
 script = ExtResource("24_xsu8o")
-pixel_size = null
-line_color = null
-snap_to_grid = null
+line_width = 2
 
 [node name="ButtonDrag" type="Button" parent="."]
 layout_mode = 2

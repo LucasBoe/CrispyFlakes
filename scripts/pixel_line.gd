@@ -2,6 +2,7 @@ extends Node2D
 class_name PixelLine
 
 @export var pixel_size: int = 1
+@export var line_width: int = 1
 @export var line_color: Color = Color.WHITE
 @export var snap_to_grid: bool = true
 
@@ -17,9 +18,22 @@ func _draw() -> void:
 	var b_vec = b_raw / float(pixel_size) if snap_to_grid else b_raw
 	var b := Vector2i(roundi(b_vec.x), roundi(b_vec.y))
 
+	var perp := _perp_offsets(a, b)
+	var half: int = line_width >> 1
+
 	for p in bresenham_line(a, b):
-		var pos := Vector2(p.x, p.y) * float(pixel_size)
-		draw_rect(Rect2(pos, Vector2.ONE * float(pixel_size)), line_color, true)
+		for w in range(-(half), line_width - half):
+			var offset := perp * w
+			var pos := Vector2(p.x + offset.x, p.y + offset.y) * float(pixel_size)
+			draw_rect(Rect2(pos, Vector2.ONE * float(pixel_size)), line_color, true)
+
+static func _perp_offsets(a: Vector2i, b: Vector2i) -> Vector2i:
+	var dx := b.x - a.x
+	var dy := b.y - a.y
+	if abs(dx) >= abs(dy):
+		return Vector2i(0, 1)
+	else:
+		return Vector2i(1, 0)
 
 static func bresenham_line(a: Vector2i, b: Vector2i) -> Array[Vector2i]:
 	var x0 := a.x
