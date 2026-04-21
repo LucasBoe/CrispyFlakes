@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/weapon_data.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/weapons/weapon_messenger_shotgun.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+weapon_name = "Messenger Shotgun"
+range_rooms = 3
+accuracy = 0.8
+fire_rate = 0
+single_handed = false
+sprite = ExtResource("2")

@@ -2,11 +2,21 @@ extends Node
 
 var instances: Array = []
 
+const WEAPONS_DIR: String = "res://assets/resources/weapons/"
+
 func _ready() -> void:
-	# Pre-populate with one of each weapon type.
-	# Replace this with proper acquisition logic when ready.
-	for data in WeaponData.get_definitions():
-		add_instance(data)
+	var dir: DirAccess = DirAccess.open(WEAPONS_DIR)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var file_name: String = dir.get_next()
+	while file_name != "":
+		if file_name.ends_with(".tres"):
+			var data = load(WEAPONS_DIR + file_name)
+			if data != null:
+				add_instance(data)
+		file_name = dir.get_next()
+	dir.list_dir_end()
 
 func add_instance(data) -> void:
 	var inst := WeaponInstance.new()
