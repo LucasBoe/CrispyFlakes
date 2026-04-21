@@ -12,6 +12,8 @@ class_name UISelectionRoomModules
 
 @onready var module_button_base_active = preload("res://assets/sprites/ui/2x/module_active.png") # base used for modules bought
 @onready var module_button_base_inactive = preload("res://assets/sprites/ui/2x/module_inactive.png") # base for inactive modules
+@onready var module_button_base_selected = preload("res://assets/sprites/ui/2x/module_selected.png") # base for the currently selected module
+
 
 var _selected_module = null
 var _current_room: RoomBase = null
@@ -91,14 +93,21 @@ func _add_branch(group: Node, is_last_group: bool) -> void:
 				branch.add_child(conn)
 			conn.show()
 
-func _apply_button_style(btn: Button, is_active: bool) -> void:
-	var tex = module_button_base_active if is_active else module_button_base_inactive
+func _apply_button_style(btn: Button, is_active: bool, is_selected: bool = false) -> void:
+	var tex: Texture2D
+	if is_selected:
+		tex = module_button_base_selected
+	elif is_active:
+		tex = module_button_base_active
+	else:
+		tex = module_button_base_inactive
 	var normal = _make_style(tex)
-	if not is_active:
+	if not is_active and not is_selected:
 		normal.modulate_color = Color(0.5019608, 0.4862745, 0.45882353, 1)
 	btn.add_theme_stylebox_override("normal", normal)
 	btn.add_theme_stylebox_override("pressed", _make_style(tex))
 	btn.add_theme_stylebox_override("hover", _make_style(tex))
+	btn.add_theme_stylebox_override("focus", _make_style(tex))
 
 func _make_style(tex: Texture2D) -> StyleBoxTexture:
 	var style = StyleBoxTexture.new()
@@ -136,7 +145,12 @@ func _on_module_hover_exit() -> void:
 		details_window.hide()
 
 func _select_module(module) -> void:
+	var prev = _selected_module
 	_selected_module = module
+	if prev != null and _module_buttons.has(prev):
+		_apply_button_style(_module_buttons[prev], prev.bought, false)
+	if _module_buttons.has(module):
+		_apply_button_style(_module_buttons[module], module.bought, true)
 	_show_selected()
 
 func _show_selected() -> void:
@@ -179,8 +193,6 @@ func _on_buy_pressed() -> void:
 
 	details_window_button.hide()
 	details_window_describtion.text = _selected_module.describtion + "\nbought ([color=#ffe432]" + str(_selected_module.price) + "$[/color])"
-	if _module_buttons.has(_selected_module):
-		_apply_button_style(_module_buttons[_selected_module], true)
 
 	# Update buttons immediately
 	var group = _selected_module.get_parent()
@@ -191,7 +203,7 @@ func _on_buy_pressed() -> void:
 			if _module_buttons.has(module):
 				_apply_button_style(_module_buttons[module], false)
 	if _module_buttons.has(_selected_module):
-		_apply_button_style(_module_buttons[_selected_module], true)
+		_apply_button_style(_module_buttons[_selected_module], true, true)
 
 	# Wait for animation, then update room visuals
 	var purchased = _selected_module

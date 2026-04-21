@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdwlqv0s782n2"
-path="res://.godot/imported/weapon_colt22.png-48a5c2c1371e78c15b48bba2d26d90ad.ctex"
+uid="uid://2uukj1qmtfld"
+path="res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_colt22.png"
-dest_files=["res://.godot/imported/weapon_colt22.png-48a5c2c1371e78c15b48bba2d26d90ad.ctex"]
+source_file="res://assets/sprites/weapons/weapon_messenger_shotgun.png"
+dest_files=["res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"]
 
 [params]
 

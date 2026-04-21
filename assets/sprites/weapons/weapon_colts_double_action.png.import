@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cirls34lac57x"
-path="res://.godot/imported/weapon_peacemaker.png-b7d8ce06ca1670bce073ba92e3e6cc70.ctex"
+uid="uid://cyry6y4riv0v3"
+path="res://.godot/imported/weapon_colts_double_action.png-8aa6f8d6217e537ee01c0c3bfccd4c5e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_peacemaker.png"
-dest_files=["res://.godot/imported/weapon_peacemaker.png-b7d8ce06ca1670bce073ba92e3e6cc70.ctex"]
+source_file="res://assets/sprites/weapons/weapon_colts_double_action.png"
+dest_files=["res://.godot/imported/weapon_colts_double_action.png-8aa6f8d6217e537ee01c0c3bfccd4c5e.ctex"]
 
 [params]
 

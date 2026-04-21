@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwi3tiwa3fm4v"
-path="res://.godot/imported/weapon_winchester.png-e1353f261aba265e3efe49922bed043b.ctex"
+uid="uid://b7ni6hqvh2q5d"
+path="res://.godot/imported/module_selected.png-542e3bf8c19a71d472db02531cba3c33.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_winchester.png"
-dest_files=["res://.godot/imported/weapon_winchester.png-e1353f261aba265e3efe49922bed043b.ctex"]
+source_file="res://assets/sprites/ui/2x/module_selected.png"
+dest_files=["res://.godot/imported/module_selected.png-542e3bf8c19a71d472db02531cba3c33.ctex"]
 
 [params]
 

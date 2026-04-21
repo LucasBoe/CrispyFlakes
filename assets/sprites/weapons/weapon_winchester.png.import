@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cyry6y4riv0v3"
-path="res://.godot/imported/weapon_colts_double_action.png-fbf36e994f916576bb2a1a5b14385649.ctex"
+uid="uid://bwi3tiwa3fm4v"
+path="res://.godot/imported/weapon_winchester.png-9a41c037b49e3315089c505ea8f09e25.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_colts_double_action.png"
-dest_files=["res://.godot/imported/weapon_colts_double_action.png-fbf36e994f916576bb2a1a5b14385649.ctex"]
+source_file="res://assets/sprites/weapons/weapon_winchester.png"
+dest_files=["res://.godot/imported/weapon_winchester.png-9a41c037b49e3315089c505ea8f09e25.ctex"]
 
 [params]
 

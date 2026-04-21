@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2uukj1qmtfld"
-path="res://.godot/imported/weapon_messenger_shotgun.png-7ddbc0eb51c2c04c804606a9a4d09e5b.ctex"
+uid="uid://cirls34lac57x"
+path="res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_messenger_shotgun.png"
-dest_files=["res://.godot/imported/weapon_messenger_shotgun.png-7ddbc0eb51c2c04c804606a9a4d09e5b.ctex"]
+source_file="res://assets/sprites/weapons/weapon_peacemaker.png"
+dest_files=["res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"]
 
 [params]
 

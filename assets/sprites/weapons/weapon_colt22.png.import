@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dd26a62ivon6q"
-path="res://.godot/imported/weapon_springfield_allin.png-28c3723fce4f81985146a94511c5a70c.ctex"
+uid="uid://cdwlqv0s782n2"
+path="res://.godot/imported/weapon_colt22.png-c6158f8a5f708d4c866d017daa5e390a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/weapon_springfield_allin.png"
-dest_files=["res://.godot/imported/weapon_springfield_allin.png-28c3723fce4f81985146a94511c5a70c.ctex"]
+source_file="res://assets/sprites/weapons/weapon_colt22.png"
+dest_files=["res://.godot/imported/weapon_colt22.png-c6158f8a5f708d4c866d017daa5e390a.ctex"]
 
 [params]
 
