@@ -18,8 +18,5 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Install ripgrep
-        run: sudo apt-get update && sudo apt-get install -y ripgrep
-
       - name: Verify project and export versions are in sync
         run: bash tools/sync_export_version.sh check

@@ -21,15 +21,17 @@ if [[ ! -f "$export_file" ]]; then
 fi
 
 derive_version() {
-  local exact_tag latest_tag commit_count distance base_version
+  local exact_tag latest_tag commit_count distance base_version hash
 
-  exact_tag="$(git tag --points-at HEAD | rg '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
+  exact_tag="$(git tag --points-at HEAD | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
   if [[ -n "$exact_tag" ]]; then
     echo "${exact_tag#v}"
     return
   fi
 
-  latest_tag="$(git tag --sort=-version:refname | rg '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
+  hash="$(git rev-parse --short HEAD)"
+
+  latest_tag="$(git tag --sort=-version:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
 
   if [[ -n "$latest_tag" ]]; then
     base_version="${latest_tag#v}"
@@ -37,7 +39,7 @@ derive_version() {
     if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
       distance="$((distance + 1))"
     fi
-    echo "${base_version}-dev.${distance}"
+    echo "${base_version}-dev.${distance}.g${hash}"
     return
   fi
 
@@ -45,61 +47,60 @@ derive_version() {
   if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
     commit_count="$((commit_count + 1))"
   fi
-  echo "0.0.0-dev.${commit_count}"
+  echo "0.0.0-dev.${commit_count}.g${hash}"
+}
+
+sed_inplace() {
+  if sed --version 2>/dev/null | grep -q GNU; then
+    sed -i "$@"
+  else
+    sed -i '' "$@"
+  fi
+}
+
+require_pattern() {
+  local pattern="$1" file="$2"
+  if ! grep -qE "$pattern" "$file"; then
+    echo "Expected pattern not found in $file: $pattern" >&2
+    exit 1
+  fi
 }
 
 version="$(derive_version)"
 filename_version="${version//./_}"
 filename_version="${filename_version//-/_}"
 
-python3 - <<'PY' "$mode" "$project_file" "$export_file" "$version" "$filename_version"
-from pathlib import Path
-import re
-import sys
-
-mode = sys.argv[1]
-project_path = Path(sys.argv[2])
-export_path = Path(sys.argv[3])
-version = sys.argv[4]
-filename_version = sys.argv[5]
-
-project_text = project_path.read_text()
-updated_project_text, count = re.subn(
-    r'^config/version=".*"$',
-    f'config/version="{version}"',
-    project_text,
-    flags=re.MULTILINE,
-)
-if count == 0:
-    raise SystemExit("Expected to replace config/version in project.godot")
-
-export_text = export_path.read_text()
-updated_export_text = export_text
-replacements = {
-    r'^application/short_version=".*"$': f'application/short_version="{version}"',
-    r'^application/version=".*"$': f'application/version="{version}"',
-    r'^export_path="builds/.*"$': f'export_path="builds/CrispyFlakes_{filename_version}.dmg"',
-}
-
-for pattern, replacement in replacements.items():
-    updated_export_text, count = re.subn(pattern, replacement, updated_export_text, flags=re.MULTILINE)
-    if count == 0:
-        raise SystemExit(f"Expected to replace pattern: {pattern}")
-
-if mode == "check":
-    if project_text != updated_project_text or export_text != updated_export_text:
-        raise SystemExit(
-            "Version metadata is out of sync. Run `bash tools/sync_export_version.sh` and commit the result."
-        )
-elif mode == "sync":
-    project_path.write_text(updated_project_text)
-    export_path.write_text(updated_export_text)
-else:
-    raise SystemExit(f"Unsupported mode: {mode}")
-PY
-
 if [[ "$mode" == "check" ]]; then
+  ok=true
+  grep -qF "config/version=\"${version}\""                            "$project_file" || ok=false
+  grep -qF "application/short_version=\"${version}\""                "$export_file"  || ok=false
+  grep -qF "application/version=\"${version}\""                      "$export_file"  || ok=false
+  grep -qF "export_path=\"builds/CrispyFlakes_${filename_version}.dmg\"" "$export_file"  || ok=false
+
+  if [[ "$ok" == "false" ]]; then
+    echo "Version metadata is out of sync. Run \`bash tools/sync_export_version.sh\` and commit the result." >&2
+    exit 1
+  fi
   echo "Version metadata is in sync for $version"
-else
+
+elif [[ "$mode" == "sync" ]]; then
+  require_pattern '^config/version=".*"$'          "$project_file"
+  require_pattern '^application/short_version=".*"$' "$export_file"
+  require_pattern '^application/version=".*"$'     "$export_file"
+  require_pattern '^export_path="builds/.*"$'      "$export_file"
+
+  # Escape & and \ in replacement strings (. and - are safe in sed replacement)
+  esc_ver=$(printf '%s' "$version"          | sed 's/[&\]/\\&/g')
+  esc_fn=$(printf '%s'  "$filename_version" | sed 's/[&\]/\\&/g')
+
+  sed_inplace "s|^config/version=\".*\"\$|config/version=\"${esc_ver}\"|"                              "$project_file"
+  sed_inplace "s|^application/short_version=\".*\"\$|application/short_version=\"${esc_ver}\"|"       "$export_file"
+  sed_inplace "s|^application/version=\".*\"\$|application/version=\"${esc_ver}\"|"                   "$export_file"
+  sed_inplace "s|^export_path=\"builds/.*\"\$|export_path=\"builds/CrispyFlakes_${esc_fn}.dmg\"|"    "$export_file"
+
   echo "Synchronized project and export metadata to version $version"
+
+else
+  echo "Unsupported mode: $mode" >&2
+  exit 1
 fi
