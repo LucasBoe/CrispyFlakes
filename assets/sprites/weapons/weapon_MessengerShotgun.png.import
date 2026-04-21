@@ -2,25 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2uukj1qmtfld"
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_messenger_shotgun.png.import
-path="res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"
-========
+uid="uid://b1rcd0it4w0cn"
 path="res://.godot/imported/weapon_MessengerShotgun.png-127a4f375425e2368024c481315d11a0.ctex"
->>>>>>>> origin/main:assets/sprites/weapons/weapon_MessengerShotgun.png.import
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_messenger_shotgun.png.import
-source_file="res://assets/sprites/weapons/weapon_messenger_shotgun.png"
-dest_files=["res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"]
-========
 source_file="res://assets/sprites/weapons/weapon_MessengerShotgun.png"
 dest_files=["res://.godot/imported/weapon_MessengerShotgun.png-127a4f375425e2368024c481315d11a0.ctex"]
->>>>>>>> origin/main:assets/sprites/weapons/weapon_MessengerShotgun.png.import
 
 [params]
 

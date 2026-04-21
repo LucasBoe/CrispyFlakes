@@ -2,25 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cirls34lac57x"
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_peacemaker.png.import
-path="res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"
-========
+uid="uid://os3p7ll1lbaq"
 path="res://.godot/imported/weapon_ThePeacemaker.png-c75b3d6a1eef134313cdbfec543cbba1.ctex"
->>>>>>>> origin/main:assets/sprites/weapons/weapon_ThePeacemaker.png.import
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_peacemaker.png.import
-source_file="res://assets/sprites/weapons/weapon_peacemaker.png"
-dest_files=["res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"]
-========
 source_file="res://assets/sprites/weapons/weapon_ThePeacemaker.png"
 dest_files=["res://.godot/imported/weapon_ThePeacemaker.png-c75b3d6a1eef134313cdbfec543cbba1.ctex"]
->>>>>>>> origin/main:assets/sprites/weapons/weapon_ThePeacemaker.png.import
 
 [params]
 

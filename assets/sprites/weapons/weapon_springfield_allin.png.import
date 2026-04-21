@@ -2,25 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dd26a62ivon6q"
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_springfield_allin.png.import
+uid="uid://dg4v7qtpxjxsr"
 path="res://.godot/imported/weapon_springfield_allin.png-6dc1932aea989dc43798f968b0c8dd91.ctex"
-========
-path="res://.godot/imported/weapon_TheSpringfieldAllin.png-07937edbb7ddc63562b4ff6c675be96e.ctex"
->>>>>>>> origin/main:assets/sprites/weapons/weapon_TheSpringfieldAllin.png.import
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-<<<<<<<< HEAD:assets/sprites/weapons/weapon_springfield_allin.png.import
 source_file="res://assets/sprites/weapons/weapon_springfield_allin.png"
 dest_files=["res://.godot/imported/weapon_springfield_allin.png-6dc1932aea989dc43798f968b0c8dd91.ctex"]
-========
-source_file="res://assets/sprites/weapons/weapon_TheSpringfieldAllin.png"
-dest_files=["res://.godot/imported/weapon_TheSpringfieldAllin.png-07937edbb7ddc63562b4ff6c675be96e.ctex"]
->>>>>>>> origin/main:assets/sprites/weapons/weapon_TheSpringfieldAllin.png.import
 
 [params]
 
