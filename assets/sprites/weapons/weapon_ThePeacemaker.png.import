@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwi3tiwa3fm4v"
-path="res://.godot/imported/item_winchester.png-594997b06b389a2179972da5ede51547.ctex"
+uid="uid://cirls34lac57x"
+path="res://.godot/imported/weapon_ThePeacemaker.png-c75b3d6a1eef134313cdbfec543cbba1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/item_winchester.png"
-dest_files=["res://.godot/imported/item_winchester.png-594997b06b389a2179972da5ede51547.ctex"]
+source_file="res://assets/sprites/weapons/weapon_ThePeacemaker.png"
+dest_files=["res://.godot/imported/weapon_ThePeacemaker.png-c75b3d6a1eef134313cdbfec543cbba1.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://2uukj1qmtfld"
-path="res://.godot/imported/item_MessengerShotgun.png-1a4dbe04cc624fc172c72c712e01f599.ctex"
+uid="uid://dd26a62ivon6q"
+path="res://.godot/imported/weapon_TheSpringfieldAllin.png-07937edbb7ddc63562b4ff6c675be96e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/item_MessengerShotgun.png"
-dest_files=["res://.godot/imported/item_MessengerShotgun.png-1a4dbe04cc624fc172c72c712e01f599.ctex"]
+source_file="res://assets/sprites/weapons/weapon_TheSpringfieldAllin.png"
+dest_files=["res://.godot/imported/weapon_TheSpringfieldAllin.png-07937edbb7ddc63562b4ff6c675be96e.ctex"]
 
 [params]
 

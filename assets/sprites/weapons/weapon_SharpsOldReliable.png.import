@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cirls34lac57x"
-path="res://.godot/imported/item_ThePeacemaker.png-189a6239a1ae8e8e363810be4f9fc912.ctex"
+uid="uid://lmw513jmjj4n"
+path="res://.godot/imported/weapon_SharpsOldReliable.png-4b902cb1dc3892048f3d69a467306712.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/guns/item_ThePeacemaker.png"
-dest_files=["res://.godot/imported/item_ThePeacemaker.png-189a6239a1ae8e8e363810be4f9fc912.ctex"]
+source_file="res://assets/sprites/weapons/weapon_SharpsOldReliable.png"
+dest_files=["res://.godot/imported/weapon_SharpsOldReliable.png-4b902cb1dc3892048f3d69a467306712.ctex"]
 
 [params]
 
