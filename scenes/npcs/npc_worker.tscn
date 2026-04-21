@@ -13,10 +13,6 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 height = 28.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
-radius = 6.0
-height = 24.0
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_escwn"]
 shader = ExtResource("2_dc1yn")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
@@ -28,11 +24,16 @@ shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
 shader_parameter/apron_sheet = ExtResource("3_aq4br")
 shader_parameter/use_apron = true
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
+radius = 6.0
+height = 24.0
+
 [node name="NPCWorker" type="Area2D"]
 z_index = 1
 script = ExtResource("1_d0f16")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_hvbcb")
 
@@ -77,5 +78,6 @@ script = ExtResource("6_lmhvm")
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PreciseHover"]
+visible = false
 position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_precise")

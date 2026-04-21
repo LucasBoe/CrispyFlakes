@@ -17,8 +17,8 @@ func _process(delta):
 		iconTexture.modulate = Color.LIGHT_GRAY
 
 	if selected:
-		background_rect.position = Vector2.ZERO
+		background_rect.position = Vector2(2,2)
 		iconTexture.position = Vector2.ZERO
 	else:
-		background_rect.position = Vector2(0,2)
-		iconTexture.position = Vector2(0,-2)
+		background_rect.position = Vector2(2,2)
+		iconTexture.position = Vector2(-2,-2)

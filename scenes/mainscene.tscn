@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=44 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Script" uid="uid://bpm87gr3dy543" path="res://scripts/ui_tutorial_item.gd" id="19_duoqm"]
 [ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="19_mwcfc"]
-[ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="19_wkmvq"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/2x/time/time-button_play.png" id="25_3ou18"]
@@ -484,10 +483,10 @@ script = ExtResource("6_4amiu")
 
 [node name="Background" type="ColorRect" parent="UI/UITime/HBoxContainer/Button"]
 layout_mode = 1
-offset_left = 5.0
-offset_top = 5.0
-offset_right = 33.0
-offset_bottom = 33.0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 29.0
+offset_bottom = 29.0
 color = Color(0, 0, 0, 1)
 
 [node name="Texture" type="TextureRect" parent="UI/UITime/HBoxContainer/Button"]
@@ -497,24 +496,6 @@ offset_top = -1.0
 offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("25_3ou18")
-
-[node name="TextureProgressBar" type="TextureProgressBar" parent="UI/UITime"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -8.0
-offset_top = 30.0
-offset_right = 8.0
-offset_bottom = 46.0
-grow_horizontal = 2
-max_value = 1.0
-step = 0.01
-value = 0.33
-fill_mode = 4
-texture_under = ExtResource("19_wkmvq")
-texture_progress = ExtResource("19_wkmvq")
-tint_under = Color(0, 0, 0, 1)
 
 [node name="Button_Idles" type="Button" parent="UI/UITime"]
 self_modulate = Color(1, 0.7, 0, 1)

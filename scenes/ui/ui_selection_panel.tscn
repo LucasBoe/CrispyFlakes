@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bfeiyyg0t6k4v" path="res://assets/sprites/ui/2x/ui_rect_base_open_left.png" id="7_jtsrp"]
 [ext_resource type="Texture2D" uid="uid://b01gv73kbgmqf" path="res://assets/sprites/ui/2x/module_inactive.png" id="8_jtsrp"]
 [ext_resource type="Texture2D" uid="uid://1jfwilqc3pm7" path="res://assets/sprites/ui/2x/module_active.png" id="9_qtqix"]
+[ext_resource type="Texture2D" uid="uid://dc87x7sqkwkct" path="res://assets/sprites/ui/2x/module_connector_inactive.png" id="11_qtqix"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://cel32774pgclg" path="res://assets/sprites/ui/icon_drink.png" id="23_42hm2"]
@@ -19,7 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="29_x63bv"]
 [ext_resource type="Script" uid="uid://bylm6fts7jdun" path="res://scripts/ui/selection_room_module_ui.gd" id="33_3qqvy"]
 [ext_resource type="Texture2D" uid="uid://bl8kmj3c14iqo" path="res://assets/sprites/ui/module_icon_brewer_small.png" id="35_cm1h5"]
-[ext_resource type="Texture2D" uid="uid://dc2hanvpmpkab" path="res://assets/sprites/ui/module_connector_active.png" id="36_bfe7r"]
 [ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="70_prisui"]
 [ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/handel_8x8.png" id="71_filter"]
 [ext_resource type="Texture2D" uid="uid://cc25qv8cwb5cw" path="res://assets/sprites/ui/x_8x8.png" id="72_filter"]
@@ -88,9 +88,7 @@ round_precision = 1
 
 [node name="Line" type="Node2D" parent="LineAnchor"]
 script = ExtResource("24_xsu8o")
-pixel_size = null
-line_color = null
-snap_to_grid = null
+line_width = 2
 
 [node name="ButtonDrag" type="Button" parent="."]
 layout_mode = 2
@@ -249,7 +247,7 @@ layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="TextureButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
-custom_minimum_size = Vector2(33, 33)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxTexture_ydpv1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_ynify")
@@ -261,7 +259,7 @@ icon_alignment = 1
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
 modulate = Color(0.5019608, 0.4862745, 0.45882353, 1)
 layout_mode = 2
-texture = ExtResource("36_bfe7r")
+texture = ExtResource("11_qtqix")
 
 [node name="BountyContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
