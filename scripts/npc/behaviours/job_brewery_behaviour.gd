@@ -17,12 +17,10 @@ func loop():
 
 		var brews_per_water: int = brewery.current_module.brews_per_water if brewery.current_module else 1
 		if _brews_since_water == 0:
-			var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
-			if brewery.has_faucet and tower != null and tower.has_water():
-				_narrative = ["Drawing from the tower...", "Tapping the water supply...", "Filling up from the pipe..."].pick_random()
-				await move(brewery.get_random_floor_position())
-				tower.consume_water()
-			else:
+			var used_tower := false
+			if brewery.has_faucet:
+				used_tower = await try_fetch_from_tower(brewery.get_random_floor_position())
+			if not used_tower:
 				_narrative = ["Fetching water...", "Going for water...", "Filling up the bucket..."].pick_random()
 				await fetch_item(Enum.Items.WATER_BUCKET)
 				if not npc.Item.is_item(Enum.Items.WATER_BUCKET):

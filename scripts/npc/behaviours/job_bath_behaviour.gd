@@ -15,13 +15,8 @@ func loop():
 		var can_run_bath := false
 
 		if bath.has_faucet:
-			var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
-			if tower != null and tower.has_water():
-				_narrative = ["Turning the faucet...", "Drawing hot water...", "Filling the tub from the tower..."].pick_random()
-				await move(bath.get_center_floor_position())
-				tower.consume_water()
-				can_run_bath = true
-			else:
+			can_run_bath = await try_fetch_from_tower(bath.get_center_floor_position())
+			if not can_run_bath:
 				_narrative = ["Waiting for the water tower...", "No water in the pipes...", "The bath's faucet is dry..."].pick_random()
 				RoomStatusHandler.notify(bath, "no water", Color.ORANGE, bath.faucet_module.icon if bath.faucet_module else null)
 				await pause(2)

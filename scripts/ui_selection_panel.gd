@@ -7,7 +7,6 @@ class_name UISelectionPanel
 @onready var need_ui_dummy = $MarginContainer/MarginContainer/VBoxContainer/NeedDummy
 @onready var status_icon_label_dummy: Label = $MarginContainer/MarginContainer/VBoxContainer/StatusIconLabelDummy
 @onready var status_row_dummy: MarginContainer = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Status
-@onready var room_upgrade_hbox = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer/UpgradeSelection
 @onready var room_delete_button = $MarginContainer/MarginContainer/VBoxContainer/Button
 @onready var hire_guest_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HireGuestButton
 @onready var arrest_button = $MarginContainer/MarginContainer/VBoxContainer/ArrestButton
@@ -217,7 +216,6 @@ func _show_for_worker(worker: NPCWorker):
 	arrest_button.hide()
 	worker_fight_response_row.show()
 	_bind_worker_fight_response(worker)
-	room_upgrade_hbox.get_parent().hide()
 	needs = null
 	_rebuild_equipment_ui(worker)
 	var has_job = worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room)
@@ -232,7 +230,6 @@ func _show_for_guest(guest: NPCGuest):
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	room_delete_button.hide()
-	room_upgrade_hbox.get_parent().hide()
 
 	hire_guest_button.show()
 	_bind_guest_hire_button(guest)
@@ -405,11 +402,6 @@ func _show_for_room(room: RoomBase):
 
 	room_module_ui.populate(room)
 
-	if room.has_upgrades:
-		_show_room_upgrades(room)
-	else:
-		room_upgrade_hbox.get_parent().hide()
-
 func _show_storage_filter(room: RoomBase):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
@@ -471,46 +463,6 @@ func _show_bounty_board():
 		call_sheriff_button.disabled = true
 	)
 
-func _show_room_upgrades(room: RoomBase):
-	room_upgrade_hbox.get_parent().show()
-
-	# keep index 0 as template, delete the rest
-	Util.delete_all_children_execept_index_0(room_upgrade_hbox)
-
-	var template = room_upgrade_hbox.get_child(0)
-	template.visible = false
-
-	var i = 0
-	for upgrade : RoomUpgrade in room.upgrades:
-		i += 1
-		var clone := template.duplicate()
-		room_upgrade_hbox.add_child(clone)
-		var content_root = clone.get_child(0).get_child(0)
-
-		var upgrade_root = content_root.get_child(0)
-		upgrade_root.get_child(0).text = str(i, ".")
-		upgrade_root.get_child(1).text = upgrade.upgrade_name
-		upgrade_root.get_child(2).text = str("Cost: ", upgrade.upgrade_price, " $")
-		upgrade_root.get_child(4).texture = upgrade.upgrade_preview
-
-		var item_root = content_root.get_child(1)
-		item_root.get_child(0).text = str("Sells: ", upgrade.item_name)
-		item_root.get_child(1).get_child(0).texture = upgrade.item_icon
-		item_root.get_child(1).get_child(1).text = str(upgrade.item_cost, "$")
-
-		var required_label = item_root.get_child(2)
-		if upgrade.room_required != null:
-			required_label.text = str("needs\n", upgrade.room_required.room_name)
-			required_label.show()
-		else:
-			required_label.hide()
-
-		clone.pressed.connect(room.try_set_upgrade.bind(upgrade))
-		clone.pressed.connect(refresh_upgrades)
-		clone.show()
-
-	refresh_upgrades()
-
 func _update_recipe_row(room: RoomBase):
 	var d = room.data
 	if d == null:
@@ -535,19 +487,6 @@ func _update_recipe_row(room: RoomBase):
 			room_recipe_consumed_icon.texture = Item.get_info(d.consumed_item_type).Tex
 		if d.produces_item:
 			room_recipe_produced_icon.texture = Item.get_info(d.produced_item_type).Tex
-
-func refresh_upgrades():
-	for child in room_upgrade_hbox.get_children():
-		var upgrade_name = child.get_child(0).get_child(0).get_child(0).get_child(1).text
-		var price_label = child.get_child(0).get_child(0).get_child(0).get_child(2) as Label
-		var current_label = child.get_child(0).get_child(0).get_child(0).get_child(3) as Label
-		var is_current = upgrade_name == target.current_upgrade.upgrade_name
-		child.modulate = Color.WHITE if not is_current else Color.WEB_GRAY
-		price_label.visible = not is_current
-		current_label.visible = is_current
-
-	if target is RoomBar:
-		_update_recipe_row(target)
 
 func _on_potential_target_deleted(room):
 	if target == room:

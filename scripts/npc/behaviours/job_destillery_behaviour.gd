@@ -13,15 +13,22 @@ func loop():
 
 	while true:
 
-		_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
-		await fetch_item(Enum.Items.WATER_BUCKET)
+		var got_water := false
+		var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
+		if destillery.has_faucet:
+			got_water = await try_fetch_from_tower(destillery.get_random_floor_position())
+		if not got_water:
+			_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
+			await fetch_item(Enum.Items.WATER_BUCKET)
 
 		if npc.Item.is_item(Enum.Items.WATER_BUCKET):
+			got_water = true
 			await move(destillery.get_random_floor_position())
 			var i = npc.Item.drop_current()
 			if is_instance_valid(i):
 				i.destroy()
 
+		if got_water:
 			_narrative = ["Working the still...", "Distilling the whiskey...", "Checking the proof..."].pick_random()
 			await progress(5)
 			var item_spawn_pos = destillery.get_random_floor_position()

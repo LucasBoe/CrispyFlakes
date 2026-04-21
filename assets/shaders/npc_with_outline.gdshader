@@ -6,8 +6,12 @@ uniform sampler2D sprite_sheet : filter_nearest;
 uniform ivec2 sprite_index = ivec2(0, 0);
 uniform vec2 cell_pixel_size = vec2(24.0, 16.0);
 uniform vec3 base_hue_offset = vec3(0.1, -0.33, 0.0);
+
 uniform sampler2D apron_sheet : filter_nearest;
 uniform bool use_apron = false;
+
+uniform sampler2D gun_texture : filter_nearest;
+uniform bool use_gun = false;
 
 const vec3 rgbh = vec3(0.0, 0.333333,  0.666667);
 
@@ -85,6 +89,11 @@ vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
     if (use_apron) {
         vec4 apron = texture(apron_sheet, uv);
         result = mix(result, apron, apron.a);
+    }
+	
+	if (use_gun) {
+        vec4 gun = texture(gun_texture, uv);
+        result = mix(result, gun, gun.a);
     }
     return result;
 }
