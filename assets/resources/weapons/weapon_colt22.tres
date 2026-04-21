@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3 uid="uid://bxr3a86yi7vji"]
+
+[ext_resource type="Script" uid="uid://dnddurwjv67mb" path="res://scripts/items/weapon_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://cdwlqv0s782n2" path="res://assets/sprites/weapons/weapon_colt22.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+weapon_name = "Colt 22"
+accuracy = 0.3
+sprite = ExtResource("2")

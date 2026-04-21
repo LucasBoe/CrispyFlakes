@@ -655,7 +655,7 @@ func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> v
 			entry_label += " *"
 		elif not inst.is_available():
 			entry_label += " (%s)" % inst.equipped_by.character_name
-		var icon: Texture2D = load(inst.data.sprite_path) if inst.data.sprite_path != "" else null
+		var icon: Texture2D = inst.data.sprite
 		if icon != null:
 			opt.add_icon_item(icon, entry_label)
 		else:
