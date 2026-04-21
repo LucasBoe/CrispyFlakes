@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://2dv0nu2ysix"]
+
+[ext_resource type="PackedScene" uid="uid://b1lbskj2hh8yj" path="res://scenes/rooms/room_gambling.tscn" id="1_gambl"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="2_gambl"]
+
+[resource]
+script = ExtResource("2_gambl")
+packed_scene = ExtResource("1_gambl")
+room_name = "Gambling Table"
+room_desc = "guests try their luck"
+construction_price = 50
+money_capacity = 150
+produces_money = true
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

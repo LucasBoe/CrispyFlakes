@@ -29,6 +29,7 @@ const room_data_horse_post := preload("res://assets/resources/room_horse_post.tr
 const room_data_broom_closet := preload("res://assets/resources/room_broom_closet.tres")
 const room_data_bouncer := preload("res://assets/resources/room_bouncer.tres")
 const room_data_water_tower := preload("res://assets/resources/room_water_tower.tres")
+const room_data_gambling := preload("res://assets/resources/room_gambling.tres")
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
