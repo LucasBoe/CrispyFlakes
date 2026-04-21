@@ -1,13 +1,14 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=4 format=3 uid="uid://bsca5xah22vrk"]
 
-[ext_resource type="Script" path="res://scripts/items/weapon_data.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/weapons/weapon_springfield_allin.png" id="2"]
+[ext_resource type="Script" uid="uid://dnddurwjv67mb" path="res://scripts/items/weapon_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://cxv10feu4gxy0" path="res://assets/sprites/weapons/weapon_springfield_allin_overlay.png" id="1_bchd5"]
+[ext_resource type="Texture2D" uid="uid://dg4v7qtpxjxsr" path="res://assets/sprites/weapons/weapon_springfield_allin.png" id="2"]
 
 [resource]
 script = ExtResource("1")
 weapon_name = "Springfield Allin"
 range_rooms = 6
 accuracy = 0.7
-fire_rate = 0
 single_handed = false
 sprite = ExtResource("2")
+equiped_overlay_texture = ExtResource("1_bchd5")

@@ -33,6 +33,12 @@ float mask_to_float(vec3 one, vec3 two) {
 
 void vertex() {
     modulate_color = COLOR;
+    // Expand the mesh 1px outward on all sides so the outline has room
+    // to render beyond the base sprite boundary (e.g. when the gun
+    // overlay reaches an edge pixel of the mesh).
+    vec2 dir = sign(UV - 0.5);
+    VERTEX += dir * 1.0;
+    UV += dir * TEXTURE_PIXEL_SIZE;
 }
 
 float hue_dist(float a, float b) {
@@ -90,15 +96,21 @@ vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
         vec4 apron = texture(apron_sheet, uv);
         result = mix(result, apron, apron.a);
     }
-	
-	if (use_gun) {
+
+    if (use_gun) {
         vec4 gun = texture(gun_texture, uv);
         result = mix(result, gun, gun.a);
     }
     return result;
 }
+vec4 sample_composite(sampler2D tex, vec2 uv, vec2 px_size) {
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
+        return vec4(0.0);
+    return composite(tex, uv, px_size);
+}
+
 void fragment() {
-    vec4 comp = composite(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
+    vec4 comp = sample_composite(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
 
     if (comp.a > 0.0) {
         COLOR = comp * modulate_color;
@@ -106,16 +118,16 @@ void fragment() {
         vec2 px = TEXTURE_PIXEL_SIZE;
 
         bool valid_side =
-            composite(TEXTURE, UV + vec2(-px.x, 0.0), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2( px.x, 0.0), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2(0.0, -px.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2(0.0,  px.y), TEXTURE_PIXEL_SIZE).a > 0.0;
+            sample_composite(TEXTURE, UV + vec2(-px.x, 0.0), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2( px.x, 0.0), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2(0.0, -px.y), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2(0.0,  px.y), px).a > 0.0;
 
         bool valid_corner =
-            composite(TEXTURE, UV + vec2(-px.x, -px.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2( px.x, -px.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2(-px.x,  px.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-            composite(TEXTURE, UV + vec2( px.x,  px.y), TEXTURE_PIXEL_SIZE).a > 0.0;
+            sample_composite(TEXTURE, UV + vec2(-px.x, -px.y), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2( px.x, -px.y), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2(-px.x,  px.y), px).a > 0.0 ||
+            sample_composite(TEXTURE, UV + vec2( px.x,  px.y), px).a > 0.0;
 
         if (valid_side || (corner_pixel && valid_corner)) {
             COLOR = outline_color * modulate_color;

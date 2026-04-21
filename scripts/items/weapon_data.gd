@@ -7,6 +7,7 @@ extends Resource
 @export var fire_rate: int = 0
 @export var single_handed: bool = true
 @export var sprite: Texture2D
+@export var equiped_overlay_texture : Texture2D
 
 func get_fire_rate_label() -> String:
 	match fire_rate:
