@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.0-dev.189.g34df4bb"
+config/version="0.0.0-dev.190.g592c8f7"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"

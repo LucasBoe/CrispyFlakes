@@ -8,6 +8,27 @@ const DEFAULT_MAX_USES := 10
 
 var user : NPC
 var uses : int = 0
+var queue: Array = []
+
+func join_queue(npc: NPC) -> void:
+	if not queue.has(npc):
+		queue.append(npc)
+
+func leave_queue(npc: NPC) -> void:
+	queue.erase(npc)
+
+func is_at_front(npc: NPC) -> bool:
+	return queue.size() > 0 and queue[0] == npc
+
+func is_occupied() -> bool:
+	return user != null
+
+func get_queue_position(npc: NPC) -> Vector2:
+	var index = queue.find(npc)
+	if index < 0:
+		return get_center_floor_position()
+	var direction: float = 1.0 if global_position.x >= 0 else -1.0
+	return get_center_floor_position() + Vector2(direction * (index + 1) * 14, 0)
 
 func init_room(_x : int, _y : int):
 	associated_job = Enum.Jobs.OUTHOUSE_CLEANER
