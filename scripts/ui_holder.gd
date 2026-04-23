@@ -12,6 +12,7 @@ class_name UIHolder
 @onready var selection :  = $UISelectionPanel
 @onready var hire : UIHire = $UIFullscreen/UIHire
 @onready var confirm : UIConfirm = $UIFullscreen/UIConfirm
+@onready var rename: UIRename = $UIFullscreen/UIRename
 #@onready var pause: UIPause = $UIPause
 
 

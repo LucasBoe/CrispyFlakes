@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var _tiles_walls : TileMapLayer = $ForegroundTiles
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
+@onready var _sign: BuildingSign = $SaloonSign
 
 var floors = {}
 var query : BuildingRoomQueries
@@ -85,6 +86,16 @@ func delete_room(room: RoomBase):
 
 func update_foreground_tiles():
 	_tile_renderer.update(floors)
+	_update_sign_position()
+
+func _update_sign_position():
+	var idx: Vector2i = _tile_renderer.sign_room_index
+	if idx.x == -9999:
+		_sign.visible = false
+		return
+	# Center of the sign tile in Building-local space
+	var sign_pos: Vector2 = Vector2(idx.x * 48 + 24, _tiles_roof.position.y + (-idx.y - 1) * 48 + 24)
+	_sign.set_target_position(sign_pos)
 
 func _erase_room_cell(x: int, y: int) -> void:
 	if not floors.has(y):

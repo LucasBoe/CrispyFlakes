@@ -3,6 +3,7 @@ class_name BuildingTileRenderer
 
 var _tiles_walls : TileMapLayer
 var _tiles_roof : TileMapLayer
+var sign_room_index: Vector2i = Vector2i(-9999, -9999)
 
 enum levelDifference { SAME, HIGHER, LOWER }
 enum placementContext { OUTER_LEFT = 0, LEFT = 1, MIDDLE = 2, RIGHT = 3, OUTER_RIGHT = 4 }
@@ -23,6 +24,7 @@ func _init(walls: TileMapLayer, roof: TileMapLayer) -> void:
 func update(floors: Dictionary) -> void:
 	_tiles_walls.clear()
 	_tiles_roof.clear()
+	sign_room_index = Vector2i(-9999, -9999)
 
 	var list_of_x_positions = []
 	var list_of_room_indexes_on_floor = {}
@@ -90,6 +92,7 @@ func update(floors: Dictionary) -> void:
 		var index = triplets[(len(triplets) - 1) / 2]
 		var x = index.x
 		var y = index.y
+		sign_room_index = Vector2i(x, y)
 
 		set_roof(x - 1, y, -1, true)
 		set_roof(x, y, roofIndexMap.SIGN)
