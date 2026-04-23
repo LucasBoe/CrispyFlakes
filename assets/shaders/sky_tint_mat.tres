@@ -1,0 +1,6 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://7fea54qisjif"]
+
+[ext_resource type="Shader" uid="uid://b77ddhtf3yaqk" path="res://assets/shaders/sky_tint.gdshader" id="1_qxylt"]
+
+[resource]
+shader = ExtResource("1_qxylt")

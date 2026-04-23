@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://lavxixcrcm5q"]
+[gd_scene load_steps=15 format=3 uid="uid://lavxixcrcm5q"]
 
 [ext_resource type="Script" uid="uid://ft3abdx5faf3" path="res://scripts/building.gd" id="1_building"]
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="2_fg_ground"]
 [ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="3_fg_basement"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="4_g3pb6"]
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="4_roof"]
 [ext_resource type="Texture2D" uid="uid://cmsgfl6oavk5a" path="res://assets/sprites/roof_sign_sign.png" id="6_gof7m"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="7_gof7m"]
@@ -62,6 +63,7 @@ tile_set = SubResource("TileSet_fg")
 
 [node name="RoofTiles" type="TileMapLayer" parent="."]
 z_index = 2100
+material = ExtResource("4_g3pb6")
 position = Vector2(0, -23)
 tile_set = SubResource("TileSet_roof")
 
@@ -72,6 +74,7 @@ script = ExtResource("sign_script")
 [node name="Sprite2D" type="NinePatchRect" parent="SaloonSign"]
 texture_filter = 1
 texture_repeat = 2
+material = ExtResource("4_g3pb6")
 custom_minimum_size = Vector2(64, 24)
 anchors_preset = 8
 anchor_left = 0.5
@@ -87,9 +90,6 @@ texture = ExtResource("6_gof7m")
 patch_margin_left = 16
 patch_margin_right = 16
 axis_stretch_horizontal = 2
-
-[node name="Sprite2D2" type="Sprite2D" parent="SaloonSign"]
-visible = false
 
 [node name="Label" type="Label" parent="SaloonSign"]
 texture_filter = 1

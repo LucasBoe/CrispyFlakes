@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://brd7wfwl3sv5n"]
+[gd_scene load_steps=17 format=4 uid="uid://brd7wfwl3sv5n"]
 
 [ext_resource type="Script" uid="uid://bkgkn0gd61g4x" path="res://scenes/main/environment_paralax_handler.gd" id="1_58wo2"]
 [ext_resource type="Shader" uid="uid://qa66dukaogw5" path="res://assets/shaders/sky.gdshader" id="2_8d0p8"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dbu6v4c5e4q2l" path="res://assets/sprites/clouds/cloud_6.png" id="8_685kp"]
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
 shader = ExtResource("2_8d0p8")
@@ -62,14 +63,23 @@ position = Vector2(0, -1)
 scale = Vector2(100, 100)
 texture = ExtResource("2_vjqo2")
 
-[node name="Ground" type="Sprite2D" parent="."]
+[node name="Ground" type="NinePatchRect" parent="."]
 z_index = -2000
 texture_filter = 1
 texture_repeat = 2
-position = Vector2(0, 32)
+material = ExtResource("10_n0wds")
+custom_minimum_size = Vector2(4096, 2048)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -1024.0
+offset_right = 1024.0
+offset_bottom = 320.0
+grow_horizontal = 2
 texture = SubResource("PortableCompressedTexture2D_cm1h5")
-region_enabled = true
 region_rect = Rect2(0, 0, 10240, 64)
+patch_margin_top = 48
+axis_stretch_horizontal = 1
 metadata/_aseprite_wizard_interface_config_ = {
 "pending_changes": {}
 }
@@ -87,15 +97,6 @@ metadata/_aseprite_wizard_config_ = {
 "source": "res://assets/sprites/ground-tile-64px.aseprite"
 }
 metadata/_aseprite_wizard_source_file_hash_ = "1a66c4b0236c1a2385aed43fbce46e23"
-
-[node name="ColorRect" type="ColorRect" parent="Ground"]
-z_index = -2000
-offset_left = -5120.0
-offset_top = 32.0
-offset_right = 5120.0
-offset_bottom = 5152.0
-mouse_filter = 2
-color = Color(0, 0, 0, 1)
 
 [node name="Sky" type="Sprite2D" parent="."]
 visible = false
@@ -137,6 +138,7 @@ texture = ExtResource("9_lj14v")
 [node name="Montains" type="Sprite2D" parent="."]
 z_index = -3000
 texture_filter = 1
+material = ExtResource("10_n0wds")
 position = Vector2(-362, 48)
 texture = ExtResource("5_mo382")
 offset = Vector2(0, -40.5)
@@ -144,10 +146,12 @@ offset = Vector2(0, -40.5)
 [node name="Montains2" type="Sprite2D" parent="."]
 z_index = -3000
 texture_filter = 1
+material = ExtResource("10_n0wds")
 position = Vector2(272, 52)
 texture = ExtResource("5_mo382")
 offset = Vector2(0, -40.5)
 
 [node name="Signpost" type="Sprite2D" parent="."]
+material = ExtResource("10_n0wds")
 position = Vector2(-320, -12)
 texture = ExtResource("5_0aorq")

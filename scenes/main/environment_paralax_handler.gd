@@ -11,10 +11,11 @@ var mountains_default_posisitions = []
 func _ready():
 	for i in mountains:
 		mountains_default_posisitions.append(i.global_position)
-		
+
 func _process(delta):
 	var tod: float = fmod(Global.time_now, Global.DAY_DURATION) / Global.DAY_DURATION * 24.0
 	$NewSky.material.set_shader_parameter("time_of_day", tod)
+	RenderingServer.global_shader_parameter_set("sky_time_of_day", tod)
 
 	var cam_pos = Camera.global_position
 	var inv_zoom: Vector2 = Vector2.ONE / Camera.zoom
