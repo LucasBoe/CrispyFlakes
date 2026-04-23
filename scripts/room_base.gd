@@ -15,6 +15,12 @@ var current_module = null
 
 const backwallDefault = preload("res://assets/sprites/back-wall.png");
 const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");
+const backwallVariants : Array = [
+	preload("res://assets/sprites/back-wall.png"),
+	preload("res://assets/sprites/back-wall_window1.png"),
+	preload("res://assets/sprites/back-wall_window2.png"),
+	preload("res://assets/sprites/back-wall_window3.png"),
+]
 
 signal on_destroy_signal
 
@@ -24,7 +30,10 @@ func init_room(x : int, y : int):
 	is_basement = y < 0
 
 	if not is_outside_room and back_wall_sprite_2d != null:
-		back_wall_sprite_2d.texture = backwallBasement if is_basement else backwallDefault
+		if is_basement:
+			back_wall_sprite_2d.texture = backwallBasement
+		else:
+			back_wall_sprite_2d.texture = backwallVariants[randi() % backwallVariants.size()]
 
 	var modules_root: Node = get_node_or_null("ModulesRoot")
 	if modules_root:
