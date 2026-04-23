@@ -2,9 +2,22 @@ extends Behaviour
 class_name UseOuthouseBehaviour
 
 var outhouse : RoomOuthouse
+var toilet : RoomToilet
+var _hidden_in_toilet := false
 
 func loop():
 	_narrative = ["Nature calls...", "Can't hold it much longer...", "In a hurry..."].pick_random()
+	toilet = _get_usable_toilet()
+	if toilet != null:
+		if await _use_toilet():
+			return
+		if stopped:
+			return
+
+	var blocked_toilet := _get_blocked_toilet()
+	if blocked_toilet != null:
+		RoomStatusHandler.notify(blocked_toilet, blocked_toilet.get_unusable_status_text(), Color.ORANGE, Building.room_data_water_tower.room_icon)
+
 	outhouse = get_random_room_of_type(RoomOuthouse)
 
 	if not outhouse:
@@ -68,11 +81,85 @@ func loop():
 	add_satisfaction(0.3, "Used Outhouse")
 
 func stop_loop() -> BehaviourSaveData:
+	if is_instance_valid(toilet):
+		toilet.leave_queue(npc)
+		toilet.release_stall(npc)
+	if _hidden_in_toilet:
+		npc.Animator.show()
+		_hidden_in_toilet = false
+
 	if is_instance_valid(outhouse):
 		outhouse.leave_queue(npc)
 		if outhouse.user == npc:
 			outhouse.user = null
 	return super.stop_loop()
+
+func _get_usable_toilet() -> RoomToilet:
+	var reachable = npc.Navigation.get_reachable_rooms()
+	var toilets = Building.query.all_rooms_of_type(RoomToilet, reachable)
+	toilets = toilets.filter(func(t: RoomToilet): return t.has_working_water_supply())
+	if toilets.is_empty():
+		return null
+	return toilets.pick_random()
+
+func _get_blocked_toilet() -> RoomToilet:
+	var reachable = npc.Navigation.get_reachable_rooms()
+	var toilets = Building.query.all_rooms_of_type(RoomToilet, reachable)
+	toilets = toilets.filter(func(t: RoomToilet): return not t.has_working_water_supply())
+	if toilets.is_empty():
+		return null
+	return toilets.pick_random()
+
+func _use_toilet() -> bool:
+	_narrative = ["Heading to the toilet...", "Making for the indoor stalls...", "Looking for a stall..."].pick_random()
+	toilet.join_queue(npc)
+	await move(toilet.get_queue_position(npc))
+
+	if stopped or not is_instance_valid(toilet):
+		return false
+
+	while is_instance_valid(toilet) and not toilet.can_enter(npc):
+		if stopped or not is_instance_valid(toilet):
+			return false
+		if not toilet.has_working_water_supply():
+			toilet.leave_queue(npc)
+			RoomStatusHandler.notify(toilet, toilet.get_unusable_status_text(), Color.ORANGE, Building.room_data_water_tower.room_icon)
+			return false
+		_narrative = "Waiting for a toilet stall..."
+		var target_pos: Vector2 = toilet.get_queue_position(npc)
+		if npc.global_position.distance_squared_to(target_pos) > 16.0:
+			await move(target_pos)
+		else:
+			await end_of_frame()
+
+	if stopped or not is_instance_valid(toilet):
+		return false
+
+	if not toilet.reserve_stall(npc):
+		toilet.leave_queue(npc)
+		RoomStatusHandler.notify(toilet, toilet.get_unusable_status_text(), Color.ORANGE, Building.room_data_water_tower.room_icon)
+		return false
+
+	_narrative = ["Using the indoor toilet...", "Taking care of business...", "Finally got a stall..."].pick_random()
+	await move(toilet.get_stall_position(npc))
+	if stopped or not is_instance_valid(toilet):
+		return false
+
+	npc.Animator.hide()
+	_hidden_in_toilet = true
+	await progress(RoomToilet.USE_DURATION)
+	if _hidden_in_toilet:
+		npc.Animator.show()
+		_hidden_in_toilet = false
+	if is_instance_valid(toilet):
+		toilet.release_stall(npc)
+
+	if stopped:
+		return false
+
+	npc.needs_to_pee = 0.0
+	add_satisfaction(0.35, "Used Toilet")
+	return true
 
 func _pee_outside() -> void:
 	_narrative = ["Finding a spot outside...", "Looking for some privacy...", "Sneaking behind the building..."].pick_random()

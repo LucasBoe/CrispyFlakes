@@ -170,8 +170,13 @@ static var was_dragging = false
 const DRAG_THRESHOLD = 8.0
 const MELEE_CONFLICT_ENGAGE_RANGE := 24.0
 const FIGHT_ENERGY_REGEN_PER_SECOND := 0.2
+const FALL_GRAVITY = 800.0
 var _drag_pending = false
 var _drag_start_mouse = Vector2.ZERO
+var _is_falling: bool = false
+var _fall_velocity: float = 0.0
+var _fall_target: Vector2 = Vector2.ZERO
+var _fall_room: RoomBase = null
 
 func _ready():
 	super._ready()
@@ -184,6 +189,14 @@ func _process(delta):
 
 	if picked_up_npc == self:
 		global_position = get_global_mouse_position()
+
+	if _is_falling:
+		_fall_velocity += FALL_GRAVITY * delta
+		global_position.y += _fall_velocity * delta
+		if global_position.y >= _fall_target.y:
+			global_position.y = _fall_target.y
+			_finish_drop()
+		return
 
 	if Behaviour.has_behaviour:
 		return
@@ -262,7 +275,7 @@ func _input(event):
 
 	var target_pos = null
 
-	var room : RoomBase = Building.query.closest_room_of_type(RoomBase, global_position, null, Vector2(-24,0))
+	var room : RoomBase = Building.query.room_at_position(global_position) as RoomBase
 	if room:
 		target_pos = room.global_position + Vector2(24,0)
 
@@ -290,15 +303,10 @@ func _input(event):
 		new_job_room_highlight = null
 
 	if event.is_action_released("click"):
-		if target_pos:
-			global_position = target_pos
-			Navigation.stop_navigation()
-			if not try_stop_fight_in_room(room):
-				if not try_arrest_in_room(room):
-					try_change_job_based_on_room(room)
-			Animator.direction = Vector2.ZERO
-		else:
-			global_position = pick_up_origin
+		_fall_room = room
+		_fall_target = _find_land_position(global_position)
+		_fall_velocity = 0.0
+		_is_falling = true
 		picked_up_npc = null
 
 		RoomHighlighter.dispose(current_job_room_highlight)
@@ -312,8 +320,6 @@ func _input(event):
 
 		for h in available_rooms_highlights:
 			RoomHighlighter.dispose(h)
-
-		Navigation.set_process(true)
 
 func try_stop_fight_in_room(room : RoomBase):
 	var fight = FightHandler.get_fight_for_room(room)
@@ -401,3 +407,28 @@ func try_change_job_based_on_room(room : RoomBase):
 		new_job = Enum.Jobs.IDLE
 
 	change_job(new_job)
+
+func _find_land_position(drop_pos: Vector2) -> Vector2:
+	var drop_idx: Vector2i = Building.round_room_index_from_global_position(drop_pos)
+	for y_idx in range(drop_idx.y, -2, -1):
+		var landed_room: RoomBase = Building.get_room_from_index(Vector2i(drop_idx.x, y_idx)) as RoomBase
+		if landed_room != null:
+			return Vector2(drop_pos.x, landed_room.global_position.y)
+	var ground_room: RoomBase = Building.query.closest_on_floor(RoomBase, drop_pos, 0) as RoomBase
+	if ground_room != null:
+		return Vector2(drop_pos.x, ground_room.global_position.y)
+	return drop_pos
+
+func _finish_drop():
+	_is_falling = false
+	global_position.y = _fall_target.y
+	Camera.add_shake(clampf(_fall_velocity * 0.005, 1.0, 5.0), 0.05)
+	_fall_velocity = 0.0
+	if _fall_room != null:
+		Navigation.stop_navigation()
+		if not try_stop_fight_in_room(_fall_room):
+			if not try_arrest_in_room(_fall_room):
+				try_change_job_based_on_room(_fall_room)
+		Animator.direction = Vector2.ZERO
+	_fall_room = null
+	Navigation.set_process(true)

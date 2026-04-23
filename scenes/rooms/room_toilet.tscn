@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/room_toilet.gd" id="1_toilet"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_wall"]
+[ext_resource type="Texture2D" path="res://assets/sprites/room_toilet.svg" id="3_toilet"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="4_outline"]
+
+[node name="Room_Toilet" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_toilet")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_wall")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("4_outline")
+
+[node name="Toilet" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -24)
+texture = ExtResource("3_toilet")

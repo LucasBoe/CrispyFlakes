@@ -48,6 +48,9 @@ func get_behaviour_from_available_rooms(all_rooms):
 
 		if room is RoomOuthouse:
 			all.append(UseOuthouseBehaviour)
+
+		if room is RoomToilet:
+			all.append(UseOuthouseBehaviour)
 			
 	if all.size() > 0:
 		return all.pick_random()

@@ -65,6 +65,8 @@ func set_sleeping(value : bool):
 func _update_texture():
 	if is_riding:
 		texture = TEX_RIDE
+	elif (npc is NPCWorker) and (NPCWorker.picked_up_npc == npc or (npc as NPCWorker)._is_falling):
+		texture = TEX_PANIC
 	elif npc.is_in_fight_state():
 		texture = TEX_FIGHT
 	elif is_sleeping:
