@@ -44,6 +44,8 @@ var _status_row_instance = null
 var selected_room_highlight_instance
 var selected_npc_highlight_instance
 
+var _connection_line: PixelLine = null
+
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
 var _satisfaction_log_container: VBoxContainer = null
@@ -56,6 +58,14 @@ func _ready():
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_potential_target_deleted)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
+
+	_connection_line = PixelLine.new()
+	_connection_line.line_color = Color(1.0, 1.0, 0.5, 0.7)
+	_connection_line.line_width = 2
+	_connection_line.z_index = 2190
+	_connection_line.z_as_relative = false
+	Building.add_child(_connection_line)
+	_connection_line.hide()
 
 	hide()
 	need_ui_dummy.hide()
@@ -159,6 +169,8 @@ func _clear_instances():
 	if is_instance_valid(_equipment_container):
 		_equipment_container.queue_free()
 	_equipment_container = null
+
+	_connection_line.hide()
 
 func _get_status_icon_entries(npc: NPC) -> Array:
 	return npc.get_state_icon_entries()
@@ -509,6 +521,7 @@ func do_hide():
 			continue
 		npc.Tint.remove_outline_for(self)
 
+	_connection_line.hide()
 	hide()
 
 func _bind_guest_arrest_button(guest: NPCGuest):
@@ -659,6 +672,31 @@ func _process(delta):
 	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, Camera)
 	line.target_position = pos
 
+	var connection_target: Node = null
+	if target is RoomBase:
+		var room := target as RoomBase
+		if is_instance_valid(room.worker):
+			connection_target = room.worker
+	elif target is NPCWorker:
+		var worker := target as NPCWorker
+		if worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room):
+			connection_target = worker.current_job_room
+
+	if is_instance_valid(connection_target):
+		var npc_pos: Vector2
+		var room_pos: Vector2
+		if target is RoomBase:
+			npc_pos = connection_target.global_position - Vector2(0, 12)
+			room_pos = _room_edge_toward(target as RoomBase, npc_pos)
+		else:
+			npc_pos = target.global_position - Vector2(0, 12)
+			room_pos = _room_edge_toward(connection_target as RoomBase, npc_pos)
+		_connection_line.global_position = room_pos
+		_connection_line.target_position = npc_pos
+		_connection_line.show()
+	else:
+		_connection_line.hide()
+
 	if target is RoomWell and is_instance_valid(_status_row_instance):
 		var well := target as RoomWell
 		var water_text = "Water %d/%d" % [int(well.current_water), int(well.max_water)]
@@ -702,3 +740,13 @@ func _process(delta):
 				var job_color = Color(0.3, 0.8, 0.3, 0.35) if has_job else Color(1.0, 0.5, 0.0, 0.35)
 				var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
 				_show_status_row("Working at" if has_job else "No Job", job_color, worker.current_job_room if has_job else null, room_name)
+
+func _room_edge_toward(room: RoomBase, toward: Vector2) -> Vector2:
+	const TILE := 48
+	var w: int = (room.data.width if room.data else 1) * TILE
+	var h: int = (room.data.height if room.data else 1) * TILE
+	# Room origin is bottom-left; y extends upward (negative y direction)
+	var rect := Rect2(room.global_position.x, room.global_position.y - h, w, h)
+	var cx := clampf(toward.x, rect.position.x, rect.position.x + rect.size.x)
+	var cy := clampf(toward.y, rect.position.y, rect.position.y + rect.size.y)
+	return Vector2(cx, cy)
