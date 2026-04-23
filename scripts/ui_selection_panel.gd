@@ -306,8 +306,17 @@ func _show_for_room(room: RoomBase):
 	room_delete_button.disabled = false
 
 	if room is RoomEmpty:
+		var room_above = Building.get_room_from_index(Vector2i(room.x, room.y + 1))
+		var can_erase = room_above == null or room_above is RoomEmpty
 		room_delete_button.show()
-		room_delete_button.disabled = true
+		room_delete_button.disabled = not can_erase
+		if can_erase:
+			Util.disconnect_all_pressed(room_delete_button)
+			room_delete_button.pressed.connect(func():
+				if is_instance_valid(room):
+					Building.erase_empty(room)
+					hide()
+			)
 	elif room is not RoomJunk and room is not RoomWell:
 		room_delete_button.show()
 		Util.disconnect_all_pressed(room_delete_button)

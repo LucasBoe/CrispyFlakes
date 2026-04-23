@@ -33,6 +33,7 @@ func _ready():
 
 	var group = room_group.new(groups)
 
+	create_button(group, Building.room_data_empty)
 	create_button(group, Building.room_data_table)
 	create_button(group, Building.room_data_bed)
 	create_button(group, Building.room_data_stairs, RoomStairs.custom_placement_check)

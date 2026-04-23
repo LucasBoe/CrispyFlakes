@@ -6,5 +6,8 @@
 [resource]
 script = ExtResource("4_4s8o0")
 packed_scene = ExtResource("1_g85or")
+room_name = "Empty"
+room_desc = "An empty room slot. Can be removed if nothing is built above it."
+construction_price = 0
 money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

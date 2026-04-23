@@ -60,6 +60,12 @@ func initialize_all_rooms():
 		for x in floors[y].keys():
 			floors[y][x].init_room(x, y)
 
+func erase_empty(room: RoomBase):
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
+	_erase_room_cell(room.x, room.y)
+	update_foreground_tiles()
+	room.destroy()
+
 func delete_room(room: RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	if room.data != null and room.data.is_outdoor:
@@ -69,7 +75,11 @@ func delete_room(room: RoomBase):
 	else:
 		for col in room.data.width:
 			for row in room.data.height:
-				set_room(room_data_empty, room.x + col, room.y + row)
+				var above = get_room_from_index(Vector2i(room.x + col, room.y + row + 1))
+				if above == null or above is RoomEmpty:
+					_erase_room_cell(room.x + col, room.y + row)
+				else:
+					set_room(room_data_empty, room.x + col, room.y + row)
 	update_foreground_tiles()
 	room.destroy()
 
