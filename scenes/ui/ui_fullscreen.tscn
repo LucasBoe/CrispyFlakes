@@ -1,5 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://ldop7rnr2opr"]
+[gd_scene load_steps=12 format=3 uid="uid://ldop7rnr2opr"]
 
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="9_aaqup"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
@@ -7,8 +8,15 @@
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
 [ext_resource type="Script" uid="uid://dlxcie6h6etix" path="res://scripts/ui/ui_rename.gd" id="60_rename"]
+[ext_resource type="Script" uid="uid://d1ka7mxn1hjds" path="res://scripts/ui/ui_fullscreen.gd" id="61_version"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_version"]
+font = ExtResource("9_aaqup")
+font_size = 11
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
 
 [node name="UIFullscreen" type="Control"]
 layout_mode = 3
@@ -22,6 +30,7 @@ offset_bottom = -1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("61_version")
 
 [node name="UIHire" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -286,3 +295,16 @@ text = "Ok"
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Cancel"
+
+[node name="VersionLabel" type="Label" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -12.0
+offset_right = 170.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "v0.0.0-dev.000"
+label_settings = SubResource("LabelSettings_version")

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.0-dev.195"
+config/version="0.0.1-dev.196"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -104,16 +104,16 @@ toggle_dev_console={
 ]
 }
 
-[shader_globals]
-
-sky_time_of_day={
-"type": "float",
-"value": 12.0
-}
-
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
+
+[shader_globals]
+
+sky_time_of_day={
+"type": "float",
+"value": 12.0
+}

@@ -4,7 +4,7 @@ This project currently ships with a macOS export preset in [export_presets.cfg](
 
 ## Automatic Versioning
 
-Version metadata is derived from Git, not edited by hand.
+Version metadata uses the leading semver from Godot's project version and appends a Git-based dev build number.
 
 `tools/sync_export_version.sh` updates both:
 
@@ -15,11 +15,15 @@ Version metadata is derived from Git, not edited by hand.
 
 The version rules are:
 
-- exact tag like `v0.2.0` on `HEAD` -> `0.2.0`
-- commits after a semver tag -> `<tag>-dev.<distance>`
-- no semver tags yet -> `0.0.0-dev.<commit_count>`
+- set `Project Settings > Application > Config > Version` to a base semver like `0.0.1`
+- `tools/sync_export_version.sh` keeps that `0.0.1` prefix
+- the script replaces anything after that prefix with `-dev.<commit_count>`
 
-The committed metadata intentionally does not include the commit hash. The version files are updated before the new commit exists, so the hash would be stale as soon as that commit is created.
+Examples:
+
+- `0.0.1` -> `0.0.1-dev.<count>`
+- `0.0.1-dev.12` -> `0.0.1-dev.<count>`
+- `0.0.1-preview` -> `0.0.1-dev.<count>`
 
 ## Automatic Sync On Commit
 
@@ -31,7 +35,7 @@ bash tools/install_git_hooks.sh
 
 After that, every commit will automatically:
 
-1. derive the current version from Git
+1. read the base semver from `project.godot`
 2. sync `project.godot`
 3. sync `export_presets.cfg`
 4. stage those version changes into the commit
@@ -63,4 +67,4 @@ That means even if a clone does not have the local hook installed yet, pull requ
 ## Notes
 
 - `builds/` is ignored in Git, so local export artifacts do not pollute the working tree.
-- When you start tagging releases, use semver tags like `v0.1.0` to get clean release versions automatically.
+- To bump the main version, change `Project Settings > Application > Config > Version` to a new semver like `0.0.2` and let the sync script rebuild the `-dev.<count>` suffix.

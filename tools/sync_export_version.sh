@@ -25,39 +25,42 @@ if [[ ! -f "$export_file" ]]; then
   exit 1
 fi
 
-find_nearest_semver_tag() {
-  git describe \
-    --tags \
-    --abbrev=0 \
-    --match 'v[0-9]*.[0-9]*.[0-9]*' \
-    --match '[0-9]*.[0-9]*.[0-9]*' \
-    2>/dev/null || true
+read_project_version() {
+  local raw_version
+
+  raw_version="$(sed -n 's/^config\/version="\([^"]*\)"$/\1/p' "$project_file" | head -n 1)"
+  if [[ -z "$raw_version" ]]; then
+    echo "Missing config/version in $project_file" >&2
+    exit 1
+  fi
+
+  echo "$raw_version"
+}
+
+extract_base_version() {
+  local raw_version="$1"
+
+  if [[ "$raw_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+    return
+  fi
+
+  echo "Expected config/version in $project_file to start with semver like 0.0.1; got: $raw_version" >&2
+  exit 1
 }
 
 derive_version() {
-  local nearest_tag commit_count distance base_version
+  local raw_version base_version commit_count
 
-  nearest_tag="$(find_nearest_semver_tag)"
-
-  if [[ -n "$nearest_tag" ]]; then
-    base_version="${nearest_tag#v}"
-    distance="$(git rev-list "${nearest_tag}..HEAD" --count)"
-    if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
-      distance="$((distance + 1))"
-    fi
-    if [[ "$distance" -eq 0 ]]; then
-      echo "${base_version}"
-    else
-      echo "${base_version}-dev.${distance}"
-    fi
-    return
-  fi
+  raw_version="$(read_project_version)"
+  base_version="$(extract_base_version "$raw_version")"
 
   commit_count="$(git rev-list --count HEAD)"
   if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
     commit_count="$((commit_count + 1))"
   fi
-  echo "0.0.0-dev.${commit_count}"
+
+  echo "${base_version}-dev.${commit_count}"
 }
 
 sed_inplace() {

@@ -28,7 +28,7 @@ Enabled editor plugins are configured in [project.godot](/Users/lucasbodeker/Cri
 
 ## Versioning
 
-Version metadata is derived from Git automatically.
+Version metadata uses the Godot project version as the base and Git commit count as the dev suffix.
 
 - `project.godot` and `export_presets.cfg` are synced by [tools/sync_export_version.sh](/Users/lucasbodeker/CrispyFlakes/tools/sync_export_version.sh:1)
 - a local pre-commit hook can update and stage version metadata automatically
@@ -42,11 +42,11 @@ bash tools/install_git_hooks.sh
 
 Version rules:
 
-- exact tag like `v0.2.0` on `HEAD` becomes `0.2.0`
-- commits after a semver tag become `<tag>-dev.<distance>`
-- repos without tags fall back to `0.0.0-dev.<commit_count>`
+- set `Project Settings > Application > Config > Version` to a base semver like `0.0.1`
+- the sync script keeps that `0.0.1` prefix
+- the sync script rewrites any suffix to `-dev.<commit_count>`
 
-The committed metadata intentionally avoids the commit hash so the pre-commit hook can prepare a stable version before the new commit exists.
+For example, `0.0.1`, `0.0.1-dev.12`, and `0.0.1-preview` all sync to `0.0.1-dev.<count>`.
 
 ## Exporting
 
