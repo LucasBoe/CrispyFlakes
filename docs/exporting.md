@@ -16,8 +16,10 @@ Version metadata is derived from Git, not edited by hand.
 The version rules are:
 
 - exact tag like `v0.2.0` on `HEAD` -> `0.2.0`
-- commits after a semver tag -> `<tag>-dev.<distance>.g<hash>`
-- no semver tags yet -> `0.0.0-dev.<commit_count>.g<hash>`
+- commits after a semver tag -> `<tag>-dev.<distance>`
+- no semver tags yet -> `0.0.0-dev.<commit_count>`
+
+The committed metadata intentionally does not include the commit hash. The version files are updated before the new commit exists, so the hash would be stale as soon as that commit is created.
 
 ## Automatic Sync On Commit
 
@@ -33,6 +35,12 @@ After that, every commit will automatically:
 2. sync `project.godot`
 3. sync `export_presets.cfg`
 4. stage those version changes into the commit
+
+If you need a one-off manual fix without the hook, run:
+
+```sh
+bash tools/sync_export_version.sh sync-next
+```
 
 ## CI Enforcement
 

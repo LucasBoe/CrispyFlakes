@@ -6,7 +6,7 @@
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Script" uid="uid://bid1sk6jm8qv4" path="res://scripts/ui/ui_hire_person.gd" id="31_fcesb"]
 [ext_resource type="Script" uid="uid://dc84ex5dy4gqe" path="res://scripts/ui_confirm.gd" id="50_n6nxc"]
-[ext_resource type="Script" path="res://scripts/ui/ui_rename.gd" id="60_rename"]
+[ext_resource type="Script" uid="uid://dlxcie6h6etix" path="res://scripts/ui/ui_rename.gd" id="60_rename"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 

@@ -43,8 +43,10 @@ bash tools/install_git_hooks.sh
 Version rules:
 
 - exact tag like `v0.2.0` on `HEAD` becomes `0.2.0`
-- commits after a semver tag become `<tag>-dev.<distance>.g<hash>`
-- repos without tags fall back to `0.0.0-dev.<commit_count>.g<hash>`
+- commits after a semver tag become `<tag>-dev.<distance>`
+- repos without tags fall back to `0.0.0-dev.<commit_count>`
+
+The committed metadata intentionally avoids the commit hash so the pre-commit hook can prepare a stable version before the new commit exists.
 
 ## Exporting
 

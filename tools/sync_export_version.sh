@@ -10,6 +10,11 @@ project_file="project.godot"
 export_file="export_presets.cfg"
 for_next_commit="${SYNC_FOR_NEXT_COMMIT:-0}"
 
+if [[ "$mode" == "sync-next" ]]; then
+  mode="sync"
+  for_next_commit="1"
+fi
+
 if [[ ! -f "$project_file" ]]; then
   echo "Missing $project_file" >&2
   exit 1
@@ -20,26 +25,31 @@ if [[ ! -f "$export_file" ]]; then
   exit 1
 fi
 
+find_nearest_semver_tag() {
+  git describe \
+    --tags \
+    --abbrev=0 \
+    --match 'v[0-9]*.[0-9]*.[0-9]*' \
+    --match '[0-9]*.[0-9]*.[0-9]*' \
+    2>/dev/null || true
+}
+
 derive_version() {
-  local exact_tag latest_tag commit_count distance base_version hash
+  local nearest_tag commit_count distance base_version
 
-  exact_tag="$(git tag --points-at HEAD | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
-  if [[ -n "$exact_tag" ]]; then
-    echo "${exact_tag#v}"
-    return
-  fi
+  nearest_tag="$(find_nearest_semver_tag)"
 
-  hash="$(git rev-parse --short HEAD)"
-
-  latest_tag="$(git tag --sort=-version:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)"
-
-  if [[ -n "$latest_tag" ]]; then
-    base_version="${latest_tag#v}"
-    distance="$(git rev-list "${latest_tag}..HEAD" --count)"
+  if [[ -n "$nearest_tag" ]]; then
+    base_version="${nearest_tag#v}"
+    distance="$(git rev-list "${nearest_tag}..HEAD" --count)"
     if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
       distance="$((distance + 1))"
     fi
-    echo "${base_version}-dev.${distance}.g${hash}"
+    if [[ "$distance" -eq 0 ]]; then
+      echo "${base_version}"
+    else
+      echo "${base_version}-dev.${distance}"
+    fi
     return
   fi
 
@@ -47,7 +57,7 @@ derive_version() {
   if [[ "$mode" == "sync" && "$for_next_commit" == "1" ]]; then
     commit_count="$((commit_count + 1))"
   fi
-  echo "0.0.0-dev.${commit_count}.g${hash}"
+  echo "0.0.0-dev.${commit_count}"
 }
 
 sed_inplace() {
@@ -78,7 +88,7 @@ if [[ "$mode" == "check" ]]; then
   grep -qF "export_path=\"builds/CrispyFlakes_${filename_version}.dmg\"" "$export_file"  || ok=false
 
   if [[ "$ok" == "false" ]]; then
-    echo "Version metadata is out of sync. Run \`bash tools/sync_export_version.sh\` and commit the result." >&2
+    echo "Version metadata is out of sync. Run \`bash tools/sync_export_version.sh sync-next\` before committing, or install the Git hook." >&2
     exit 1
   fi
   echo "Version metadata is in sync for $version"

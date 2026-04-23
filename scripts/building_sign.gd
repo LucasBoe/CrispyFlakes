@@ -8,10 +8,15 @@ class_name BuildingSign
 
 var saloon_name: String = "My Saloon"
 var _tween: Tween
+var _outline_material: ShaderMaterial
 
 func _ready():
 	_label.text = saloon_name
 	_area.input_event.connect(_on_area_input)
+	_area.mouse_entered.connect(_on_mouse_entered)
+	_area.mouse_exited.connect(_on_mouse_exited)
+	_outline_material = (load("res://assets/materials/mat_outline_outside_rooms.tres") as ShaderMaterial).duplicate(true)
+	_sign_rect.material = _outline_material
 	_update_sign_size()
 
 func set_target_position(target: Vector2):
@@ -51,6 +56,12 @@ func _update_sign_size():
 
 	(_collision.shape as RectangleShape2D).size.x = sign_w
 
+func _on_mouse_entered() -> void:
+	_outline_material.set_shader_parameter("outline_color", Color.WHITE)
+
+func _on_mouse_exited() -> void:
+	_outline_material.set_shader_parameter("outline_color", Color.BLACK)
+
 func _on_area_input(_viewport: Viewport, event: InputEvent, _shape_idx: int):
-	if event is InputEventMouseButton and event.double_click and event.button_index == MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		Global.UI.rename.show_rename(saloon_name, func(new_name: String): set_saloon_name(new_name))
