@@ -99,7 +99,7 @@ func _get_fight_response_position(fight: Fight) -> Vector2:
 		if is_instance_valid(npc):
 			return npc.global_position
 	if fight.room != null:
-		return fight.room.get_center_position()
+		return fight.room.get_center_floor_position()
 	return Vector2.INF
 
 func _is_in_active_fight(guest: NPCGuest) -> bool:

@@ -121,11 +121,25 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer"]
+[node name="HeaderRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("29_1f2rr")
 text = "NPC"
 horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/HeaderRow"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_3ou18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_3ou18")
+icon = ExtResource("72_filter")
+expand_icon = true
 
 [node name="ColorRect" type="ColorRect" parent="MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 1)

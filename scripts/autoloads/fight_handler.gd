@@ -1,6 +1,8 @@
 extends Node
 
+const PanicBehaviourScript = preload("res://scripts/npc/behaviours/panic_behaviour.gd")
 const GUEST_DRUNK_FIGHT_MIN_START_ENERGY := 0.35
+const DEBUG_GUTLESS_PANIC := true
 
 var active_fights: Array[Fight] = []
 var _next_fight_debug_id := 1
@@ -41,7 +43,7 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
 	if existing != null:
 		existing.make_join_fight(guest)
 		return
-	var fight := _create_fight(room.get_center_position())
+	var fight := _create_fight(room.get_center_floor_position())
 	fight.fight_type = Fight.FightType.ROBBERY
 	fight.make_join_fight(guest)
 
@@ -69,6 +71,8 @@ func _process(_delta: float) -> void:
 	for fight: Fight in active_fights.duplicate():
 		if not active_fights.has(fight):
 			continue
+
+		_try_panic_gutless_near_fight(fight)
 
 		if fight.has_started:
 			fight.handle_fight()
@@ -109,16 +113,135 @@ func _try_attract_brawlers(fight: Fight) -> bool:
 	for guest: NPCGuest in Global.NPCSpawner.guests:
 		if not is_instance_valid(guest) or fight.has_participant(guest):
 			continue
-		if not is_within_fight_detection_range(fight.room.get_center_position(), guest.global_position):
+		if not is_within_fight_detection_range(get_fight_position(fight), guest.global_position):
 			continue
 		if randf() < guest.Traits.get_voluntary_fight_chance(guest.Needs.drunkenness.strength):
 			create_or_join_drunk_fight(guest)
 			attracted = true
 	return attracted
 
+func _try_panic_gutless_near_fight(fight: Fight) -> void:
+	if Global.NPCSpawner == null or not is_started_active_fight(fight):
+		return
+
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		_try_panic_gutless_npc(guest, fight)
+	for worker: NPCWorker in Global.NPCSpawner.workers:
+		_try_panic_gutless_npc(worker, fight)
+
+func _try_panic_gutless_npc(npc: NPC, fight: Fight) -> bool:
+	if not _can_panic_from_fight(npc, fight):
+		return false
+
+	_debug_gutless_panic(npc, fight, "panic start")
+	var panic_data := BehaviourSaveData.new(PanicBehaviourScript)
+	panic_data.extra["fight"] = fight
+	panic_data.extra["threat_room"] = fight.room
+	panic_data.extra["threat_position"] = get_fight_position(fight)
+	npc.Behaviour.set_behaviour(PanicBehaviourScript, panic_data)
+	return true
+
+func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
+	if not is_instance_valid(npc) or npc.Traits == null:
+		return false
+	if not npc.Traits.refuses_voluntary_fights():
+		return false
+	if fight.has_participant(npc):
+		_debug_gutless_panic(npc, fight, "skip already in fight")
+		return false
+	var fight_position := get_fight_position(fight)
+	var in_range := is_within_fight_detection_range(fight_position, npc.global_position)
+	_debug_gutless_panic(npc, fight, "range check", fight_position, npc.global_position, in_range)
+	if not in_range:
+		return false
+	if npc is NPCWorker and NPCWorker.picked_up_npc == npc:
+		_debug_gutless_panic(npc, fight, "skip picked up")
+		return false
+	if npc.Behaviour == null:
+		_debug_gutless_panic(npc, fight, "skip no behaviour module")
+		return false
+
+	var current = npc.Behaviour.behaviour_instance
+	if current != null and current.get_script() == PanicBehaviourScript:
+		_debug_gutless_panic(npc, fight, "skip already panicking")
+		return false
+	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour:
+		_debug_gutless_panic(npc, fight, "skip blocked behaviour %s" % _behaviour_name(current))
+		return false
+	return true
+
 func is_within_fight_detection_range(a: Vector2, b: Vector2) -> bool:
 	var diff := b - a
 	return abs(diff.x) < 96.0 and abs(diff.y) < 16.0
+
+func is_fight_near_room(room: RoomBase) -> bool:
+	if not is_instance_valid(room):
+		return false
+	for fight: Fight in active_fights:
+		if not is_started_active_fight(fight):
+			continue
+		if fight.room == room:
+			_debug_room_fight_range(room, fight, "same room", true)
+			return true
+		var fight_position: Vector2 = get_fight_position(fight)
+		var room_position: Vector2 = room.get_center_floor_position()
+		var in_range: bool = is_within_fight_detection_range(fight_position, room_position)
+		_debug_room_fight_range(room, fight, "range check", in_range, fight_position, room_position)
+		if in_range:
+			return true
+	return false
+
+func get_fight_position(fight: Fight) -> Vector2:
+	if fight == null:
+		return Vector2.INF
+	if fight.room != null:
+		return fight.room.get_center_floor_position()
+	for participant in fight.participants:
+		var npc := participant as NPC
+		if is_instance_valid(npc):
+			return npc.global_position
+	return Vector2.INF
+
+func is_started_active_fight(fight: Fight) -> bool:
+	return fight != null and fight.has_started and not fight.is_over and active_fights.has(fight)
+
+func _debug_gutless_panic(npc: NPC, fight: Fight, reason: String, fight_position: Vector2 = Vector2.INF, npc_position: Vector2 = Vector2.INF, in_range := false) -> void:
+	if not DEBUG_GUTLESS_PANIC:
+		return
+	var current = npc.Behaviour.behaviour_instance if npc != null and npc.Behaviour != null else null
+	var details := ""
+	if fight_position != Vector2.INF or npc_position != Vector2.INF:
+		var diff := npc_position - fight_position
+		details = " fight_pos=%s npc_pos=%s diff=%s in_range=%s" % [fight_position, npc_position, diff, in_range]
+	print("[GutlessPanic] npc=%s type=%s behaviour=%s fight=%s room=%s reason=%s%s" % [
+		npc.name if is_instance_valid(npc) else "<invalid>",
+		npc.get_script().get_global_name() if is_instance_valid(npc) and npc.get_script() != null else "<none>",
+		_behaviour_name(current),
+		fight.debug_label() if fight != null else "<none>",
+		fight.room.name if fight != null and fight.room != null else "<none>",
+		reason,
+		details,
+	])
+
+func _debug_room_fight_range(room: RoomBase, fight: Fight, reason: String, in_range: bool, fight_position: Vector2 = Vector2.INF, room_position: Vector2 = Vector2.INF) -> void:
+	if not DEBUG_GUTLESS_PANIC:
+		return
+	var details := ""
+	if fight_position != Vector2.INF or room_position != Vector2.INF:
+		var diff := room_position - fight_position
+		details = " fight_pos=%s room_pos=%s diff=%s" % [fight_position, room_position, diff]
+	print("[GutlessPanic] room=%s fight=%s reason=%s in_range=%s%s" % [
+		room.name if is_instance_valid(room) else "<invalid>",
+		fight.debug_label() if fight != null else "<none>",
+		reason,
+		in_range,
+		details,
+	])
+
+func _behaviour_name(behaviour) -> String:
+	if behaviour == null or behaviour.get_script() == null:
+		return "<none>"
+	return behaviour.get_script().resource_path.get_file()
 
 # HELPERS
 

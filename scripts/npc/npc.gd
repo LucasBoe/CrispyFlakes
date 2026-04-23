@@ -60,6 +60,9 @@ func get_state_icon_entries() -> Array:
 		var secs = int((b as KnockedOutBehaviour).time_remaining)
 		entries.append({icon = UiNotifications.ICON_KNOCKED_OUT, label = "Knocked out (%ds)" % secs})
 
+	if b != null and b.get_script().resource_path.ends_with("panic_behaviour.gd"):
+		entries.append({label = "Panicking"})
+
 	if is_in_fight_state():
 		entries.append({icon = UiNotifications.ICON_FIGHT, label = STATE_LABEL_FIGHT})
 

@@ -113,7 +113,7 @@ func get_ranged_accuracy_multiplier() -> float:
 
 func get_voluntary_fight_chance(base_chance: float) -> float:
 	if has_trait(TRAIT_HOTHEAD):
-		return 1.0
+		return min(base_chance * 2, 1) #drinking makes this npc start fights earlier, a brawl he never withstands, no matter how drunk
 	if has_trait(TRAIT_GUTLESS):
 		return 0.0
 	return base_chance

@@ -25,6 +25,7 @@ const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
 const TEX_CARRY = preload("res://assets/sprites/cowboy_raw_carry.png")
 const TEX_SIT   = preload("res://assets/sprites/cowboy_raw_sit.png")
 const TEX_RIDE  = preload("res://assets/sprites/cowboy_raw_ride.png")
+const TEX_PANIC = preload("res://assets/sprites/cowboy_raw_panic.png")
 
 var npc
 var is_sitting : bool = false
@@ -68,6 +69,8 @@ func _update_texture():
 		texture = TEX_SIT
 	elif npc.Item.current_item != null:
 		texture = TEX_CARRY
+	elif npc.Behaviour.behaviour_instance is PanicBehaviour:
+		texture = TEX_PANIC
 	else:
 		texture = TEX_STAND
 

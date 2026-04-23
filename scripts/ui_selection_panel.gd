@@ -1,7 +1,8 @@
 extends FullscreenDragable
 class_name UISelectionPanel
 
-@onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/Label
+@onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/Label
+@onready var panel_close_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/CloseButton
 @onready var describtion_label = $MarginContainer/MarginContainer/VBoxContainer/DescribtionLabel
 @onready var line : PixelLine = $LineAnchor/Line
 @onready var need_ui_dummy = $MarginContainer/MarginContainer/VBoxContainer/NeedDummy
@@ -59,6 +60,8 @@ func _ready():
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_potential_target_deleted)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
+
+	panel_close_button.pressed.connect(do_hide)
 
 	_connection_line = PixelLine.new()
 	_connection_line.line_color = Color(1.0, 1.0, 0.5, 0.7)
