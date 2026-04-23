@@ -22,14 +22,15 @@ func loop():
 		return
 	await move(room.get_random_floor_position())
 	while true:
-		if not FightHandler.active_fights.is_empty():
+		var worker := npc as NPCWorker
+		if worker.should_fight_conflicts() and not FightHandler.active_fights.is_empty():
 			_narrative = ["Responding to a fight!", "Breaking it up!", "On my way!"].pick_random()
 			var fight: Fight = FightHandler.active_fights[0]
 			fight.make_join_fight(npc)
 			return
 
 		var arrest_target := _find_pending_arrest_target()
-		if arrest_target != null:
+		if worker.should_fight_conflicts() and arrest_target != null:
 			_narrative = ["Making an arrest...", "Got a fugitive!", "Going after them..."].pick_random()
 			FightHandler.create_defense_fight(arrest_target, npc)
 			return

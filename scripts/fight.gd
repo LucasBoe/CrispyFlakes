@@ -192,7 +192,7 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 	if target_behaviour == null:
 		return
 
-	var damage := _get_attack_damage(attacker)
+	var damage := _get_attack_damage(attacker, target)
 	target.energy = maxf(0.0, target.energy - damage)
 	last_attack[attacker] = Global.time_now
 	SoundPlayer.play_punch(attacker.global_position)
@@ -209,8 +209,10 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 		target_mapping[target] = attacker
 		_compute_fight_positions(target, attacker)
 
-func _get_attack_damage(attacker: NPC) -> float:
-	return MELEE_DAMAGE * (0.5 + attacker.strength * 0.5)
+func _get_attack_damage(attacker: NPC, target: NPC) -> float:
+	var outgoing = attacker.Traits.get_melee_damage_multiplier()
+	var incoming = target.Traits.get_incoming_damage_multiplier()
+	return MELEE_DAMAGE * (0.5 + attacker.strength * 0.5) * outgoing * incoming
 
 func _check_for_knockouts() -> void:
 	for participant: NPC in participants:
@@ -249,7 +251,7 @@ func _sync_health_bars(active_participants: Array) -> void:
 			continue
 		if not health_bars.has(participant):
 			health_bars[participant] = UiNotifications.create_npc_health_bar(participant, _health_bar_color(participant))
-		UiNotifications.update_npc_health_bar(health_bars[participant], participant.energy)
+		UiNotifications.update_npc_health_bar(health_bars[participant], participant.energy / participant.get_max_energy())
 
 func _health_bar_color(npc: NPC) -> Color:
 	if npc is NPCWorker:

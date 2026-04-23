@@ -111,7 +111,7 @@ func _try_attract_brawlers(fight: Fight) -> bool:
 			continue
 		if not is_within_fight_detection_range(fight.room.get_center_position(), guest.global_position):
 			continue
-		if randf() < guest.Needs.drunkenness.strength:
+		if randf() < guest.Traits.get_voluntary_fight_chance(guest.Needs.drunkenness.strength):
 			create_or_join_drunk_fight(guest)
 			attracted = true
 	return attracted

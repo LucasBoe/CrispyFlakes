@@ -67,7 +67,7 @@ func _find_responder_for_position(position: Vector2) -> NPCWorker:
 func _can_worker_respond(worker: NPCWorker, position: Vector2) -> bool:
 	if not is_instance_valid(worker):
 		return false
-	if worker.saloon_fight_response != NPCWorker.SaloonFightResponse.FIGHT:
+	if not worker.should_fight_conflicts():
 		return false
 	if NPCWorker.picked_up_npc == worker:
 		return false

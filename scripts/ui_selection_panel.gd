@@ -48,6 +48,7 @@ var _connection_line: PixelLine = null
 
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
+var _trait_container: VBoxContainer = null
 var _satisfaction_log_container: VBoxContainer = null
 var _satisfaction_log_size: int = -1
 var _equipment_container: VBoxContainer = null
@@ -140,6 +141,10 @@ func _clear_instances():
 	_npc_base_description = ""
 	_npc_narrative_text = ""
 
+	if is_instance_valid(_trait_container):
+		_trait_container.queue_free()
+	_trait_container = null
+
 	room_money_label.hide()
 	room_recipe_row.hide()
 	room_module_ui.hide()
@@ -223,6 +228,7 @@ func _show_for_worker(worker: NPCWorker):
 	_npc_base_description = str("This worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
+	_rebuild_traits_ui(worker)
 	room_delete_button.hide()
 	hire_guest_button.hide()
 	arrest_button.hide()
@@ -241,6 +247,7 @@ func _show_for_guest(guest: NPCGuest):
 	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(guest.strength * 100), int(guest.agility * 100), int(guest.intelligence * 100)]
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
+	_rebuild_traits_ui(guest)
 	room_delete_button.hide()
 
 	hire_guest_button.show()
@@ -263,6 +270,58 @@ func _show_for_guest(guest: NPCGuest):
 		need_ui_instances.append(instance)
 		instance.bind_instance(need)
 		instance.show()
+
+func _rebuild_traits_ui(npc: NPC) -> void:
+	if is_instance_valid(_trait_container):
+		_trait_container.queue_free()
+	_trait_container = null
+
+	if npc.Traits == null or npc.Traits.traits.is_empty():
+		return
+
+	var parent: VBoxContainer = need_ui_dummy.get_parent()
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	parent.add_child(container)
+	parent.move_child(container, describtion_label.get_index() + 1)
+	_trait_container = container
+
+	var title := status_icon_label_dummy.duplicate() as Label
+	title.text = "Traits"
+	title.show()
+	container.add_child(title)
+
+	for data in npc.Traits.traits:
+		container.add_child(_create_trait_row(data))
+
+func _create_trait_row(data) -> Control:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.24, 0.55, 0.18, 0.24) if data.is_positive() else Color(0.75, 0.24, 0.22, 0.24)
+	style.content_margin_left = 4
+	style.content_margin_top = 2
+	style.content_margin_right = 4
+	style.content_margin_bottom = 2
+	panel.add_theme_stylebox_override("panel", style)
+
+	var text_box := VBoxContainer.new()
+	text_box.add_theme_constant_override("separation", 0)
+	panel.add_child(text_box)
+
+	var name_label := status_icon_label_dummy.duplicate() as Label
+	name_label.text = data.trait_name
+	name_label.add_theme_color_override("font_color", Color(0.72, 0.95, 0.45) if data.is_positive() else Color(1.0, 0.55, 0.52))
+	name_label.show()
+	text_box.add_child(name_label)
+
+	var desc_label := Label.new()
+	desc_label.theme = status_icon_label_dummy.theme
+	desc_label.text = data.description
+	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	desc_label.add_theme_color_override("font_color", Color(0.9, 0.86, 0.77, 0.9))
+	text_box.add_child(desc_label)
+	return panel
 
 func _rebuild_satisfaction_log(guest: NPCGuest):
 	if is_instance_valid(_satisfaction_log_container):
@@ -564,9 +623,14 @@ func _bind_worker_fight_response(worker: NPCWorker) -> void:
 
 	Util.disconnect_all_pressed(worker_conflict_button)
 
-	var is_fight := worker.saloon_fight_response == NPCWorker.SaloonFightResponse.FIGHT
+	var locked_by_traits: bool = worker.Traits.forces_fight_response() or worker.Traits.refuses_voluntary_fights()
+	var is_fight: bool = worker.should_fight_conflicts()
 	worker_conflict_label.text = "in conflict I"
 	worker_conflict_button.text = "fight" if is_fight else "flee"
+	worker_conflict_button.disabled = locked_by_traits
+	if locked_by_traits:
+		worker_conflict_label.text = "trait makes me"
+		return
 	worker_conflict_button.pressed.connect(func():
 		if not is_instance_valid(worker):
 			return

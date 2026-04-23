@@ -240,7 +240,8 @@ func progress(duration, bar: TextureProgressBar = null):
 
 	_register_progress_bar(bar)
 
-	var t = float(duration)
+	var adjusted_duration := _get_progress_duration(duration)
+	var t = adjusted_duration
 	if is_instance_valid(bar):
 		bar.visible = true
 	while t > 0:
@@ -251,7 +252,7 @@ func progress(duration, bar: TextureProgressBar = null):
 			_unregister_progress_bar(bar)
 			_unregister_owned_progress_bar(owned_bar)
 			return
-		bar.value = (1.0 - (t / duration)) * 100
+		bar.value = (1.0 - (t / adjusted_duration)) * 100
 		await end_of_frame()
 	if is_instance_valid(bar):
 		bar.visible = false
@@ -285,6 +286,11 @@ func _cleanup_progress_bars() -> void:
 
 	_active_progress_bars.clear()
 	_owned_progress_bars.clear()
+
+func _get_progress_duration(duration: float) -> float:
+	if npc is NPCWorker and npc.Traits != null:
+		return maxf(0.05, duration * npc.Traits.get_work_duration_multiplier())
+	return duration
 
 func add_satisfaction(amount: float, reason: String = ""):
 	if npc != null and npc.has_method("add_satisfaction"):

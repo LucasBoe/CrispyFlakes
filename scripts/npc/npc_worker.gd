@@ -176,6 +176,7 @@ var _drag_start_mouse = Vector2.ZERO
 func _ready():
 	super._ready()
 	character_name = possible_names.pick_random()
+	apply_trait_conflict_preference()
 
 func _process(delta):
 	super._process(delta)
@@ -192,7 +193,20 @@ func _process(delta):
 func _regenerate_fight_energy(delta: float) -> void:
 	if Behaviour != null and Behaviour.behaviour_instance is FightBehaviour:
 		return
-	energy = minf(1.0, energy + FIGHT_ENERGY_REGEN_PER_SECOND * delta)
+	energy = minf(get_max_energy(), energy + FIGHT_ENERGY_REGEN_PER_SECOND * delta)
+
+func apply_trait_conflict_preference() -> void:
+	if Traits.forces_fight_response():
+		saloon_fight_response = SaloonFightResponse.FIGHT
+	elif Traits.refuses_voluntary_fights():
+		saloon_fight_response = SaloonFightResponse.FLEE
+
+func should_fight_conflicts() -> bool:
+	if Traits.refuses_voluntary_fights():
+		return false
+	if Traits.forces_fight_response():
+		return true
+	return saloon_fight_response == SaloonFightResponse.FIGHT
 
 func change_job(new):
 	current_job = new
@@ -334,7 +348,7 @@ func _can_join_fight_in_room(room: RoomBase) -> bool:
 	return Navigation.get_connected_rooms(current_job_room).has(room)
 
 func should_auto_join_saloon_fight(room: RoomBase, _target_position: Vector2 = Vector2.INF) -> bool:
-	if saloon_fight_response != SaloonFightResponse.FIGHT:
+	if not should_fight_conflicts():
 		return false
 	if not _can_join_fight_in_room(room):
 		return false
@@ -347,7 +361,7 @@ func should_auto_join_saloon_fight(room: RoomBase, _target_position: Vector2 = V
 	return true
 
 func should_auto_respond_to_arrest(room: RoomBase) -> bool:
-	if saloon_fight_response != SaloonFightResponse.FIGHT:
+	if not should_fight_conflicts():
 		return false
 	if room == null or current_job_room != room:
 		return false
