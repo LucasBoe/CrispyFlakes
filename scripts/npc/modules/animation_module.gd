@@ -17,6 +17,9 @@ const FIGHT_MOVE_DISTANCE = 8.0
 const FIGHT_ROTATION = 1.0
 const BROOM_ANIMATION_SPEED = 12.0
 const BROOM_ROTATION_STRENGTH = 0.7
+const PIANO_ANIMATION_SPEED = 11.0
+const PIANO_BOB_DISTANCE = 1.5
+const PIANO_ROTATION_STRENGTH = 0.1
 const SWAY_ANIMATION_SPEED = 12.0
 const SWAY_ROTATION_STRENGTH = 0.12
 
@@ -34,6 +37,7 @@ var is_peeing : bool = false
 var is_puking : bool = false
 var is_sleeping : bool = false
 var is_brooming : bool = false
+var is_playing_piano : bool = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 static var _music_sway_sources := 0
@@ -89,6 +93,8 @@ func _process(_delta):
 		target = broom_tween(time_in_seconds)
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript or is_sleeping:
 		target = knocked_out_tween()
+	elif is_playing_piano:
+		target = piano_tween(time_in_seconds)
 	elif is_peeing:
 		target = pee_tween(time_in_seconds)
 	elif is_puking:
@@ -151,6 +157,15 @@ func fight_tween(time_in_seconds):
 func broom_tween(time_in_seconds):
 	var rot = sin(time_in_seconds * BROOM_ANIMATION_SPEED) * BROOM_ROTATION_STRENGTH
 	return TweenTargetData.new(Vector2(0, 1), rot, Vector2(x_orientation, 1.0))
+
+func piano_tween(time_in_seconds):
+	var beat = time_in_seconds * PIANO_ANIMATION_SPEED
+	var key_press = pow(abs(sin(beat)), 0.4)
+	var side_to_side = sin(beat * 0.5) * 0.5
+	var bob = -2 + key_press * PIANO_BOB_DISTANCE
+	var rot = sin(beat) * PIANO_ROTATION_STRENGTH + sin(beat * 0.5) * PIANO_ROTATION_STRENGTH * 0.5
+	var squash = key_press * SQUASH_STRENGTH
+	return TweenTargetData.new(Vector2(side_to_side, bob), rot, Vector2(x_orientation * (1.0 + squash), 1.0 - squash * 0.5))
 
 func pee_tween(time_in_seconds):
 	# Lean sideways like a dog, with a small bob

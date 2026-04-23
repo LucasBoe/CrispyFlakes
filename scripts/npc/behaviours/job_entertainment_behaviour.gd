@@ -18,6 +18,7 @@ func loop():
 	
 	await move(pos)
 	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
+	npc.Animator.is_playing_piano = true
 	_piano_sound = SoundPlayer.play_piano_loop(room.global_position)
 	room.set_guests_swaying(true)
 
@@ -43,6 +44,7 @@ func loop():
 			#await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
+	npc.Animator.is_playing_piano = false
 	if is_instance_valid(_piano_sound):
 		_piano_sound.queue_free()
 		_piano_sound = null
