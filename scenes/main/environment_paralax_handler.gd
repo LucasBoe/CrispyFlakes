@@ -11,6 +11,20 @@ var mountains_default_posisitions = []
 func _ready():
 	for i in mountains:
 		mountains_default_posisitions.append(i.global_position)
+	_setup_world_tint()
+
+func _setup_world_tint() -> void:
+	var layer: CanvasLayer = CanvasLayer.new()
+	layer.layer = 1
+	add_child(layer)
+
+	var rect: ColorRect = ColorRect.new()
+	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var mat: ShaderMaterial = ShaderMaterial.new()
+	mat.shader = load("res://assets/shaders/world_tint.gdshader")
+	rect.material = mat
+	layer.add_child(rect)
 
 func _process(delta):
 	var tod: float = fmod(Global.time_now, Global.DAY_DURATION) / Global.DAY_DURATION * 24.0
