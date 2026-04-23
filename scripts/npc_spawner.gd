@@ -62,8 +62,7 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 	worker.strength = guest.strength
 	worker.agility = guest.agility
 	worker.intelligence = guest.intelligence
-	worker.stamina = guest.stamina
-	worker.health = guest.health
+
 
 	if guest.look_info != null:
 		var worker_look := NPCLookInfo.new()
@@ -176,6 +175,8 @@ func console_spawn_guest(adj):
 			guest.Needs.drunkenness.strength = .5
 		elif adj == "horse":
 			guest.force_behaviour(ArriveOnHorseBehaviour)
+		elif adj == "fight":
+			FightHandler.create_or_join_drunk_fight(guest)
 		elif adj == "robber":
 			guest.is_robber = true
 

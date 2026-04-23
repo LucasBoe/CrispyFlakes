@@ -10,21 +10,15 @@ texture_filter = 1
 material = ExtResource("2_jevch")
 script = ExtResource("1_j7q48")
 
-[node name="Outline" type="Sprite2D" parent="."]
-visible = false
-z_index = 4000
-position = Vector2(24, -24)
-texture = ExtResource("3_1lj21")
-
-[node name="ModulesRoot" type="Node2D" parent="."]
-
-[node name="Visual" type="Node2D" parent="ModulesRoot"]
-
-[node name="Default" type="Node2D" parent="ModulesRoot/Visual"]
-
-[node name="Board" type="Sprite2D" parent="ModulesRoot/Visual/Default"]
+[node name="Board" type="Sprite2D" parent="."]
 z_index = -200
 material = ExtResource("2_jevch")
 position = Vector2(24, 0)
 texture = ExtResource("1_q16jd")
 offset = Vector2(0.5, -8.5)
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_1lj21")

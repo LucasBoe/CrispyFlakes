@@ -5,7 +5,7 @@ const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_slee
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 
 var manual_behaviour = false
-var pending_arrest: bool = false
+
 var is_known_fugitive: bool = false
 var is_robber: bool = false
 
@@ -61,13 +61,13 @@ func _process(_delta):
 
 	if Behaviour.has_behaviour:
 		return
-
 	var new_behaviour = IdleBehaviour
 
 	if not manual_behaviour:
 		new_behaviour = get_next_behaviour()
 
-	Behaviour.set_behaviour(new_behaviour)
+	if new_behaviour != null:
+		Behaviour.set_behaviour(new_behaviour)
 
 func _append_state_icon_entries(entries: Array) -> void:
 	var b = Behaviour.behaviour_instance
@@ -76,7 +76,7 @@ func _append_state_icon_entries(entries: Array) -> void:
 	var is_arrested = b is ArrestedBehaviour
 	var has_visible_bounty = bounty != null and is_known_fugitive
 
-	if pending_arrest:
+	if ConflictResponseHandler.is_marked_for_arrest(self):
 		entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest (Drop Worker)"})
 	if is_arrested:
 		entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = "Arrested (Call Sherrif)"})
@@ -84,7 +84,7 @@ func _append_state_icon_entries(entries: Array) -> void:
 		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = str("Known Fugitive (", bounty, "$)")})
 	if fine != null:
 		entries.append({label = str("Outstanding Fine (", fine, "$)")})
-	elif (pending_arrest or is_arrested) and bounty == null:
+	elif (ConflictResponseHandler.is_marked_for_arrest(self) or is_arrested) and bounty == null:
 		entries.append({label = "Has No Bounty or Fine"})
 
 func counts_towards_guest_total() -> bool:
@@ -93,7 +93,7 @@ func counts_towards_guest_total() -> bool:
 
 func get_next_behaviour():
 
-	if pending_arrest:
+	if ConflictResponseHandler.is_marked_for_arrest(self):
 		return IdleBehaviour
 
 	if is_robber:
@@ -102,14 +102,15 @@ func get_next_behaviour():
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
 		return NeedLeaveBehaviour
 
-	if Needs.drunkenness.strength > randf():
-		return PukeBehaviour
-		
-	if Needs.drunkenness.strength / 4 > randf():
-		return KnockedOutBehaviour
+	#if Needs.drunkenness.strength > randf():
+		#return PukeBehaviour
+		#
+	#if Needs.drunkenness.strength / 4 > randf():
+		#return KnockedOutBehaviour
 
-	if (Needs.drunkenness.strength / 4) > randf():
-		return FightBehaviour
+	if (Needs.drunkenness.strength) > randf():
+		FightHandler.create_or_join_drunk_fight(self)
+		return null
 
 	if (1.0 - Needs.Energy.strength) > randf():
 		return NeedSleepBehaviourScript
@@ -121,7 +122,7 @@ func get_next_behaviour():
 
 func _refresh_arrest_highlight():
 	var in_fight = is_in_fight_state()
-	if pending_arrest and not in_fight:
+	if ConflictResponseHandler.is_marked_for_arrest(self) and not in_fight:
 		var current_room = Building.query.room_at_position(global_position)
 		if current_room != _arrest_highlight_room:
 			_clear_arrest_highlight()

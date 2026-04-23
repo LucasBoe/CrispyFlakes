@@ -524,13 +524,14 @@ func _bind_guest_arrest_button(guest: NPCGuest):
 		return
 
 	arrest_button.disabled = false
-	arrest_button.text = "Unmark Arrest" if guest.pending_arrest else "Mark for Arrest"
+	arrest_button.text = "Unmark Arrest" if ConflictResponseHandler.is_marked_for_arrest(guest) else "Mark for Arrest"
 	arrest_button.pressed.connect(func():
 		if not is_instance_valid(guest):
 			return
-		guest.pending_arrest = not guest.pending_arrest
-		if guest.pending_arrest:
-			FightHandler.try_start_auto_arrest(guest)
+		if ConflictResponseHandler.is_marked_for_arrest(guest):
+			ConflictResponseHandler.unmark_for_arrest(guest)
+		else:
+			ConflictResponseHandler.mark_for_arrest(guest)
 		_bind_guest_arrest_button(guest)
 	)
 

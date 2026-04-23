@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="RoomData" load_steps=3 format=3 uid="uid://2dv0nu2ysix"]
 
-[ext_resource type="PackedScene" uid="uid://cubc3d83sojc7" path="res://scenes/rooms/room_gambling.tscn" id="1_gambl"]
+[ext_resource type="PackedScene" uid="uid://b1lbskj2hh8yj" path="res://scenes/rooms/room_gambling.tscn" id="1_gambl"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="2_gambl"]
 
 [resource]

@@ -12,22 +12,16 @@ func loop():
 	while true:
 		var to_arrest := get_npc_to_arrest()
 		if to_arrest != null:
-			if to_arrest.pending_arrest:
+			if ConflictResponseHandler.is_marked_for_arrest(to_arrest):
 				_narrative = ["Going after them...", "Making an arrest...", "They're not getting away..."].pick_random()
 				var drunkenness = to_arrest.Needs.drunkenness.strength
 				await move(to_arrest)
 				if true:
 					_narrative = ["Subduing them...", "Putting up a fight...", "Bringing them in!"].pick_random()
-					var fight = FightHandler.create_arrest_fight(to_arrest, npc)
-					to_arrest.Behaviour.set_behaviour(FightBehaviour)
-					(to_arrest.Behaviour.behaviour_instance as FightBehaviour).fight = fight
-					var stop = npc.Behaviour.set_behaviour(StopFightBehaviour) as StopFightBehaviour
-					stop.fight = fight
-					stop.arrest_target = to_arrest
-					stop.arrest_room = room
+					FightHandler.create_defense_fight(to_arrest, npc)
 					return
 				else:
-					to_arrest.pending_arrest = false
+					ConflictResponseHandler.unmark_for_arrest(to_arrest)
 					to_arrest.force_behaviour(ArrestedBehaviour)
 
 			var behaviour = (to_arrest.Behaviour.behaviour_instance as ArrestedBehaviour)
@@ -51,7 +45,7 @@ func loop():
 
 static func get_npc_to_arrest() -> NPCGuest:
 	for g : NPCGuest in Global.NPCSpawner.guests:
-		if g.pending_arrest:
+		if ConflictResponseHandler.is_marked_for_arrest(g):
 			return g
 		if g.Behaviour.behaviour_instance is ArrestedBehaviour \
 		and not (g.Behaviour.behaviour_instance as ArrestedBehaviour).cell:
@@ -61,7 +55,7 @@ static func get_npc_to_arrest() -> NPCGuest:
 static func count_people_that_need_arrestment() -> int:
 	var count = 0
 	for g : NPCGuest in Global.NPCSpawner.guests:
-		if g.pending_arrest:
+		if ConflictResponseHandler.is_marked_for_arrest(g):
 			count += 1
 			continue
 		if g.Behaviour.behaviour_instance is ArrestedBehaviour \

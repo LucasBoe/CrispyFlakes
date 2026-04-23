@@ -53,6 +53,7 @@ func stop_navigation():
 	has_target = false
 	is_moving = false
 	_stair_waypoints_remaining = 0
+	npc.Animator.direction = Vector2.ZERO
 	if _has_enter_gate:
 		_has_enter_gate = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)

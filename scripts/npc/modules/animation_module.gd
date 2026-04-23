@@ -143,8 +143,7 @@ func idle_tween(time_in_seconds):
 func fight_tween(time_in_seconds):
 	var s = time_in_seconds * FIGHT_ANIMATION_SPEED + random_instance_offset
 	var x = clamp( sin(s) * sin(s + 1), 0, 1)
-	var scale = Vector2(1 if random_instance_offset < .5 else -1, 1)
-	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, scale)
+	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2(x_orientation, 1))
 
 func broom_tween(time_in_seconds):
 	var rot = sin(time_in_seconds * BROOM_ANIMATION_SPEED) * BROOM_ROTATION_STRENGTH

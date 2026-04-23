@@ -17,14 +17,9 @@ var look_info : NPCLookInfo
 var strength: float = 0.5
 var agility: float = 0.5
 var intelligence: float = 0.5
-var stamina: float = 1.0
-var health: float = 1.0
 
 var _status_icon_instance = null
 var _status_icon_texture = null
-
-const STAMINA_DRAIN = 0.08
-const STAMINA_REGEN = 0.05
 
 func _init():
 	Tint = TintModule.new(self)
@@ -35,12 +30,7 @@ func _ready():
 	agility = randf_range(0.3, 1.0)
 	intelligence = randf_range(0.3, 1.0)
 
-func _process(delta):
-	var in_fight = is_in_fight_state()
-	if in_fight:
-		stamina = max(0.0, stamina - STAMINA_DRAIN * delta)
-	else:
-		stamina = min(1.0, stamina + STAMINA_REGEN * delta)
+func _process(_delta):
 	_refresh_status_icon()
 
 func _exit_tree():
@@ -54,9 +44,7 @@ func is_in_fight_state() -> bool:
 
 	var behaviour = Behaviour.behaviour_instance
 	if behaviour is FightBehaviour:
-		return true
-	if behaviour is StopFightBehaviour:
-		return (behaviour as StopFightBehaviour).is_actively_fighting()
+		return (behaviour as FightBehaviour).fight.has_started
 	return false
 
 func get_state_icon_entries() -> Array:

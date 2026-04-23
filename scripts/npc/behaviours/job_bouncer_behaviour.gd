@@ -25,21 +25,13 @@ func loop():
 		if not FightHandler.active_fights.is_empty():
 			_narrative = ["Responding to a fight!", "Breaking it up!", "On my way!"].pick_random()
 			var fight: Fight = FightHandler.active_fights[0]
-			var stop := npc.force_behaviour(StopFightBehaviour) as StopFightBehaviour
-			stop.fight = fight
+			fight.make_join_fight(npc)
 			return
 
 		var arrest_target := _find_pending_arrest_target()
 		if arrest_target != null:
 			_narrative = ["Making an arrest...", "Got a fugitive!", "Going after them..."].pick_random()
-			var prison := Building.query.closest_room_of_type(RoomPrison, npc.global_position) as RoomPrison
-			var fight := FightHandler.create_arrest_fight(arrest_target, npc)
-			arrest_target.Behaviour.set_behaviour(FightBehaviour)
-			(arrest_target.Behaviour.behaviour_instance as FightBehaviour).fight = fight
-			var stop := npc.force_behaviour(StopFightBehaviour) as StopFightBehaviour
-			stop.fight = fight
-			stop.arrest_target = arrest_target
-			stop.arrest_room = prison
+			FightHandler.create_defense_fight(arrest_target, npc)
 			return
 
 		_narrative = ["On patrol...", "Keeping the peace...", "Eyes peeled...", "All quiet..."].pick_random()
@@ -67,11 +59,11 @@ func _find_room() -> RoomBouncer:
 
 func _find_pending_arrest_target() -> NPCGuest:
 	for guest: NPCGuest in Global.NPCSpawner.guests:
-		if not guest.pending_arrest:
+		if not ConflictResponseHandler.is_marked_for_arrest(guest):
 			continue
 		var being_arrested := false
 		for fight: Fight in FightHandler.active_fights:
-			if fight.is_arrest_fight and fight.participants.has(guest):
+			if fight.is_arrest_fight and fight.has_participant(guest):
 				being_arrested = true
 				break
 		if not being_arrested:
