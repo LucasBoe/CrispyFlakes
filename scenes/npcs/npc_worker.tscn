@@ -25,7 +25,7 @@ shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
 shader_parameter/apron_sheet = ExtResource("3_aq4br")
 shader_parameter/use_apron = true
 shader_parameter/gun_texture = ExtResource("4_aq4br")
-shader_parameter/use_gun = true
+shader_parameter/use_gun = false
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
 radius = 6.0

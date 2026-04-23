@@ -63,7 +63,7 @@ func _find_pending_arrest_target() -> NPCGuest:
 			continue
 		var being_arrested := false
 		for fight: Fight in FightHandler.active_fights:
-			if fight.is_arrest_fight and fight.has_participant(guest):
+			if fight.fight_type == Fight.FightType.ARREST and fight.has_participant(guest):
 				being_arrested = true
 				break
 		if not being_arrested:

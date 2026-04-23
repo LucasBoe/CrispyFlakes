@@ -73,12 +73,14 @@ func _can_worker_respond(worker: NPCWorker, position: Vector2) -> bool:
 		return false
 	if worker.Behaviour == null or worker.Behaviour.behaviour_instance is FightBehaviour:
 		return false
+	if worker.Behaviour.behaviour_instance is KnockedOutBehaviour:
+		return false
 	return FightHandler.is_within_fight_detection_range(worker.global_position, position)
 
 func _can_join_brawl(fight: Fight) -> bool:
 	if fight == null or not is_instance_valid(fight):
 		return false
-	if fight.is_over or fight.is_arrest_fight:
+	if fight.is_over or fight.fight_type == Fight.FightType.ARREST:
 		return false
 	if fight.room == null:
 		return false

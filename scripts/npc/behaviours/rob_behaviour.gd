@@ -37,7 +37,5 @@ func loop():
 		npc.force_behaviour(NeedLeaveBehaviour)
 
 func stop_loop():
-	print_debug("stop rob!");
-	#UiNotifications.create_notification_dynamic("I'm done robbing", npc, Vector2(0,-32), null, Color.RED, INF)
 	(npc as NPCGuest).is_robber = false
 	return super.stop_loop()

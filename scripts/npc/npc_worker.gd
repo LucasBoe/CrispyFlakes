@@ -169,6 +169,7 @@ static var was_dragging = false
 
 const DRAG_THRESHOLD = 8.0
 const MELEE_CONFLICT_ENGAGE_RANGE := 24.0
+const FIGHT_ENERGY_REGEN_PER_SECOND := 0.2
 var _drag_pending = false
 var _drag_start_mouse = Vector2.ZERO
 
@@ -178,6 +179,7 @@ func _ready():
 
 func _process(delta):
 	super._process(delta)
+	_regenerate_fight_energy(delta)
 
 	if picked_up_npc == self:
 		global_position = get_global_mouse_position()
@@ -186,6 +188,11 @@ func _process(delta):
 		return
 
 	change_job(current_job)
+
+func _regenerate_fight_energy(delta: float) -> void:
+	if Behaviour != null and Behaviour.behaviour_instance is FightBehaviour:
+		return
+	energy = minf(1.0, energy + FIGHT_ENERGY_REGEN_PER_SECOND * delta)
 
 func change_job(new):
 	current_job = new

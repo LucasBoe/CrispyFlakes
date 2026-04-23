@@ -1,14 +1,24 @@
 extends Node
 
+const GUEST_DRUNK_FIGHT_MIN_START_ENERGY := 0.35
+
 var active_fights: Array[Fight] = []
+var _next_fight_debug_id := 1
 
 # FIGHT CREATION
 
 func _create_fight(position: Vector2) -> Fight:
 	var room := _get_closest_indoor_room(position)
 	var fight = Fight.new()
+	fight.debug_id = _next_fight_debug_id
+	_next_fight_debug_id += 1
 	active_fights.append(fight)
 	fight.room = room
+	print("[FightHandler] create fight #%d room=%s position=%s" % [
+		fight.debug_id,
+		room.name if room != null else "<none>",
+		position,
+	])
 	return fight
 
 func get_or_create_fight(npc: NPC) -> Fight:
@@ -22,8 +32,9 @@ func get_or_create_fight(npc: NPC) -> Fight:
 	return fight
 
 func create_or_join_drunk_fight(guest: NPCGuest) -> void:
-	var fight := get_or_create_fight(guest)
-	fight.make_join_fight(guest)
+	if not _is_in_active_fight(guest):
+		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
+	get_or_create_fight(guest)
 
 func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
 	var existing := get_fight_for_room(room)
@@ -31,11 +42,12 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
 		existing.make_join_fight(guest)
 		return
 	var fight := _create_fight(room.get_center_position())
+	fight.fight_type = Fight.FightType.ROBBERY
 	fight.make_join_fight(guest)
 
 func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> void:
 	var fight := _create_fight(guest.global_position)
-	fight.is_arrest_fight = true
+	fight.fight_type = Fight.FightType.ARREST
 	fight.make_join_fight(guest)
 	fight.make_join_fight(worker)
 
@@ -63,11 +75,10 @@ func _process(_delta: float) -> void:
 			continue
 
 		if fight.get_active_participants().size() >= 2:
-			fight.has_started = true
 			fight.start_fight()
 			continue
 
-		if not fight.is_arrest_fight and fight.participants.size() <= 1:
+		if fight.fight_type != Fight.FightType.ARREST and fight.participants.size() <= 1:
 			if not ConflictResponseHandler.try_join_brawl(fight) and not _try_attract_brawlers(fight):
 				end_fight(fight)
 
@@ -76,7 +87,17 @@ func _process(_delta: float) -> void:
 func end_fight(fight: Fight) -> void:
 	if fight == null or not active_fights.has(fight):
 		return
+	print("[FightHandler] end fight #%d state=%s result=%s participants=%s" % [
+		fight.debug_id,
+		Fight.State.keys()[fight.state],
+		Fight.Result.keys()[fight.result],
+		fight._participants_debug(),
+	])
+	if fight.state != Fight.State.OVER:
+		fight.state = Fight.State.OVER
+		fight.result = Fight.Result.NO_CONTEST
 	fight.is_over = true
+	fight.clear_health_bars()
 	RoomHighlighter.dispose(fight.highlight)
 	fight.highlight = null
 	active_fights.erase(fight)
@@ -101,6 +122,12 @@ func is_within_fight_detection_range(a: Vector2, b: Vector2) -> bool:
 
 # HELPERS
 
+func _is_in_active_fight(npc: NPC) -> bool:
+	for fight: Fight in active_fights:
+		if fight.has_participant(npc):
+			return true
+	return false
+
 func _get_closest_indoor_room(position: Vector2) -> RoomBase:
 	var closest: RoomBase = null
 	var closest_dist := INF
@@ -108,6 +135,7 @@ func _get_closest_indoor_room(position: Vector2) -> RoomBase:
 		for room: RoomBase in floor_rooms.values():
 			if room.is_outside_room:
 				continue
+			# TODO: Replace this proximity fallback with room-index based fight placement.
 			var d := room.global_position.distance_to(position)
 			if d < closest_dist:
 				closest_dist = d

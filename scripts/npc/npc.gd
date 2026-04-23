@@ -17,6 +17,7 @@ var look_info : NPCLookInfo
 var strength: float = 0.5
 var agility: float = 0.5
 var intelligence: float = 0.5
+var energy: float = 1.0
 
 var _status_icon_instance = null
 var _status_icon_texture = null

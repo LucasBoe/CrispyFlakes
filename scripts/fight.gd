@@ -1,5 +1,23 @@
 class_name Fight
 
+enum FightType {
+	BRAWL,
+	ARREST,
+	ROBBERY,
+}
+
+enum State {
+	GATHERING,
+	ACTIVE,
+	OVER,
+}
+
+enum Result {
+	NONE,
+	WORKERS_WON,
+	NO_CONTEST,
+}
+
 var participants = []
 var target_mapping : Dictionary[NPC, NPC] = {}
 var fight_positions: Dictionary = {}  # Dictionary[NPC, Vector2]
@@ -8,13 +26,13 @@ var health_bars := {}
 var room : RoomBase
 var highlight
 
+var debug_id: int = -1
+var fight_type: FightType = FightType.BRAWL
+var state: State = State.GATHERING
+var result: Result = Result.NONE
 var has_started: bool = false
 var is_over: bool = false
 
-# Optionally set when this fight is an arrest confrontation
-var is_arrest_fight: bool = false
-
-const MAX_DURATION_IN_SECONDS = 30
 const DRUNK_FIGHT_BOUNTY: int = 10
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
@@ -35,6 +53,35 @@ func get_active_participants() -> Array:
 				active.append(npc)
 	return active
 
+func debug_label() -> String:
+	return "#%d %s %s %s" % [debug_id, FightType.keys()[fight_type], State.keys()[state], Result.keys()[result]]
+
+func _debug(message: String) -> void:
+	print("[Fight %s] %s" % [debug_label(), message])
+
+func _npc_debug(npc: NPC) -> String:
+	if not is_instance_valid(npc):
+		return "<invalid>"
+	var behaviour_name := "<none>"
+	if npc.Behaviour != null and npc.Behaviour.behaviour_instance != null:
+		behaviour_name = npc.Behaviour.behaviour_instance.get_script().resource_path.get_file()
+	var fight_behaviour := _get_fight_behaviour(npc)
+	return "%s(%s energy=%.2f behaviour=%s arrived=%s)" % [
+		npc.name,
+		"worker" if npc is NPCWorker else "guest",
+		npc.energy,
+		behaviour_name,
+		fight_behaviour != null and fight_behaviour.arrived_at_room,
+	]
+
+func _participants_debug(list = null) -> String:
+	if list == null:
+		list = participants
+	var entries := PackedStringArray()
+	for participant in list:
+		entries.append(_npc_debug(participant as NPC))
+	return "; ".join(entries)
+
 func has_participant(npc: NPC) -> bool:
 	return participants.has(npc)
 
@@ -43,12 +90,16 @@ func make_join_fight(npc: NPC) -> void:
 		return
 	if not has_participant(npc):
 		participants.append(npc)
+		_debug("join %s" % _npc_debug(npc))
 	if not (npc.Behaviour.behaviour_instance is FightBehaviour):
 		npc.Behaviour.set_behaviour(FightBehaviour)
 	var behaviour := npc.Behaviour.behaviour_instance as FightBehaviour
 	behaviour.fight = self
 
 func start_fight():
+	state = State.ACTIVE
+	has_started = true
+	_debug("start active=%s all=%s" % [_participants_debug(get_active_participants()), _participants_debug()])
 	if room != null:
 		highlight = RoomHighlighter.request_rect(room, Color.RED, 2, RoomHighlighter.Priority.FIGHT)
 
@@ -100,11 +151,16 @@ func _assign_targets(active_participants: Array) -> void:
 func _pick_target_for(participant: NPC, active_participants: Array) -> NPC:
 	var candidates := []
 	for candidate: NPC in active_participants:
-		if candidate != participant:
+		if candidate != participant and _can_target(participant, candidate):
 			candidates.append(candidate)
 	if candidates.is_empty():
 		return null
 	return candidates.pick_random()
+
+func _can_target(attacker: NPC, target: NPC) -> bool:
+	if attacker is NPCWorker and target is NPCWorker:
+		return false
+	return true
 
 func _compute_fight_positions(a: NPC, b: NPC) -> void:
 	var dir := a.global_position - b.global_position
@@ -137,10 +193,16 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 		return
 
 	var damage := _get_attack_damage(attacker)
-	target_behaviour.energy = maxf(0.0, target_behaviour.energy - damage)
+	target.energy = maxf(0.0, target.energy - damage)
 	last_attack[attacker] = Global.time_now
 	SoundPlayer.play_punch(attacker.global_position)
-	print("[Fight] %s hit %s for %.2f -> energy now %.2f" % [attacker.name, target.name, damage, target_behaviour.energy])
+	if target.energy <= 0.0:
+		_debug("hit KO %s -> %s damage=%.2f active_before_cleanup=%s" % [
+			_npc_debug(attacker),
+			_npc_debug(target),
+			damage,
+			_participants_debug(get_active_participants()),
+		])
 
 	var target_target := target_mapping.get(target) as NPC
 	if target_target != attacker and _get_fight_behaviour(target) != null:
@@ -153,9 +215,8 @@ func _get_attack_damage(attacker: NPC) -> float:
 func _check_for_knockouts() -> void:
 	for participant: NPC in participants:
 		var behaviour := _get_fight_behaviour(participant)
-		if behaviour == null or behaviour.energy > 0.0:
+		if behaviour == null or participant.energy > 0.0:
 			continue
-		print("[Fight] knocking out %s (is_worker=%s)" % [participant.name, participant is NPCWorker])
 		_knock_out(participant)
 
 func _knock_out(npc: NPC) -> void:
@@ -168,6 +229,7 @@ func _knock_out(npc: NPC) -> void:
 
 	if npc.Navigation != null:
 		npc.Navigation.stop_navigation()
+	_debug("knockout %s participants=%s" % [_npc_debug(npc), _participants_debug()])
 	npc.Behaviour.set_behaviour(KnockedOutBehaviour)
 
 func clear_health_bars() -> void:
@@ -187,7 +249,7 @@ func _sync_health_bars(active_participants: Array) -> void:
 			continue
 		if not health_bars.has(participant):
 			health_bars[participant] = UiNotifications.create_npc_health_bar(participant, _health_bar_color(participant))
-		UiNotifications.update_npc_health_bar(health_bars[participant], behaviour.energy)
+		UiNotifications.update_npc_health_bar(health_bars[participant], participant.energy)
 
 func _health_bar_color(npc: NPC) -> Color:
 	if npc is NPCWorker:
@@ -195,15 +257,37 @@ func _health_bar_color(npc: NPC) -> Color:
 	return Color.RED
 
 func _try_resolve(active_participants: Array) -> bool:
-	if not _should_resolve(active_participants):
+	var next_result := _get_result(active_participants)
+	if next_result == Result.NONE:
 		return false
-	_apply_resolution(active_participants)
+	_debug("resolve candidate %s active=%s all=%s" % [
+		Result.keys()[next_result],
+		_participants_debug(active_participants),
+		_participants_debug(),
+	])
+	resolve(next_result)
+	return true
+
+func resolve(next_result: Result) -> bool:
+	if state == State.OVER:
+		return false
+	result = next_result
+	state = State.OVER
+	is_over = true
+	_debug("resolve apply %s" % Result.keys()[result])
+	_apply_result()
 	FightHandler.end_fight(self)
 	return true
 
-func _should_resolve(active_participants: Array) -> bool:
+func _get_result(active_participants: Array) -> Result:
 	if active_participants.size() <= 1:
-		return true
+		if active_participants.size() == 1:
+			var survivor := active_participants[0] as NPC
+			if survivor is NPCWorker:
+				return Result.WORKERS_WON
+			if survivor is NPCGuest:
+				return Result.NO_CONTEST
+		return Result.NO_CONTEST
 
 	var has_active_worker := false
 	var has_active_guest := false
@@ -214,32 +298,34 @@ func _should_resolve(active_participants: Array) -> bool:
 			has_active_guest = true
 
 	if has_active_worker and not has_active_guest:
-		return true
-	if is_arrest_fight and has_active_guest and not has_active_worker:
-		return true
-	return false
+		return Result.WORKERS_WON
+	if has_active_guest and not has_active_worker:
+		if fight_type == FightType.BRAWL:
+			return Result.NONE
+		return Result.NO_CONTEST
+	return Result.NONE
 
-func _apply_resolution(active_participants: Array) -> void:
-	if not _workers_won(active_participants):
-		return
+func _apply_result() -> void:
+	if result == Result.WORKERS_WON:
+		_apply_workers_won()
 
+func _apply_workers_won() -> void:
 	for participant in participants:
 		var guest := participant as NPCGuest
 		if not is_instance_valid(guest):
 			continue
-		if not is_arrest_fight and guest.look_info != null:
+		if not _should_apply_worker_win_to_guest(guest):
+			_debug("worker win skip %s" % _npc_debug(guest))
+			continue
+		_debug("worker win apply %s" % _npc_debug(guest))
+		if fight_type == FightType.BRAWL and guest.look_info != null:
 			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY)
 		ConflictResponseHandler.unmark_for_arrest(guest)
 		guest.force_behaviour(ArrestedBehaviour)
 
-func _workers_won(active_participants: Array) -> bool:
-	var has_active_worker := false
-	for participant: NPC in active_participants:
-		if participant is NPCWorker:
-			has_active_worker = true
-		elif participant is NPCGuest:
-			return false
-	return has_active_worker
+func _should_apply_worker_win_to_guest(guest: NPCGuest) -> bool:
+	var behaviour = guest.Behaviour.behaviour_instance
+	return behaviour is FightBehaviour or behaviour is KnockedOutBehaviour
 
 func _cleanup_inactive_participants(active_participants: Array) -> void:
 	for i: int in range(participants.size() - 1, -1, -1):

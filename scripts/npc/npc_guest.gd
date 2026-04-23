@@ -102,11 +102,11 @@ func get_next_behaviour():
 	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
 		return NeedLeaveBehaviour
 
-	#if Needs.drunkenness.strength > randf():
-		#return PukeBehaviour
-		#
-	#if Needs.drunkenness.strength / 4 > randf():
-		#return KnockedOutBehaviour
+	if Needs.drunkenness.strength > randf():
+		return PukeBehaviour
+		
+	if Needs.drunkenness.strength / 4 > randf():
+		return KnockedOutBehaviour
 
 	if (Needs.drunkenness.strength) > randf():
 		FightHandler.create_or_join_drunk_fight(self)
