@@ -177,15 +177,20 @@ Flow:
 2. Placement handler tracks mouse position and computes a target room index.
 3. It validates money, occupancy, adjacency, outdoor rules, and optional custom checks.
 4. On left click, it calls `Building.set_room(building_data, location.x, location.y)`.
-5. It updates foreground tiles and charges money.
+5. It charges money and refreshes foreground/roof tiles once placement is finalized.
 
 ### Default placement rules
 
 Indoor above-ground rooms:
 
-- use "tetris gravity" and snap to the lowest free `y` in the chosen column
+- highlight the raw hovered/clicked location
+- allow empty above-ground hover targets even in mid-air
+- settle into the lowest free `y` in the chosen column footprint when placed
+- `RoomEmpty` tiles count as occupied support for that landing scan
+- directly targeting a `RoomEmpty` footprint still replaces it in place
+- if the room falls, foreground/roof tiles refresh after the fall animation finishes
 - must be empty
-- must connect to something above or below, or be on ground floor
+- the landed location handles the usual support/stacking behavior
 - cannot be placed in a column whose ground-floor slot is an outdoor room
 
 Basement indoor rooms:

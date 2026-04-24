@@ -576,6 +576,8 @@ func _on_potential_target_deleted(room):
 		do_hide()
 
 func do_hide():
+	target = null
+
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
 	selected_room_highlight_instance = null

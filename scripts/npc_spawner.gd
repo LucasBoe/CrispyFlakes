@@ -58,6 +58,12 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 	if not is_instance_valid(guest):
 		return null
 
+	# Release any active guest behaviour state (toilet queues, occupied stalls, etc.)
+	if guest.Behaviour != null:
+		guest.Behaviour.clear_behaviour()
+	if guest.Navigation != null:
+		guest.Navigation.stop_navigation()
+
 	var worker := spawn_new_worker(guest.global_position) as NPCWorker
 	worker.strength = guest.strength
 	worker.agility = guest.agility

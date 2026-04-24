@@ -4,11 +4,11 @@ var is_placing = false
 var has_valid_target = false
 var building_data : RoomData
 var location : Vector2i
+var landed_location : Vector2i
 var highlights : Array = []
 var custom_placement_check = null
 
 var previous_notification = null
-var _raw_location : Vector2i
 
 func start_building(data : RoomData, check):
 	self.building_data = data
@@ -26,40 +26,65 @@ func stop_building():
 			RoomHighlighter.dispose(h)
 		highlights.clear()
 
-# Returns the lowest free y in column x (Tetris gravity for above-ground rooms).
+func _should_use_above_ground_fall(target_location: Vector2i) -> bool:
+	return not building_data.is_outdoor and target_location.y >= 0
+
 func _get_tetris_y(x: int) -> int:
 	var y = 0
 	while y < 100:
 		var room = Building.get_room_from_index(Vector2i(x, y))
-		if room == null or room is RoomEmpty:
+		if room == null:
 			return y
 		y += 1
 	return y
+
+func _has_direct_empty_override(target_location: Vector2i) -> bool:
+	if not _should_use_above_ground_fall(target_location):
+		return false
+
+	var has_empty := false
+	for col in building_data.width:
+		for row in building_data.height:
+			var cell = Building.get_room_from_index(target_location + Vector2i(col, row))
+			if cell is RoomEmpty:
+				has_empty = true
+			elif cell != null:
+				return false
+	return has_empty
+
+func _get_landed_location(target_location: Vector2i) -> Vector2i:
+	if not _should_use_above_ground_fall(target_location):
+		return target_location
+
+	var base_y := 0
+	for col in building_data.width:
+		base_y = max(base_y, _get_tetris_y(target_location.x + col))
+	return Vector2i(target_location.x, base_y)
+
+func _is_footprint_empty(target_location: Vector2i) -> bool:
+	for col in building_data.width:
+		for row in building_data.height:
+			var cell = Building.get_room_from_index(target_location + Vector2i(col, row))
+			if cell != null and not cell is RoomEmpty:
+				return false
+	return true
+
+func _refresh_tiles_after_fall(impact_strength: float, impact_duration: float) -> void:
+	Building.update_foreground_tiles()
+	Camera.add_shake(impact_strength, impact_duration)
 
 func _input(event):
 	if not is_placing:
 		return
 
 	var mouse = get_global_mouse_position()
-	_raw_location = Building.round_room_index_from_global_position(mouse)
+	location = Building.round_room_index_from_global_position(mouse)
+	landed_location = _get_landed_location(location)
+	var validation_location := location if _has_direct_empty_override(location) else landed_location
 
-	# Outdoor rooms always use the raw mouse location (custom_placement_check enforces y==0).
-	# Basement rooms (y < 0) use raw location — adjacency rules apply instead of gravity.
-	# Above-ground indoor rooms snap highlight to the lowest free slot in the column.
-	if _raw_location.y >= 0 and not building_data.is_outdoor:
-		var base_y = 0
-		for col in building_data.width:
-			base_y = max(base_y, _get_tetris_y(_raw_location.x + col))
-		location = Vector2i(_raw_location.x, base_y)
-	else:
-		location = _raw_location
-
-	has_valid_target = true
-	for col in building_data.width:
-		for row in building_data.height:
-			var cell = Building.get_room_from_index(location + Vector2i(col, row))
-			if cell != null and not cell is RoomEmpty:
-				has_valid_target = false
+	has_valid_target = _is_footprint_empty(location)
+	if validation_location != location:
+		has_valid_target = has_valid_target && _is_footprint_empty(validation_location)
 	var has_money = ResourceHandler.has_money(building_data.construction_price)
 
 	# Adjacency check — any cell in the footprint satisfies it
@@ -73,6 +98,8 @@ func _input(event):
 				for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
 					if Building.get_room_from_index(cell + dir):
 						has_adjacent_room_or_is_ground_floor = true
+	elif _should_use_above_ground_fall(location):
+		has_adjacent_room_or_is_ground_floor = true
 	else:
 		# Above ground: a room above/below the footprint, or any footprint cell is on y==0
 		for col in building_data.width:
@@ -87,15 +114,15 @@ func _input(event):
 
 	# Above-ground indoor rooms cannot be placed in a column where y=0 is an outdoor room.
 	# Basement rooms live below that surface slot, so they should still be placeable there.
-	if not building_data.is_outdoor and location.y >= 0:
+	if not building_data.is_outdoor and validation_location.y >= 0:
 		for col in building_data.width:
-			var ground_room = Building.get_room_from_index(Vector2i(location.x + col, 0))
+			var ground_room = Building.get_room_from_index(Vector2i(validation_location.x + col, 0))
 			if ground_room is RoomOutsideBase:
 				has_valid_target = false
 
 	# check custom
 	if custom_placement_check:
-		has_valid_target = has_valid_target && custom_placement_check.call(location)
+		has_valid_target = has_valid_target && custom_placement_check.call(validation_location)
 
 	var can_place = has_valid_target && has_money
 
@@ -110,35 +137,36 @@ func _input(event):
 		and not event.pressed \
 		and get_viewport().gui_get_hovered_control() == null:
 		if can_place:
+			var placement_location := validation_location
 			var had_horse_post_before_build = Building.count_rooms_by_data(Building.room_data_horse_post) > 0
 			SoundPlayer.play_construction_placed()
 			for col in building_data.width:
 				for row in building_data.height:
-					var existing = Building.get_room_from_index(location + Vector2i(col, row))
+					var existing = Building.get_room_from_index(placement_location + Vector2i(col, row))
 					if existing != null:
 						existing.queue_free()
-			Building.set_room(building_data, location.x, location.y)
-			Building.update_foreground_tiles()
+			Building.set_room(building_data, placement_location.x, placement_location.y)
 
-			# Tween the placed room down from the cursor y to its landed position
-			var drop_distance = _raw_location.y - location.y
+			var drop_distance := location.y - placement_location.y
 			if drop_distance > 0:
-				var placed_room = Building.get_room_from_index(location)
+				var placed_room = Building.get_room_from_index(placement_location)
 				if placed_room:
 					var final_y = placed_room.position.y
 					var impact_strength := 4.0 + float(min(drop_distance, 3))
-					placed_room.position.y = _raw_location.y * -48.0
+					placed_room.position.y = location.y * -48.0
 					var tween = placed_room.create_tween()
 					tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
 						.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-					tween.finished.connect(Camera.add_shake.bind(impact_strength, 0.12), CONNECT_ONE_SHOT)
+					tween.finished.connect(_refresh_tiles_after_fall.bind(impact_strength, 0.12), CONNECT_ONE_SHOT)
 				else:
+					Building.update_foreground_tiles()
 					Camera.add_shake()
 			else:
+				Building.update_foreground_tiles()
 				Camera.add_shake()
 
 			if building_data == Building.room_data_horse_post and not had_horse_post_before_build:
-				var placed_post := Building.get_room_from_index(location) as RoomHorsePost
+				var placed_post := Building.get_room_from_index(placement_location) as RoomHorsePost
 				if placed_post != null:
 					Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
 
