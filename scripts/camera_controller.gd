@@ -12,6 +12,7 @@ var _shake_offset := Vector2.ZERO
 var _shake_strength := 0.0
 var _shake_decay := 0.0
 var _rng := RandomNumberGenerator.new()
+var _last_shake_update_usec := 0
 
 var camera_offset_base: Vector2:
 	get:
@@ -28,6 +29,7 @@ var zoom_tween: Tween
 
 func _ready():
 	_rng.randomize()
+	_last_shake_update_usec = Time.get_ticks_usec()
 	camera_offset_base = offset
 	
 	zoomTarget = 3
@@ -40,7 +42,7 @@ func _process(delta):
 	simple_pan(delta)
 	click_and_drag()
 	clamp_pan_to_bounds()
-	_update_shake(delta)
+	_update_shake(_get_unscaled_delta())
 
 func _refresh_offset() -> void:
 	offset = _camera_offset_base + _shake_offset
@@ -62,6 +64,16 @@ func _update_shake(delta: float) -> void:
 
 	_shake_strength = maxf(0.0, _shake_strength - _shake_decay * delta)
 	_update_shake_offset()
+
+func _get_unscaled_delta() -> float:
+	var now_usec := Time.get_ticks_usec()
+	if _last_shake_update_usec == 0:
+		_last_shake_update_usec = now_usec
+		return 0.0
+
+	var delta_usec := now_usec - _last_shake_update_usec
+	_last_shake_update_usec = now_usec
+	return maxf(delta_usec / 1000000.0, 0.0)
 
 func _update_shake_offset() -> void:
 	if _shake_strength <= 0.0:
