@@ -92,6 +92,7 @@ enum ZLayer {
 	NPC_FAR_BACK = -150,
 	NPC_BEHIND_CONTENT = -50,
 	NPC_DEFAULT = 0,
+	NPC_DRAGGED = 2200,
 }
 
 enum RequestStatus {

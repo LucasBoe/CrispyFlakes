@@ -247,6 +247,7 @@ func _activate_drag():
 	was_dragging = true
 	picked_up_npc = self
 	_drag_pending = false
+	Animator.set_z(Enum.ZLayer.NPC_DRAGGED)
 	Navigation.set_process(false)
 
 	available_rooms_highlights.clear()
@@ -310,6 +311,8 @@ func _input(event):
 		_fall_velocity = 0.0
 		_is_falling = true
 		picked_up_npc = null
+		var drop_z: Enum.ZLayer = Enum.ZLayer.NPC_OUTSIDE if (room == null or room.is_outside_room) else Enum.ZLayer.NPC_DEFAULT
+		Animator.set_z(drop_z)
 
 		RoomHighlighter.dispose(current_job_room_highlight)
 		current_job_room_highlight = null

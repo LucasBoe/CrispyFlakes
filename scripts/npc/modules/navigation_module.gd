@@ -257,14 +257,15 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 	if right_room is RoomBase:
 		result.append(right_room)
 
-	# 3. Vertical movement only via stairs on adjacent floors
+	# 3. Vertical movement via stairs on the lower floor
 	if room is RoomStairs:
-		var stairs_above = Building.get_room_from_index(Vector2i(room.x, room.y + 1))
-		var stairs_below = Building.get_room_from_index(Vector2i(room.x, room.y - 1))
-		if stairs_above is RoomStairs:
-			result.append(stairs_above)
-		if stairs_below is RoomStairs:
-			result.append(stairs_below)
+		var room_above := _get_room_above_stairs(room as RoomStairs)
+		if room_above != null:
+			result.append(room_above)
+
+	for stair_below in _get_stairs_below(room):
+		if stair_below != room:
+			result.append(stair_below)
 
 	return result
 
@@ -273,9 +274,27 @@ func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, i
 	if from_room == null or to_room == null:
 		return
 
-	# Vertical movement via stairs
-	if from_room is RoomStairs and to_room is RoomStairs and from_room.y != to_room.y:
-		_append_stairs_transition(from_room as RoomStairs, to_room as RoomStairs)
+	# Vertical movement uses the stair on the lower floor.
+	var transition_stairs := _get_transition_stairs(from_room, to_room)
+	if transition_stairs != null and from_room.y != to_room.y:
+		if _debug:
+			print(
+				"[STAIRS][PATH] ",
+				npc.name,
+				" from=",
+				_debug_room_label(from_room),
+				" to=",
+				_debug_room_label(to_room),
+				" using=",
+				_debug_room_label(transition_stairs),
+				" dir=",
+				"down" if to_room.y < from_room.y else "up",
+				" room_above=",
+				_debug_room_label(_get_room_above_stairs(transition_stairs))
+			)
+		_append_stairs_transition(transition_stairs, to_room.y < from_room.y)
+		if not is_final and to_room is not RoomStairs:
+			target_path.append(to_room.get_center_floor_position())
 		return
 
 	# Skip center waypoint when entering stairs (zig-zag provides the entry point)
@@ -286,40 +305,64 @@ func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, i
 	target_path.append(to_room.get_center_floor_position())
 
 
-func _append_stairs_transition(from_stairs: RoomStairs, to_stairs: RoomStairs) -> void:
-	var go_downwards = to_stairs.y < from_stairs.y
-	var current_floor = from_stairs.y if go_downwards else from_stairs.y + 1
-	var end_floor = to_stairs.y if go_downwards else to_stairs.y + 1
+func _append_stairs_transition(stairs: RoomStairs, go_downwards: bool) -> void:
+	if stairs == null:
+		return
 
-	while current_floor != end_floor:
-		var current_stairs = Building.get_room_from_index(Vector2i(from_stairs.x, current_floor)) as RoomStairs
+	if _debug:
+		print(
+			"[STAIRS][TRANSITION] ",
+			npc.name,
+			" stairs=",
+			_debug_room_label(stairs),
+				" go_down=",
+				go_downwards,
+				" ",
+				_debug_stair_geometry(stairs)
+		)
 
-		if current_stairs == null:
-			current_stairs = Building.query.closest_on_floor(
-				RoomStairs,
-				from_stairs.global_position,
-				current_floor
-			) as RoomStairs
-
-		if current_stairs == null:
-			return
-
-		_append_stairs_zig_zag(current_stairs, go_downwards)
-		current_floor += -1 if go_downwards else 1
+	_append_stairs_zig_zag(stairs, go_downwards)
 
 
 func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
 	_stair_waypoints_remaining += 4
+	var waypoints: Array[Vector2] = []
+	var room_above := _get_room_above_stairs(stairs)
+	var top_aligned_origin := stairs.global_position + Vector2(0, -48)
 	if go_downwards:
-		target_path.append(stairs.global_position + Vector2(8, 0))
-		target_path.append(stairs.global_position + Vector2(28, 24))
-		target_path.append(stairs.global_position + Vector2(36, 24))
-		target_path.append(stairs.global_position + Vector2(36, 48))
+		waypoints = [
+			top_aligned_origin + Vector2(8, 0),
+			top_aligned_origin + Vector2(28, 24),
+			top_aligned_origin + Vector2(36, 24),
+			top_aligned_origin + Vector2(36, 48),
+		]
 	else:
-		target_path.append(stairs.global_position + Vector2(36, 48))
-		target_path.append(stairs.global_position + Vector2(36, 24))
-		target_path.append(stairs.global_position + Vector2(28, 24))
-		target_path.append(stairs.global_position + Vector2(8, 0))
+		waypoints = [
+			top_aligned_origin + Vector2(36, 48),
+			top_aligned_origin + Vector2(36, 24),
+			top_aligned_origin + Vector2(28, 24),
+			top_aligned_origin + Vector2(8, 0),
+		]
+
+	if _debug:
+		for i in range(waypoints.size()):
+			print(
+				"[STAIRS][WAYPOINT] ",
+				npc.name,
+				" step=",
+				i,
+				" anchor=",
+				_debug_room_label(stairs),
+				" above=",
+				_debug_room_label(room_above),
+				" delta=",
+				waypoints[i] - stairs.global_position,
+				" waypoint=",
+				_debug_waypoint_label(waypoints[i])
+			)
+
+	for waypoint in waypoints:
+		target_path.append(waypoint)
 
 
 func _fail_target_path() -> void:
@@ -402,6 +445,76 @@ func _get_current_floor_room(pos: Vector2) -> RoomBase:
 
 func _get_goal_floor_room(pos: Vector2) -> RoomBase:
 	return Building.query.closest_on_position_floor(RoomBase, pos) as RoomBase
+
+
+func _get_room_above_stairs(stairs: RoomStairs) -> RoomBase:
+	if stairs == null:
+		return null
+	return Building.get_room_from_index(Vector2i(stairs.x, stairs.y + 1)) as RoomBase
+
+
+func _get_stairs_below(room: RoomBase) -> Array[RoomStairs]:
+	var stairs_below: Array[RoomStairs] = []
+	if room == null:
+		return stairs_below
+
+	var width := room.data.width if room.data != null else 1
+	for offset in range(width):
+		var stair := Building.get_room_from_index(Vector2i(room.x + offset, room.y - 1)) as RoomStairs
+		if stair != null and stair not in stairs_below:
+			stairs_below.append(stair)
+
+	return stairs_below
+
+
+func _get_transition_stairs(from_room: RoomBase, to_room: RoomBase) -> RoomStairs:
+	if from_room is RoomStairs and _get_room_above_stairs(from_room as RoomStairs) == to_room:
+		return from_room as RoomStairs
+
+	if to_room is RoomStairs and _get_room_above_stairs(to_room as RoomStairs) == from_room:
+		return to_room as RoomStairs
+
+	return null
+
+
+func _debug_room_label(room: RoomBase) -> String:
+	if room == null:
+		return "null"
+
+	var room_name := room.data.room_name if room.data != null else room.get_class()
+	return "%s[%d,%d]@%s" % [room_name, room.x, room.y, str(room.global_position)]
+
+
+func _debug_stair_geometry(stairs: RoomStairs) -> String:
+	if stairs == null:
+		return "stairs=null"
+
+	var room_above := _get_room_above_stairs(stairs)
+	var sprite_center: Variant = stairs.stairs_sprite.global_position if stairs.stairs_sprite != null else "null"
+	return "origin=%s floor_center=%s top_center=%s sprite_center=%s floor_room=%s visual_room=%s above=%s above_floor_center=%s" % [
+		str(stairs.global_position),
+		str(stairs.get_center_floor_position()),
+		str(stairs.get_top_center_position()),
+		str(sprite_center),
+		_debug_room_label(Building.query.room_at_floor_position(stairs.global_position) as RoomBase),
+		_debug_room_label(Building.query.room_at_position(stairs.global_position) as RoomBase),
+		_debug_room_label(room_above),
+		str(room_above.get_center_floor_position() if room_above != null else null),
+	]
+
+
+func _debug_waypoint_label(pos: Vector2) -> String:
+	var biased_pos: Vector2 = pos + Vector2(0, Building.FLOOR_POSITION_Y_BIAS)
+	var floor_idx: Vector2i = Building.round_floor_index_from_global_position(pos)
+	return "%s biased=%s room_idx=%s floor_idx=%s floor_origin=%s floor=%s visual=%s" % [
+		str(pos),
+		str(biased_pos),
+		str(Building.round_room_index_from_global_position(pos)),
+		str(floor_idx),
+		str(Building.global_position_from_room_index(floor_idx)),
+		_debug_room_label(Building.query.room_at_floor_position(pos) as RoomBase),
+		_debug_room_label(Building.query.room_at_position(pos) as RoomBase),
+	]
 
 
 func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:
