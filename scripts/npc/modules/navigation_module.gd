@@ -34,6 +34,7 @@ func _process(delta):
 	npc.Animator.direction = Vector2.ZERO
 
 	if global_position.distance_to(target_path[0]) < 1:
+		npc.global_position = target_path[0]
 		_on_waypoint_arrived(target_path[0])
 		target_path.remove_at(0)
 		if _stair_waypoints_remaining > 0:
@@ -83,12 +84,11 @@ func get_random_target():
 
 
 func refresh_room_index():
-	current_room_index = Building.round_room_index_from_global_position(global_position + Vector2(0, -1))
+	current_room_index = Building.round_floor_index_from_global_position(global_position)
 
 
 func get_reachable_rooms() -> Array[RoomBase]:
-	var start_index = Building.round_room_index_from_global_position(global_position)
-	var start_room := Building.query.closest_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+	var start_room := _get_current_floor_room(global_position)
 	if start_room == null:
 		return []
 
@@ -109,8 +109,7 @@ func get_reachable_rooms() -> Array[RoomBase]:
 
 
 func is_room_reachable(room: RoomBase) -> bool:
-	var start_index = Building.round_room_index_from_global_position(global_position)
-	var start_room := Building.query.closest_on_floor(RoomBase, global_position, start_index.y) as RoomBase
+	var start_room := _get_current_floor_room(global_position)
 
 	if start_room == null or room == null:
 		return false
@@ -124,9 +123,8 @@ func get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 
 
 func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
-	var start_index = Building.round_room_index_from_global_position(start_pos)
-	var start_room := Building.query.closest_on_floor(RoomBase, start_pos, start_index.y) as RoomBase
-	var goal_room := Building.query.closest_room_of_type(RoomBase, goal_pos) as RoomBase
+	var start_room := _get_current_floor_room(start_pos)
+	var goal_room := _get_goal_floor_room(goal_pos)
 
 	if start_room == null or goal_room == null:
 		if _debug:
@@ -164,8 +162,8 @@ func refresh_target_path() -> void:
 
 	refresh_room_index()
 
-	var start_room := Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
-	var goal_room := Building.query.closest_room_of_type(RoomBase, final_target) as RoomBase
+	var start_room := _get_current_floor_room(global_position)
+	var goal_room := _get_goal_floor_room(final_target)
 
 	if start_room == null or goal_room == null:
 		_fail_target_path()
@@ -326,7 +324,7 @@ func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
 
 func _fail_target_path() -> void:
 	target_path.clear()
-	var current_room := Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
+	var current_room := _get_current_floor_room(global_position)
 	if current_room != null:
 		target_path.append(current_room.get_random_floor_position())
 
@@ -379,14 +377,12 @@ func _try_frisk_at_bouncer() -> void:
 		(npc as NPCGuest).is_known_fugitive = true
 
 func _is_outside_target(pos: Vector2) -> bool:
-	var idx: Vector2i = Building.round_room_index_from_global_position(pos)
-	var room: RoomBase = Building.get_room_from_index(idx) as RoomBase
+	var room := Building.query.room_at_floor_position(pos) as RoomBase
 	return room == null or room.is_outside_room
 
 
 func _check_inside_outside_transition() -> void:
-	var idx: Vector2i = Building.round_room_index_from_global_position(global_position)
-	var current_room: RoomBase = Building.get_room_from_index(idx) as RoomBase
+	var current_room := Building.query.room_at_floor_position(global_position) as RoomBase
 	if current_room == _last_known_room:
 		return
 	var prev_room: RoomBase = _last_known_room
@@ -400,6 +396,12 @@ func _check_inside_outside_transition() -> void:
 	elif leaving:
 		_is_inside = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+
+func _get_current_floor_room(pos: Vector2) -> RoomBase:
+	return Building.query.closest_on_current_floor(RoomBase, pos) as RoomBase
+
+func _get_goal_floor_room(pos: Vector2) -> RoomBase:
+	return Building.query.closest_on_position_floor(RoomBase, pos) as RoomBase
 
 
 func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:

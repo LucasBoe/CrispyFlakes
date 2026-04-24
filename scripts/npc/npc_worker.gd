@@ -339,10 +339,10 @@ func try_arrest_in_room(room: RoomBase) -> bool:
 	return true
 
 func get_current_room() -> RoomBase:
-	var exact := Building.query.room_at_position(global_position) as RoomBase
+	var exact := Building.query.room_at_floor_position(global_position) as RoomBase
 	if exact != null:
 		return exact
-	return Building.query.closest_room_of_type(RoomBase, global_position) as RoomBase
+	return Building.query.closest_on_current_floor(RoomBase, global_position) as RoomBase
 
 func _can_join_fight_in_room(room: RoomBase) -> bool:
 	if room == null or current_job_room == null:

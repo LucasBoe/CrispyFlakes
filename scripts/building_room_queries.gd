@@ -96,6 +96,21 @@ func closest_on_floor(type, global_pos: Vector2, y):
 
 	return closest_room
 
+func closest_on_position_floor(type, global_pos: Vector2):
+	var exact := room_at_floor_position(global_pos) as RoomBase
+	if exact != null and is_instance_of(exact, type):
+		return exact
+
+	var floor_index: Vector2i = _building.round_floor_index_from_global_position(global_pos)
+	return closest_on_floor(type, global_pos, floor_index.y)
+
+func closest_on_current_floor(type, global_pos: Vector2):
+	return closest_on_position_floor(type, global_pos)
+
 func room_at_position(global_pos: Vector2):
 	var index = _building.round_room_index_from_global_position(global_pos)
+	return _building.get_room_from_index(index)
+
+func room_at_floor_position(global_pos: Vector2):
+	var index = _building.round_floor_index_from_global_position(global_pos)
 	return _building.get_room_from_index(index)

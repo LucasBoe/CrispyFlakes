@@ -109,7 +109,7 @@ func get_all_rooms_of_type_ordered_by_distance(type):
 
 func move(target, custom_speed = -1):
 	var goal_pos: Vector2 = (target as Node2D).global_position if target is Node2D else target
-	var goal_room := Building.query.closest_room_of_type(RoomBase, goal_pos) as RoomBase
+	var goal_room := Building.query.closest_on_position_floor(RoomBase, goal_pos) as RoomBase
 
 	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
 		var fallback_room := _get_closest_reachable_room_to(goal_pos)

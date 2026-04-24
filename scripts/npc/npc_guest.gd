@@ -123,7 +123,7 @@ func get_next_behaviour():
 func _refresh_arrest_highlight():
 	var in_fight = is_in_fight_state()
 	if ConflictResponseHandler.is_marked_for_arrest(self) and not in_fight:
-		var current_room = Building.query.room_at_position(global_position)
+		var current_room = Building.query.room_at_floor_position(global_position)
 		if current_room != _arrest_highlight_room:
 			_clear_arrest_highlight()
 			_arrest_highlight_room = current_room

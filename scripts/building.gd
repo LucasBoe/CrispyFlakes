@@ -7,6 +7,7 @@ extends Node2D
 var floors = {}
 var query : BuildingRoomQueries
 var _tile_renderer : BuildingTileRenderer
+const FLOOR_POSITION_Y_BIAS := -1.0
 
 # RoomData resources
 const room_data_empty := preload("res://assets/resources/room_empty.tres")
@@ -145,6 +146,9 @@ func round_room_index_from_global_position(global_pos: Vector2):
 	var x = floor(global_pos.x / 48)
 	var y = floor(global_pos.y / -48)
 	return Vector2i(x, y)
+
+func round_floor_index_from_global_position(global_pos: Vector2):
+	return round_room_index_from_global_position(global_pos + Vector2(0, FLOOR_POSITION_Y_BIAS))
 
 func global_position_from_room_index(room_index: Vector2i):
 	var x = room_index.x * 48 + 24

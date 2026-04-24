@@ -142,8 +142,13 @@ func _input(event):
 				if placed_post != null:
 					Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
 
+			var repeat_data: RoomData = building_data
+			var repeat_check = custom_placement_check
+			var shift_held = Input.is_key_pressed(KEY_SHIFT)
 			stop_building()
 			ResourceHandler.change_resource(Enum.Resources.MONEY, -building_data.construction_price)
+			if shift_held:
+				start_building(repeat_data, repeat_check)
 			return
 		else:
 			if not has_valid_target:

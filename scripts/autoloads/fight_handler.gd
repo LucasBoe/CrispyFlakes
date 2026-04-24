@@ -269,7 +269,7 @@ func _get_actor_room(actor: Node2D) -> RoomBase:
 	if actor == null or not is_instance_valid(actor):
 		return null
 
-	var exact := Building.query.room_at_position(actor.global_position) as RoomBase
+	var exact := Building.query.room_at_floor_position(actor.global_position) as RoomBase
 	if exact != null:
 		return exact
-	return Building.query.closest_room_of_type(RoomBase, actor.global_position) as RoomBase
+	return Building.query.closest_on_current_floor(RoomBase, actor.global_position) as RoomBase
