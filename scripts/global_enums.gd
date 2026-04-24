@@ -88,6 +88,7 @@ static func job_to_behaviour(job : Jobs):
 			return JobWaterTowerBehaviour
 
 enum ZLayer {
+	NPC_IN_OUTHOUSE = -620,
 	NPC_OUTSIDE = -500,
 	NPC_FAR_BACK = -150,
 	NPC_BEHIND_CONTENT = -50,

@@ -13,7 +13,10 @@ func loop():
 	while true:
 
 		var loose = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.WATER_BUCKET)
-		if loose != null:
+		var storage_available = loose != null and get_all_rooms_of_type_ordered_by_distance(RoomStorage).any(
+			func(s: RoomStorage) -> bool: return s.can_receive(loose)
+		)
+		if storage_available:
 			_narrative = ["Picking up a stray bucket...", "Grabbing that loose water...", "Collecting spilled water..."].pick_random()
 			await move(loose.global_position)
 			if is_instance_valid(loose):

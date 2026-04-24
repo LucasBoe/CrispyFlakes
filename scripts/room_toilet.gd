@@ -6,6 +6,9 @@ const USE_DURATION := 5.0
 const STALL_POSITIONS := [Vector2(14, 0), Vector2(34, 0)]
 const QUEUE_SPACING := 10.0
 const QUEUE_CLAMP_STEP := 4.0
+const FRAME_DURATION := 0.08
+
+@onready var _door_sprites: Array[Sprite2D] = [$Door1, $Door2]
 
 var users: Array[NPC] = []
 var queue: Array[NPC] = []
@@ -79,6 +82,23 @@ func _get_next_open_stall_index() -> int:
 		if not _stall_users.values().has(i):
 			return i
 	return 0
+
+func get_stall_index(using_npc: NPC) -> int:
+	return _stall_users.get(using_npc, 0)
+
+func play_open_animation(stall_index: int) -> void:
+	var door: Sprite2D = _door_sprites[stall_index]
+	var last_frame: int = door.hframes * door.vframes - 1
+	for f in range(0, last_frame + 1):
+		door.frame = f
+		await get_tree().create_timer(FRAME_DURATION).timeout
+
+func play_close_animation(stall_index: int) -> void:
+	var door: Sprite2D = _door_sprites[stall_index]
+	var last_frame: int = door.hframes * door.vframes - 1
+	for f in range(last_frame - 1, -1, -1):
+		door.frame = f
+		await get_tree().create_timer(FRAME_DURATION).timeout
 
 func _get_valid_queue_position(queue_target: Vector2) -> Vector2:
 	var center: Vector2 = get_center_floor_position()

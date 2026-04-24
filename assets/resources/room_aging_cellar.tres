@@ -1,7 +1,6 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://dewb0r5nwcwq0"]
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://dewb0r5nwcwq0"]
 
 [ext_resource type="PackedScene" uid="uid://txgsroajte5l" path="res://scenes/rooms/room_aging_cellar.tscn" id="1_ussxi"]
-[ext_resource type="Texture2D" uid="uid://dfmnthej186x3" path="res://assets/sprites/ui/room_aging-cellar_icon.png" id="2_dvik4"]
 [ext_resource type="Texture2D" uid="uid://ba6fhx3sik71g" path="res://assets/sprites/ui/room_aging-cellar_preview.png" id="3_2t72g"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_4hwfa"]
 
@@ -10,7 +9,6 @@ script = ExtResource("4_4hwfa")
 packed_scene = ExtResource("1_ussxi")
 room_name = "Aging Cellar"
 room_desc = "age whiskey for the bar"
-room_icon = ExtResource("2_dvik4")
 room_preview = ExtResource("3_2t72g")
 construction_price = 30
 tier = 2

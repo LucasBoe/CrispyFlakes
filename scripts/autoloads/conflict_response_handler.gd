@@ -42,7 +42,7 @@ func try_join_brawl(fight: Fight) -> bool:
 func _refresh_potential_arrests() -> void:
 	for i: int in range(potential_arrests.size() - 1, -1, -1):
 		var guest: NPCGuest = potential_arrests[i]
-		if not is_instance_valid(guest) or _is_in_active_fight(guest):
+		if not is_instance_valid(guest):
 			potential_arrests.remove_at(i)
 
 func _try_pair_arrests() -> void:
@@ -50,6 +50,8 @@ func _try_pair_arrests() -> void:
 		return
 
 	for guest: NPCGuest in potential_arrests:
+		if _is_in_active_fight(guest):
+			continue
 		var worker := _find_responder_for_position(guest.global_position)
 		if worker != null:
 			FightHandler.create_defense_fight(guest, worker)

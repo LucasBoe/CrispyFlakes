@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://jfyr5d3ixvlc"]
 
-[ext_resource type="Script" path="res://scripts/room_toilet.gd" id="1_toilet"]
+[ext_resource type="Script" uid="uid://dsg82delbl54a" path="res://scripts/room_toilet.gd" id="1_toilet"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_wall"]
-[ext_resource type="Texture2D" path="res://assets/sprites/room_toilet.svg" id="3_toilet"]
+[ext_resource type="Texture2D" uid="uid://b8vydsqi5yu1f" path="res://assets/sprites/toilet_base.png" id="4_acays"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="4_outline"]
+[ext_resource type="Texture2D" uid="uid://r857bfgbxywg" path="res://assets/sprites/toilet_door_sheet.png" id="5_6ivw5"]
 
 [node name="Room_Toilet" type="Node2D"]
 texture_filter = 1
@@ -20,7 +21,21 @@ z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("4_outline")
 
-[node name="Toilet" type="Sprite2D" parent="."]
+[node name="Base" type="Sprite2D" parent="."]
 z_index = -100
-position = Vector2(24, -24)
-texture = ExtResource("3_toilet")
+position = Vector2(24.5, -19)
+texture = ExtResource("4_acays")
+
+[node name="Door1" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(14, -16)
+texture = ExtResource("5_6ivw5")
+offset = Vector2(0.5, 0.5)
+hframes = 4
+
+[node name="Door2" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(34, -16)
+texture = ExtResource("5_6ivw5")
+offset = Vector2(0.5, 0.5)
+hframes = 4

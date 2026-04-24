@@ -69,7 +69,7 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	var instance : Button = button_dummy.duplicate()
 	button_dummy.get_parent().add_child(instance)
 	instance.visible = true
-	instance.icon = data.room_icon
+	instance.icon = data.room_icon if data.room_icon else data.room_preview
 	var _initial_count: int = Building.count_rooms_by_data(data)
 	instance.text = "" if _initial_count == 0 else str(_initial_count)
 	instance.button_down.connect(PlacementHandler.start_building.bind(data, custom_placement_check))

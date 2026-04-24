@@ -83,8 +83,19 @@ func delete_room(room: RoomBase):
 					_erase_room_cell(room.x + col, room.y + row)
 				else:
 					set_room(room_data_empty, room.x + col, room.y + row)
+	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
 	room.destroy()
+
+func refresh_adjacent_stair_visuals(x: int, y: int, width: int, height: int) -> void:
+	for col in width:
+		var nx = x + col
+		var stair_below: RoomStairs = get_room_from_index(Vector2i(nx, y - 1)) as RoomStairs
+		if stair_below != null:
+			stair_below.refresh_visuals()
+		var stair_above: RoomStairs = get_room_from_index(Vector2i(nx, y + height)) as RoomStairs
+		if stair_above != null:
+			stair_above.refresh_visuals()
 
 func update_foreground_tiles():
 	_tile_renderer.update(floors)

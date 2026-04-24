@@ -60,7 +60,7 @@ func loop():
 	if is_instance_valid(outhouse):
 		SoundPlayer.play_outhouse_door(outhouse.global_position)
 		await outhouse.play_open_animation()
-		npc.Animator.hide()
+		npc.Animator.set_z(Enum.ZLayer.NPC_IN_OUTHOUSE)
 		await outhouse.play_close_animation()
 
 		await progress(7)
@@ -68,8 +68,8 @@ func loop():
 		if is_instance_valid(outhouse):
 			SoundPlayer.play_outhouse_door(outhouse.global_position)
 			await outhouse.play_open_animation()
-		npc.Animator.show()
-		
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+
 		if is_instance_valid(outhouse):
 			await outhouse.play_close_animation()
 
@@ -85,12 +85,13 @@ func stop_loop() -> BehaviourSaveData:
 		toilet.leave_queue(npc)
 		toilet.release_stall(npc)
 	if _hidden_in_toilet:
-		npc.Animator.show()
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 		_hidden_in_toilet = false
 
 	if is_instance_valid(outhouse):
 		outhouse.leave_queue(npc)
 		if outhouse.user == npc:
+			npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 			outhouse.user = null
 	return super.stop_loop()
 
@@ -145,13 +146,23 @@ func _use_toilet() -> bool:
 	if stopped or not is_instance_valid(toilet):
 		return false
 
-	npc.Animator.hide()
+	var stall_index: int = toilet.get_stall_index(npc)
+	SoundPlayer.play_outhouse_door(toilet.global_position)
+	await toilet.play_open_animation(stall_index)
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	_hidden_in_toilet = true
+	await toilet.play_close_animation(stall_index)
+
 	await progress(RoomToilet.USE_DURATION)
+
+	if is_instance_valid(toilet):
+		SoundPlayer.play_outhouse_door(toilet.global_position)
+		await toilet.play_open_animation(stall_index)
 	if _hidden_in_toilet:
-		npc.Animator.show()
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 		_hidden_in_toilet = false
 	if is_instance_valid(toilet):
+		await toilet.play_close_animation(stall_index)
 		toilet.release_stall(npc)
 
 	if stopped:

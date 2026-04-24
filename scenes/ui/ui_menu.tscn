@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
+[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="16_p76uh"]
 [ext_resource type="Texture2D" uid="uid://br2d8r00vl7bg" path="res://assets/sprites/ui/2x/ui_rect_base_open_right.png" id="18_p76uh"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
@@ -24,7 +25,6 @@
 [ext_resource type="Texture2D" uid="uid://bar5420knrv4c" path="res://assets/sprites/ui/icon_comfort.png" id="50_em0su"]
 [ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
-[ext_resource type="Texture2D" uid="uid://cpm3j0j8jebt6" path="res://assets/sprites/ui/room_table_icon.png" id="54_k504d"]
 [ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
 
 [node name="UIMenu" type="Control"]
@@ -51,6 +51,7 @@ theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 48
 
 [node name="UIWorkers" type="Control" parent="MarginContainer"]
+visible = false
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("19_6ravm")
@@ -166,7 +167,6 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="MarginContainer" parent="MarginContainer"]
-visible = false
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 8
@@ -254,14 +254,14 @@ layout_mode = 2
 columns = 3
 
 [node name="ButtonDummy" type="Button" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(58, 58)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")
 theme_override_fonts/font = ExtResource("25_q3hll")
 theme_override_font_sizes/font_size = 11
 text = "1"
-icon = ExtResource("54_k504d")
+icon = ExtResource("16_p76uh")
 icon_alignment = 1
 expand_icon = true
 
@@ -412,6 +412,7 @@ theme_override_constants/margin_bottom = 1
 
 [node name="RoomBuildHoverInfoRoomPreviewTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("55_nmmsk")
 stretch_mode = 4

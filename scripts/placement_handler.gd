@@ -147,14 +147,7 @@ func _input(event):
 						existing.queue_free()
 			Building.set_room(building_data, placement_location.x, placement_location.y)
 
-			for col in building_data.width:
-				var nx = placement_location.x + col
-				var stair_below = Building.get_room_from_index(Vector2i(nx, placement_location.y - 1)) as RoomStairs
-				if stair_below != null:
-					stair_below.refresh_visuals()
-				var stair_above = Building.get_room_from_index(Vector2i(nx, placement_location.y + building_data.height)) as RoomStairs
-				if stair_above != null:
-					stair_above.refresh_visuals()
+			Building.refresh_adjacent_stair_visuals(placement_location.x, placement_location.y, building_data.width, building_data.height)
 
 			var drop_distance := location.y - placement_location.y
 			if drop_distance > 0:

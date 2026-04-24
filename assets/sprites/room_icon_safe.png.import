@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://nmvdi1x55hwq"
-path="res://.godot/imported/room_watertower_icon.png-a7ba728a7e07ad5d75118466375baab0.ctex"
+uid="uid://hffpvi362s42"
+path="res://.godot/imported/room_icon_safe.png-e81564923c672ad626c6c199a803f610.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/room_watertower_icon.png"
-dest_files=["res://.godot/imported/room_watertower_icon.png-a7ba728a7e07ad5d75118466375baab0.ctex"]
+source_file="res://assets/sprites/room_icon_safe.png"
+dest_files=["res://.godot/imported/room_icon_safe.png-e81564923c672ad626c6c199a803f610.ctex"]
 
 [params]
 
