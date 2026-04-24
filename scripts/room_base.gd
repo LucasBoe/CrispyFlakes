@@ -73,6 +73,30 @@ func get_top_center_position():
 func get_center_floor_position():
 	return global_position + Vector2(24, 0)
 
+func get_preferred_horizontal_queue_direction(fallback_direction: float = 1.0) -> float:
+	var left_span: int = _get_contiguous_queue_span(-1)
+	var right_span: int = _get_contiguous_queue_span(1)
+
+	if left_span == 0 and right_span == 0:
+		return fallback_direction
+	if left_span == right_span:
+		return fallback_direction
+	return -1.0 if left_span > right_span else 1.0
+
+func _get_contiguous_queue_span(direction: int) -> int:
+	var room_width: int = data.width if data != null else 1
+	var current_x: int = x - 1 if direction < 0 else x + room_width
+	var span: int = 0
+
+	while true:
+		var room := Building.get_room_from_index(Vector2i(current_x, y)) as RoomBase
+		if room == null or room is RoomStairs:
+			return span
+		span += 1
+		current_x += direction
+
+	return span
+
 func get_notification_position():
 	return global_position + Vector2(2, -32)
 

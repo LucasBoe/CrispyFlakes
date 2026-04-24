@@ -27,7 +27,7 @@ func get_queue_position(npc: NPC) -> Vector2:
 	var index = queue.find(npc)
 	if index < 0:
 		return get_center_floor_position()
-	var direction: float = 1.0 if global_position.x >= 0 else -1.0
+	var direction: float = get_preferred_horizontal_queue_direction(1.0 if global_position.x >= 0 else -1.0)
 	return get_center_floor_position() + Vector2(direction * (index + 1) * 14, 0)
 
 func init_room(_x : int, _y : int):

@@ -22,6 +22,14 @@ func all_rooms_of_type(type, reachable_rooms: Array = []) -> Array:
 	return filtered if not filtered.is_empty() else rooms
 
 func closest_room_of_type(type, global_pos: Vector2, blacklist = null, offset = Vector2.ZERO, reachable_rooms: Array = []):
+	var resolved_pos: Vector2 = global_pos + offset
+	var containing_room := room_at_position(resolved_pos) as RoomBase
+	if containing_room != null and is_instance_of(containing_room, type):
+		var is_blacklisted: bool = blacklist != null and blacklist.has(containing_room)
+		var is_reachable_match: bool = reachable_rooms.is_empty() or containing_room in reachable_rooms
+		if not is_blacklisted and is_reachable_match:
+			return containing_room
+
 	var closest_reachable = null
 	var closest_any = null
 	var dist_reachable := INF
@@ -35,7 +43,7 @@ func closest_room_of_type(type, global_pos: Vector2, blacklist = null, offset = 
 			if blacklist != null and blacklist.has(room):
 				continue
 
-			var d = room.global_position.distance_to(global_pos + offset)
+			var d = room.global_position.distance_to(resolved_pos)
 			if d < dist_any:
 				dist_any = d
 				closest_any = room

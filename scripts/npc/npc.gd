@@ -49,7 +49,8 @@ func is_in_fight_state() -> bool:
 
 	var behaviour = Behaviour.behaviour_instance
 	if behaviour is FightBehaviour:
-		return (behaviour as FightBehaviour).fight.has_started
+		if (behaviour as FightBehaviour).fight:
+			return (behaviour as FightBehaviour).fight.has_started
 	return false
 
 func get_state_icon_entries() -> Array:
