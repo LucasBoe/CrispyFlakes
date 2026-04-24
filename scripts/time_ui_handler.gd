@@ -18,6 +18,16 @@ func _unhandled_input(event):
 		var pause = Engine.time_scale > 0
 		set_time(0 if pause else 1)
 		set_selected_button(buttons[0 if pause else 1])
+	elif event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_1: set_time_by_index(0)
+			KEY_2: set_time_by_index(1)
+			KEY_3: set_time_by_index(2)
+			KEY_4: set_time_by_index(3)
+
+func set_time_by_index(index: int):
+	set_selected_button(buttons[index])
+	set_time([0, 1, 3, 9][index])
 	
 func create_button(speed, path):
 	var instance : TimeButton = dummy.duplicate()
