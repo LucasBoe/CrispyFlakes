@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://ulsbt763ecmh" path="res://assets/sprites/sky.png" id="2_golqe"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="2_vjqo2"]
 [ext_resource type="Texture2D" uid="uid://dx5t8rbpen24y" path="res://assets/sprites/clouds/cloud_2.png" id="4_xj8bt"]
-[ext_resource type="Texture2D" uid="uid://deby5nh05g5wr" path="res://assets/sprites/signpost.png" id="5_0aorq"]
 [ext_resource type="Texture2D" uid="uid://5bdykruptoea" path="res://assets/sprites/montains.png" id="5_mo382"]
 [ext_resource type="Texture2D" uid="uid://itmvfg300knf" path="res://assets/sprites/clouds/cloud_3.png" id="5_n0wds"]
 [ext_resource type="Texture2D" uid="uid://cgw120akkva1t" path="res://assets/sprites/clouds/cloud_4.png" id="6_bi8nk"]
@@ -14,6 +13,7 @@
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
 [ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
+[ext_resource type="Texture2D" uid="uid://creqk7ma6nxlt" path="res://assets/sprites/spawn_gate.png" id="14_n0wds"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
 shader = ExtResource("2_8d0p8")
@@ -151,7 +151,7 @@ position = Vector2(272, 52)
 texture = ExtResource("5_mo382")
 offset = Vector2(0, -40.5)
 
-[node name="Signpost" type="Sprite2D" parent="."]
+[node name="Gate" type="Sprite2D" parent="."]
 material = ExtResource("10_n0wds")
-position = Vector2(-320, -12)
-texture = ExtResource("5_0aorq")
+position = Vector2(-320, -17)
+texture = ExtResource("14_n0wds")
