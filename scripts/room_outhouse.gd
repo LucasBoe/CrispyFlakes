@@ -5,6 +5,8 @@ class_name RoomOuthouse
 
 const FRAME_DURATION := 0.08
 const DEFAULT_MAX_USES := 10
+const USE_DURATION := 7.0
+const SERVICE_PRICE := 2
 
 var user : NPC
 var uses : int = 0
@@ -47,6 +49,9 @@ func get_max_uses() -> int:
 	if current_module != null and current_module.max_guests > 0:
 		return current_module.max_guests
 	return DEFAULT_MAX_USES
+
+func get_service_price() -> int:
+	return SERVICE_PRICE
 
 func play_open_animation() -> void:
 	var last_frame : int = outhouse_sprite.hframes * outhouse_sprite.vframes - 1

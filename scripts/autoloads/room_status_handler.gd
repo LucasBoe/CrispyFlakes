@@ -14,15 +14,15 @@ func _ready():
 func _on_room_created(room : RoomBase):
 	
 	await get_tree().process_frame
-	
-	if not room.associated_job:
-		return
-	
+
 	if room is RoomWell: #not mandatory
 		return
 
-	if room is RoomWaterTower:
+	if room is RoomWaterTower or room is RoomToilet:
 		rooms.append(room)
+		return
+
+	if not room.associated_job:
 		return
 
 	#only when people need to be arested
@@ -45,6 +45,11 @@ func notification_loop():
 				if r is RoomWaterTower:
 					if not (r as RoomWaterTower).has_water() and not r.worker:
 						notify(r, "needs pumping", Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomToilet:
+					var toilet := r as RoomToilet
+					if not toilet.has_working_water_supply():
+						notify(toilet, toilet.get_unusable_status_text(), Color.ORANGE, Building.room_data_water_tower.room_icon)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomOuthouse:
 					if (r as RoomOuthouse).is_full() and not r.worker:

@@ -116,7 +116,7 @@ func get_next_behaviour():
 		return NeedSleepBehaviourScript
 
 	if needs_to_pee > randf():
-		return UseOuthouseBehaviour
+		return NeedPeeBehaviour
 
 	return Behaviour.get_behaviour_from_available_rooms(Building.query.all_rooms_of_type(RoomBase))
 

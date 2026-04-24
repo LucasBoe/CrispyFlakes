@@ -107,6 +107,9 @@ func get_job_capacity(job = null) -> int:
 		return 0
 	return 1
 
+func get_service_price() -> int:
+	return 0
+
 func get_assigned_worker_count(job = null) -> int:
 	if job == null:
 		job = associated_job

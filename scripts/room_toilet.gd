@@ -7,6 +7,7 @@ const STALL_POSITIONS := [Vector2(14, 0), Vector2(34, 0)]
 const QUEUE_SPACING := 10.0
 const QUEUE_CLAMP_STEP := 4.0
 const FRAME_DURATION := 0.08
+const SERVICE_PRICE := 3
 
 @onready var _door_sprites: Array[Sprite2D] = [$Door1, $Door2]
 
@@ -61,6 +62,9 @@ func get_queue_position(waiting_npc: NPC) -> Vector2:
 func get_stall_position(using_npc: NPC) -> Vector2:
 	var stall_index: int = _stall_users.get(using_npc, 0)
 	return global_position + STALL_POSITIONS[stall_index]
+
+func get_service_price() -> int:
+	return SERVICE_PRICE
 
 func has_water_tower() -> bool:
 	return Building.count_rooms_by_data(Building.room_data_water_tower) > 0

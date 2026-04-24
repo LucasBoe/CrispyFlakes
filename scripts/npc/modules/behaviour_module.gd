@@ -47,10 +47,10 @@ func get_behaviour_from_available_rooms(all_rooms):
 			all.append(NeedCleaningBehaviour)
 
 		if room is RoomOuthouse:
-			all.append(UseOuthouseBehaviour)
+			all.append(NeedPeeBehaviour)
 
 		if room is RoomToilet:
-			all.append(UseOuthouseBehaviour)
+			all.append(NeedPeeBehaviour)
 			
 	if all.size() > 0:
 		return all.pick_random()
