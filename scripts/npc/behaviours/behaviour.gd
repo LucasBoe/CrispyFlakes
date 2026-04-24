@@ -68,7 +68,7 @@ func _change_to_idle():
 
 func get_random_room_of_type(type):
 	var reachable = npc.Navigation.get_reachable_rooms()
-	var rooms = Building.query.all_rooms_of_type(type, reachable)
+	var rooms = Building.query.all_rooms_of_type(type).filter(func(r): return r in reachable)
 	if rooms.is_empty():
 		return null
 	return rooms.pick_random()
