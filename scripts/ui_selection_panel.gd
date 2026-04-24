@@ -32,6 +32,10 @@ class_name UISelectionPanel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
+const _ROOM_TILE_SIZE := 48.0
+const _NPC_SELECTION_OFFSET := Vector2(0, -12)
+const _PANEL_TARGET_GAP := 96.0
+const _PANEL_SCREEN_MARGIN := 8.0
 
 var target = null
 var needs = null
@@ -53,6 +57,8 @@ var _trait_container: VBoxContainer = null
 var _satisfaction_log_container: VBoxContainer = null
 var _satisfaction_log_size: int = -1
 var _equipment_container: VBoxContainer = null
+var _manual_follow_offset := Vector2.ZERO
+var _follow_side: int = 0
 
 func _ready():
 	super._ready()
@@ -113,6 +119,8 @@ func _on_click_hovered_node_signal(node):
 		npc.Tint.remove_outline_for(self)
 
 	target = node
+	_manual_follow_offset = Vector2.ZERO
+	_follow_side = 0
 
 	if target is NPC:
 		selected_npc_highlight_instance = target.Tint.add_outline(Color.WHITE, 15, self)
@@ -128,6 +136,8 @@ func _on_click_hovered_node_signal(node):
 	var parent = room_delete_button.get_parent()
 	parent.move_child(room_delete_button, parent.get_child_count())
 	show()
+	_update_floating_panel_position()
+	call_deferred("_update_floating_panel_position")
 
 func _clear_instances():
 	if is_instance_valid(status_icon_row):
@@ -577,6 +587,8 @@ func _on_potential_target_deleted(room):
 
 func do_hide():
 	target = null
+	_manual_follow_offset = Vector2.ZERO
+	_follow_side = 0
 
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
@@ -744,11 +756,14 @@ func _bind_guest_hire_button(guest: NPCGuest):
 func _process(delta):
 	super._process(delta)
 
-	if not target:
+	if target == null:
 		return
 
-	var pos = Util.world_to_ui_position(target.global_position - Vector2(0, 12), self, Camera)
-	line.target_position = pos
+	if not is_instance_valid(target):
+		do_hide()
+		return
+
+	_update_floating_panel_position()
 
 	var connection_target: Node = null
 	if target is RoomBase:
@@ -818,6 +833,86 @@ func _process(delta):
 				var job_color = Color(0.3, 0.8, 0.3, 0.35) if has_job else Color(1.0, 0.5, 0.0, 0.35)
 				var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
 				_show_status_row("Working at" if has_job else "No Job", job_color, worker.current_job_room if has_job else null, room_name)
+
+func _update_floating_panel_position() -> void:
+	if target == null or not is_instance_valid(target):
+		return
+
+	_sync_panel_size()
+	var target_rect := _get_target_ui_rect()
+	var default_panel_position := _get_default_panel_position(target_rect)
+
+	if drag_button.button_pressed:
+		_manual_follow_offset = global_position - default_panel_position
+	else:
+		global_position = _clamp_panel_position(default_panel_position + _manual_follow_offset)
+
+	var target_ui_position := target_rect.get_center()
+	line.global_position = _panel_edge_toward(target_ui_position)
+	line.target_position = target_ui_position
+
+func _get_target_ui_rect() -> Rect2:
+	if target is RoomBase:
+		var room := target as RoomBase
+		var room_size_world := Vector2(
+			float((room.data.width if room.data != null else 1)) * _ROOM_TILE_SIZE,
+			float((room.data.height if room.data != null else 1)) * _ROOM_TILE_SIZE
+		)
+		var top_left: Vector2 = Util.world_to_ui_position(room.global_position - Vector2(0, room_size_world.y), self, Camera)
+		var bottom_right: Vector2 = Util.world_to_ui_position(room.global_position + Vector2(room_size_world.x, 0), self, Camera)
+		var rect_position := Vector2(minf(top_left.x, bottom_right.x), minf(top_left.y, bottom_right.y))
+		var rect_size := Vector2(absf(bottom_right.x - top_left.x), absf(bottom_right.y - top_left.y))
+		return Rect2(rect_position, rect_size)
+
+	var npc_position: Vector2 = Util.world_to_ui_position(target.global_position + _NPC_SELECTION_OFFSET, self, Camera)
+	return Rect2(npc_position, Vector2.ZERO)
+
+func _sync_panel_size() -> void:
+	var min_size := get_combined_minimum_size()
+	size = Vector2(ceilf(min_size.x), ceilf(min_size.y))
+
+func _get_panel_size() -> Vector2:
+	return size
+
+func _get_default_panel_position(target_rect: Rect2) -> Vector2:
+	var panel_size := _get_panel_size()
+	var viewport_size := get_viewport().get_visible_rect().size
+	var target_center := target_rect.get_center()
+	var can_place_right := target_rect.position.x + target_rect.size.x + _PANEL_TARGET_GAP + panel_size.x <= viewport_size.x - _PANEL_SCREEN_MARGIN
+	var can_place_left := target_rect.position.x - _PANEL_TARGET_GAP - panel_size.x >= _PANEL_SCREEN_MARGIN
+
+	if _follow_side == 0:
+		_follow_side = -1
+
+	if _follow_side == 1 and not can_place_right and can_place_left:
+		_follow_side = -1
+	elif _follow_side == -1 and not can_place_left and can_place_right:
+		_follow_side = 1
+	elif not can_place_right and not can_place_left:
+		var left_space := target_rect.position.x - _PANEL_SCREEN_MARGIN
+		var right_space := viewport_size.x - _PANEL_SCREEN_MARGIN - (target_rect.position.x + target_rect.size.x)
+		_follow_side = -1 if left_space >= right_space else 1
+
+	var x := target_rect.position.x + target_rect.size.x + _PANEL_TARGET_GAP if _follow_side == 1 else target_rect.position.x - panel_size.x - _PANEL_TARGET_GAP
+	return Vector2(x, target_center.y - panel_size.y * 0.5)
+
+func _clamp_panel_position(panel_position: Vector2) -> Vector2:
+	var panel_size := _get_panel_size()
+	var viewport_size := get_viewport().get_visible_rect().size
+	var max_x := maxf(_PANEL_SCREEN_MARGIN, viewport_size.x - panel_size.x - _PANEL_SCREEN_MARGIN)
+	var max_y := maxf(_PANEL_SCREEN_MARGIN, viewport_size.y - panel_size.y - _PANEL_SCREEN_MARGIN)
+	return Vector2(
+		clampf(panel_position.x, _PANEL_SCREEN_MARGIN, max_x),
+		clampf(panel_position.y, _PANEL_SCREEN_MARGIN, max_y)
+	)
+
+func _panel_edge_toward(toward: Vector2) -> Vector2:
+	var panel_size := _get_panel_size()
+	var rect := Rect2(global_position, panel_size)
+	return Vector2(
+		clampf(toward.x, rect.position.x, rect.position.x + rect.size.x),
+		clampf(toward.y, rect.position.y, rect.position.y + rect.size.y)
+	)
 
 func _room_edge_toward(room: RoomBase, toward: Vector2) -> Vector2:
 	const TILE := 48
