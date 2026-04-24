@@ -410,7 +410,10 @@ func try_change_job_based_on_room(room : RoomBase):
 
 func _find_land_position(drop_pos: Vector2) -> Vector2:
 	var drop_idx: Vector2i = Building.round_room_index_from_global_position(drop_pos)
-	for y_idx in range(drop_idx.y, -2, -1):
+	var floor_indexes: Array = Building.floors.keys()
+	floor_indexes.sort()
+	var bottom_floor: int = int(floor_indexes[0]) if not floor_indexes.is_empty() else -1
+	for y_idx in range(drop_idx.y, bottom_floor - 1, -1):
 		var landed_room: RoomBase = Building.get_room_from_index(Vector2i(drop_idx.x, y_idx)) as RoomBase
 		if landed_room != null:
 			return Vector2(drop_pos.x, landed_room.global_position.y)
