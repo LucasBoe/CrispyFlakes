@@ -177,6 +177,7 @@ var _is_falling: bool = false
 var _fall_velocity: float = 0.0
 var _fall_target: Vector2 = Vector2.ZERO
 var _fall_room: RoomBase = null
+var _fall_landed_room: RoomBase = null
 
 func _ready():
 	super._ready()
@@ -305,6 +306,7 @@ func _input(event):
 	if event.is_action_released("click"):
 		_fall_room = room
 		_fall_target = _find_land_position(global_position)
+		_fall_landed_room = Building.query.room_at_floor_position(_fall_target) as RoomBase
 		_fall_velocity = 0.0
 		_is_falling = true
 		picked_up_npc = null
@@ -425,13 +427,15 @@ func _find_land_position(drop_pos: Vector2) -> Vector2:
 func _finish_drop():
 	_is_falling = false
 	global_position.y = _fall_target.y
+	var resolved_drop_room: RoomBase = _fall_landed_room if _fall_landed_room != null else _fall_room
 	Camera.add_shake(clampf(_fall_velocity * 0.005, 1.0, 5.0), 0.05)
 	_fall_velocity = 0.0
-	if _fall_room != null:
+	if resolved_drop_room != null:
 		Navigation.stop_navigation()
-		if not try_stop_fight_in_room(_fall_room):
-			if not try_arrest_in_room(_fall_room):
-				try_change_job_based_on_room(_fall_room)
+		if not try_stop_fight_in_room(resolved_drop_room):
+			if not try_arrest_in_room(resolved_drop_room):
+				try_change_job_based_on_room(resolved_drop_room)
 		Animator.direction = Vector2.ZERO
 	_fall_room = null
+	_fall_landed_room = null
 	Navigation.set_process(true)
