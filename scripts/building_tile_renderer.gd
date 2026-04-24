@@ -6,7 +6,7 @@ var _tiles_roof : TileMapLayer
 var sign_room_index: Vector2i = Vector2i(-9999, -9999)
 
 enum levelDifference { SAME, HIGHER, LOWER }
-enum placementContext { OUTER_LEFT = 0, LEFT = 1, MIDDLE = 2, RIGHT = 3, OUTER_RIGHT = 4 }
+enum placementContext { OUTER_LEFT = 0, LEFT = 1, MIDDLE = 2, RIGHT = 3, OUTER_RIGHT = 4, OUTER_DOUBLE = 5, MIDDLE_OUTER = 6 }
 enum roofIndexMap {
 	OUTER_LEFT_LOWER = 0,
 	RIGHT_END_HIGHER = 1,
@@ -15,6 +15,7 @@ enum roofIndexMap {
 	OUTER_RIGHT_LOWER = 4,
 	SIGN = 5,
 	DOUBLE_END_HIGHER = 6,
+	OUTER_DOUBLE_LOWER = 9,
 }
 
 func _init(walls: TileMapLayer, roof: TileMapLayer) -> void:
@@ -29,7 +30,7 @@ func update(floors: Dictionary) -> void:
 	var list_of_x_positions = []
 	var list_of_room_indexes_on_floor = {}
 	var max_floor_height_at_x = {}
-	var max_floor_level = -1
+	var max_floor_level = -1 
 	var triplets = []
 
 	for y in floors.keys():
@@ -53,20 +54,34 @@ func update(floors: Dictionary) -> void:
 
 	for y in floors.keys():
 		for x in list_of_room_indexes_on_floor[y]:
-			if not list_of_room_indexes_on_floor[y].has(x - 1):
-				set_wall(x - 1, y, placementContext.OUTER_LEFT)
-				set_wall(x, y, placementContext.LEFT)
-			elif not list_of_room_indexes_on_floor[y].has(x + 1):
-				set_wall(x + 1, y, placementContext.OUTER_RIGHT)
-				set_wall(x, y, placementContext.RIGHT)
-			else:
+			var has_left: bool = check_at_indoor_room_at(x - 1, y, floors)
+			var has_right: bool = check_at_indoor_room_at(x + 1, y, floors)
+
+			if not has_left:
+				set_wall(x - 1, y,
+					placementContext.OUTER_DOUBLE
+					if check_at_indoor_room_at(x - 2, y, floors) else
+					placementContext.OUTER_LEFT)
+			if not has_right:
+				set_wall(x + 1, y,
+					placementContext.OUTER_DOUBLE
+					if check_at_indoor_room_at(x + 2, y, floors) else
+					placementContext.OUTER_RIGHT)
+
+			if has_left and has_right:
 				set_wall(x, y, placementContext.MIDDLE)
+			elif not has_left and has_right:
+				set_wall(x, y, placementContext.LEFT)
+			else:
+				set_wall(x, y, placementContext.MIDDLE_OUTER)
 
 	for x in list_of_x_positions:
 		var y = max_floor_height_at_x[x]
 
 		var previous_level = _compare_level(max_floor_height_at_x, x, -1)
 		var next_level = _compare_level(max_floor_height_at_x, x, +1)
+		var has_matching_left_peak := _has_matching_roof_peak(max_floor_height_at_x, x, y, -2)
+		var has_matching_right_peak := _has_matching_roof_peak(max_floor_height_at_x, x, y, +2)
 
 		if y == max_floor_level and previous_level == levelDifference.SAME and next_level == levelDifference.SAME:
 			triplets.append(Vector2i(x, y))
@@ -74,12 +89,18 @@ func update(floors: Dictionary) -> void:
 		var own_roof_index = roofIndexMap.MIDDLE
 
 		if previous_level == levelDifference.LOWER:
-			set_roof(x - 1, y, roofIndexMap.OUTER_LEFT_LOWER)
+			set_roof(x - 1, y,
+				roofIndexMap.OUTER_DOUBLE_LOWER
+				if has_matching_left_peak else
+				roofIndexMap.OUTER_LEFT_LOWER)
 		elif previous_level == levelDifference.HIGHER:
 			own_roof_index = roofIndexMap.LEFT_END_HIGHER
 
 		if next_level == levelDifference.LOWER:
-			set_roof(x + 1, y, roofIndexMap.OUTER_RIGHT_LOWER)
+			set_roof(x + 1, y,
+				roofIndexMap.OUTER_DOUBLE_LOWER
+				if has_matching_right_peak else
+				roofIndexMap.OUTER_RIGHT_LOWER)
 		elif next_level == levelDifference.HIGHER:
 			if previous_level == levelDifference.HIGHER:
 				own_roof_index = roofIndexMap.DOUBLE_END_HIGHER
@@ -97,6 +118,15 @@ func update(floors: Dictionary) -> void:
 		set_roof(x - 1, y, -1, true)
 		set_roof(x, y, roofIndexMap.SIGN)
 		set_roof(x + 1, y, -1, true)
+
+func check_at_indoor_room_at(x, y, list):
+	if not list[y].has(x):
+		return false
+		
+	if not list[y][x]:
+		return false
+			
+	return not list[y][x].is_outside_room
 
 func set_wall(x: int, y: int, context: int = -1) -> void:
 	_tiles_walls.set_cell(Vector2i(x, y * -1 - 1), 1 if y < 0 else 0, Vector2i(context, 0))
@@ -121,3 +151,6 @@ func _compare_level(floor_heights_over_x: Dictionary, x: int, offset: int):
 		return levelDifference.LOWER
 	else:
 		return levelDifference.HIGHER
+
+func _has_matching_roof_peak(floor_heights_over_x: Dictionary, x: int, y: int, offset: int) -> bool:
+	return floor_heights_over_x.has(x + offset) and floor_heights_over_x[x + offset] == y

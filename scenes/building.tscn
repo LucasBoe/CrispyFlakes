@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://lavxixcrcm5q"]
+[gd_scene load_steps=16 format=3 uid="uid://lavxixcrcm5q"]
 
 [ext_resource type="Script" uid="uid://ft3abdx5faf3" path="res://scripts/building.gd" id="1_building"]
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="2_fg_ground"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="4_roof"]
 [ext_resource type="Texture2D" uid="uid://cmsgfl6oavk5a" path="res://assets/sprites/roof_sign_sign.png" id="6_gof7m"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="7_gof7m"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="9_8lqx8"]
 [ext_resource type="Script" uid="uid://cpahleadvanqi" path="res://scripts/building_sign.gd" id="sign_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
@@ -17,6 +18,8 @@ texture_region_size = Vector2i(48, 48)
 2:0/0 = 0
 3:0/0 = 0
 4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_basement"]
 texture = ExtResource("3_fg_basement")
@@ -26,6 +29,8 @@ texture_region_size = Vector2i(48, 48)
 2:0/0 = 0
 3:0/0 = 0
 4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_fg"]
 tile_size = Vector2i(48, 48)
@@ -41,6 +46,7 @@ texture_region_size = Vector2i(48, 48)
 3:0/0 = 0
 4:0/0 = 0
 8:0/0 = 0
+9:0/0 = 0
 5:0/size_in_atlas = Vector2i(3, 1)
 5:0/0 = 0
 
@@ -95,10 +101,12 @@ axis_stretch_horizontal = 2
 texture_filter = 1
 offset_left = -24.0
 offset_top = -17.0
-offset_right = 24.0
-offset_bottom = -5.0
+offset_right = 39.0
+offset_bottom = 3.0
 theme = ExtResource("7_gof7m")
-theme_override_colors/font_color = Color(0.25882354, 0.17254902, 0.0627451, 1)
+theme_override_colors/font_color = Color(0.15686275, 0.078431375, 0.003921569, 0.6627451)
+theme_override_fonts/font = ExtResource("9_8lqx8")
+theme_override_font_sizes/font_size = 8
 text = "My Saloon"
 horizontal_alignment = 1
 vertical_alignment = 1
