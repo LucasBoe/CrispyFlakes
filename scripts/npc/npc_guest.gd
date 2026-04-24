@@ -10,7 +10,9 @@ var is_known_fugitive: bool = false
 var is_robber: bool = false
 
 var needs_to_pee: float = 0.0
-const PEE_RATE: float = 0.01
+const INITIAL_MAX_PEE_URGE: float = 0.9
+const PEE_TRIGGER_THRESHOLD: float = 0.8
+const PEE_RATE: float = 0.004
 const MAX_STAY_DURATION = 20.0
 
 var _arrest_highlight = null
@@ -25,7 +27,7 @@ var satisfaction_log: Array = []
 @onready var dirt = $AnimationModule/Dirt
 
 func init(custom_look = null):
-	needs_to_pee = randf()
+	needs_to_pee = randf_range(0.0, INITIAL_MAX_PEE_URGE)
 	is_known_fugitive = false
 	apply_look(custom_look)
 	while is_dirty:
@@ -115,7 +117,7 @@ func get_next_behaviour():
 	if (1.0 - Needs.Energy.strength) > randf():
 		return NeedSleepBehaviourScript
 
-	if needs_to_pee > randf():
+	if needs_to_pee >= PEE_TRIGGER_THRESHOLD:
 		return NeedPeeBehaviour
 
 	return Behaviour.get_behaviour_from_available_rooms(Building.query.all_rooms_of_type(RoomBase))
