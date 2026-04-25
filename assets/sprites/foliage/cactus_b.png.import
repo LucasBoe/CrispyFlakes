@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b4vc7vegk2tf8"
-path="res://.godot/imported/weapon_SharpsOldReliable.png-4b902cb1dc3892048f3d69a467306712.ctex"
+uid="uid://d4bas2v685fg6"
+path="res://.godot/imported/cactus_b.png-e6c8b826e8311ae215be9ff0c6cf150f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/weapon_SharpsOldReliable.png"
-dest_files=["res://.godot/imported/weapon_SharpsOldReliable.png-4b902cb1dc3892048f3d69a467306712.ctex"]
+source_file="res://assets/sprites/foliage/cactus_b.png"
+dest_files=["res://.godot/imported/cactus_b.png-e6c8b826e8311ae215be9ff0c6cf150f.ctex"]
 
 [params]
 

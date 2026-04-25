@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b3mdhu7dbalxc"
-path="res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"
+uid="uid://b7b2e781jfl13"
+path="res://.godot/imported/outhouse_upgrade.png-2e9bccd73cce0510c3f9d9d330ae1acd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/weapon_peacemaker.png"
-dest_files=["res://.godot/imported/weapon_peacemaker.png-beeb9a99d8018881708a4487db4448d5.ctex"]
+source_file="res://assets/sprites/outhouse_upgrade.png"
+dest_files=["res://.godot/imported/outhouse_upgrade.png-2e9bccd73cce0510c3f9d9d330ae1acd.ctex"]
 
 [params]
 

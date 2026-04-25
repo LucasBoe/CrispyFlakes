@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwaruwl1o6j4x"
-path="res://.godot/imported/weapon_Colts _double-action.png-92b23eeb2b2339a3183531717df27f40.ctex"
+uid="uid://bhuem737pgo3h"
+path="res://.godot/imported/weapon_colt22_overlay.png-3272730e188dd6fc026e4620ec865c8c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/weapon_Colts _double-action.png"
-dest_files=["res://.godot/imported/weapon_Colts _double-action.png-92b23eeb2b2339a3183531717df27f40.ctex"]
+source_file="res://assets/sprites/weapons/weapon_colt22_overlay.png"
+dest_files=["res://.godot/imported/weapon_colt22_overlay.png-3272730e188dd6fc026e4620ec865c8c.ctex"]
 
 [params]
 

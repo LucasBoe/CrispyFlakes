@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhdh2jkbkq5jx"
-path="res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"
+uid="uid://dawnrlsuuddf0"
+path="res://.godot/imported/weapon_winchester_overlay.png-a8dd266c17f74ad77e30f656cd4f4a08.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/weapons/weapon_messenger_shotgun.png"
-dest_files=["res://.godot/imported/weapon_messenger_shotgun.png-563d52c1f63fc198f69bdb569b431529.ctex"]
+source_file="res://assets/sprites/weapons/weapon_winchester_overlay.png"
+dest_files=["res://.godot/imported/weapon_winchester_overlay.png-a8dd266c17f74ad77e30f656cd4f4a08.ctex"]
 
 [params]
 
