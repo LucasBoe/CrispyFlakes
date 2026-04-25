@@ -26,4 +26,7 @@ func _unhandled_input(event):
 	if get_viewport().gui_get_hovered_control() != null:
 		return
 
+	if PlacementHandler.is_placing:
+		return
+
 	menu._on_ui_close()

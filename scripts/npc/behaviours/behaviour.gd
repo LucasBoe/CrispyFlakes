@@ -19,7 +19,7 @@ func run():
 
 	start_loop()
 
-	await npc.get_tree().process_frame
+	await (Engine.get_main_loop() as SceneTree).process_frame
 
 	if stopped:
 		return
@@ -142,7 +142,7 @@ func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
 	return closest
 
 func pause(duration):
-	return npc.get_tree().create_timer(duration).timeout #error
+	return (Engine.get_main_loop() as SceneTree).create_timer(duration).timeout
 
 func fetch_item(item: Enum.Items):
 	if npc.Item.current_item and npc.Item.current_item.itemType == item:

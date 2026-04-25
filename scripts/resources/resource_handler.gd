@@ -80,5 +80,5 @@ func spend_animated(amount: int, global_pos: Vector2) -> void:
 	await get_tree().create_timer(animation_duration).timeout
 
 func _process(delta):
-	if Input.is_key_pressed(KEY_4):
+	if Input.is_key_pressed(KEY_5):
 		add_animated(Enum.Resources.MONEY, 4, get_global_mouse_position())

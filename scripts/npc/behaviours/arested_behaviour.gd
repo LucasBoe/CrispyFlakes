@@ -20,7 +20,7 @@ func loop():
 	_narrative = ["In custody.", "Going nowhere fast...", "Locked up."].pick_random()
 	await move(cell.get_random_floor_position())
 
-	while true:
+	while not stopped:
 		await pause(2)
 
 func stop_loop():

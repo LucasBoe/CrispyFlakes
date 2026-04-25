@@ -14,6 +14,9 @@ func _ready():
 	set_selected_button(buttons[1])
 	
 func _unhandled_input(event):
+	if _is_typing_in_text_input():
+		return
+
 	if event.is_action_released("toggle_pause"):
 		var pause = Engine.time_scale > 0
 		set_time(0 if pause else 1)
@@ -24,6 +27,10 @@ func _unhandled_input(event):
 			KEY_2: set_time_by_index(1)
 			KEY_3: set_time_by_index(2)
 			KEY_4: set_time_by_index(3)
+
+func _is_typing_in_text_input() -> bool:
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	return focus_owner is LineEdit or focus_owner is TextEdit or focus_owner is CodeEdit
 
 func set_time_by_index(index: int):
 	set_selected_button(buttons[index])

@@ -101,10 +101,28 @@ func end_fight(fight: Fight) -> void:
 		fight.state = Fight.State.OVER
 		fight.result = Fight.Result.NO_CONTEST
 	fight.is_over = true
+	_release_panicking_guests(fight)
 	fight.clear_health_bars()
 	RoomHighlighter.dispose(fight.highlight)
 	fight.highlight = null
 	active_fights.erase(fight)
+
+func _release_panicking_guests(fight: Fight) -> void:
+	if Global.NPCSpawner == null:
+		return
+
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		if not is_instance_valid(guest) or guest.Behaviour == null:
+			continue
+
+		var current := guest.Behaviour.behaviour_instance
+		if current == null or current.get_script() != PanicBehaviourScript:
+			continue
+
+		if current.data == null or current.data.extra.get("fight", null) != fight:
+			continue
+
+		guest.Behaviour.clear_behaviour()
 
 func _try_attract_brawlers(fight: Fight) -> bool:
 	if Global.NPCSpawner == null or fight.room == null:

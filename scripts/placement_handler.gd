@@ -15,9 +15,11 @@ func start_building(data : RoomData, check):
 	self.custom_placement_check = check
 	is_placing = true
 
-	if highlights.is_empty():
-		for _i in building_data.width * building_data.height:
-			highlights.append(RoomHighlighter.request_rect(Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION))
+	for h in highlights:
+		RoomHighlighter.dispose(h)
+	highlights.clear()
+	for _i in building_data.width * building_data.height:
+		highlights.append(RoomHighlighter.request_rect(Building.floors[0][0], Color.WHITE, 2, RoomHighlighter.Priority.SELECTION))
 
 func stop_building():
 	if not highlights.is_empty():

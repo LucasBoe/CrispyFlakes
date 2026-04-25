@@ -38,11 +38,12 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var unscaled_delta := _get_unscaled_delta()
 	handle_zoom(delta)
-	simple_pan(delta)
+	simple_pan(_get_pan_delta(delta, unscaled_delta))
 	click_and_drag()
 	clamp_pan_to_bounds()
-	_update_shake(_get_unscaled_delta())
+	_update_shake(unscaled_delta)
 
 func _refresh_offset() -> void:
 	offset = _camera_offset_base + _shake_offset
@@ -74,6 +75,9 @@ func _get_unscaled_delta() -> float:
 	var delta_usec := now_usec - _last_shake_update_usec
 	_last_shake_update_usec = now_usec
 	return maxf(delta_usec / 1000000.0, 0.0)
+
+func _get_pan_delta(delta: float, unscaled_delta: float) -> float:
+	return unscaled_delta if Engine.time_scale <= 0.0 else delta
 
 func _update_shake_offset() -> void:
 	if _shake_strength <= 0.0:
