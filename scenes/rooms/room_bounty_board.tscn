@@ -13,7 +13,7 @@ script = ExtResource("1_j7q48")
 [node name="Board" type="Sprite2D" parent="."]
 z_index = -200
 material = ExtResource("2_jevch")
-position = Vector2(24, 0)
+position = Vector2(24, -4)
 texture = ExtResource("1_q16jd")
 offset = Vector2(0.5, -8.5)
 
