@@ -32,35 +32,20 @@ static func get_all_traits() -> Array:
 		TraitDataScript.new("naive", PAIR_CRIMINAL_DETECTION, "Naive", "Less likely to discover criminals.", TraitDataScript.Polarity.NEGATIVE),
 	]
 
-static func roll_traits(positive_count: int = 2, negative_count: int = 2) -> Array:
+static func roll_traits(max_count: int = 3) -> Array:
+	var available := get_all_traits()
+	var target_count := randi_range(0, min(max_count, available.size()))
+	available.shuffle()
+
 	var picked: Array = []
 	var blocked_pairs := {}
 
-	var positives := _traits_with_polarity(TraitDataScript.Polarity.POSITIVE)
-	positives.shuffle()
-	for data in positives:
-		if picked.size() >= positive_count:
-			break
-		picked.append(data)
-		blocked_pairs[data.pair_id] = true
-
-	var negatives := _traits_with_polarity(TraitDataScript.Polarity.NEGATIVE)
-	negatives.shuffle()
-	var picked_negatives := 0
-	for data in negatives:
-		if picked_negatives >= negative_count:
+	for data in available:
+		if picked.size() >= target_count:
 			break
 		if blocked_pairs.has(data.pair_id):
 			continue
 		picked.append(data)
 		blocked_pairs[data.pair_id] = true
-		picked_negatives += 1
 
 	return picked
-
-static func _traits_with_polarity(polarity: int) -> Array:
-	var result: Array = []
-	for data in get_all_traits():
-		if data.polarity == polarity:
-			result.append(data)
-	return result

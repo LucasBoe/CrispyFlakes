@@ -1,7 +1,7 @@
-[gd_scene load_steps=24 format=4 uid="uid://brd7wfwl3sv5n"]
+[gd_scene load_steps=26 format=4 uid="uid://brd7wfwl3sv5n"]
 
 [ext_resource type="Script" uid="uid://bkgkn0gd61g4x" path="res://scenes/main/environment_paralax_handler.gd" id="1_58wo2"]
-[ext_resource type="Shader" path="res://assets/shaders/sky.gdshader" id="2_8d0p8"]
+[ext_resource type="Shader" uid="uid://qa66dukaogw5" path="res://assets/shaders/sky.gdshader" id="2_8d0p8"]
 [ext_resource type="Texture2D" uid="uid://ulsbt763ecmh" path="res://assets/sprites/sky.png" id="2_golqe"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="2_vjqo2"]
 [ext_resource type="Texture2D" uid="uid://dx5t8rbpen24y" path="res://assets/sprites/clouds/cloud_2.png" id="4_xj8bt"]
@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dbu6v4c5e4q2l" path="res://assets/sprites/clouds/cloud_6.png" id="8_685kp"]
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
-[ext_resource type="Material" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
 [ext_resource type="Texture2D" uid="uid://creqk7ma6nxlt" path="res://assets/sprites/spawn_gate.png" id="14_n0wds"]
 [ext_resource type="Texture2D" uid="uid://2ssy3qx153d6" path="res://assets/sprites/foliage/rock_a.png" id="15_k5nya"]
 [ext_resource type="Texture2D" uid="uid://dfrq32ud33gh7" path="res://assets/sprites/foliage/cactus_a.png" id="16_mhuxc"]
@@ -21,6 +21,8 @@
 [ext_resource type="Texture2D" uid="uid://b3qc7gpkp7124" path="res://assets/sprites/foliage/bush_a.png" id="19_affbb"]
 [ext_resource type="Texture2D" uid="uid://drxp0dhy41dfe" path="res://assets/sprites/foliage/bush_b.png" id="20_bgj18"]
 [ext_resource type="Texture2D" uid="uid://d4bas2v685fg6" path="res://assets/sprites/foliage/cactus_b.png" id="21_ut3y5"]
+[ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="22_sun01"]
+[ext_resource type="Texture2D" uid="uid://ce7kfhlakajks" path="res://assets/sprites/moon.png" id="23_moon1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
 shader = ExtResource("2_8d0p8")
@@ -37,14 +39,14 @@ shader_parameter/afternoon_bottom = Vector4(0.9, 0.72, 0.5, 1)
 shader_parameter/golden_top = Vector4(0.9, 0.72, 0.55, 1)
 shader_parameter/golden_bottom = Vector4(1, 0.6, 0.25, 1)
 shader_parameter/sunset_top = Vector4(0.45, 0.35, 0.7, 1)
-shader_parameter/sunset_bottom = Vector4(1, 0.4, 0.2, 1)
+shader_parameter/sunset_bottom = Vector4(0.8, 0.4, 0, 1)
 shader_parameter/dusk_top = Vector4(0.12, 0.22, 0.45, 1)
 shader_parameter/dusk_bottom = Vector4(0.4, 0.28, 0.35, 1)
 shader_parameter/night_blue_top = Vector4(0.02, 0.08, 0.18, 1)
 shader_parameter/night_blue_bottom = Vector4(0.05, 0.16, 0.28, 1)
 shader_parameter/night_teal_top = Vector4(0, 0.1, 0.14, 1)
 shader_parameter/night_teal_bottom = Vector4(0.02, 0.22, 0.18, 1)
-shader_parameter/time_of_day = 0.0
+shader_parameter/time_of_day = 12.6910006028225
 shader_parameter/cloud_tex_0 = ExtResource("9_lj14v")
 shader_parameter/cloud_tex_1 = ExtResource("4_xj8bt")
 shader_parameter/cloud_tex_2 = ExtResource("5_n0wds")
@@ -54,6 +56,22 @@ shader_parameter/cloud_tex_5 = ExtResource("8_685kp")
 shader_parameter/cloud_speed = 0.010000000475
 shader_parameter/cloud_scale = 2.00000009174012
 shader_parameter/reference_resolution = Vector2(640, 360)
+shader_parameter/sun_tex = ExtResource("22_sun01")
+shader_parameter/moon_tex = ExtResource("23_moon1")
+shader_parameter/celestial_scale = 0.5
+shader_parameter/arc_center_y = 0.78000003705
+shader_parameter/arc_radius_x = 0.4
+shader_parameter/arc_radius_y = 0.7030000333925
+shader_parameter/sun_horizon_size = 1.6000000285
+shader_parameter/sun_size_start = 0.0
+shader_parameter/sun_size_end = 1.0
+shader_parameter/sun_aura_cutoff = 0.666000031635
+shader_parameter/sun_aura_elevation = 0.35
+shader_parameter/sun_color_horizon = Color(0.9765578, 0.34967643, 0.13707888, 1)
+shader_parameter/sun_color_morning = Color(1, 0.85, 0.45, 1)
+shader_parameter/sun_color_noon = Color(1, 0.89411765, 0.6431373, 1)
+shader_parameter/moon_alpha_min = 0.10000000475
+shader_parameter/moon_alpha_max = 0.6000000285
 
 [sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_cm1h5"]
 _data = PackedByteArray("AAADAAUAAAABAAAAQAAAAEAAAADcCgAAUklGRtQKAABXRUJQVlA4TMcKAAAvP8APANcHN7ZtV806eDJyIqtQ/ffmzqD7RjXAkSRJkeSxKK2dTDrD/99GCUeSJNdK1ldoTI3F/a+Hyev5J5C0SXC/GEhIDBM0CiIYTjZuCAkMJmAKgwRECKZgGCNFFAUpSEAChgkIMQoHCmYE48hiGA5paTBFTH84nE4CUTCcGAmiKZjicveJBAMrBr4ICCka/2CZiEEMTjSCCUiFiJqCGcoiivzupH+H8+0isrn/s/KMhCiKoYqC/GWYgZjACARTiIIsqSyFsXFo00Mq2+Xr/9/ZHUMJ8vRGvL8uyKIQJDCCIGBqCkEKETCBQd7dBj43GE5+R4aNsTnyHRw+nl99fv+4vT+5Xn/B/v//b9PGO/0IVOQ6Q3HTiUWHS4/o88UpdOHuQveezjTlDqkjFw1349s4F7l7OV0Wd6E+miWVuNOJ0224NgPSBTfidIHcvUeS/mh9bZM2ov8O3LaNpM3Mnj3ooPuJn3/12vOr1+7de6hndwNaUVqJ+kRpfgHXrlLt3k2Pc593uRbKU1Lt2vMLuIbdx67ycRSA/j6fd5G78nvvGtr1WgnhfnIt+V354bLv865j11C+DDVUeryWHy5ZXqN8Q8OUK18yDrtMyliqodfyrqU0b9ew6yhZqTiUYzg/lKeLcg6VGA4tKRbzDgX4fOcOd6XCe3QIe6eLGM/nnclRVzJczOfH8vn86DuFN1zHi4XiZGGkFG3H0wVnbPPkqi92jG/U7W5z6N786PYFGWVg5+cT4yMjpQwp6/Of/u+8Erkvv/2L5FOZL5zJ4o6dj9qms9P5cvPoY9Yn3/8nm1pV+Lo4vmHd29uS/WbGGSkkn3li1f82TzrfvSqp9v3OFysy1qffbH69YFqZiW3fThSvskbHSwHGPi88f1dM6806rzvf2NnCl+OfFAdT5lNfv/munVyXTSa/GnvXTm8eGy1MbHc+nHio9651qS83OwXnpbcdp/DF+KgzuSwcj6aLXxQzA9mxrat+tDKWtapQdOyVZnr1qqz1xZcjljlQ+HHUGfn35vdH+8be3fFOsTCZ+q/z7RuTX08UMn+KRqxM38D99oY+OytlMtnSlUs+a75o2MkN184bsMzMwEb77Y8dJ2mmzQ3JovO+MzIxmUzaX657x8osz+S0ZWkraT/60Gdfb/m/ueIfL0y8peuGJl1oaP1Jx3kvY40542NfP56K2dsnt73/RPJ9a0dfxrKs5778eMTM5Qb7XtAvTzyVTlnrsgmp8NH2R+3LTFsN63IstyGVnvghXSi+Y6Wtvv7sB475jG2uf3fr5hWThWx/7qd31w/Ym1IrzTtT1uZJO3KPcqFiWY/YF/x+fljplSwzrS0OF/9ppyxz0NJUM2OtfLKQefBFZyz11TWJK2961tqUTptPvfikpi8bcH4czCrK8+mcZli5bDp2lRyNXHz+zSvNyHrzmafij96hxRf15MZ2GJ0JazAbNww5l7UfXhVOWtlELH55PPLgKrMzrFlPR5RnVvbLXYbRe51yzqV3xJLPbCnoFyV0JSHZT+cMVe5PPx3LaX++c/GF8ro+Y8mjVn/vH+ZvXGlnMncs12RNlzRTiUqadPfVF15xTfc1/5pw7CdT6T4jtslcZFqJ5cpl0vlZK/XXJd2rVC1mWyt6lfmb7BzxC5joiljmSk3StZ55knRx1H55o6reZm7KPL5m0fK7o9r50vp1iqIMxq3kks67uzRjVaTr/AsvMPREtIMETueJbK1IBs/So6vSmXhYiUt3D9qK1mOk0vrNUq4vIZsP61cbib/HlxqyZamKprxozU9oF14SDQ/ksuptjdh6HDa0t89BosaXdkqSpoV4IbifJMuL/9ifUZdFwsoDa9WoJuiRRHc8pgxmLlUXSEq4V9f6dWN5LEL8SO4O64q0JCHd5uvpjsUQyf7HRu/oCIiqtmBeQI4lot0z2pvapNslSZ139+WXaYYakeWuSCKsH9E8lxC1W71S1qORv+mhULusE14UA3gcETUjiq37E2Ppbbqs8SJBTGj6uecrXbIW/q0qt8pyz4mkETvjso8kEqJwOIqivHTxQn0/JCEMy4qsyZE4YsNRRlhG32z+qFZh8WWXXxA1onr4Bp40BQGu6kEiAhrS7xp5JPPRd5gR1fTlJxD/zYamKMtV9VA8kaCO5AR9gdjQLCkRXe097zKlV2nAECRUQw/75gDqkR4R+TYhqEmJ/ZXjfKSjjXQK6j2J/Y9RtAaCcxojnfrSBQQNJS5df0GXLPHIN8lh7ZoQELFRUsCLM1EkJ/puIdjm67yxt0lEFEKzMNoTWdxFCGJMOUEks3mUFZ0gf7euqQkU6o8QDz/8QDIHmwlpPSWATU0iIfxfZam5HSOSLpKgIMX9QQ0RZ+ARAoZOChys3k0IEbW/RK4BhNaAzycEQjMxGOA7BMLP4iXlCLz1r51zRT0aMUgLYggblFBjyIfdAUKwgzS3oRBEIt8eE+sOn6tLBOFI3i8c24oB0u7fvzO8CFFsI+j369LiADnp2DAJTA8dSZCQEBLS1iLg/oIWv01CBORbY7PD3BxEQprw+Bt7ZjVo2v77h+a6kJ4lIfSj8BtePCLAExHFBpwdOLuxVcBmkfgXyQtmEWhqwyZNAyQ4G09foqIXwB/AGaJPayGkOYCtiIcdFZjJiu1+EeqmEz8CQJOCp59wwgEMwKkBUo+6qgKcObOZtCJA8Fj0+402tQWJP4QNQFAE4E4MncQDAzzWAxy0P2AHEQN+Bma17I8EMQQ+n9jYgSeLwKIoAiGIPr6jHpkgBloAIESQAAAPANAWFJHjgwJwwLAAAms0I6BvhgcARGRF5AA4qBc6dQL7EwyyAGKD+w68QKh5XjgLRSTEK/AsB0xNk4AtXg4AiOtCrkX0YuCsM7AekBwDABxX14pAZrEAde7FaeDz8TMAgyh6WAZAIABsHVcHTUd7kW8UeDIzBCwAsEAA0QPQCCDs70I4YIHD0GkcwNEBcixbC+ATGlwjUFJAgSAXFEIILEvgEB8cGawFIB1AFdVqQIrggZPqg24nxNaZUFPhDSIDAMfhSVALdR4BgAGG5WgW68IYph6Bq2UB2kUAxkvFYIDlWBCBYevdkUegu1ktUxYWAMoItQCVegRcGasGWKhoY+egCDAjQFk4BljYtywAQw1myoRMOZXuY00Zyi0EhhFnVHjlqHmsewFbYV0Ajq0038tQrQXClJnKcaybpwzoBboZAuxTpit7rWSr4Spkq/TGrX0Z6i3LAYjuLh6GgtIxPa6BAdZVcAxwHprDUGEqJaih4pYtVAe1VKu5GmAq5CsLQqM8FIOhWuqFas0AFs7kkEpKiaj5XiiDsfQGNWWrUwfMQ0ViGGCZGnccsAgAdQzUMWV5uZppwEINQA1DH6c6hq0D4MrHc8DQApb1uA6GY9myHnjBCwxHtYcFD5WDZb0ukmMrvWErDGNYZh8Ajyv1lp++8kzA0H8wjgUOGDoEB1yVHeqYUtUyLpFzO1r1fFDlYaizSgeqsoPLrS09M0yVjtJEAPe12kmZ6g6VqcCAByqcD4YCVQjlVvUdKudhubJdqnWx3MJMZYe9K46bWmcqdbiaauoZWKqVFceW92sKvwJDmaaKomXATjkbC3tT7JRGVYUy1STM1KRQvmz1HjJVmlWGoDhVIBV1dJt+IUaVRGyFp73dkNlblGevzhoD3JTfAgA=")

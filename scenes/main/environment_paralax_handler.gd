@@ -26,7 +26,7 @@ func _setup_world_tint() -> void:
 	rect.material = mat
 	layer.add_child(rect)
 
-func _process(delta):
+func _process(_delta):
 	var tod: float = fmod(Global.time_now, Global.DAY_DURATION) / Global.DAY_DURATION * 24.0
 	$NewSky.material.set_shader_parameter("time_of_day", tod)
 	RenderingServer.global_shader_parameter_set("sky_time_of_day", tod)

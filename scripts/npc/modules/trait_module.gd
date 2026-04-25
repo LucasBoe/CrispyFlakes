@@ -3,8 +3,7 @@ extends RefCounted
 
 const TraitLibraryScript = preload("res://scripts/npc/traits/trait_library.gd")
 
-const POSITIVE_TRAIT_COUNT := 2
-const NEGATIVE_TRAIT_COUNT := 2
+const MAX_RANDOM_TRAIT_COUNT := 3
 
 const TRAIT_STRONG := "strong"
 const TRAIT_WEAK := "weak"
@@ -34,7 +33,7 @@ func ensure_traits() -> void:
 		roll_random_traits()
 
 func roll_random_traits() -> void:
-	traits = TraitLibraryScript.roll_traits(POSITIVE_TRAIT_COUNT, NEGATIVE_TRAIT_COUNT)
+	traits = TraitLibraryScript.roll_traits(MAX_RANDOM_TRAIT_COUNT)
 
 func copy_from(other) -> void:
 	traits.clear()
