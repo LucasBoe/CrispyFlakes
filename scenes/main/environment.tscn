@@ -12,16 +12,16 @@
 [ext_resource type="Texture2D" uid="uid://dbu6v4c5e4q2l" path="res://assets/sprites/clouds/cloud_6.png" id="8_685kp"]
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
-[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
+[ext_resource type="Material" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
 [ext_resource type="Texture2D" uid="uid://creqk7ma6nxlt" path="res://assets/sprites/spawn_gate.png" id="14_n0wds"]
 [ext_resource type="Texture2D" uid="uid://2ssy3qx153d6" path="res://assets/sprites/foliage/rock_a.png" id="15_k5nya"]
 [ext_resource type="Texture2D" uid="uid://dfrq32ud33gh7" path="res://assets/sprites/foliage/cactus_a.png" id="16_mhuxc"]
 [ext_resource type="Texture2D" uid="uid://bhmw02dpr27i0" path="res://assets/sprites/foliage/rock_b.png" id="17_ghof4"]
 [ext_resource type="Texture2D" uid="uid://cnnv1tej16tqv" path="res://assets/sprites/foliage/rock_c.png" id="18_wwugl"]
-[ext_resource type="Texture2D" uid="uid://b3qc7gpkp7124" path="res://assets/sprites/foliage/bush_a.png" id="19_affbb"]
-[ext_resource type="Texture2D" uid="uid://drxp0dhy41dfe" path="res://assets/sprites/foliage/bush_b.png" id="20_bgj18"]
 [ext_resource type="Texture2D" uid="uid://d4bas2v685fg6" path="res://assets/sprites/foliage/cactus_b.png" id="21_ut3y5"]
+[ext_resource type="PackedScene" uid="uid://drbbf67md224p" path="res://scenes/foliage/bush_a.tscn" id="21_wwugl"]
 [ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="22_sun01"]
+[ext_resource type="PackedScene" uid="uid://cud3lh35rfmqh" path="res://scenes/foliage/bush_b.tscn" id="22_wwugl"]
 [ext_resource type="Texture2D" uid="uid://ce7kfhlakajks" path="res://assets/sprites/moon.png" id="23_moon1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
@@ -206,20 +206,18 @@ z_index = -400
 position = Vector2(-460, -3)
 texture = ExtResource("18_wwugl")
 
-[node name="BushA" type="Sprite2D" parent="Decoration/Backgound"]
-z_index = -400
+[node name="BushA" parent="Decoration/Backgound" instance=ExtResource("21_wwugl")]
 position = Vector2(310, -9)
-texture = ExtResource("19_affbb")
+frame = 0
+
+[node name="BushA3" parent="Decoration/Backgound" instance=ExtResource("21_wwugl")]
+position = Vector2(-151, -9)
+frame = 0
 
 [node name="RockB2" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
 position = Vector2(316, -4)
 texture = ExtResource("17_ghof4")
-
-[node name="BushA2" type="Sprite2D" parent="Decoration/Backgound"]
-z_index = -400
-position = Vector2(-151, -9)
-texture = ExtResource("19_affbb")
 
 [node name="RockB3" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
@@ -231,20 +229,18 @@ z_index = -400
 position = Vector2(383, -3)
 texture = ExtResource("18_wwugl")
 
-[node name="BushB2" type="Sprite2D" parent="Decoration/Backgound"]
-z_index = -400
-position = Vector2(-591, -7)
-texture = ExtResource("20_bgj18")
-
 [node name="RockC3" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
 position = Vector2(-157, -3)
 texture = ExtResource("18_wwugl")
 
-[node name="BushB" type="Sprite2D" parent="Decoration/Backgound"]
+[node name="BushB3" parent="Decoration/Backgound" instance=ExtResource("22_wwugl")]
 z_index = -400
-position = Vector2(72, -7)
-texture = ExtResource("20_bgj18")
+position = Vector2(73, -7)
+
+[node name="BushB4" parent="Decoration/Backgound" instance=ExtResource("22_wwugl")]
+z_index = -400
+position = Vector2(-591, -7)
 
 [node name="Foreground" type="Node2D" parent="Decoration"]
 z_index = 10
@@ -257,13 +253,13 @@ texture = ExtResource("21_ut3y5")
 position = Vector2(185, -3)
 texture = ExtResource("18_wwugl")
 
-[node name="BushB" type="Sprite2D" parent="Decoration/Foreground"]
+[node name="BushB" parent="Decoration/Foreground" instance=ExtResource("22_wwugl")]
 position = Vector2(349, -7)
-texture = ExtResource("20_bgj18")
 
-[node name="BushA" type="Sprite2D" parent="Decoration/Foreground"]
+[node name="BushA3" parent="Decoration/Foreground" instance=ExtResource("21_wwugl")]
+z_index = 0
 position = Vector2(-562, -9)
-texture = ExtResource("19_affbb")
+frame = 0
 
 [node name="RockB" type="Sprite2D" parent="Decoration/Foreground"]
 position = Vector2(-566, -4)
