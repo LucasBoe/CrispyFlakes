@@ -31,6 +31,9 @@ func try_join_brawl(fight: Fight) -> bool:
 
 	var joined := false
 	for worker: NPCWorker in Global.NPCSpawner.workers:
+		if not is_instance_valid(worker):
+			continue
+		
 		if not _can_worker_respond(worker, response_position):
 			continue
 		if fight.has_participant(worker):
