@@ -50,6 +50,7 @@ func loop():
 
 		if table:
 			await move(table.sit(npc))
+			table.on_seated(npc)
 		else:
 			await move(get_guest_allowed_random_floor_position(npc.Needs.drunkenness.strength))
 

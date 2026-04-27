@@ -36,12 +36,13 @@ func sit(guest : NPC):
 			guests[i] = guest
 			break
 
-	guest.Animator.set_sitting(true)
-	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
-
 	show_guest_count_notification()
 
 	return current_module.to_global(current_module.seat_positions[index])
+
+func on_seated(guest : NPC):
+	guest.Animator.set_sitting(true)
+	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 
 func stand_up(guest : NPC):
 	guest.Animator.set_sitting(false)
