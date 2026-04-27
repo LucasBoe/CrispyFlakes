@@ -7,7 +7,6 @@ var is_basement
 var data : RoomData
 var associated_job = null
 var is_outside_room = false
-var has_upgrades = false
 var worker : NPCWorker = null
 var current_module = null
 
