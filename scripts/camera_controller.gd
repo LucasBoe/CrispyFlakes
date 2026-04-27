@@ -3,7 +3,7 @@ extends Camera2D
 const zoomSpeed : float = 10
 const minZoom: float = 0.5
 const maxZoom: float = 6.0
-const panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
+const panBounds: Rect2 = Rect2(Vector2(-1920,-1080), Vector2(3840,2160))
 
 
 var zoomTarget : float = 1

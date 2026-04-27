@@ -4,7 +4,7 @@ extends Node2D
 @onready var clouds = $CloudHandler
 @onready var mountains = [$Montains, $Montains2]
 
-var mointain_lerp = .33
+var mointain_lerp = Vector2(.33, .1)
 
 var mountains_default_posisitions = []
 
@@ -31,7 +31,7 @@ func _process(_delta):
 	$NewSky.material.set_shader_parameter("time_of_day", tod)
 	RenderingServer.global_shader_parameter_set("sky_time_of_day", tod)
 
-	var cam_pos = Camera.global_position
+	var cam_pos = Camera.global_position + Camera.camera_offset_base
 	var inv_zoom: Vector2 = Vector2.ONE / Camera.zoom
 	sky.global_position = cam_pos
 	sky.scale = Vector2(1000.0, inv_zoom.y)
@@ -41,5 +41,5 @@ func _process(_delta):
 	for i in mountains.size():
 		var mountain = mountains[i]
 		var default_position = mountains_default_posisitions[i]
-		mountain.global_position = lerp(default_position, cam_pos, mointain_lerp)
-		mountain.scale = lerp(Vector2.ONE, inv_zoom, mointain_lerp)
+		mountain.global_position = Vector2(lerp(default_position.x, cam_pos.x, mointain_lerp.x), lerp(default_position.y, cam_pos.y, mointain_lerp.y))
+		mountain.scale = Vector2(lerp(1.0, inv_zoom.x, mointain_lerp.x), lerp(1.0, inv_zoom.y, mointain_lerp.y))
