@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6di3nl2jy3i"]
+[gd_scene load_steps=6 format=3 uid="uid://c6di3nl2jy3i"]
 
 [ext_resource type="Script" uid="uid://cfdiynhg0751b" path="res://scripts/pause.gd" id="1_s30pc"]
+[ext_resource type="Texture2D" uid="uid://n1aih7rh7eoj" path="res://assets/sprites/ui/2x/time_overlay_paused.png" id="2_b120i"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="2_uk7e7"]
+[ext_resource type="Texture2D" uid="uid://meq02ffyf6j0" path="res://assets/sprites/ui/2x/time_overlay_play.png" id="3_b120i"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_katdn"]
 font = ExtResource("2_uk7e7")
@@ -20,7 +22,39 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_s30pc")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="PausePlayIconOverlay" type="Control" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -56.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 56.0
+grow_horizontal = 0
+
+[node name="Paused" type="TextureRect" parent="PausePlayIconOverlay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_b120i")
+
+[node name="Play" type="TextureRect" parent="PausePlayIconOverlay"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("3_b120i")
+
+[node name="ESCOverlay" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="ESCOverlay"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,7 +63,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.501961)
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="ESCOverlay"]
 texture_filter = 1
 layout_mode = 1
 anchors_preset = 8
@@ -37,10 +71,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -11.5
-offset_right = 20.0
-offset_bottom = 11.5
+offset_left = -40.5
+offset_top = -12.0
+offset_right = 40.5
+offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "PAUSED"

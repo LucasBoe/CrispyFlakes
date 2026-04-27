@@ -19,7 +19,7 @@ func _unhandled_input(event):
 
 	if event.is_action_released("toggle_pause"):
 		var pause = Engine.time_scale > 0
-		set_time(0 if pause else 1)
+		TimeHandler.set_time(0 if pause else 1)
 		set_selected_button(buttons[0 if pause else 1])
 	elif event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
@@ -34,7 +34,7 @@ func _is_typing_in_text_input() -> bool:
 
 func set_time_by_index(index: int):
 	set_selected_button(buttons[index])
-	set_time([0, 1, 3, 9][index])
+	TimeHandler.set_time([0, 1, 3, 9][index])
 	
 func create_button(speed, path):
 	var instance : TimeButton = dummy.duplicate()
@@ -42,13 +42,10 @@ func create_button(speed, path):
 	buttons.append(instance)
 	instance.visible = true
 	instance.pressed.connect(set_selected_button.bind(instance))
-	instance.pressed.connect(set_time.bind(speed))
+	instance.pressed.connect(TimeHandler.set_time.bind(speed))
 	instance.iconTexture.texture = load(path)
 	
 func set_selected_button(b):
 	SoundPlayer.play_ui_click_down()
 	for button : TimeButton in buttons:
 		button.selected = button == b
-
-func set_time(t):
-	Engine.time_scale = t
