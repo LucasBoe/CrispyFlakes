@@ -1,0 +1,73 @@
+[gd_scene load_steps=7 format=3 uid="uid://rge7opbckgs4"]
+
+[ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="1_26idi"]
+[ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="2_26idi"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_05kn2"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_26idi"]
+[ext_resource type="Script" uid="uid://bpm87gr3dy543" path="res://scripts/ui_tutorial_item.gd" id="5_gsoht"]
+[ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="6_q0ngo"]
+
+[node name="UITutorial" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_26idi")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 96
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
+modulate = Color(0.13725491, 0.1254902, 0.12941177, 1)
+layout_mode = 2
+texture = ExtResource("2_26idi")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/CenterContainer"]
+layout_mode = 2
+theme = ExtResource("3_05kn2")
+theme_override_fonts/font = ExtResource("4_26idi")
+theme_override_font_sizes/font_size = 8
+text = "A new Beginning"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+script = ExtResource("5_gsoht")
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_05kn2")
+text = "- Assign a worker to the bar"
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("6_q0ngo")
