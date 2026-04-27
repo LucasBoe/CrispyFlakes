@@ -23,8 +23,17 @@ func _ready():
 	visibility_changed.connect(_on_visibility_changed)
 		
 func _on_visibility_changed():
-	if not visible:
-		return
+	HoverHandler.worker_ui_active = visible
+	if visible:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.add_outline(Color.YELLOW, 5, self)
+	else:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.remove_outline_for(self)
+		if HoverHandler.currently_hovered is NPCGuest:
+			HoverHandler.change_hover(null)
 
 func _on_destroy_npc_signal(npc):
 	if npc is not NPCWorker:
@@ -33,6 +42,11 @@ func _on_destroy_npc_signal(npc):
 	_on_jobs_changed()
 
 func _on_jobs_changed():
+	if visible:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.add_outline(Color.YELLOW, 5, self)
+
 	var p = worker_info_dummy.get_parent()
 	Util.delete_all_children_execept_index_0(p)
 	
