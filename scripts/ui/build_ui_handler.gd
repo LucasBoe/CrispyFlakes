@@ -95,7 +95,7 @@ func _on_room_created(_room : RoomBase):
 
 func _refresh_desc(data : RoomData):
 	var count: int = Building.count_rooms_by_data(data)
-	hover_info_room_desc_label.text = data.room_desc + "\nhas: " + str(count)
+	hover_info_room_desc_label.text = data.room_desc + "\nowned: " + str(count)
 
 func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_name_label.text = data.room_name
