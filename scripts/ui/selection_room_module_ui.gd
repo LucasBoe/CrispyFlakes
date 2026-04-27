@@ -119,11 +119,33 @@ func _make_style(tex: Texture2D) -> StyleBoxTexture:
 	style.texture_margin_bottom = 1.0
 	return style
 
+func _get_effective_price(module) -> int:
+	var group = module.get_parent()
+	var modules = group.get_children()
+	var selected_index = modules.find(module)
+	for i in range(selected_index + 1, modules.size()):
+		if modules[i].bought:
+			return 0
+	for i in range(selected_index - 1, -1, -1):
+		if modules[i].bought:
+			return max(0, module.price - modules[i].price)
+	return module.price
+
 func _module_text(module) -> String:
 	var dependency_text = module.get_unmet_dependency_text(_current_room) if module.has_method("get_unmet_dependency_text") else ""
-	var price = "[color=#ffe432]" + str(module.price) + "$[/color]"
-	var price_line = "\nbought (" + price + ")" if module.bought else "\n" + price
 	var dependency_line = "\n" + dependency_text if dependency_text != "" else ""
+	var price_line: String
+	if module.bought:
+		price_line = "\nbought ([color=#ffe432]" + str(module.price) + "$[/color])"
+	else:
+		var effective = _get_effective_price(module)
+		var discount = module.price - effective
+		if effective == 0 and module.price > 0:
+			price_line = "\n[color=#8ced8c]free (downgrade)[/color]"
+		elif discount > 0:
+			price_line = "\n[color=#ffe432]" + str(effective) + "$[/color] [color=#8ced8c](-" + str(discount) + "$ upgrade credit)[/color]"
+		else:
+			price_line = "\n[color=#ffe432]" + str(module.price) + "$[/color]"
 	return module.describtion + dependency_line + price_line
 
 func _on_module_hover(module) -> void:
@@ -187,7 +209,8 @@ func _refresh_buy_button() -> void:
 func _on_buy_pressed() -> void:
 	if _selected_module == null or _selected_module.bought:
 		return
-	if not ResourceHandler.has_money(_selected_module.price):
+	var effective_price = _get_effective_price(_selected_module)
+	if not ResourceHandler.has_money(effective_price):
 		var btn_center = details_window_button.global_position + details_window_button.size / 2
 		UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		return
@@ -209,7 +232,7 @@ func _on_buy_pressed() -> void:
 	# Wait for animation, then update room visuals
 	var purchased = _selected_module
 	var world_pos = _current_room.get_center_position() if is_instance_valid(_current_room) else global_position
-	await ResourceHandler.spend_animated(purchased.price, world_pos)
+	await ResourceHandler.spend_animated(effective_price, world_pos)
 
 	for module in group.get_children():
 		if module == purchased:
