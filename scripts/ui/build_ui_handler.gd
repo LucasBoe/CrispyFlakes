@@ -1,6 +1,8 @@
 extends MenuUITab
 class_name BuildMenuUITab
 
+const InfrastructureDataScript = preload("res://scripts/infrastructure_data.gd")
+
 @onready var tab_cointainer : TabBar = $MarginContainer/GridContainer/TabBar
 @onready var room_tier_dummy : Control = $MarginContainer/GridContainer/RoomTierDummy
 
@@ -28,8 +30,9 @@ var data_to_button : Dictionary = {}
 
 func _ready():
 	tab_cointainer.tab_changed.connect(_on_tab_changed)
-	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
-	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_created)
+	GlobalEventHandler.on_room_created_signal.connect(_on_buildables_changed)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_buildables_changed)
+	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
 
 	var group = room_group.new(groups)
 
@@ -38,6 +41,7 @@ func _ready():
 	create_button(group, Building.room_data_bed)
 	create_button(group, Building.room_data_stairs)
 	create_button(group, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
+	create_button(group, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(group, Building.room_data_toilet)
 	create_button(group, Building.room_data_bar)
 	create_button(group, Building.room_data_entertainment)
@@ -58,7 +62,7 @@ func _ready():
 	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
 	hover_info_room_box_root.hide()
 
-func create_button(group : room_group, data : RoomData, custom_placement_check = null):
+func create_button(group : room_group, data, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
 
 	var tier = data.tier
 	while group.tiers.size() <= tier:
@@ -70,9 +74,9 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 	button_dummy.get_parent().add_child(instance)
 	instance.visible = true
 	instance.icon = data.room_icon if data.room_icon else data.room_preview
-	var _initial_count: int = Building.count_rooms_by_data(data)
+	var _initial_count: int = _count_buildable(data)
 	instance.text = "" if _initial_count == 0 else str(_initial_count)
-	instance.button_down.connect(PlacementHandler.start_building.bind(data, custom_placement_check))
+	instance.button_down.connect(build_action.bind(data, custom_placement_check))
 	instance.button_down.connect(SoundPlayer.play_ui_click_down)
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))
 	instance.mouse_exited.connect(_on_hover_exit.bind(instance, data))
@@ -86,18 +90,23 @@ func create_button(group : room_group, data : RoomData, custom_placement_check =
 
 	return instance
 
-func _on_room_created(_room : RoomBase):
-	for data: RoomData in data_to_button:
-		var count: int = Building.count_rooms_by_data(data)
+func _on_buildables_changed(_changed = null):
+	for data in data_to_button:
+		var count: int = _count_buildable(data)
 		data_to_button[data].text = "" if count == 0 else str(count)
 	if last_hover != null:
 		_refresh_desc(last_hover)
 
-func _refresh_desc(data : RoomData):
-	var count: int = Building.count_rooms_by_data(data)
+func _refresh_desc(data):
+	var count: int = _count_buildable(data)
 	hover_info_room_desc_label.text = data.room_desc + "\nhas: " + str(count)
 
-func _on_hover_enter(button : Button, data : RoomData):
+func _count_buildable(data) -> int:
+	if data != null and data.get_script() == InfrastructureDataScript:
+		return Building.infrastructure.count_cells_by_data(data)
+	return Building.count_rooms_by_data(data)
+
+func _on_hover_enter(button : Button, data):
 	hover_info_room_name_label.text = data.room_name
 	_refresh_desc(data)
 	hover_info_room_price_label.text = str(data.construction_price, "$")
@@ -122,7 +131,7 @@ func _on_hover_enter(button : Button, data : RoomData):
 	hover_info_room_box_root.show()
 	return
 
-func _on_hover_exit(button : Button, data : RoomData):
+func _on_hover_exit(button : Button, data):
 	if last_hover == data:
 		last_hover = null
 		hover_info_room_box_root.hide()

@@ -9,7 +9,7 @@
 script = ExtResource("2_roomdata")
 packed_scene = ExtResource("1_scene")
 room_name = "Water Tower"
-room_desc = "safely store water for workers and faucets"
+room_desc = "safely store water for workers and connected rooms"
 room_icon = ExtResource("2_h0jvj")
 room_preview = ExtResource("3_h0jvj")
 construction_price = 75

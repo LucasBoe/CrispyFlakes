@@ -66,20 +66,36 @@ func get_stall_position(using_npc: NPC) -> Vector2:
 func get_service_price() -> int:
 	return SERVICE_PRICE
 
+func has_water_pipe() -> bool:
+	return Building.infrastructure.room_has_layer(self, &"water")
+
 func has_water_tower() -> bool:
-	return Building.count_rooms_by_data(Building.room_data_water_tower) > 0
+	return get_connected_water_tower() != null
 
 func has_working_water_supply() -> bool:
 	return get_available_water_tower() != null
 
 func get_available_water_tower() -> RoomWaterTower:
-	for tower: RoomWaterTower in Building.query.rooms_of_type_ordered_by_distance(RoomWaterTower, global_position):
-		if tower.has_water():
-			return tower
-	return null
+	var tower := get_connected_water_tower()
+	return tower if tower != null and tower.has_water() else null
+
+func get_connected_water_tower() -> RoomWaterTower:
+	return Building.infrastructure.get_connected_provider(self, &"water") as RoomWaterTower
+
+func uses_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water" and get_connected_water_tower() != null
 
 func get_unusable_status_text() -> String:
-	return "needs tower" if not has_water_tower() else "no water"
+	if not has_water_pipe():
+		return "needs pipe"
+	if not has_water_tower():
+		return "needs tower"
+	return "no water"
+
+func get_unusable_status_icon() -> Texture2D:
+	if not has_water_pipe():
+		return Building.infrastructure_data_water_pipe.room_icon
+	return Building.room_data_water_tower.room_icon
 
 func _get_next_open_stall_index() -> int:
 	for i in STALL_COUNT:

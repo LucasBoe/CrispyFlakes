@@ -27,8 +27,9 @@ func _ready() -> void:
 	details_window_describtion.bbcode_enabled = true
 	hide()
 	details_window_button.pressed.connect(_on_buy_pressed)
-	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
-	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
+	GlobalEventHandler.on_room_created_signal.connect(_on_provider_room_changed)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_provider_room_changed)
+	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_infrastructure_changed)
 
 func populate(room: Node2D) -> void:
 	_clear()
@@ -119,7 +120,7 @@ func _make_style(tex: Texture2D) -> StyleBoxTexture:
 	return style
 
 func _module_text(module) -> String:
-	var dependency_text = module.get_unmet_dependency_text() if module.has_method("get_unmet_dependency_text") else ""
+	var dependency_text = module.get_unmet_dependency_text(_current_room) if module.has_method("get_unmet_dependency_text") else ""
 	var price = "[color=#ffe432]" + str(module.price) + "$[/color]"
 	var price_line = "\nbought (" + price + ")" if module.bought else "\n" + price
 	var dependency_line = "\n" + dependency_text if dependency_text != "" else ""
@@ -176,8 +177,8 @@ func _refresh_buy_button() -> void:
 		details_window_button.hide()
 	else:
 		details_window_button.show()
-		if _selected_module.has_method("is_dependency_met") and not _selected_module.is_dependency_met():
-			details_window_button.text = "Needs Water Tower"
+		if _selected_module.has_method("is_dependency_met") and not _selected_module.is_dependency_met(_current_room):
+			details_window_button.text = _selected_module.get_dependency_button_text(_current_room) if _selected_module.has_method("get_dependency_button_text") else "Needs Infrastructure"
 			details_window_button.disabled = true
 			return
 		details_window_button.text = _get_buy_label()
@@ -228,13 +229,13 @@ func _clear() -> void:
 	_branch_instances.clear()
 	details_window.hide()
 
-func _on_room_created(room: RoomBase) -> void:
-	if room is not RoomWaterTower:
+func _on_provider_room_changed(room: RoomBase) -> void:
+	if room.get_provided_infrastructure_layers().is_empty():
 		return
-	_refresh_dependency_state()
+	call_deferred("_refresh_dependency_state")
 
-func _on_room_deleted(room: RoomBase) -> void:
-	if room is not RoomWaterTower:
+func _on_infrastructure_changed(layer_name: StringName) -> void:
+	if layer_name != &"water":
 		return
 	call_deferred("_refresh_dependency_state")
 

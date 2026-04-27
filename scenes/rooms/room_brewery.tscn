@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://y7ent6yu2agy"]
+[gd_scene load_steps=7 format=3 uid="uid://y7ent6yu2agy"]
 
 [ext_resource type="Script" uid="uid://bo5d5mtcgiq1p" path="res://scripts/room_brewery.gd" id="1_i7va0"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_7sj4r"]
@@ -6,8 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://d4akkgimciem6" path="res://assets/sprites/beer_brewery_big.png" id="4_7sj4r"]
 [ext_resource type="Texture2D" uid="uid://dbr6bj7g0ld33" path="res://assets/sprites/beer_brewery_small.png" id="5_o8qhr"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="6_pec21"]
-[ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="8_ifaucet"]
-[ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="9_kmbao"]
 
 [node name="Room_Brewery" type="Node2D"]
 texture_filter = 1
@@ -53,15 +51,3 @@ module_name = "Big Brewer"
 describtion = "3 barrels per day"
 brew_duration = 6.667
 brews_per_water = 2
-
-[node name="Water" type="Node2D" parent="ModulesRoot"]
-
-[node name="Faucet" type="Sprite2D" parent="ModulesRoot/Water"]
-position = Vector2(24, -18.5)
-texture = ExtResource("9_kmbao")
-script = ExtResource("6_pec21")
-icon = ExtResource("8_ifaucet")
-price = 10
-module_name = "Faucet"
-describtion = "no bucket fetching"
-requires_water_tower = true

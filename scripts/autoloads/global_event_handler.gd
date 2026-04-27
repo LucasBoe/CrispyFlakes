@@ -2,3 +2,4 @@ extends Node
 
 signal on_room_created_signal
 signal on_room_deleted_signal
+signal on_infrastructure_changed_signal

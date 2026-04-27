@@ -3,6 +3,7 @@ extends Node2D
 @onready var _tiles_walls : TileMapLayer = $ForegroundTiles
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
 @onready var _sign: BuildingSign = $SaloonSign
+@onready var infrastructure = $WaterPipeTiles
 
 var floors = {}
 var query : BuildingRoomQueries
@@ -33,6 +34,7 @@ const room_data_broom_closet := preload("res://assets/resources/room_broom_close
 const room_data_bouncer := preload("res://assets/resources/room_bouncer.tres")
 const room_data_water_tower := preload("res://assets/resources/room_water_tower.tres")
 const room_data_gambling := preload("res://assets/resources/room_gambling.tres")
+const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure_water_pipe.tres")
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
@@ -64,13 +66,13 @@ func initialize_all_rooms():
 			floors[y][x].init_room(x, y)
 
 func erase_empty(room: RoomBase):
-	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	_erase_room_cell(room.x, room.y)
+	infrastructure.clear_under_room(room)
 	update_foreground_tiles()
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
 
 func delete_room(room: RoomBase):
-	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	if room.data != null and room.data.is_outdoor:
 		for col in room.data.width:
 			for row in room.data.height:
@@ -83,8 +85,10 @@ func delete_room(room: RoomBase):
 					_erase_room_cell(room.x + col, room.y + row)
 				else:
 					set_room(room_data_empty, room.x + col, room.y + row)
+	infrastructure.clear_under_room(room)
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
 
 func refresh_adjacent_stair_visuals(x: int, y: int, width: int, height: int) -> void:
@@ -99,6 +103,8 @@ func refresh_adjacent_stair_visuals(x: int, y: int, width: int, height: int) -> 
 
 func update_foreground_tiles():
 	_tile_renderer.update(floors)
+	if is_instance_valid(infrastructure):
+		infrastructure.refresh_visuals()
 	_update_sign_position()
 
 func _update_sign_position():

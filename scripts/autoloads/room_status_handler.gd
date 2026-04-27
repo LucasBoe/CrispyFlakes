@@ -49,7 +49,7 @@ func notification_loop():
 				elif r is RoomToilet:
 					var toilet := r as RoomToilet
 					if not toilet.has_working_water_supply():
-						notify(toilet, toilet.get_unusable_status_text(), Color.ORANGE, Building.room_data_water_tower.room_icon)
+						notify(toilet, toilet.get_unusable_status_text(), Color.ORANGE, toilet.get_unusable_status_icon())
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomOuthouse:
 					if (r as RoomOuthouse).is_full() and not r.worker:
