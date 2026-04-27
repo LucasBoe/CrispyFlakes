@@ -9,5 +9,5 @@ func _ready():
 	gui_input.connect(_on_click)
 	
 func _on_click(event : InputEvent):
-	if (event.is_action_pressed("click")):
+	if (event.is_action_pressed("click") or event.is_action_pressed("right_click")):
 		fullscreen_ui_close_signal.emit()

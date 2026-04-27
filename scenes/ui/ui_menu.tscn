@@ -93,6 +93,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer"]
+visible = false
 layout_mode = 2
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/UIWorkers/MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer"]

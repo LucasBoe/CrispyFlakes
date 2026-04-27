@@ -3,7 +3,7 @@ extends Camera2D
 const zoomSpeed : float = 10
 const minZoom: float = 0.5
 const maxZoom: float = 6.0
-const panBounds: Rect2 = Rect2(Vector2.ZERO, Vector2.ZERO)
+const panBounds: Rect2 = Rect2(Vector2(-1920,-1080), Vector2(3840,2160))
 
 
 var zoomTarget : float = 1
@@ -24,6 +24,7 @@ var camera_offset_base: Vector2:
 var drag_start_mouse_pos = Vector2.ZERO
 var drag_start_camera_pos = Vector2.ZERO
 var isDragging : bool = false
+var isLMBDragging : bool = false
 var zoomFactor : float = 1
 var zoom_tween: Tween
 
@@ -166,7 +167,7 @@ func clamp_pan_to_bounds() -> void:
 			shift.y = bounds_end.y - view_end.y
 
 	if shift != Vector2.ZERO:
-		if isDragging:
+		if isDragging or isLMBDragging:
 			camera_offset_base += shift
 			drag_start_camera_pos += shift
 		else:
@@ -182,6 +183,22 @@ func click_and_drag():
 		isDragging = false
 
 	if isDragging:
+		var move_vector = get_viewport().get_mouse_position() - drag_start_mouse_pos
+		global_position = drag_start_camera_pos - move_vector * (1.0 / zoomFactor)
+
+	if !isLMBDragging and Input.is_action_just_pressed("click"):
+		var can_lmb_pan = NPCWorker.picked_up_npc == null \
+			and not (HoverHandler.currently_hovered is NPCWorker) \
+			and not PlacementHandler.is_placing
+		if can_lmb_pan:
+			drag_start_mouse_pos = get_viewport().get_mouse_position()
+			drag_start_camera_pos = global_position
+			isLMBDragging = true
+
+	if isLMBDragging and Input.is_action_just_released("click"):
+		isLMBDragging = false
+
+	if isLMBDragging:
 		var move_vector = get_viewport().get_mouse_position() - drag_start_mouse_pos
 		global_position = drag_start_camera_pos - move_vector * (1.0 / zoomFactor)
 

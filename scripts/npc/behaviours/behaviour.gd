@@ -117,21 +117,25 @@ func move(target, custom_speed = -1):
 
 	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
 		var fallback_room := _get_closest_reachable_room_to(goal_pos)
-		while fallback_room != null and is_instance_valid(goal_room) and not npc.Navigation.is_room_reachable(goal_room):
+		while fallback_room != null and is_instance_valid(goal_room) and is_instance_valid(npc) and not npc.Navigation.is_room_reachable(goal_room):
 			npc.Navigation.set_target(fallback_room.get_random_floor_position(), -1)
-			while npc.Navigation.is_moving:
+			while is_instance_valid(npc) and npc.Navigation.is_moving:
 				await end_of_frame()
+			if not is_instance_valid(npc):
+				return
 			UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Building.room_data_stairs.room_icon)
 			await pause(3)
 
+	if not is_instance_valid(npc):
+		return
 	npc.Navigation.set_target(target, custom_speed)
 	if target is NPC:
-		while is_instance_valid(target) and npc.Navigation.is_moving:
+		while is_instance_valid(target) and is_instance_valid(npc) and npc.Navigation.is_moving:
 			if not npc.Navigation.is_on_stair_path():
 				npc.Navigation.refresh_target_path()
 			await end_of_frame()
 	else:
-		while npc.Navigation.is_moving:
+		while is_instance_valid(npc) and npc.Navigation.is_moving:
 			await end_of_frame()
 
 

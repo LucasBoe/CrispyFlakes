@@ -4,7 +4,7 @@ class_name RoomBar
 var drink_requests = []
 var drink_type : Enum.Items = Enum.Items.WATER_BUCKET
 
-const TIMEOUT_DURATION_IN_MSEC = 5000
+const TIMEOUT_DURATION_IN_MSEC = 10000
 
 const _MODULE_DRINK_MAP = {
 	"Water": Enum.Items.WATER_BUCKET,

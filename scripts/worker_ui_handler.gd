@@ -1,8 +1,8 @@
 extends MenuUITab
 
 @onready var hire_button = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/Button
-@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/ProgressBar
-@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/Label
+#@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/ProgressBar
+#@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/Label
 
 @onready var worker_info_dummy : WorkerUIInfo = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer
 @onready var worker_ui_add_remove_dummy : WorkerUIAddRemove = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove
@@ -23,8 +23,17 @@ func _ready():
 	visibility_changed.connect(_on_visibility_changed)
 		
 func _on_visibility_changed():
-	if not visible:
-		return
+	HoverHandler.worker_ui_active = visible
+	if visible:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.add_outline(Color.YELLOW, 5, self)
+	else:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.remove_outline_for(self)
+		if HoverHandler.currently_hovered is NPCGuest:
+			HoverHandler.change_hover(null)
 
 func _on_destroy_npc_signal(npc):
 	if npc is not NPCWorker:
@@ -33,6 +42,11 @@ func _on_destroy_npc_signal(npc):
 	_on_jobs_changed()
 
 func _on_jobs_changed():
+	if visible:
+		for worker in Global.NPCSpawner.workers:
+			if is_instance_valid(worker):
+				worker.Tint.add_outline(Color.YELLOW, 5, self)
+
 	var p = worker_info_dummy.get_parent()
 	Util.delete_all_children_execept_index_0(p)
 	
@@ -47,7 +61,7 @@ func _on_jobs_changed():
 			clone.button_fire.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to fire a Worker.", JobHandler.fire_worker.bind(worker)))
 			clone.show()
 	
-	payment_height_label.text = str("-", JobHandler.payment_total, "$/M")
+	#payment_height_label.text = str("-", JobHandler.payment_total, "$/M")
 
-func _process(delta):
-	payment_progress_bar.value = JobHandler.payment_cycle_progression
+#func _process(delta):
+	#payment_progress_bar.value = JobHandler.payment_cycle_progression

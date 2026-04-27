@@ -43,6 +43,7 @@ func spawn_new_worker(opt_spawn_position = Vector2(-320,0)):
 	add_child(worker)
 
 	workers.append(worker)
+	worker.tree_exiting.connect(func(): workers.erase(worker)) # keep list free of freed instances
 	return worker
 
 func get_active_guest_count() -> int:

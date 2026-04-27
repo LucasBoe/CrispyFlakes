@@ -3,6 +3,8 @@ extends Node2D
 var previously_hovered = null
 var currently_hovered = null
 
+var worker_ui_active: bool = false
+
 signal click_hovered_node_signal
 
 func _process(_delta):
@@ -32,7 +34,7 @@ func _process(_delta):
 		if npc is NPCWorker:
 			if best_worker == null or npc.global_position.distance_squared_to(mouse_pos) < best_worker.global_position.distance_squared_to(mouse_pos):
 				best_worker = npc
-		elif npc is NPCGuest:
+		elif npc is NPCGuest and not worker_ui_active:
 			if best_guest == null or npc.global_position.distance_squared_to(mouse_pos) < best_guest.global_position.distance_squared_to(mouse_pos):
 				best_guest = npc
 

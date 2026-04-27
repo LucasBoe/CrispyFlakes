@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://dbu6v4c5e4q2l" path="res://assets/sprites/clouds/cloud_6.png" id="8_685kp"]
 [ext_resource type="Script" uid="uid://hx2lclpcljrw" path="res://scripts/cloud_handler.gd" id="8_owwh3"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="9_lj14v"]
-[ext_resource type="Material" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="10_n0wds"]
 [ext_resource type="Texture2D" uid="uid://creqk7ma6nxlt" path="res://assets/sprites/spawn_gate.png" id="14_n0wds"]
 [ext_resource type="Texture2D" uid="uid://2ssy3qx153d6" path="res://assets/sprites/foliage/rock_a.png" id="15_k5nya"]
 [ext_resource type="Texture2D" uid="uid://dfrq32ud33gh7" path="res://assets/sprites/foliage/cactus_a.png" id="16_mhuxc"]
@@ -87,7 +87,7 @@ script = ExtResource("1_58wo2")
 z_index = -4096
 material = SubResource("ShaderMaterial_157or")
 position = Vector2(207, -15)
-scale = Vector2(100, 100)
+scale = Vector2(200, 200)
 texture = ExtResource("2_vjqo2")
 
 [node name="Ground" type="NinePatchRect" parent="."]

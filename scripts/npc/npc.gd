@@ -111,4 +111,6 @@ func clamp_energy() -> void:
 
 func destroy():
 	NPCEventHandler.on_destroy_npc_signal.emit(self)
+	if Behaviour != null:
+		Behaviour.clear_behaviour()
 	queue_free()
