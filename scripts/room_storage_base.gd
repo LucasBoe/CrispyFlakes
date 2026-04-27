@@ -55,6 +55,16 @@ func get_next_free_slot() -> int:
 
 	return -1
 
+func get_slot_capacity() -> int:
+	return max_x * max_y
+
+func get_occupied_slot_count() -> int:
+	var occupied := 0
+	for i in get_slot_capacity():
+		if _get_item_at_index(i) != null:
+			occupied += 1
+	return occupied
+
 func get_floor_position_for_slot(index: int) -> Vector2:
 	if index < 0:
 		return get_center_floor_position()
@@ -70,6 +80,17 @@ func get_stored_items() -> Array[Item]:
 		if item != null:
 			stored.append(item)
 	return stored
+
+func get_stored_item_amounts() -> Dictionary:
+	var stored_amounts := {}
+	for item in get_stored_items():
+		var stored_item_type := int(item.itemType)
+		var stored_amount := 1
+		if item.is_trade_crate():
+			stored_item_type = item.get_trade_crate_item_type()
+			stored_amount = item.get_trade_crate_item_amount()
+		stored_amounts[stored_item_type] = int(stored_amounts.get(stored_item_type, 0)) + stored_amount
+	return stored_amounts
 
 func remove_item(item: Item) -> bool:
 	if item == null:
