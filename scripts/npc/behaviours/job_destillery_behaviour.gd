@@ -12,11 +12,9 @@ func loop():
 	await move(destillery.get_random_floor_position())
 
 	while true:
-
 		var got_water := false
-		var tower := get_closest_room_of_type(RoomWaterTower) as RoomWaterTower
-		if destillery.has_faucet:
-			got_water = await try_fetch_from_tower(destillery.get_random_floor_position())
+		if destillery.uses_infrastructure_layer(&"water"):
+			got_water = await try_fetch_from_tower(destillery.get_random_floor_position(), destillery)
 		if not got_water:
 			_narrative = ["Fetching water...", "Getting water for the still...", "Filling up..."].pick_random()
 			await fetch_item(Enum.Items.WATER_BUCKET)

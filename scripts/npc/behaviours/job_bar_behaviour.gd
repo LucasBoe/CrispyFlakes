@@ -14,13 +14,12 @@ func loop():
 		var drink = bar.drink_type
 
 		if drinks_available < .1:
-
-			if bar.has_faucet and drink == Enum.Items.WATER_BUCKET:
-				if await try_fetch_from_tower(bar.get_center_floor_position()):
+			if bar.uses_infrastructure_layer(&"water") and drink == Enum.Items.WATER_BUCKET:
+				if await try_fetch_from_tower(bar.get_center_floor_position(), bar):
 					drinks_available = 1.0
 				else:
 					_narrative = ["Waiting for the water tower...", "Tower's dry...", "No water in the pipe..."].pick_random()
-					RoomStatusHandler.notify(bar, "no water", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
+					RoomStatusHandler.notify(bar, "no water", Color.ORANGE, Building.infrastructure_data_water_pipe.room_icon)
 					await pause(2)
 			else:
 				_narrative = "Fetching drinks..."
@@ -36,9 +35,7 @@ func loop():
 						drinks_available = 1.0
 				else:
 					RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
-
 		else:
-
 			npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 			await move(bar.get_center_floor_position())
 

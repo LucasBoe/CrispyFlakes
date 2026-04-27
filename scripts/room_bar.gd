@@ -3,8 +3,6 @@ class_name RoomBar
 
 var drink_requests = []
 var drink_type : Enum.Items = Enum.Items.WATER_BUCKET
-var has_faucet: bool = false
-var faucet_module = null
 
 const TIMEOUT_DURATION_IN_MSEC = 10000
 
@@ -17,19 +15,15 @@ const _MODULE_DRINK_MAP = {
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.BAR
-	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
-	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
-	_refresh_faucet_state()
 
 func _on_module_bought(module) -> void:
-	if module.name == "Faucet":
-		faucet_module = module
-		_refresh_faucet_state()
-		return
 	if not module.bought:
 		return
+	var used_water_before := uses_infrastructure_layer(&"water")
 	current_module = module
 	drink_type = _MODULE_DRINK_MAP.get(module.name, drink_type)
+	if used_water_before != uses_infrastructure_layer(&"water"):
+		refresh_infrastructure_visuals()
 
 	if Global.NPCSpawner:
 		for worker : NPCWorker in Global.NPCSpawner.workers:
@@ -40,18 +34,8 @@ func _on_module_bought(module) -> void:
 			if bar_job.bar == self:
 				bar_job.drinks_available = 0.0
 
-func _on_room_created(room: RoomBase) -> void:
-	if room is not RoomWaterTower:
-		return
-	_refresh_faucet_state()
-
-func _on_room_deleted(room: RoomBase) -> void:
-	if room is not RoomWaterTower:
-		return
-	call_deferred("_refresh_faucet_state")
-
-func _refresh_faucet_state() -> void:
-	has_faucet = faucet_module != null and faucet_module.bought and faucet_module.is_dependency_met()
+func uses_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water" and drink_type == Enum.Items.WATER_BUCKET and Building.infrastructure.room_has_service(self, &"water")
 
 func try_receive(item) -> bool:
 	item.destroy()

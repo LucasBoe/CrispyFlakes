@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dvvvnn4s5rhak"]
+[gd_scene load_steps=8 format=3 uid="uid://dvvvnn4s5rhak"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
@@ -7,8 +7,6 @@
 [ext_resource type="Texture2D" uid="uid://dofp0dlo4es73" path="res://assets/sprites/bar_water.png" id="6_water"]
 [ext_resource type="Texture2D" uid="uid://cim07ui8dh1tq" path="res://assets/sprites/bar_beer.png" id="7_beer"]
 [ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="8_wiskey"]
-[ext_resource type="Texture2D" uid="uid://b7omfqcog7r07" path="res://assets/sprites/upgrade_water.png" id="11_kyvij"]
-[ext_resource type="Texture2D" uid="uid://bhdbictoygf0c" path="res://assets/sprites/ui/module_icon_faucet.png" id="12_ifaucet"]
 
 [node name="Room_Bar" type="Node2D"]
 texture_filter = 1
@@ -61,15 +59,3 @@ price = 50
 module_name = "Bottle Shelf"
 describtion = "serve aged whiskey"
 item_cost = 7
-
-[node name="Plumbing" type="Node2D" parent="ModulesRoot"]
-
-[node name="Faucet" type="Sprite2D" parent="ModulesRoot/Plumbing"]
-position = Vector2(24, -18.5)
-texture = ExtResource("11_kyvij")
-script = ExtResource("5_mod")
-icon = ExtResource("12_ifaucet")
-price = 40
-module_name = "Faucet"
-describtion = "pipe water from a water tower"
-requires_water_tower = true

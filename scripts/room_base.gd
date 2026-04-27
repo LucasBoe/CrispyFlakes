@@ -122,6 +122,23 @@ func can_accept_worker(job = null) -> bool:
 		job = associated_job
 	return get_assigned_worker_count(job) < get_job_capacity(job)
 
+func get_provided_infrastructure_layers() -> Array[StringName]:
+	var provided: Array[StringName] = []
+	return provided
+
+func uses_infrastructure_layer(_layer_name: StringName) -> bool:
+	return false
+
+func refresh_infrastructure_visuals() -> void:
+	if is_instance_valid(Building.infrastructure):
+		Building.infrastructure.refresh_visuals()
+
+func clear_infrastructure_output_tiles(_layer_name: StringName) -> void:
+	return
+
+func add_infrastructure_output_tile(_layer_name: StringName, _room_index: Vector2i, _tile_index: int) -> void:
+	return
+
 func destroy():
 	on_destroy_signal.emit()
 	queue_free()

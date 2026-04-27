@@ -14,11 +14,11 @@ func loop():
 	while true:
 		var can_run_bath := false
 
-		if bath.has_faucet:
-			can_run_bath = await try_fetch_from_tower(bath.get_center_floor_position())
+		if bath.uses_infrastructure_layer(&"water"):
+			can_run_bath = await try_fetch_from_tower(bath.get_center_floor_position(), bath)
 			if not can_run_bath:
-				_narrative = ["Waiting for the water tower...", "No water in the pipes...", "The bath's faucet is dry..."].pick_random()
-				RoomStatusHandler.notify(bath, "no water", Color.ORANGE, bath.faucet_module.icon if bath.faucet_module else null)
+				_narrative = ["Waiting for the water tower...", "No water in the pipes...", "The bath line is dry..."].pick_random()
+				RoomStatusHandler.notify(bath, "no water", Color.ORANGE, Building.infrastructure_data_water_pipe.room_icon)
 				await pause(2)
 		else:
 			_narrative = ["Fetching water...", "Filling the bucket...", "Getting water for the bath..."].pick_random()

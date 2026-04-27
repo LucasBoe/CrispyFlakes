@@ -8,7 +8,7 @@
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
 room_name = "Toilet"
-room_desc = "two indoor stalls, needs a water tower"
+room_desc = "two indoor stalls, needs a water line"
 room_preview = ExtResource("3_ckra1")
 construction_price = 35
 tier = 2

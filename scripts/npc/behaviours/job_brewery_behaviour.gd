@@ -14,12 +14,11 @@ func loop():
 	await move(brewery.get_random_floor_position())
 
 	while true:
-
 		var brews_per_water: int = brewery.current_module.brews_per_water if brewery.current_module else 1
 		if _brews_since_water == 0:
 			var used_tower := false
-			if brewery.has_faucet:
-				used_tower = await try_fetch_from_tower(brewery.get_random_floor_position())
+			if brewery.uses_infrastructure_layer(&"water"):
+				used_tower = await try_fetch_from_tower(brewery.get_random_floor_position(), brewery)
 			if not used_tower:
 				_narrative = ["Fetching water...", "Going for water...", "Filling up the bucket..."].pick_random()
 				await fetch_item(Enum.Items.WATER_BUCKET)
@@ -46,7 +45,7 @@ func loop():
 		_brews_since_water = (_brews_since_water + 1) % brews_per_water
 
 func custom_array_sort(a, b):
-		return a[1] < b[1]
+	return a[1] < b[1]
 
 func stop_loop():
 	if is_instance_valid(_brewery_sound):
