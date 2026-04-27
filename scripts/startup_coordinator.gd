@@ -22,7 +22,11 @@ func _process(delta):
 		var bounty = randi_range(1, 5) * 10
 		BountyHandler.create_bounty(look, bounty)
 
-	Global.NPCSpawner.spawn_new_worker(Vector2(-72, 0))
+	var starter_worker = Global.NPCSpawner.spawn_new_worker(Vector2(-72, 0))
+	var positive_traits := TraitLibrary.get_all_traits().filter(func(t): return t.is_positive())
+	positive_traits.shuffle()
+	starter_worker.Traits.traits = [positive_traits[0]]
+	starter_worker.apply_trait_conflict_preference()
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true
 
