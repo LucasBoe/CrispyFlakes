@@ -190,21 +190,25 @@ z_index = -400
 
 [node name="RockA" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-449, -10)
 texture = ExtResource("15_k5nya")
 
 [node name="CactusA" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-455, -19)
 texture = ExtResource("16_mhuxc")
 
 [node name="RockB" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-296, -4)
 texture = ExtResource("17_ghof4")
 
 [node name="RockC" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-460, -3)
 texture = ExtResource("18_wwugl")
 
@@ -216,21 +220,25 @@ position = Vector2(-151, -9)
 
 [node name="RockB2" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(316, -4)
 texture = ExtResource("17_ghof4")
 
 [node name="RockB3" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-113, -4)
 texture = ExtResource("17_ghof4")
 
 [node name="RockC2" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(383, -3)
 texture = ExtResource("18_wwugl")
 
 [node name="RockC3" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
+material = ExtResource("10_n0wds")
 position = Vector2(-157, -3)
 texture = ExtResource("18_wwugl")
 
@@ -243,6 +251,7 @@ z_index = -400
 position = Vector2(-591, -7)
 
 [node name="TumbleWheet" type="Sprite2D" parent="Decoration/Backgound"]
+material = ExtResource("10_n0wds")
 position = Vector2(0, -6)
 texture = ExtResource("23_affbb")
 script = ExtResource("24_bgj18")
@@ -256,10 +265,12 @@ jump_chance = 0.02
 z_index = 10
 
 [node name="CactusB" type="Sprite2D" parent="Decoration/Foreground"]
+material = ExtResource("10_n0wds")
 position = Vector2(190, -13)
 texture = ExtResource("21_ut3y5")
 
 [node name="RockC" type="Sprite2D" parent="Decoration/Foreground"]
+material = ExtResource("10_n0wds")
 position = Vector2(185, -3)
 texture = ExtResource("18_wwugl")
 
@@ -271,5 +282,6 @@ z_index = 0
 position = Vector2(-562, -9)
 
 [node name="RockB" type="Sprite2D" parent="Decoration/Foreground"]
+material = ExtResource("10_n0wds")
 position = Vector2(-566, -4)
 texture = ExtResource("17_ghof4")
