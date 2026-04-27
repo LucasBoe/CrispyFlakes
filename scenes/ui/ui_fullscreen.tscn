@@ -1,6 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://ldop7rnr2opr"]
+[gd_scene load_steps=15 format=3 uid="uid://ldop7rnr2opr"]
 
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="8_00ix3"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="9_aaqup"]
+[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="9_kqlah"]
+[ext_resource type="FontFile" uid="uid://cvcefhu641q68" path="res://assets/fonts/modern_dos/ModernDOS8x14.ttf" id="10_00fpk"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Script" uid="uid://b135x8g31jq5r" path="res://scripts/ui/ui_hire_handler.gd" id="28_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://bij13mklmifqc" path="res://assets/sprites/ui/menu-toggle-button-sheet.png" id="28_3ou18"]
@@ -157,7 +160,6 @@ grow_vertical = 2
 script = ExtResource("50_n6nxc")
 
 [node name="ButtonDrag" type="Button" parent="UIConfirm"]
-visible = false
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxEmpty_3ou18")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_3ou18")
@@ -172,20 +174,19 @@ mouse_filter = 2
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UIConfirm/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("28_3ou18")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("8_00ix3")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="UIConfirm/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UIConfirm/MarginContainer/MarginContainer"]
 layout_mode = 2
@@ -193,7 +194,7 @@ mouse_filter = 2
 
 [node name="Label" type="Label" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("9_kqlah")
 text = "Are you sure?"
 horizontal_alignment = 1
 
@@ -203,8 +204,11 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="UIConfirm/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(192, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
+theme_override_fonts/normal_font = ExtResource("10_00fpk")
+theme_override_font_sizes/normal_font_size = 16
 text = "You are about to do something... This is your chance to not do it."
 fit_content = true
 
@@ -245,20 +249,19 @@ mouse_filter = 2
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UIRename/MarginContainer"]
 layout_mode = 2
-texture = ExtResource("28_3ou18")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
+texture = ExtResource("8_00ix3")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="UIRename/MarginContainer"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 4
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UIRename/MarginContainer/MarginContainer"]
 layout_mode = 2
@@ -266,7 +269,7 @@ mouse_filter = 2
 
 [node name="Label" type="Label" parent="UIRename/MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_fonts/font = ExtResource("9_kqlah")
 text = "Rename Saloon"
 horizontal_alignment = 1
 
