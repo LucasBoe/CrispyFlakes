@@ -122,3 +122,12 @@ func forces_fight_response() -> bool:
 
 func refuses_voluntary_fights() -> bool:
 	return has_trait(TRAIT_GUTLESS)
+
+func get_hire_cost() -> int:
+	const BASE := 25
+	const PER_POSITIVE := 15
+	const PER_NEGATIVE := -5
+	var cost := BASE
+	for t in traits:
+		cost += PER_POSITIVE if t.is_positive() else PER_NEGATIVE
+	return cost
