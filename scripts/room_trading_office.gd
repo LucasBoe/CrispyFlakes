@@ -2,6 +2,7 @@ extends RoomStorageBase
 class_name RoomTradingOffice
 
 const TRADER_WAGON_SCENE = preload("res://scenes/npcs/trader_wagon.tscn")
+const TRADER_WAGON_SCRIPT = preload("res://scripts/npc/trader_wagon.gd")
 const ORDER_BASE_DURATION := 8.0
 const ORDER_PER_ITEM_DURATION := 2.5
 
@@ -50,13 +51,11 @@ func has_active_delivery() -> bool:
 	return order_arrival_time >= 0.0
 
 func is_waiting_for_trader() -> bool:
-	return has_active_delivery() and not delivery_in_progress and Global.time_now < order_arrival_time
+	return has_active_delivery() and not delivery_in_progress and Global.time_now < _get_trader_spawn_time()
 
 func get_delivery_progress() -> float:
 	if not has_active_delivery():
 		return 0.0
-	if delivery_in_progress:
-		return 1.0
 
 	var duration := maxf(0.001, order_arrival_time - order_start_time)
 	return clampf((Global.time_now - order_start_time) / duration, 0.0, 1.0)
@@ -64,9 +63,9 @@ func get_delivery_progress() -> float:
 func get_delivery_status_text() -> String:
 	if not has_active_delivery():
 		return ""
-	if delivery_in_progress:
-		return "Trader arriving..."
 	var remaining := maxi(0, ceili(order_arrival_time - Global.time_now))
+	if delivery_in_progress:
+		return "Trader arriving..." if remaining <= 0 else "Trader arriving in %ss" % remaining
 	return "Arrival in %ss" % remaining
 
 func get_order_duration_for(order_amounts: Dictionary) -> float:
@@ -107,7 +106,7 @@ func _process(_delta: float) -> void:
 
 	if not has_active_delivery() or delivery_in_progress:
 		return
-	if Global.time_now < order_arrival_time:
+	if Global.time_now < _get_trader_spawn_time():
 		return
 
 	_start_trader_arrival()
@@ -138,6 +137,7 @@ func _start_trader_arrival() -> void:
 	var trader = TRADER_WAGON_SCENE.instantiate()
 	trader.target_room = self
 	trader.order_items = pending_order.duplicate(true)
+	trader.scheduled_dropoff_time = order_arrival_time
 	var parent = Global.NPCSpawner if Global.NPCSpawner != null else Building
 	parent.add_child(trader)
 
@@ -168,6 +168,12 @@ func _prune_tracked_crates() -> void:
 		var crate := tracked_crates[i] as Item
 		if crate == null or not is_instance_valid(crate) or not crate.is_trade_crate() or not crate.is_owned_by_trade_office(self):
 			tracked_crates.remove_at(i)
+
+func _get_trader_spawn_time() -> float:
+	if not has_active_delivery():
+		return -1.0
+	var lead_time := TRADER_WAGON_SCRIPT.estimate_dropoff_duration_for_room(self)
+	return maxf(order_start_time, order_arrival_time - lead_time)
 
 func _refresh_progress_bar() -> void:
 	if progress_bar == null:

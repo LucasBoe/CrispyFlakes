@@ -5,6 +5,7 @@ class_name NPCSpawner
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn");
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
+const traderWagonScene : PackedScene = preload("res://scenes/npcs/trader_wagon.tscn")
 
 var guests = []
 var workers = []
@@ -26,6 +27,10 @@ func _ready():
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)
 	Console.add_command("worker", console_spawn_worker)
 	Console.add_command("workers", console_spawn_workers, ["amount"])
+	Console.add_command("wagon", console_spawn_wagon, ["item", "amount"])
+	Console.add_command("trader_wagon", console_spawn_wagon, ["item", "amount"])
+	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom"]))
+	Console.add_command_autocomplete_list("trader_wagon", PackedStringArray(["beer", "whiskey", "water", "broom"]))
 	Console.add_command("follow_test", console_follow_test)
 
 func _process(delta):
@@ -132,6 +137,18 @@ func spawn_sheriff():
 	add_child(sheriff)
 	return sheriff
 
+func spawn_trader_wagon(target_room = null, order_items: Dictionary = {}, debug_stop_x: float = 96.0, debug_travel_y: float = 0.0) -> TraderWagon:
+	if order_items.is_empty():
+		return null
+
+	var wagon: TraderWagon = traderWagonScene.instantiate() as TraderWagon
+	wagon.target_room = target_room
+	wagon.order_items = order_items.duplicate(true)
+	wagon.debug_stop_x = debug_stop_x
+	wagon.debug_travel_y = debug_travel_y
+	add_child(wagon)
+	return wagon
+
 func assign_loose_horse_to_post(post: RoomHorsePost) -> HorseNPC:
 	if post == null or not is_instance_valid(post) or not post.can_accept_horse():
 		return null
@@ -201,6 +218,36 @@ func console_spawn_workers(amount):
 	for i in amount.to_int():
 		console_spawn_worker()
 
+func console_spawn_wagon(item_name = "", amount = ""):
+	var order_items := _build_console_wagon_order(str(item_name), str(amount))
+	if order_items.is_empty():
+		Console.print_error("Unknown wagon cargo. Try: beer, whiskey, water, broom")
+		return
+
+	var office: RoomTradingOffice = _find_console_trading_office()
+	var wagon: TraderWagon = null
+	if office != null:
+		wagon = spawn_trader_wagon(office, order_items)
+	else:
+		wagon = spawn_trader_wagon(null, order_items, _get_console_wagon_stop_x(), _get_console_wagon_travel_y())
+
+	if wagon == null:
+		Console.print_error("Failed to spawn trader wagon.")
+		return
+
+	var cargo_parts: Array[String] = []
+	for item_type in order_items.keys():
+		cargo_parts.append("%s x%d" % [Item.get_display_name(int(item_type)), int(order_items[item_type])])
+
+	if office != null:
+		Console.print_line("Spawned trader wagon for trading office at (%d, %d) carrying %s." % [
+			office.x,
+			office.y,
+			", ".join(cargo_parts),
+		])
+	else:
+		Console.print_line("Spawned trader wagon test ride carrying %s." % [", ".join(cargo_parts)])
+
 func console_follow_test():
 	if workers.is_empty():
 		print("follow_test: no workers to follow")
@@ -211,3 +258,53 @@ func console_follow_test():
 		var target_worker: NPCWorker = workers.pick_random()
 		var follow_b := guest.force_behaviour(FollowSheriffBehaviour) as FollowSheriffBehaviour
 		follow_b.sheriff = target_worker
+
+func _find_console_trading_office() -> RoomTradingOffice:
+	if Building == null or Building.query == null:
+		return null
+
+	var office := Building.query.closest_on_floor(RoomTradingOffice, Vector2.ZERO, 0) as RoomTradingOffice
+	if office != null:
+		return office
+
+	return Building.query.closest_room_of_type(RoomTradingOffice, Vector2.ZERO) as RoomTradingOffice
+
+func _build_console_wagon_order(item_name: String, amount_text: String) -> Dictionary:
+	var trimmed_item := item_name.strip_edges().to_lower()
+	if trimmed_item == "":
+		return {
+			Enum.Items.BEER_BARREL: 1,
+			Enum.Items.WISKEY_BOX: 1,
+		}
+
+	var item_type := _parse_console_trade_item(trimmed_item)
+	if item_type < 0:
+		return {}
+
+	var amount := maxi(1, amount_text.to_int())
+	return { item_type: amount }
+
+func _parse_console_trade_item(item_name: String) -> int:
+	match item_name:
+		"beer", "barrel", "beer_barrel":
+			return Enum.Items.BEER_BARREL
+		"whiskey", "wiskey", "whiskey_box", "wiskey_box":
+			return Enum.Items.WISKEY_BOX
+		"water", "bucket", "water_bucket":
+			return Enum.Items.WATER_BUCKET
+		"broom":
+			return Enum.Items.BROOM
+	return -1
+
+func _get_console_wagon_stop_x() -> float:
+	if Building == null or not Building.floors.has(0) or Building.floors[0].is_empty():
+		return 96.0
+
+	var floor_xs: Array = Building.floors[0].keys()
+	floor_xs.sort()
+	var left_center: Vector2 = Building.global_position_from_room_index(Vector2i(int(floor_xs.front()), 0))
+	var right_center: Vector2 = Building.global_position_from_room_index(Vector2i(int(floor_xs.back()), 0))
+	return (left_center.x + right_center.x) * 0.5
+
+func _get_console_wagon_travel_y() -> float:
+	return 0.0
