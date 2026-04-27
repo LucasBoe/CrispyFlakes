@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://drbbf67md224p"]
+[gd_scene load_steps=7 format=3 uid="uid://drbbf67md224p"]
 
+[ext_resource type="Material" path="res://assets/shaders/sky_tint_mat.tres" id="1_hr08f"]
 [ext_resource type="Texture2D" uid="uid://b3qc7gpkp7124" path="res://assets/sprites/foliage/bush_a.png" id="1_ybuij"]
 [ext_resource type="Script" uid="uid://b400qfebrksiy" path="res://scripts/foliage_animator.gd" id="2_hr08f"]
 
@@ -41,6 +42,7 @@ _data = {
 
 [node name="BushA" type="Sprite2D"]
 z_index = -400
+material = ExtResource("1_hr08f")
 texture = ExtResource("1_ybuij")
 hframes = 3
 
