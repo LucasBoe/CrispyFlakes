@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://brd7wfwl3sv5n"]
+[gd_scene load_steps=28 format=4 uid="uid://brd7wfwl3sv5n"]
 
 [ext_resource type="Script" uid="uid://bkgkn0gd61g4x" path="res://scenes/main/environment_paralax_handler.gd" id="1_58wo2"]
 [ext_resource type="Shader" uid="uid://qa66dukaogw5" path="res://assets/shaders/sky.gdshader" id="2_8d0p8"]
@@ -22,7 +22,9 @@
 [ext_resource type="PackedScene" uid="uid://drbbf67md224p" path="res://scenes/foliage/bush_a.tscn" id="21_wwugl"]
 [ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="22_sun01"]
 [ext_resource type="PackedScene" uid="uid://cud3lh35rfmqh" path="res://scenes/foliage/bush_b.tscn" id="22_wwugl"]
+[ext_resource type="Texture2D" uid="uid://cadgme2j6i348" path="res://assets/sprites/foliage/tumble_wheet.png" id="23_affbb"]
 [ext_resource type="Texture2D" uid="uid://ce7kfhlakajks" path="res://assets/sprites/moon.png" id="23_moon1"]
+[ext_resource type="Script" uid="uid://ccp0asawve4si" path="res://scenes/main/tumble_wheet.gd" id="24_bgj18"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
 shader = ExtResource("2_8d0p8")
@@ -208,11 +210,9 @@ texture = ExtResource("18_wwugl")
 
 [node name="BushA" parent="Decoration/Backgound" instance=ExtResource("21_wwugl")]
 position = Vector2(310, -9)
-frame = 0
 
 [node name="BushA3" parent="Decoration/Backgound" instance=ExtResource("21_wwugl")]
 position = Vector2(-151, -9)
-frame = 0
 
 [node name="RockB2" type="Sprite2D" parent="Decoration/Backgound"]
 z_index = -400
@@ -242,6 +242,16 @@ position = Vector2(73, -7)
 z_index = -400
 position = Vector2(-591, -7)
 
+[node name="TumbleWheet" type="Sprite2D" parent="Decoration/Backgound"]
+position = Vector2(0, -6)
+texture = ExtResource("23_affbb")
+script = ExtResource("24_bgj18")
+move_speed = 70.0
+rotation_speed = 8.0
+jump_height = 7.0
+jump_speed = 1.8
+jump_chance = 0.02
+
 [node name="Foreground" type="Node2D" parent="Decoration"]
 z_index = 10
 
@@ -259,7 +269,6 @@ position = Vector2(349, -7)
 [node name="BushA3" parent="Decoration/Foreground" instance=ExtResource("21_wwugl")]
 z_index = 0
 position = Vector2(-562, -9)
-frame = 0
 
 [node name="RockB" type="Sprite2D" parent="Decoration/Foreground"]
 position = Vector2(-566, -4)
