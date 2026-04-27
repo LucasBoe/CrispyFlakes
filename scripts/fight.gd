@@ -212,7 +212,7 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 func _get_attack_damage(attacker: NPC, target: NPC) -> float:
 	var outgoing = attacker.Traits.get_melee_damage_multiplier()
 	var incoming = target.Traits.get_incoming_damage_multiplier()
-	return MELEE_DAMAGE * (0.5 + attacker.strength * 0.5) * outgoing * incoming
+	return MELEE_DAMAGE * outgoing * incoming
 
 func _check_for_knockouts() -> void:
 	for participant: NPC in participants:

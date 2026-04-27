@@ -238,7 +238,7 @@ func _show_status_row(text: String, color: Color, link_target = null, link_text:
 
 func _show_for_worker(worker: NPCWorker):
 	header_label.text = worker.character_name
-	_npc_base_description = str("This worker can be dragged onto rooms in order to work there.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(worker.strength * 100), int(worker.agility * 100), int(worker.intelligence * 100)])
+	_npc_base_description = "This worker can be dragged onto rooms in order to work there."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	_rebuild_traits_ui(worker)
@@ -257,7 +257,7 @@ func _show_for_worker(worker: NPCWorker):
 
 func _show_for_guest(guest: NPCGuest):
 	header_label.text = "Guest"
-	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services.\n\nSTR [color=cornflower_blue]%d[/color]  AGI [color=cornflower_blue]%d[/color]  INT [color=cornflower_blue]%d[/color]" % [int(guest.strength * 100), int(guest.agility * 100), int(guest.intelligence * 100)]
+	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
 	_rebuild_traits_ui(guest)

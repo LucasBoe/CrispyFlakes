@@ -15,9 +15,6 @@ var Equipment: EquipmentModule
 var Traits: TraitModule
 
 var look_info : NPCLookInfo
-var strength: float = 0.5
-var agility: float = 0.5
-var intelligence: float = 0.5
 var energy: float = 1.0
 
 var _status_icon_instance = null
@@ -29,9 +26,6 @@ func _init():
 	Traits = TraitModule.new(self)
 
 func _ready():
-	strength = randf_range(0.3, 1.0)
-	agility = randf_range(0.3, 1.0)
-	intelligence = randf_range(0.3, 1.0)
 	Traits.ensure_traits()
 	restore_energy()
 

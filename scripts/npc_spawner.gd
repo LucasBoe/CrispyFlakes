@@ -66,9 +66,6 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 		guest.Navigation.stop_navigation()
 
 	var worker := spawn_new_worker(guest.global_position) as NPCWorker
-	worker.strength = guest.strength
-	worker.agility = guest.agility
-	worker.intelligence = guest.intelligence
 	worker.Traits.copy_from(guest.Traits)
 	worker.restore_energy()
 	worker.apply_trait_conflict_preference()

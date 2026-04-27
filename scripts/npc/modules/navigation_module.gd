@@ -71,7 +71,7 @@ func set_target(target, custom_speed):
 		refresh_target_path()
 		is_moving = true
 		has_target = true
-		var base_speed = DEFAULT_MOVE_SPEED * (0.75 + npc.agility * 0.5) if custom_speed < 0 else custom_speed
+		var base_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
 		move_speed = base_speed * npc.Traits.get_move_speed_multiplier()
 
 func get_random_target():
@@ -412,7 +412,7 @@ func _try_frisk_at_bouncer() -> void:
 	var best_intelligence := 0.0
 	for bouncer in bouncer_room.assigned_bouncers:
 		if is_instance_valid(bouncer):
-			var effective_intelligence = bouncer.intelligence * bouncer.Traits.get_criminal_detection_multiplier()
+			var effective_intelligence = bouncer.Traits.get_criminal_detection_multiplier()
 			best_intelligence = maxf(best_intelligence, effective_intelligence)
 	if best_intelligence == 0.0:
 		return
