@@ -33,7 +33,7 @@ var result: Result = Result.NONE
 var has_started: bool = false
 var is_over: bool = false
 
-const DRUNK_FIGHT_BOUNTY: int = 10
+const DRUNK_FIGHT_BOUNTY: int = 2
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
 const MELEE_DAMAGE: float = 0.2
