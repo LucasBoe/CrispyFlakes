@@ -38,6 +38,8 @@ func _ready():
 		TutorialHandler.tasks_changed.connect(refresh_callable)
 	refresh_ui()
 
+
+
 func refresh_ui():
 	_clear_instances(step_instances)
 	_clear_instances(big_pills)

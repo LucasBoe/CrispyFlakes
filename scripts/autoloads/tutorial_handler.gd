@@ -1,6 +1,15 @@
 extends Node
 
 signal tasks_changed
+signal tutorial_finished
+
+var skip_requested: bool = false
+
+
+func _poll_until(condition: Callable) -> bool:
+	while not condition.call() and not skip_requested:
+		await get_tree().process_frame
+	return skip_requested
 
 
 class TutorialTask:
@@ -88,8 +97,9 @@ func _notify_tasks_changed() -> void:
 
 
 func do_first_tutorial():
+	skip_requested = false
 	clear_tasks()
-	
+
 	var hire_worker_task = TutorialHandler.create_task("A new Beginning", "Hire a new worker", ["click on guest","click hire from contex menu"])
 	var asign_job_task = TutorialHandler.create_task("A new Beginning", "Asign a job to your worker", ["click and hold LMB to pick up worker","drop worker to valid room"])
 
@@ -104,47 +114,51 @@ func do_first_tutorial():
 	var reached_bar := [false]
 	if is_instance_valid(tutorial_guest):
 		tutorial_guest.Navigation.target_reached_signal.connect(func(): reached_bar[0] = true, CONNECT_ONE_SHOT)
-		while not reached_bar[0] and is_instance_valid(tutorial_guest):
-			await end_of_frame()
+		if await _poll_until(func(): return reached_bar[0] or not is_instance_valid(tutorial_guest)):
+			return
 	if is_instance_valid(tutorial_guest):
 		await Global.UI.dialogue.print_dialogue("This was such a nice place long ago what a shame...", tutorial_guest)
+	if skip_requested:
+		return
 
 	hire_worker_task.start()
-	while Global.NPCSpawner.workers.size() <= 0:
-		await end_of_frame()
+	if await _poll_until(func(): return Global.NPCSpawner.workers.size() > 0):
+		return
 	hire_worker_task.finish()
 
 	asign_job_task.start()
-	while not Global.NPCSpawner.workers.any(func(w: NPCWorker): return w.current_job == Enum.Jobs.BAR):
-		await end_of_frame()
+	if await _poll_until(func(): return Global.NPCSpawner.workers.any(func(w: NPCWorker): return w.current_job == Enum.Jobs.BAR)):
+		return
 	asign_job_task.finish()
-
 
 	var inspect_guest = Global.NPCSpawner.spawn_new_guest() as NPCGuest
 	inspect_guest.manual_behaviour = true
 	await get_tree().process_frame
 	inspect_guest.Behaviour.set_behaviour(IdleBehaviour)
 
+	var guest_clicked := [false]
+	var click_conn := func(node: Node): if node is NPCGuest: guest_clicked[0] = true
+	HoverHandler.click_hovered_node_signal.connect(click_conn)
 	var check_needs_task = TutorialHandler.create_task("A new Beginning", "Click on a guest to inspect their needs", ["left-click on any guest"])
 	check_needs_task.start()
-	while true:
-		var clicked_node = await HoverHandler.click_hovered_node_signal
-		if clicked_node is NPCGuest:
-			break
+	if await _poll_until(func(): return guest_clicked[0]):
+		HoverHandler.click_hovered_node_signal.disconnect(click_conn)
+		return
+	HoverHandler.click_hovered_node_signal.disconnect(click_conn)
 	check_needs_task.finish()
 
 	inspect_guest.manual_behaviour = false
 
 	var wait_for_drink_task = TutorialHandler.create_task("A new Beginning", "Wait for the guest to receive their drink")
 	wait_for_drink_task.start()
-	while not Global.NPCSpawner.guests.any(npc_has_item):
-		await end_of_frame()
+	if await _poll_until(func(): return Global.NPCSpawner.guests.any(npc_has_item)):
+		return
 	wait_for_drink_task.finish()
 
 	var build_table_task = TutorialHandler.create_task("A new Beginning", "Build a Table so guests have somewhere to sit", ["open the Build menu", "find Tables under Furniture"])
 	build_table_task.start()
-	while Building.query.all_rooms_of_type(RoomTable).size() == 0:
-		await end_of_frame()
+	if await _poll_until(func(): return Building.query.all_rooms_of_type(RoomTable).size() > 0):
+		return
 	build_table_task.finish()
 
 	Global.should_auto_spawn_guests = true
@@ -152,11 +166,13 @@ func do_first_tutorial():
 	var open_workers_task = TutorialHandler.create_task("A new Beginning", "Open the Workers panel to manage your staff", ["click the Workers button in the menu"])
 	open_workers_task.start()
 	TimeHandler.set_time(0)
-	while not Global.UI.menu.worker_tab.visible:
-		await Global.UI.menu.worker_tab.visibility_changed
+	if await _poll_until(func(): return Global.UI.menu.worker_tab.visible):
+		TimeHandler.set_time(1)
+		return
 	TimeHandler.set_time(1)
 	open_workers_task.finish()
 	clear_tasks()
+	tutorial_finished.emit()
 
 # this function is deprecated but for some lookup it MIGHT be useful or not since a lot of stuff has changed since then
 func start_tutorial():

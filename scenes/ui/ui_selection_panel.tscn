@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="70_prisui"]
 [ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/handel_8x8.png" id="71_filter"]
 [ext_resource type="Texture2D" uid="uid://cc25qv8cwb5cw" path="res://assets/sprites/ui/x_8x8.png" id="72_filter"]
+[ext_resource type="Script" path="res://scripts/ui/selection_trading_office_ui.gd" id="73_trade_ui"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 
@@ -445,6 +446,10 @@ vertical_alignment = 2
 [node name="ProducedIcon" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
 layout_mode = 2
 stretch_mode = 5
+
+[node name="TradingOfficeUI" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("73_trade_ui")
 
 [node name="StorageFilterContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

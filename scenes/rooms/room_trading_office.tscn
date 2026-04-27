@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/room_trading_office.gd" id="1_room"]
+[ext_resource type="Texture2D" path="res://assets/sprites/back-wall.png" id="2_back"]
+[ext_resource type="Texture2D" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bar_water.png" id="4_desk"]
+[ext_resource type="PackedScene" path="res://scenes/progress_bar.tscn" id="5_progress"]
+
+[node name="Room_TradingOffice" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_room")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_back")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_outline")
+
+[node name="Desk" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -17.5)
+texture = ExtResource("4_desk")
+
+[node name="ProgressBar" parent="." instance=ExtResource("5_progress")]
+visible = false
+offset_left = 10.0
+offset_top = -36.0
+offset_right = 38.0
+offset_bottom = -31.0

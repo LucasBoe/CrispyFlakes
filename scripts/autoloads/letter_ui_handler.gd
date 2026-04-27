@@ -51,6 +51,15 @@ func present() -> void:
 	await presentation_finished
 
 
+func skip() -> void:
+	if _state == State.IDLE:
+		return
+	visible = false
+	get_tree().paused = false
+	_state = State.IDLE
+	presentation_finished.emit()
+
+
 func _reset_nodes() -> void:
 	_letter_anchor.position = Vector2(LETTER_CENTER.x, LETTER_ENTER_FROM_Y)
 	_letter_anchor.modulate.a = 0.0

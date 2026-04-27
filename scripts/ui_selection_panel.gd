@@ -1,6 +1,8 @@
 extends FullscreenDragable
 class_name UISelectionPanel
 
+const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd")
+
 @onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/Label
 @onready var panel_close_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/CloseButton
 @onready var describtion_label = $MarginContainer/MarginContainer/VBoxContainer/DescribtionLabel
@@ -30,6 +32,7 @@ class_name UISelectionPanel
 @onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
+@onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
 const _ROOM_TILE_SIZE := 48.0
@@ -161,6 +164,7 @@ func _clear_instances():
 	room_money_label.hide()
 	room_recipe_row.hide()
 	room_module_ui.hide()
+	trading_office_ui.clear_room()
 
 	for n in need_ui_instances:
 		n.queue_free()
@@ -374,7 +378,7 @@ func _show_for_room(room: RoomBase):
 	hire_guest_button.hide()
 	arrest_button.hide()
 	worker_fight_response_row.hide()
-	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
+	header_label.text = room.data.room_name if room.data != null and room.data.room_name != "" else room.get_script().get_global_name().trim_prefix("Room")
 	room_delete_button.disabled = false
 
 	if room is RoomEmpty:
@@ -493,12 +497,15 @@ func _show_for_room(room: RoomBase):
 	elif room.get_script() != null and room.get_script().get_global_name() == "RoomStorage":
 		_show_storage_filter(room)
 
+	if room.get_script() == ROOM_TRADING_OFFICE_SCRIPT:
+		trading_office_ui.bind_room(room)
+
 	room_module_ui.populate(room)
 
 func _show_storage_filter(room: RoomBase):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY):
+	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY and t != Enum.Items.CRATE):
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed
