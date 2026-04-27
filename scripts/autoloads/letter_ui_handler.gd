@@ -67,7 +67,7 @@ func _reset_nodes() -> void:
 	_sheet_wrapper.position = SHEET_WRAPPER_HIDDEN
 	_sheet.size = SHEET_INITIAL_SIZE
 	_sheet.visible = false
-	_sheet_label.add_theme_font_size_override("normal_font_size", 8)
+	_sheet_label.add_theme_font_size_override("normal_font_size", 4)
 	_letter_hovered = false
 	_sheet_hovered = false
 	_letter_mat.set_shader_parameter("outline_color", Color.BLACK)

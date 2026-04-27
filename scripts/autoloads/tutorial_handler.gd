@@ -1,7 +1,164 @@
 extends Node
 
-signal sold_beer
+signal tasks_changed
 
+
+class TutorialTask:
+	extends RefCounted
+
+	var _handler
+	var section_title: String
+	var text: String
+	var hints: Array[String] = []
+	var is_started: bool = false
+	var is_done: bool = false
+
+	func _init(handler, new_section_title: String, new_text: String, new_hints: Array[String] = []):
+		_handler = handler
+		section_title = new_section_title
+		text = new_text
+		hints = new_hints.duplicate()
+
+	func start() -> void:
+		if is_started:
+			return
+		is_started = true
+		_handler._notify_tasks_changed()
+
+	func finish() -> void:
+		if is_done:
+			return
+		is_started = true
+		is_done = true
+		_handler._notify_tasks_changed()
+
+	func set_done(done := true) -> void:
+		is_started = true
+		is_done = done
+		_handler._notify_tasks_changed()
+
+	func set_text(new_text: String) -> void:
+		if text == new_text:
+			return
+		text = new_text
+		_handler._notify_tasks_changed()
+
+
+var tasks: Array[TutorialTask] = []
+
+
+func create_task(section_title: String, text: String, hints: Array[String] = []) -> TutorialTask:
+	var task := TutorialTask.new(self, section_title, text, hints)
+	tasks.append(task)
+	_notify_tasks_changed()
+	return task
+
+
+func clear_tasks() -> void:
+	tasks.clear()
+	_notify_tasks_changed()
+
+
+func get_current_section_title() -> String:
+	for task in tasks:
+		if task.is_started and not task.is_done:
+			return task.section_title
+
+	for i in range(tasks.size() - 1, -1, -1):
+		var task = tasks[i]
+		if task.is_started or task.is_done:
+			return task.section_title
+
+	return ""
+
+
+func get_section_tasks(section_title: String) -> Array[TutorialTask]:
+	if section_title.is_empty():
+		return []
+
+	var section_tasks: Array[TutorialTask] = []
+	for task in tasks:
+		if task.section_title == section_title:
+			section_tasks.append(task)
+	return section_tasks
+
+
+func _notify_tasks_changed() -> void:
+	tasks_changed.emit()
+
+
+func do_first_tutorial():
+	clear_tasks()
+	
+	var hire_worker_task = TutorialHandler.create_task("A new Beginning", "Hire a new worker", ["click on guest","click hire from contex menu"])
+	var asign_job_task = TutorialHandler.create_task("A new Beginning", "Asign a job to your worker", ["click and hold LMB to pick up worker","drop worker to valid room"])
+
+	var tutorial_guest = Global.NPCSpawner.spawn_new_guest() as NPCGuest
+	var positive_traits := TraitLibrary.get_all_traits().filter(func(t): return t.is_positive())
+	positive_traits.shuffle()
+	tutorial_guest.Traits.traits = [positive_traits[0]]
+	tutorial_guest.manual_behaviour = true
+	tutorial_guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
+	await get_tree().process_frame
+
+	var reached_bar := [false]
+	if is_instance_valid(tutorial_guest):
+		tutorial_guest.Navigation.target_reached_signal.connect(func(): reached_bar[0] = true, CONNECT_ONE_SHOT)
+		while not reached_bar[0] and is_instance_valid(tutorial_guest):
+			await end_of_frame()
+	if is_instance_valid(tutorial_guest):
+		await Global.UI.dialogue.print_dialogue("This was such a nice place long ago what a shame...", tutorial_guest)
+
+	hire_worker_task.start()
+	while Global.NPCSpawner.workers.size() <= 0:
+		await end_of_frame()
+	hire_worker_task.finish()
+
+	asign_job_task.start()
+	while not Global.NPCSpawner.workers.any(func(w: NPCWorker): return w.current_job == Enum.Jobs.BAR):
+		await end_of_frame()
+	asign_job_task.finish()
+
+
+	var inspect_guest = Global.NPCSpawner.spawn_new_guest() as NPCGuest
+	inspect_guest.manual_behaviour = true
+	await get_tree().process_frame
+	inspect_guest.Behaviour.set_behaviour(IdleBehaviour)
+
+	var check_needs_task = TutorialHandler.create_task("A new Beginning", "Click on a guest to inspect their needs", ["left-click on any guest"])
+	check_needs_task.start()
+	while true:
+		var clicked_node = await HoverHandler.click_hovered_node_signal
+		if clicked_node is NPCGuest:
+			break
+	check_needs_task.finish()
+
+	inspect_guest.manual_behaviour = false
+
+	var wait_for_drink_task = TutorialHandler.create_task("A new Beginning", "Wait for the guest to receive their drink")
+	wait_for_drink_task.start()
+	while not Global.NPCSpawner.guests.any(npc_has_item):
+		await end_of_frame()
+	wait_for_drink_task.finish()
+
+	var build_table_task = TutorialHandler.create_task("A new Beginning", "Build a Table so guests have somewhere to sit", ["open the Build menu", "find Tables under Furniture"])
+	build_table_task.start()
+	while Building.query.all_rooms_of_type(RoomTable).size() == 0:
+		await end_of_frame()
+	build_table_task.finish()
+
+	Global.should_auto_spawn_guests = true
+
+	var open_workers_task = TutorialHandler.create_task("A new Beginning", "Open the Workers panel to manage your staff", ["click the Workers button in the menu"])
+	open_workers_task.start()
+	TimeHandler.set_time(0)
+	while not Global.UI.menu.worker_tab.visible:
+		await Global.UI.menu.worker_tab.visibility_changed
+	TimeHandler.set_time(1)
+	open_workers_task.finish()
+	clear_tasks()
+
+# this function is deprecated but for some lookup it MIGHT be useful or not since a lot of stuff has changed since then
 func start_tutorial():
 	pass
 	#Global.UI.resources.hide()
@@ -130,8 +287,6 @@ func start_tutorial():
 	#
 	#ResourceHandler.change_resource(Enum.Resources.MONEY, -(ResourceHandler.resources[Enum.Resources.MONEY] - 100))
 
-func try_notify_sold_beer():
-	sold_beer.emit()
 
 func junk_text(text, amount_done, amount_needed):
 	return str(text, " (", amount_done, "/", amount_needed, ")")
