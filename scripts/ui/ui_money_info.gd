@@ -7,7 +7,7 @@ class_name UIMoney
 @onready var minus_label = $MarginContainer/MinusLabel
 
 func _ready():
-	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
+	#JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
 	ResourceHandler.on_money_changed.connect(_on_money_changed)
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_changed)
@@ -15,9 +15,9 @@ func _ready():
 func _on_room_changed(_room = null):
 	_on_money_changed()
 	
-func _on_jobs_changed():
-	var worker_payments_daily = JobHandler.payment_total
-	minus_label.text = str("-",roundi(worker_payments_daily), "/M")
+#func _on_jobs_changed():
+	#var worker_payments_daily = JobHandler.payment_total
+	#minus_label.text = str("-",roundi(worker_payments_daily), "/M")
 	
 func _on_money_changed():
 	var total_money = ResourceHandler.resources[Enum.Resources.MONEY]

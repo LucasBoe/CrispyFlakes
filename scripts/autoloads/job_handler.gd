@@ -2,8 +2,8 @@ extends Node
 
 var workers : Dictionary[Enum.Jobs, Array]
 
-var payment_total = 0
-var payment_cycle_progression = 0.0
+#var payment_total = 0
+#var payment_cycle_progression = 0.0
 
 signal on_jobs_changed_signal
 
@@ -32,21 +32,21 @@ func on_job_changed(npc : NPCWorker, new_job):
 		
 	workers[new_job].append(npc)
 	
-	payment_total = 0
-	for w in workers.values():
-		for worker in w:
-			payment_total += worker.salary
+	#payment_total = 0
+	#for w in workers.values():
+		#for worker in w:
+			#payment_total += worker.salary
 
 	on_jobs_changed_signal.emit()
 	
-func _process(delta):
-	payment_cycle_progression += delta / Global.DAY_DURATION
-	if payment_cycle_progression >= 1.0:
-		payment_cycle_progression = 0.0
-		execute_payments()
+#func _process(delta):
+	#payment_cycle_progression += delta / Global.DAY_DURATION
+	#if payment_cycle_progression >= 1.0:
+		#payment_cycle_progression = 0.0
+		#execute_payments()
 
-func execute_payments():			
-	ResourceHandler.change_money(-payment_total)
+#func execute_payments():
+	#ResourceHandler.change_money(-payment_total)
 
 func count_workers_in(job):
 	if not workers.has(job):

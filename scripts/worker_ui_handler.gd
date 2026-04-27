@@ -1,8 +1,8 @@
 extends MenuUITab
 
 @onready var hire_button = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/Button
-@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/ProgressBar
-@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/Label
+#@onready var payment_progress_bar = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/ProgressBar
+#@onready var payment_height_label = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/HBoxContainer/Label
 
 @onready var worker_info_dummy : WorkerUIInfo = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/VBoxContainer/HBoxContainer
 @onready var worker_ui_add_remove_dummy : WorkerUIAddRemove = $MarginContainer/MarginContainer/ScrollContainer/MarginContainer/GridContainer/WorkerUIAddRemove
@@ -47,7 +47,7 @@ func _on_jobs_changed():
 			clone.button_fire.pressed.connect(Global.UI.confirm.show_dialogue.bind("You are about to fire a Worker.", JobHandler.fire_worker.bind(worker)))
 			clone.show()
 	
-	payment_height_label.text = str("-", JobHandler.payment_total, "$/M")
+	#payment_height_label.text = str("-", JobHandler.payment_total, "$/M")
 
-func _process(delta):
-	payment_progress_bar.value = JobHandler.payment_cycle_progression
+#func _process(delta):
+	#payment_progress_bar.value = JobHandler.payment_cycle_progression
