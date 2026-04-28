@@ -74,6 +74,7 @@ func _apply_state() -> void:
 	var frame_mat := _frame_rect.material as ShaderMaterial
 	frame_mat.set_shader_parameter("is_unlocked", _unlocked)
 	frame_mat.set_shader_parameter("is_active", is_active)
+	_icon_rect.modulate = Color(1,1,1,1.0 if _unlocked else .4)
 	_cost_frame_rect.material = frame_mat
 	if _connector != null:
 		var con_mat := _connector.material as ShaderMaterial
