@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3 uid="uid://bt2i8iaooelm2"]
 
 [ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://ec0iyqippsh2" path="res://assets/sprites/room_empty_preview.png" id="2_8dbfa"]
 
 [resource]
 script = ExtResource("1_script")
+sprite = ExtResource("2_8dbfa")
 display_name = "Empty Room"
-cost = 0
