@@ -175,6 +175,8 @@ func clamp_pan_to_bounds() -> void:
 
 func click_and_drag():
 	if !isDragging and Input.is_action_just_pressed("camera_pan"):
+		if get_viewport().gui_get_hovered_control() != null:
+			return
 		drag_start_mouse_pos = get_viewport().get_mouse_position()
 		drag_start_camera_pos = global_position
 		isDragging = true
@@ -189,7 +191,8 @@ func click_and_drag():
 	if !isLMBDragging and Input.is_action_just_pressed("click"):
 		var can_lmb_pan = NPCWorker.picked_up_npc == null \
 			and not (HoverHandler.currently_hovered is NPCWorker) \
-			and not PlacementHandler.is_placing
+			and not PlacementHandler.is_placing \
+			and get_viewport().gui_get_hovered_control() == null
 		if can_lmb_pan:
 			drag_start_mouse_pos = get_viewport().get_mouse_position()
 			drag_start_camera_pos = global_position

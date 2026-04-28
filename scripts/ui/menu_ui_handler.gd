@@ -4,10 +4,12 @@ class_name MenuUIHandler
 @onready var worker_tab = $MarginContainer/UIWorkers
 @onready var build_tab = $MarginContainer/UIBuild
 @onready var settings_tab = $MarginContainer/UISettings
+@onready var progression_tab = $MarginContainer/UIProgressionTree
 
 @onready var worker_button = $HBoxContainer/Button_Workers
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
+@onready var progression_button = $HBoxContainer/Button_Progression
 @onready var notification_dot = $HBoxContainer/Button_Build/Notification_Dot
 
 var visible_tab = null
@@ -20,6 +22,7 @@ const DOT_HOVERED = preload("res://assets/sprites/ui/notification_dot_hovered.pn
 func _ready():
 	bind_slot(worker_button, worker_tab)
 	bind_slot(build_button, build_tab)
+	bind_slot(progression_button, progression_tab)
 	bind_slot(settings_button, settings_tab)
 	set_tab(null)
 
