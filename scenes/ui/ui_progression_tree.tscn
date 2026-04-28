@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="1_7tuwu"]
 [ext_resource type="Script" uid="uid://c880icutpyv75" path="res://scripts/ui/ui_pan_canvas.gd" id="2_pancv"]
 [ext_resource type="Script" uid="uid://bdyilld1m1yth" path="res://scripts/ui/progression_tree_layout.gd" id="3_layout"]
-[ext_resource type="Shader" uid="uid://dxdnx0xlvuel7" path="res://assets/shaders/progression_state.gdshader" id="3_ly0o3"]
+[ext_resource type="Shader" path="res://assets/shaders/diamond_wave.gdshader" id="3_ly0o3"]
 [ext_resource type="Texture2D" uid="uid://13fb4slbkmvw" path="res://assets/sprites/ui/2x/tree_filled_button.png" id="3_wxl5x"]
 [ext_resource type="PackedScene" uid="uid://cxmwbe18bacqa" path="res://scenes/ui/progression_item_button.tscn" id="4_btn"]
 [ext_resource type="Script" uid="uid://dcre7i7a7ws1g" path="res://scripts/ui/progression_sidebar.gd" id="5_side"]
@@ -65,15 +65,16 @@ patch_margin_bottom = 4
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 4
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
 
 [node name="Label" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer"]
 custom_minimum_size = Vector2(116, 0)
 layout_mode = 2
 theme = ExtResource("6_theme")
+theme_override_colors/default_color = Color(0.13725491, 0.1254902, 0.12941177, 1)
 bbcode_enabled = true
 text = "Points: [color=#ff0055]0[/color]"
 fit_content = true

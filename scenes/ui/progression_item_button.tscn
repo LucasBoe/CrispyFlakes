@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dk8tkbxeylykp" path="res://scripts/ui/progression_item_button.gd" id="1_scr"]
 [ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="2_xj46g"]
-[ext_resource type="Shader" uid="uid://dxdnx0xlvuel7" path="res://assets/shaders/progression_state.gdshader" id="3_cqxqj"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="3_cqxqj"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_thm"]
 [ext_resource type="Texture2D" uid="uid://cj7ythbeh0kju" path="res://assets/sprites/ui/2x/tree_frame_rect.png" id="3_xj46g"]
 [ext_resource type="Texture2D" uid="uid://bubf6vi6l3jh6" path="res://assets/sprites/ui/2x/tree_empty_button.png" id="6_4fn8j"]
