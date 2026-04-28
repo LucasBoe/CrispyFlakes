@@ -1,6 +1,8 @@
 extends FullscreenDragable
 class_name UISelectionPanel
 
+const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd")
+
 @onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/Label
 @onready var panel_close_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/CloseButton
 @onready var describtion_label = $MarginContainer/MarginContainer/VBoxContainer/DescribtionLabel
@@ -30,6 +32,7 @@ class_name UISelectionPanel
 @onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
+@onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
 const _ROOM_TILE_SIZE := 48.0
@@ -57,6 +60,8 @@ var _trait_container: VBoxContainer = null
 var _satisfaction_log_container: VBoxContainer = null
 var _satisfaction_log_size: int = -1
 var _equipment_container: VBoxContainer = null
+var _storage_items_container: VBoxContainer = null
+var _storage_items_signature: Array = []
 var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
 
@@ -161,6 +166,7 @@ func _clear_instances():
 	room_money_label.hide()
 	room_recipe_row.hide()
 	room_module_ui.hide()
+	trading_office_ui.clear_room()
 
 	for n in need_ui_instances:
 		n.queue_free()
@@ -187,6 +193,11 @@ func _clear_instances():
 	if is_instance_valid(_equipment_container):
 		_equipment_container.queue_free()
 	_equipment_container = null
+
+	if is_instance_valid(_storage_items_container):
+		_storage_items_container.queue_free()
+	_storage_items_container = null
+	_storage_items_signature = []
 
 	_connection_line.hide()
 
@@ -374,7 +385,7 @@ func _show_for_room(room: RoomBase):
 	hire_guest_button.hide()
 	arrest_button.hide()
 	worker_fight_response_row.hide()
-	header_label.text = room.get_script().get_global_name().trim_prefix("Room")
+	header_label.text = room.data.room_name if room.data != null and room.data.room_name != "" else room.get_script().get_global_name().trim_prefix("Room")
 	room_delete_button.disabled = false
 
 	if room is RoomEmpty:
@@ -490,15 +501,18 @@ func _show_for_room(room: RoomBase):
 		_show_bounty_board()
 	elif room is RoomPrison:
 		_show_prison(room)
-	elif room.get_script() != null and room.get_script().get_global_name() == "RoomStorage":
-		_show_storage_filter(room)
+	elif room is RoomStorage:
+		_show_storage_filter(room as RoomStorage)
+
+	if room.get_script() == ROOM_TRADING_OFFICE_SCRIPT:
+		trading_office_ui.bind_room(room)
 
 	room_module_ui.populate(room)
 
-func _show_storage_filter(room: RoomBase):
+func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY):
+	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY and t != Enum.Items.CRATE):
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed
@@ -516,6 +530,60 @@ func _show_storage_filter(room: RoomBase):
 		)
 		storage_filter_grid.add_child(btn)
 		btn.show()
+
+	_refresh_storage_items(room)
+
+func _refresh_storage_items(storage: RoomStorageBase, force: bool = false) -> void:
+	var signature := _get_storage_items_signature(storage)
+	if not force and signature == _storage_items_signature:
+		return
+
+	_storage_items_signature = signature
+	if is_instance_valid(_storage_items_container):
+		_storage_items_container.queue_free()
+
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	var parent := storage_filter_container.get_parent()
+	parent.add_child(container)
+	parent.move_child(container, storage_filter_container.get_index() + 1)
+	_storage_items_container = container
+
+	var title := status_icon_label_dummy.duplicate() as Label
+	title.text = "Stored Items (%d/%d)" % [storage.get_occupied_slot_count(), storage.get_slot_capacity()]
+	title.show()
+	container.add_child(title)
+
+	var stored_amounts := storage.get_stored_item_amounts()
+	if stored_amounts.is_empty():
+		var empty_label := status_icon_label_dummy.duplicate() as Label
+		empty_label.text = "Empty"
+		empty_label.show()
+		container.add_child(empty_label)
+		return
+
+	var item_types: Array[int] = []
+	for item_type in stored_amounts.keys():
+		item_types.append(int(item_type))
+	item_types.sort()
+
+	for item_type in item_types:
+		var row := status_icon_row_dummy.duplicate() as HBoxContainer
+		var icon := row.get_child(0) as TextureRect
+		var label := row.get_child(1) as Label
+		icon.texture = Item.get_info(item_type).Tex
+		label.text = "%s x%d" % [Item.get_display_name(item_type), int(stored_amounts[item_type])]
+		row.show()
+		container.add_child(row)
+
+func _get_storage_items_signature(storage: RoomStorageBase) -> Array:
+	var signature: Array = []
+	signature.append("%d/%d" % [storage.get_occupied_slot_count(), storage.get_slot_capacity()])
+	var stored_amounts := storage.get_stored_item_amounts()
+	for item_type in stored_amounts.keys():
+		signature.append("%d:%d" % [int(item_type), int(stored_amounts[item_type])])
+	signature.sort()
+	return signature
 
 func _show_prison(room: RoomPrison):
 	for prisoner in room.prisoners:
@@ -801,6 +869,9 @@ func _process(delta):
 		var stored = MoneyHandler.get_money_at(Vector2i(target.x, target.y))
 		var cap = target.data.money_capacity if target.data != null else 0
 		room_money_label.text = str("Cash stored here: ", roundi(stored), " / ", cap, "$")
+
+	if target is RoomStorageBase and is_instance_valid(_storage_items_container):
+		_refresh_storage_items(target)
 
 	if target is NPC:
 		var entries = _get_status_icon_entries(target)

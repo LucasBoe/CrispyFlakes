@@ -1,6 +1,7 @@
-[gd_scene load_steps=44 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=42 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
+[ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
 [ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
 [ext_resource type="Script" uid="uid://b7bo83wpu73wu" path="res://scripts/time_button.gd" id="6_4amiu"]
 [ext_resource type="Script" uid="uid://drqq0is6by4ae" path="res://scripts/time_ui_handler.gd" id="6_rt53s"]
@@ -10,17 +11,14 @@
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
-[ext_resource type="Script" uid="uid://bpm87gr3dy543" path="res://scripts/ui_tutorial_item.gd" id="19_duoqm"]
+[ext_resource type="FontFile" uid="uid://dwbhc72qylw8u" path="res://assets/fonts/WesternSwaggerDEMO.ttf" id="17_wvm38"]
 [ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="19_mwcfc"]
-[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/time/time-button_play.png" id="25_3ou18"]
 [ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
-[ext_resource type="FontFile" uid="uid://lqh04fcpwlab" path="res://assets/fonts/Cubix_Mystical.ttf" id="26_lbk5b"]
+[ext_resource type="Texture2D" uid="uid://boca2hk30ecvv" path="res://assets/sprites/ui/speechbubble.aseprite" id="25_pklhh"]
 [ext_resource type="Texture2D" uid="uid://ckpjxsbbfx781" path="res://assets/sprites/ui/icon_dialogue_skip.png" id="27_8145v"]
-[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://ceaqnkct2m7dc" path="res://assets/sprites/ui/icon_npc_closeup_cowboy.png" id="29_8st1d"]
-[ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="33_h367x"]
 [ext_resource type="Texture2D" uid="uid://bl2f4bqvktgp1" path="res://assets/sprites/ui/icon_locked_1.png" id="35_em0su"]
 [ext_resource type="Script" uid="uid://bxubwaflp8wkf" path="res://scripts/ui/ui_money_info.gd" id="37_u4j4d"]
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
@@ -68,78 +66,7 @@ modulate_color = Color(18.892157, 18.892157, 18.892157, 0.3764706)
 [node name="UI" type="CanvasLayer" parent="."]
 script = ExtResource("15_3fppy")
 
-[node name="UITutorial" type="Control" parent="UI"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("33_h367x")
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial"]
-layout_mode = 1
-offset_right = 40.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 96
-
-[node name="NinePatchRect" type="NinePatchRect" parent="UI/UITutorial/MarginContainer"]
-layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(16, 0, 8, 8)
-patch_margin_left = 4
-patch_margin_top = 4
-patch_margin_right = 4
-patch_margin_bottom = 4
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 6
-theme_override_constants/margin_top = 3
-theme_override_constants/margin_right = 6
-theme_override_constants/margin_bottom = 3
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer/MarginContainer"]
-layout_mode = 2
-size_flags_vertical = 0
-theme_override_constants/margin_top = -8
-theme_override_constants/margin_bottom = 8
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-
-[node name="TextureRect" type="ColorRect" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer/MarginContainer"]
-layout_mode = 2
-color = Color(0, 0, 0, 1)
-
-[node name="Label" type="Label" parent="UI/UITutorial/MarginContainer/MarginContainer/MarginContainer/MarginContainer"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme = ExtResource("22_hpv7r")
-theme_override_fonts/font = ExtResource("29_1f2rr")
-theme_override_font_sizes/font_size = 16
-text = "ToDo"
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UITutorial/MarginContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 1
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 2
-script = ExtResource("19_duoqm")
-
-[node name="Label" type="Label" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "- Assign a worker to the bar"
-
-[node name="TextureRect" type="TextureRect" parent="UI/UITutorial/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-texture = ExtResource("19_mwcfc")
+[node name="UITutorial" parent="UI" instance=ExtResource("3_jj3vu")]
 
 [node name="UISelectionPanel" parent="UI" instance=ExtResource("sel_panel")]
 
@@ -401,10 +328,11 @@ grow_vertical = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/UIDialogue/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_top = 23
+theme_override_constants/margin_top = 38
 
 [node name="NinePatchRect" type="NinePatchRect" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
 layout_mode = 2
+texture = ExtResource("25_pklhh")
 patch_margin_left = 10
 patch_margin_top = 3
 patch_margin_right = 3
@@ -412,27 +340,29 @@ patch_margin_bottom = 9
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 3
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 9
+theme_override_constants/margin_left = 13
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 13
+theme_override_constants/margin_bottom = 13
 
 [node name="Label" type="RichTextLabel" parent="UI/UIDialogue/MarginContainer/MarginContainer/MarginContainer"]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-theme_override_fonts/normal_font = ExtResource("26_lbk5b")
-theme_override_font_sizes/normal_font_size = 11
+theme_override_constants/line_separation = -2
+theme_override_fonts/normal_font = ExtResource("17_wvm38")
+theme_override_font_sizes/normal_font_size = 22
 text = "I should stop talking shit like this..."
 fit_content = true
 
 [node name="Button" type="Button" parent="UI/UIDialogue/MarginContainer/MarginContainer"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 theme = ExtResource("22_hpv7r")
 icon = ExtResource("27_8145v")
+icon_alignment = 1
 
 [node name="MarginContainer2" type="MarginContainer" parent="UI/UIDialogue/MarginContainer"]
 layout_mode = 2
@@ -441,6 +371,7 @@ size_flags_vertical = 0
 theme_override_constants/margin_left = 8
 
 [node name="TextureRect" type="TextureRect" parent="UI/UIDialogue/MarginContainer/MarginContainer2"]
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 texture = ExtResource("29_8st1d")
 stretch_mode = 4

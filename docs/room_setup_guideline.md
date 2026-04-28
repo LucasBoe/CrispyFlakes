@@ -9,7 +9,6 @@ It covers:
 - how placement validation works
 - how jobs are attached to rooms
 - how room-specific modules work
-- how upgrades currently fit into the project
 
 ## 1. Room Checklist
 
@@ -50,7 +49,6 @@ The main exported fields live in [scripts/room_data.gd](/Users/lucasbodeker/Cris
 - `tier`: controls which unlock tier it appears in
 - `is_outdoor`: changes placement rules
 - production/consumption fields like `has_consumed_item`, `produces_item`, `produces_money`
-- `room_upgrades`: resource list for the older upgrade path
 
 Examples:
 
@@ -241,7 +239,6 @@ The shared runtime properties are in [scripts/room_base.gd](/Users/lucasbodeker/
 - `data: RoomData`
 - `associated_job`
 - `worker`
-- `has_upgrades`
 
 `init_room()` is where coordinates are assigned and back-wall visuals are finalized.
 
@@ -310,7 +307,7 @@ Examples:
 
 ## 8. Room Modules
 
-Modules are the more complete and actively used in-room upgrade/customization system right now.
+Modules are the active and supported in-room variant/customization system.
 
 The reusable module script is [scripts/room_module.gd](/Users/lucasbodeker/CrispyFlakes/scripts/room_module.gd:1).
 
@@ -404,38 +401,9 @@ It expects:
 - modules as children of each group
 - modules to expose `bought`, `price`, `icon`, `module_name`, and `describtion`
 
-If a room should have selectable in-room upgrades, this is the path that is currently most complete.
+If a room should have selectable in-room variants or mutually exclusive module choices, this module path is the supported implementation to follow.
 
-## 9. Room Upgrades
-
-There is also a separate `RoomUpgrade` resource type in [scripts/room_upgrade.gd](/Users/lucasbodeker/CrispyFlakes/scripts/room_upgrade.gd:1).
-
-Those resources are referenced from `RoomData.room_upgrades`, for example:
-
-- [assets/resources/room_bar.tres](/Users/lucasbodeker/CrispyFlakes/assets/resources/room_bar.tres:10)
-- [assets/resources/room_bar_water.tres](/Users/lucasbodeker/CrispyFlakes/assets/resources/room_bar_water.tres:1)
-
-The selection panel also contains UI for `room.upgrades`, `room.current_upgrade`, and `room.try_set_upgrade()` in [scripts/ui_selection_panel.gd](/Users/lucasbodeker/CrispyFlakes/scripts/ui_selection_panel.gd:399).
-
-Important current-state note:
-
-- `RoomUpgrade` resources exist
-- `RoomData.room_upgrades` exists
-- the selection UI references runtime room upgrade fields
-- but the room runtime base classes in this repo do not currently define `upgrades`, `current_upgrade`, or `try_set_upgrade()`
-
-So today this looks like a partial or older upgrade path, while `RoomModule` is the path that is visibly implemented and used by multiple rooms.
-
-### Recommendation
-
-For a new room, choose one of these intentionally:
-
-- use `RoomModule` if the room needs active, visible, in-room variants or upgrades
-- extend the `RoomUpgrade` runtime path first if you want resource-driven upgrade cards from `RoomData`
-
-Do not assume that filling `room_upgrades` in the `.tres` is enough by itself.
-
-## 10. Suggested Setup Order for a New Room
+## 9. Suggested Setup Order for a New Room
 
 Use this order to avoid missing one of the manual registration steps:
 
@@ -451,7 +419,7 @@ Use this order to avoid missing one of the manual registration steps:
 10. If the room needs custom selection-panel info, extend `scripts/ui_selection_panel.gd`.
 11. Optionally add it to the startup layout for quick testing.
 
-## 11. Practical Template
+## 10. Practical Template
 
 ### Minimal indoor room
 
@@ -494,23 +462,22 @@ static func custom_placement_check(location: Vector2i) -> bool:
 	return location.y == 0
 ```
 
-## 12. Pitfalls to Watch For
+## 11. Pitfalls to Watch For
 
 - Adding a `.tres` resource does not automatically make the room buildable.
 - Adding a room to `Building` does not automatically create a build-menu button.
 - Jobs are not declared in `RoomData`; they live on the room instance via `associated_job`.
 - Outdoor placement and indoor placement follow different rules.
 - `ModulesRoot` is UI-driven by scene structure, so node hierarchy matters.
-- `RoomUpgrade` resources are not currently a complete runtime setup on their own.
 
-## 13. Recommended Convention Going Forward
+## 12. Recommended Convention Going Forward
 
 For consistency, new rooms should follow this mental model:
 
 - `RoomData` answers: how do I build this room?
 - `RoomBase` subclass answers: how does this room behave once placed?
 - `associated_job` answers: can a worker be assigned here?
-- `ModulesRoot` answers: what mutually exclusive in-room upgrades or variants does this room support?
+- `ModulesRoot` answers: what mutually exclusive in-room variants or module choices does this room support?
 - custom placement check answers: where is this room allowed to exist?
 
 If we want, the next step can be turning this into a stricter "new room template" with copy-paste starter files for indoor, outdoor, worker, and module-based rooms.

@@ -1,5 +1,7 @@
 extends Node
 
+const JOB_TRADING_OFFICE_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_trading_office_behaviour.gd")
+
 @onready var need_icon_drink = preload("res://assets/sprites/ui/icon_drink.png")
 @onready var need_icon_energy = preload("res://assets/sprites/ui/icon_energy.png")
 @onready var need_icon_hygene = preload("res://assets/sprites/ui/icon_hygene.png")
@@ -14,7 +16,8 @@ enum Items {
 	WATER_BUCKET,
 	WISKEY_BOX_RAW,
 	BROOM,
-	MONEY
+	MONEY,
+	CRATE,
 }
 
 enum Resources {
@@ -38,6 +41,7 @@ enum Jobs {
 	BROOM_CLEANER,
 	BOUNCER,
 	WATER_TOWER,
+	TRADING_OFFICE,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -86,6 +90,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.WATER_TOWER:
 			return JobWaterTowerBehaviour
+
+		Enum.Jobs.TRADING_OFFICE:
+			return JOB_TRADING_OFFICE_BEHAVIOUR
 
 enum ZLayer {
 	NPC_IN_OUTHOUSE = -620,

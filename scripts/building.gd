@@ -34,6 +34,7 @@ const room_data_broom_closet := preload("res://assets/resources/room_broom_close
 const room_data_bouncer := preload("res://assets/resources/room_bouncer.tres")
 const room_data_water_tower := preload("res://assets/resources/room_water_tower.tres")
 const room_data_gambling := preload("res://assets/resources/room_gambling.tres")
+const room_data_trading_office := preload("res://assets/resources/room_trading_office.tres")
 const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure_water_pipe.tres")
 
 func _ready():

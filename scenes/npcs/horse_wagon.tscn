@@ -1,35 +1,44 @@
-[gd_scene load_steps=6 format=3 uid="uid://j6mbibj7a54f"]
+[gd_scene load_steps=9 format=3 uid="uid://bxpnkoxnc4na4"]
 
 [ext_resource type="Script" uid="uid://cxagioa6s38sj" path="res://scripts/npc/horse_npc.gd" id="1_kqofp"]
+[ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="2_6mq4k"]
 [ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="2_ht87e"]
 [ext_resource type="Texture2D" uid="uid://cek3xggrtyogh" path="res://assets/sprites/wheel_back.png" id="3_6mq4k"]
-[ext_resource type="Texture2D" uid="uid://dxgyt1bhx6uw6" path="res://assets/sprites/wagon_with_cover.png" id="4_8tlfy"]
+[ext_resource type="Shader" uid="uid://cxxlpi848smjv" path="res://assets/shaders/outline_wagon_drive.gdshader" id="3_ht87e"]
 [ext_resource type="Texture2D" uid="uid://blsb5tgp3suxi" path="res://assets/sprites/wheel_front.png" id="5_fj4ol"]
+[ext_resource type="Texture2D" uid="uid://5370nunidfxu" path="res://assets/sprites/wagon.png" id="6_6mq4k"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8tlfy"]
+shader = ExtResource("3_ht87e")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/outline_size = 1.0
+shader_parameter/corner_pixel = false
+shader_parameter/back_wheel_texture = ExtResource("3_6mq4k")
+shader_parameter/front_wheel_texture = ExtResource("5_fj4ol")
+shader_parameter/back_wheel_texture_size = Vector2(12, 12)
+shader_parameter/front_wheel_texture_size = Vector2(12, 12)
+shader_parameter/back_left_wheel_center_px = Vector2(20.5, 30.5)
+shader_parameter/back_right_wheel_center_px = Vector2(39.5, 30.5)
+shader_parameter/front_left_wheel_center_px = Vector2(16.5, 30.5)
+shader_parameter/front_right_wheel_center_px = Vector2(35.5, 30.5)
+shader_parameter/left_wheel_cutout_px = Vector4(0, 0, 0, 0)
+shader_parameter/right_wheel_cutout_px = Vector4(0, 0, 0, 0)
+shader_parameter/wheel_spin_speed = 1.0
+shader_parameter/wheel_scale = 1.0
+shader_parameter/wheel_phase = 0.0
 
 [node name="Horse_Wagon" type="Node2D"]
+z_index = -500
 script = ExtResource("1_kqofp")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-z_index = -501
+[node name="Sprite2D_Horse" type="Sprite2D" parent="."]
+z_index = -1
+material = ExtResource("2_6mq4k")
 texture = ExtResource("2_ht87e")
 offset = Vector2(0, -9.5)
 
-[node name="WheelBack" type="Sprite2D" parent="."]
-position = Vector2(-22, -6)
-texture = ExtResource("3_6mq4k")
-
-[node name="WheelBack2" type="Sprite2D" parent="."]
-position = Vector2(-41, -6)
-texture = ExtResource("3_6mq4k")
-
-[node name="WagonWithCover" type="Sprite2D" parent="."]
-position = Vector2(-24, -18)
-texture = ExtResource("4_8tlfy")
-
-[node name="WheelFront" type="Sprite2D" parent="."]
-position = Vector2(-26, -6)
-texture = ExtResource("5_fj4ol")
-
-[node name="WheelFront2" type="Sprite2D" parent="."]
-position = Vector2(-45, -6)
-texture = ExtResource("5_fj4ol")
+[node name="Sprite2D_Wagon" type="Sprite2D" parent="."]
+z_index = 3
+material = SubResource("ShaderMaterial_8tlfy")
+position = Vector2(-27, -18.5)
+texture = ExtResource("6_6mq4k")

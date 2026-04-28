@@ -1,0 +1,75 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://scripts/npc/trader_wagon.gd" id="1_trader"]
+[ext_resource type="Material" path="res://assets/materials/mat_outline_outside_rooms.tres" id="2_horse_mat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/horse.png" id="3_horse"]
+[ext_resource type="Texture2D" path="res://assets/sprites/wheel_back.png" id="4_back_wheel"]
+[ext_resource type="Shader" path="res://assets/shaders/outline_wagon_drive.gdshader" id="5_shader"]
+[ext_resource type="Texture2D" path="res://assets/sprites/wheel_front.png" id="6_front_wheel"]
+[ext_resource type="Texture2D" path="res://assets/sprites/wagon.png" id="7_wagon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/item_crate.png" id="8_crate"]
+[ext_resource type="Shader" path="res://assets/shaders/npc_with_outline.gdshader" id="9_npc_shader"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cowboy_upper_bodies.png" id="10_upper_body"]
+[ext_resource type="Texture2D" path="res://assets/sprites/cowboy_raw_ride.png" id="11_ride"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trader_wagon"]
+shader = ExtResource("5_shader")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/outline_size = 1.0
+shader_parameter/corner_pixel = false
+shader_parameter/back_wheel_texture = ExtResource("4_back_wheel")
+shader_parameter/front_wheel_texture = ExtResource("6_front_wheel")
+shader_parameter/back_wheel_texture_size = Vector2(12, 12)
+shader_parameter/front_wheel_texture_size = Vector2(12, 12)
+shader_parameter/back_left_wheel_center_px = Vector2(20.5, 30.5)
+shader_parameter/back_right_wheel_center_px = Vector2(39.5, 30.5)
+shader_parameter/front_left_wheel_center_px = Vector2(16.5, 30.5)
+shader_parameter/front_right_wheel_center_px = Vector2(35.5, 30.5)
+shader_parameter/left_wheel_cutout_px = Vector4(0, 0, 0, 0)
+shader_parameter/right_wheel_cutout_px = Vector4(0, 0, 0, 0)
+shader_parameter/wheel_spin_speed = 1.0
+shader_parameter/wheel_scale = 1.0
+shader_parameter/wheel_phase = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trader_rider"]
+shader = ExtResource("9_npc_shader")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/sprite_sheet = ExtResource("10_upper_body")
+shader_parameter/sprite_index = Vector2i(0, 0)
+shader_parameter/cell_pixel_size = Vector2(24, 16)
+shader_parameter/base_hue_offset = Vector3(0.12, 0.68, 0.12)
+shader_parameter/use_apron = false
+
+[node name="Trader_Wagon" type="Node2D"]
+z_index = -500
+script = ExtResource("1_trader")
+
+[node name="Sprite2D_Horse" type="Sprite2D" parent="."]
+z_index = -1
+material = ExtResource("2_horse_mat")
+texture = ExtResource("3_horse")
+offset = Vector2(0, -9.5)
+
+[node name="Sprite2D_Wagon" type="Sprite2D" parent="."]
+z_index = 3
+material = SubResource("ShaderMaterial_trader_wagon")
+position = Vector2(-27, -18.5)
+texture = ExtResource("7_wagon")
+
+[node name="CrateBack" type="Sprite2D" parent="."]
+z_index = 0
+position = Vector2(-31, -24)
+texture = ExtResource("8_crate")
+
+[node name="CrateFront" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(-21, -21)
+texture = ExtResource("8_crate")
+
+[node name="TraderRider" type="Sprite2D" parent="."]
+z_index = 2
+material = SubResource("ShaderMaterial_trader_rider")
+position = Vector2(-26, -16)
+texture = ExtResource("11_ride")
+offset = Vector2(0, -8)

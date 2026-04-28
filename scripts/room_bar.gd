@@ -54,9 +54,6 @@ func fullfill_next_request():
 
 	var req = drink_requests[0]
 
-	if drink_type == Enum.Items.BEER_BARREL:
-		TutorialHandler.try_notify_sold_beer()
-
 	req.status = Enum.RequestStatus.FULFILLED
 	drink_requests.erase(req)
 

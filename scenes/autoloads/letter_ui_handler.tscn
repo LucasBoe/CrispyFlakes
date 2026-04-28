@@ -1,0 +1,101 @@
+[gd_scene load_steps=10 format=3 uid="uid://dm70rhtpvuxx8"]
+
+[ext_resource type="Script" uid="uid://q7duwwu5ttso" path="res://scripts/autoloads/letter_ui_handler.gd" id="1_letter"]
+[ext_resource type="Texture2D" uid="uid://cjpa8euoutxbl" path="res://assets/sprites/ui/2x/Letter_closed.png" id="2_letter"]
+[ext_resource type="Texture2D" uid="uid://p74vw3u8o4o5" path="res://assets/sprites/ui/2x/Letter_opened_background.png" id="3_letter"]
+[ext_resource type="Texture2D" uid="uid://bxntu24b74sx7" path="res://assets/sprites/ui/2x/Sheet.png" id="3_vkqu0"]
+[ext_resource type="Texture2D" uid="uid://cn2y2atm6ifa8" path="res://assets/sprites/ui/2x/Letter_opened_foreground.png" id="4_letter"]
+[ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="6_letter"]
+[ext_resource type="Shader" uid="uid://batcxl4nqfa1b" path="res://assets/shaders/outline_size.gdshader" id="7_v7af4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sheet"]
+shader = ExtResource("7_v7af4")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/outline_size = 3.0
+shader_parameter/corner_pixel = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_letter"]
+shader = ExtResource("7_v7af4")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/outline_size = 3.0
+shader_parameter/corner_pixel = true
+
+[node name="LetterUIHandler" type="CanvasLayer"]
+process_mode = 3
+layer = 100
+script = ExtResource("1_letter")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="LetterAnchor" type="Node2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="LetterHover" type="Node2D" parent="LetterAnchor"]
+
+[node name="LetterOpenedBg" type="Sprite2D" parent="LetterAnchor/LetterHover"]
+visible = false
+texture = ExtResource("3_letter")
+
+[node name="SheetWrapper" type="Node2D" parent="LetterAnchor/LetterHover"]
+
+[node name="Sheet" type="NinePatchRect" parent="LetterAnchor/LetterHover/SheetWrapper"]
+z_index = 1
+material = SubResource("ShaderMaterial_sheet")
+offset_right = 144.0
+offset_bottom = 96.0
+mouse_filter = 0
+texture = ExtResource("3_vkqu0")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
+
+[node name="MarginContainer" type="MarginContainer" parent="LetterAnchor/LetterHover/SheetWrapper/Sheet"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="SheetLabel" type="RichTextLabel" parent="LetterAnchor/LetterHover/SheetWrapper/Sheet/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.2522429, 0.06272319, 0.0046995706, 1)
+theme_override_fonts/normal_font = ExtResource("6_letter")
+theme_override_font_sizes/normal_font_size = 4
+bbcode_enabled = true
+text = "Dear Grandchild,
+
+If you are reading this, my trail has come to an end.
+
+I leave you my old saloon. She is dusty, loud, and half broken, but she has got spirit.
+
+Run her well. Pour fair, keep order, and make this place shine again.
+
+The West is yours now.
+Your Granddad"
+fit_content = true
+scroll_active = false
+vertical_alignment = 1
+
+[node name="LetterOpenedFg" type="Sprite2D" parent="LetterAnchor/LetterHover"]
+visible = false
+z_index = 2
+texture = ExtResource("4_letter")
+
+[node name="LetterClosed" type="Sprite2D" parent="LetterAnchor/LetterHover"]
+visible = false
+z_index = 3
+material = SubResource("ShaderMaterial_letter")
+texture = ExtResource("2_letter")
