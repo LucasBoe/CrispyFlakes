@@ -25,32 +25,32 @@ func _process(_delta: float) -> void:
 		BountyHandler.create_bounty(look, bounty)
 		
 	ProgressionHandler.unlock_default_rooms()
-
-	var skip_layer := CanvasLayer.new()
-	skip_layer.layer = 101
-	var skip_button := Button.new()
-	skip_button.text = "Skip Tutorial"
-	skip_button.anchor_left = 0.0
-	skip_button.anchor_top = 1.0
-	skip_button.anchor_right = 0.0
-	skip_button.anchor_bottom = 1.0
-	skip_button.offset_left = 8.0
-	skip_button.offset_top = -28.0
-	skip_button.offset_right = 100.0
-	skip_button.offset_bottom = -8.0
-	skip_button.pressed.connect(func():
-		TutorialHandler.skip_requested = true
-		LetterUIHandler.skip()
-		Global.UI.dialogue.finish_dialogue()
-		TutorialHandler.clear_tasks()
-	, CONNECT_ONE_SHOT)
-	skip_layer.add_child(skip_button)
-	add_child(skip_layer)
-
-	await LetterUIHandler.present()
-	await TutorialHandler.do_first_tutorial()
-
-	skip_layer.queue_free()
+#
+	#var skip_layer := CanvasLayer.new()
+	#skip_layer.layer = 101
+	#var skip_button := Button.new()
+	#skip_button.text = "Skip Tutorial"
+	#skip_button.anchor_left = 0.0
+	#skip_button.anchor_top = 1.0
+	#skip_button.anchor_right = 0.0
+	#skip_button.anchor_bottom = 1.0
+	#skip_button.offset_left = 8.0
+	#skip_button.offset_top = -28.0
+	#skip_button.offset_right = 100.0
+	#skip_button.offset_bottom = -8.0
+	#skip_button.pressed.connect(func():
+		#TutorialHandler.skip_requested = true
+		#LetterUIHandler.skip()
+		#Global.UI.dialogue.finish_dialogue()
+		#TutorialHandler.clear_tasks()
+	#, CONNECT_ONE_SHOT)
+	#skip_layer.add_child(skip_button)
+	#add_child(skip_layer)
+#
+	#await LetterUIHandler.present()
+	#await TutorialHandler.do_first_tutorial()
+#
+	#skip_layer.queue_free()
 
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true

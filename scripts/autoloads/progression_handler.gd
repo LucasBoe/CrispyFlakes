@@ -9,15 +9,17 @@ signal item_unlocked(item: ProgressionItem)
 @onready var table_room = preload("res://assets/resources/progression/prog_tables.tres")
 @onready var broom_room = preload("res://assets/resources/progression/prog_broom_room.tres")
 
-var _points: int = 10
+var _points: int = 0
+var _highest_guest_count_reached: int = 0
 var _unlocked_flags: Dictionary = {}
 var _unlocked_rooms: Array[RoomData] = []
 var _unlocked_items: Array[ProgressionItem] = []
 
+func _ready() -> void:
+	Global.NPCSpawner.spawned_guest_signal.connect(_on_spawned_guest)
+
 func unlock_default_rooms():
 	force_unlock(empty_room)
-	force_unlock(table_room)
-	force_unlock(broom_room)
 
 func force_unlock(item: ProgressionItem) -> void:
 	if is_item_unlocked(item):
@@ -66,3 +68,10 @@ func is_flag_set(flag: ProgressionItem.ProgressionFlag) -> bool:
 
 func is_room_unlocked(room: RoomData) -> bool:
 	return room in _unlocked_rooms
+
+func _on_spawned_guest(guest_count: int) -> void:
+	if guest_count <= _highest_guest_count_reached:
+		return
+
+	add_points(guest_count - _highest_guest_count_reached)
+	_highest_guest_count_reached = guest_count

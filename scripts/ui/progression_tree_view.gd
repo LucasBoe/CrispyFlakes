@@ -39,7 +39,7 @@ const ALL_ITEMS := [
 ]
 
 @onready var _content:        Control       = $MarginContainer/MarginContainer/VBoxContainer/PanCanvas/Content
-@onready var _sidebar:        Control       = $SidePanel
+@onready var _sidebar:        Control       = $MarginContainer/SidePanel
 @onready var _points_label:   RichTextLabel = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer/Label
 @onready var _points_btn:     NinePatchRect = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer/NinePatchRect
 
@@ -53,12 +53,16 @@ func _ready() -> void:
 	tree_layout.spawn_connectors(_content, CONNECTOR_DOWN, CONNECTOR_LEFT, CONNECTOR_RIGHT)
 	_connectors = tree_layout.connectors
 	_spawn_buttons()
+	_sidebar.z_index = 2
 	ProgressionHandler.points_changed.connect(_on_points_changed)
 	_on_points_changed(ProgressionHandler.get_points())
 
 func _on_points_changed(pts: int) -> void:
-	_points_label.text = "Points available: [color=#ff0055]%d[/color]" % pts
 	var has_points := pts > 0
+	if has_points:
+		_points_label.text = "Points available: [color=#ff0055]%d[/color]" % pts
+	else:
+		_points_label.text = "[color=#888888]Points available: 0[/color]"
 	_points_btn.texture = BTN_FILLED if has_points else BTN_EMPTY
 	(_points_btn.material as ShaderMaterial).set_shader_parameter("is_unlocked", has_points)
 

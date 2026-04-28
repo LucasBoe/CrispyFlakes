@@ -1,13 +1,17 @@
-[gd_scene load_steps=10 format=3 uid="uid://5cq8vewjg6nc"]
+[gd_scene load_steps=14 format=3 uid="uid://5cq8vewjg6nc"]
 
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="1_7tuwu"]
-[ext_resource type="Script" path="res://scripts/ui/ui_pan_canvas.gd" id="2_pancv"]
-[ext_resource type="Script" path="res://scripts/ui/progression_tree_view.gd" id="3_layout"]
+[ext_resource type="Script" uid="uid://c880icutpyv75" path="res://scripts/ui/ui_pan_canvas.gd" id="2_pancv"]
+[ext_resource type="Script" uid="uid://bdyilld1m1yth" path="res://scripts/ui/progression_tree_view.gd" id="3_layout"]
 [ext_resource type="Shader" path="res://assets/shaders/progression_state.gdshader" id="3_ly0o3"]
 [ext_resource type="Texture2D" uid="uid://13fb4slbkmvw" path="res://assets/sprites/ui/2x/tree_filled_button.png" id="3_wxl5x"]
-[ext_resource type="PackedScene" uid="uid://cxmwbe18bacqa" path="res://scenes/ui/progression_item_button.tscn" id="4_btn"]
-[ext_resource type="Script" path="res://scripts/ui/progression_sidebar.gd" id="5_side"]
+[ext_resource type="Script" uid="uid://dcre7i7a7ws1g" path="res://scripts/ui/progression_sidebar.gd" id="5_side"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="6_theme"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="8_vbm7x"]
+[ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="9_fwnd1"]
+[ext_resource type="Texture2D" uid="uid://dowrpukem0x38" path="res://assets/sprites/ui/2x/tree_cost_rect_frame.png" id="9_rck2a"]
+[ext_resource type="Script" uid="uid://dxmton66x401y" path="res://scripts/ui/content_sized_button.gd" id="10_size_btn"]
+[ext_resource type="Script" uid="uid://8hfkx4li5sky" path="res://scripts/ui/room_recipe_display.gd" id="recipe_display"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fwnd1"]
 shader = ExtResource("3_ly0o3")
@@ -31,6 +35,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 8
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
 layout_mode = 2
@@ -71,12 +79,12 @@ theme_override_constants/margin_right = 6
 theme_override_constants/margin_bottom = 3
 
 [node name="Label" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer"]
-custom_minimum_size = Vector2(116, 0)
+custom_minimum_size = Vector2(148, 0)
 layout_mode = 2
 theme = ExtResource("6_theme")
 theme_override_colors/default_color = Color(0.13725491, 0.1254902, 0.12941177, 1)
 bbcode_enabled = true
-text = "Points: [color=#ff0055]0[/color]"
+text = "[color=#888888]Points available: 0[/color]"
 fit_content = true
 
 [node name="PanCanvas" type="Control" parent="MarginContainer/MarginContainer/VBoxContainer"]
@@ -90,103 +98,138 @@ script = ExtResource("2_pancv")
 layout_mode = 1
 anchors_preset = 0
 
-[node name="DummyButton" parent="MarginContainer/MarginContainer/VBoxContainer/PanCanvas/Content" instance=ExtResource("4_btn")]
-layout_mode = 0
-offset_right = 64.0
-offset_bottom = 56.0
-
-[node name="SidePanel" type="Control" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -216.0
-offset_top = 16.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 0
-grow_vertical = 2
+[node name="SidePanel" type="MarginContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 script = ExtResource("5_side")
 
-[node name="BG" type="NinePatchRect" parent="SidePanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="BG" type="NinePatchRect" parent="MarginContainer/SidePanel"]
+layout_mode = 2
 texture = ExtResource("1_7tuwu")
 patch_margin_left = 8
 patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
-[node name="Margin" type="MarginContainer" parent="SidePanel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Margin" type="MarginContainer" parent="MarginContainer/SidePanel"]
+layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 12
 theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="SidePanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="MarginContainer/SidePanel/Margin"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 
-[node name="ItemIcon" type="TextureRect" parent="SidePanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 64)
+[node name="ItemName" type="Label" parent="MarginContainer/SidePanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
-size_flags_horizontal = 3
-expand_mode = 1
-stretch_mode = 5
+theme = ExtResource("6_theme")
+theme_override_fonts/font = ExtResource("8_vbm7x")
+theme_override_font_sizes/font_size = 8
+text = "This is an Upgrade"
+horizontal_alignment = 1
+vertical_alignment = 2
 
-[node name="ItemName" type="Label" parent="SidePanel/Margin/VBox"]
+[node name="ItemCost" type="Label" parent="MarginContainer/SidePanel/Margin/VBox"]
+visible = false
 layout_mode = 2
 theme = ExtResource("6_theme")
 horizontal_alignment = 1
 
-[node name="ItemCost" type="Label" parent="SidePanel/Margin/VBox"]
-layout_mode = 2
-theme = ExtResource("6_theme")
-horizontal_alignment = 1
-
-[node name="HSeparator" type="HSeparator" parent="SidePanel/Margin/VBox"]
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/SidePanel/Margin/VBox"]
 layout_mode = 2
 
-[node name="RoomSection" type="VBoxContainer" parent="SidePanel/Margin/VBox"]
+[node name="RoomSection" type="VBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="RoomPreview" type="TextureRect" parent="SidePanel/Margin/VBox/RoomSection"]
+[node name="RoomPreview" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection"]
 custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 size_flags_horizontal = 3
 expand_mode = 1
 stretch_mode = 5
 
-[node name="RoomName" type="Label" parent="SidePanel/Margin/VBox/RoomSection"]
+[node name="RoomName" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection"]
 layout_mode = 2
 theme = ExtResource("6_theme")
 horizontal_alignment = 1
 
-[node name="RoomDesc" type="Label" parent="SidePanel/Margin/VBox/RoomSection"]
+[node name="RoomDesc" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection"]
 layout_mode = 2
 theme = ExtResource("6_theme")
 autowrap_mode = 2
 
-[node name="Spacer" type="Control" parent="SidePanel/Margin/VBox"]
+[node name="RoomRecipeDisplay" type="HBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection"]
+layout_mode = 2
+theme_override_constants/separation = 2
+script = ExtResource("recipe_display")
+
+[node name="ConsumedIcon" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection/RoomRecipeDisplay"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="ArrowLabel" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection/RoomRecipeDisplay"]
 layout_mode = 2
 size_flags_vertical = 3
-
-[node name="BuyButton" type="Button" parent="SidePanel/Margin/VBox"]
-layout_mode = 2
 theme = ExtResource("6_theme")
+text = ">"
+vertical_alignment = 1
+
+[node name="ProducedIcon" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomSection/RoomRecipeDisplay"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="BuyButton" type="Button" parent="MarginContainer/SidePanel/Margin/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme = ExtResource("6_theme")
+theme_override_colors/font_color = Color(1, 0, 0.333333, 1)
+theme_override_colors/font_hover_color = Color(1, 0.2, 0.5, 1)
+script = ExtResource("10_size_btn")
+content_path = NodePath("MarginContainer")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/SidePanel/Margin/VBox/BuyButton"]
+layout_mode = 0
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/SidePanel/Margin/VBox/BuyButton/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("9_rck2a")
+draw_center = false
+patch_margin_left = 1
+patch_margin_top = 1
+patch_margin_right = 1
+patch_margin_bottom = 1
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/SidePanel/Margin/VBox/BuyButton/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 2
+
+[node name="Label" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/BuyButton/MarginContainer/MarginContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0.33333334, 1)
+theme_override_fonts/font = ExtResource("9_fwnd1")
+theme_override_font_sizes/font_size = 16
 text = "Buy"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -7,6 +7,10 @@ var _drag_start_pos := Vector2.ZERO
 
 @onready var content: Control = $Content
 
+func _ready() -> void:
+	content.position.x = 100.0
+	content.position.y = 100.0
+
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		_dragging = event.pressed

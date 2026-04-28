@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/room_recipe_display.gd" id="1_recipe"]
+
+[node name="RoomRecipeDisplay" type="HBoxContainer"]
+theme_override_constants/separation = 2
+script = ExtResource("1_recipe")
+
+[node name="ConsumedIcon" type="TextureRect" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 16)
+stretch_mode = 5
+
+[node name="ArrowLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+text = ">"
+vertical_alignment = 1
+
+[node name="ProducedIcon" type="TextureRect" parent="."]
+layout_mode = 2
+custom_minimum_size = Vector2(16, 16)
+stretch_mode = 5
