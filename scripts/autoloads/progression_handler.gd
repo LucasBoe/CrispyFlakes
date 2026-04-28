@@ -1,0 +1,68 @@
+extends Node
+
+signal flag_unlocked(flag: ProgressionItem.ProgressionFlag)
+signal room_unlocked(room: RoomData)
+signal points_changed(new_total: int)
+signal item_unlocked(item: ProgressionItem)
+
+@onready var empty_room = preload("res://assets/resources/progression/prog_empty_room.tres")
+@onready var table_room = preload("res://assets/resources/progression/prog_tables.tres")
+@onready var broom_room = preload("res://assets/resources/progression/prog_broom_room.tres")
+
+var _points: int = 10
+var _unlocked_flags: Dictionary = {}
+var _unlocked_rooms: Array[RoomData] = []
+var _unlocked_items: Array[ProgressionItem] = []
+
+func unlock_default_rooms():
+	force_unlock(empty_room)
+	force_unlock(table_room)
+	force_unlock(broom_room)
+
+func force_unlock(item: ProgressionItem) -> void:
+	if is_item_unlocked(item):
+		return
+	if item.unlocks_flag != ProgressionItem.ProgressionFlag.NONE:
+		_unlocked_flags[item.unlocks_flag] = true
+		flag_unlocked.emit(item.unlocks_flag)
+	if item.unlocks_room != null:
+		_unlocked_rooms.append(item.unlocks_room)
+		room_unlocked.emit(item.unlocks_room)
+	_unlocked_items.append(item)
+	item_unlocked.emit(item)
+
+func add_points(amount: int) -> void:
+	_points += amount
+	points_changed.emit(_points)
+
+func get_points() -> int:
+	return _points
+
+func is_item_unlocked(item: ProgressionItem) -> bool:
+	return item in _unlocked_items
+
+func try_unlock(item: ProgressionItem) -> bool:
+	if _points < item.cost:
+		return false
+	if item.depends_on != null and not is_item_unlocked(item.depends_on):
+		return false
+	_points -= item.cost
+	points_changed.emit(_points)
+
+	if item.unlocks_flag != ProgressionItem.ProgressionFlag.NONE:
+		_unlocked_flags[item.unlocks_flag] = true
+		flag_unlocked.emit(item.unlocks_flag)
+
+	if item.unlocks_room != null:
+		_unlocked_rooms.append(item.unlocks_room)
+		room_unlocked.emit(item.unlocks_room)
+
+	_unlocked_items.append(item)
+	item_unlocked.emit(item)
+	return true
+
+func is_flag_set(flag: ProgressionItem.ProgressionFlag) -> bool:
+	return _unlocked_flags.get(flag, false)
+
+func is_room_unlocked(room: RoomData) -> bool:
+	return room in _unlocked_rooms

@@ -25,11 +25,11 @@ var _sheet_mat: ShaderMaterial
 const LETTER_CENTER: Vector2 = Vector2(640.0, 360.0)
 const LETTER_ENTER_FROM_Y: float = 1080.0
 
-const SHEET_INITIAL_SIZE: Vector2 = Vector2(144.0, 96.0)
+const SHEET_INITIAL_SIZE: Vector2 = Vector2(256.0, 192.0)
 const SHEET_FULL_SIZE: Vector2 = Vector2(400.0, 300.0)
-const SHEET_WRAPPER_HIDDEN: Vector2 = Vector2(-72.0, 36.0)
-const SHEET_WRAPPER_PEEK: Vector2 = Vector2(-72.0, -10.0)
-const SHEET_WRAPPER_HOVER_PEEK: Vector2 = Vector2(-72.0, -28.0)
+const SHEET_WRAPPER_HIDDEN: Vector2 = Vector2(-128.0, -32.0)
+const SHEET_WRAPPER_PEEK: Vector2 = Vector2(-128.0, -48.0)
+const SHEET_WRAPPER_HOVER_PEEK: Vector2 = Vector2(-128.0, -64.0)
 const SHEET_WRAPPER_FULL: Vector2 = Vector2(-200.0, -150.0)
 
 const HOVER_AMPLITUDE: float = 8.0
@@ -76,7 +76,7 @@ func _reset_nodes() -> void:
 	_sheet_wrapper.position = SHEET_WRAPPER_HIDDEN
 	_sheet.size = SHEET_INITIAL_SIZE
 	_sheet.visible = false
-	_sheet_label.add_theme_font_size_override("normal_font_size", 4)
+	_sheet_label.add_theme_font_size_override("normal_font_size", 9)
 	_letter_hovered = false
 	_sheet_hovered = false
 	_letter_mat.set_shader_parameter("outline_color", Color.BLACK)

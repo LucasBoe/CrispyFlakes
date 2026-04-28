@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dm70rhtpvuxx8"]
+[gd_scene load_steps=10 format=3 uid="uid://bdktuc385xt8y"]
 
 [ext_resource type="Script" uid="uid://q7duwwu5ttso" path="res://scripts/autoloads/letter_ui_handler.gd" id="1_letter"]
 [ext_resource type="Texture2D" uid="uid://cjpa8euoutxbl" path="res://assets/sprites/ui/2x/Letter_closed.png" id="2_letter"]
@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bxntu24b74sx7" path="res://assets/sprites/ui/2x/Sheet.png" id="3_vkqu0"]
 [ext_resource type="Texture2D" uid="uid://cn2y2atm6ifa8" path="res://assets/sprites/ui/2x/Letter_opened_foreground.png" id="4_letter"]
 [ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="6_letter"]
-[ext_resource type="Shader" uid="uid://batcxl4nqfa1b" path="res://assets/shaders/outline_size.gdshader" id="7_v7af4"]
+[ext_resource type="Shader" path="res://assets/shaders/outline_size.gdshader" id="7_v7af4"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sheet"]
 shader = ExtResource("7_v7af4")

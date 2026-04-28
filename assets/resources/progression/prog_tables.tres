@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3 uid="uid://c6fm2cs0pfqlu"]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cq2uf15slgvuo" path="res://assets/resources/rooms/room_table.tres" id="2_room"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_empty_room.tres" id="3_dep"]
+[ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="4_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("4_sprite")
+display_name = "Tables"
+cost = 1
+unlocks_room = ExtResource("2_room")
+depends_on = ExtResource("3_dep")

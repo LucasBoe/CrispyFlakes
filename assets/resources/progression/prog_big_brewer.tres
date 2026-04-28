@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_brewery.tres" id="2_dep"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Big Brewer"
+cost = 2
+unlocks_flag = 2
+depends_on = ExtResource("2_dep")

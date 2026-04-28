@@ -127,7 +127,7 @@ Examples:
 Pattern:
 
 ```gdscript
-const room_data_example := preload("res://assets/resources/room_example.tres")
+const room_data_example := preload("res://assets/resources/rooms/room_example.tres")
 ```
 
 Why this matters:

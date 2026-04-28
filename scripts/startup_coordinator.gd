@@ -23,8 +23,11 @@ func _process(_delta: float) -> void:
 		var look = NPCLookInfo.new_random()
 		var bounty: int = randi_range(1, 5) * 10
 		BountyHandler.create_bounty(look, bounty)
+		
+	ProgressionHandler.unlock_default_rooms()
 
 	var skip_layer := CanvasLayer.new()
+	skip_layer.layer = 101
 	var skip_button := Button.new()
 	skip_button.text = "Skip Tutorial"
 	skip_button.anchor_left = 0.0

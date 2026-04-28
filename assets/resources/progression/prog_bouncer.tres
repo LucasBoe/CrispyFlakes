@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3 uid="uid://saafjdujb2xj"]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bci7lea6r4qhu" path="res://assets/resources/rooms/room_bouncer.tres" id="2_room"]
+[ext_resource type="Resource" uid="uid://rujb3up4j356" path="res://assets/resources/progression/prog_entertainment.tres" id="3_dep"]
+[ext_resource type="Texture2D" uid="uid://10n1oy8dghal" path="res://assets/sprites/ui/room_bouncer_preview.png" id="4_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("4_sprite")
+display_name = "Bouncer"
+cost = 2
+unlocks_room = ExtResource("2_room")
+depends_on = ExtResource("3_dep")
