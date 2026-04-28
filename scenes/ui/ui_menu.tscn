@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=33 format=3 uid="uid://848oy1tnfobv"]
 
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
@@ -21,6 +21,7 @@
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://dnonetdv2nbtg" path="res://assets/sprites/ui/2x/arrow_up_icon.png" id="28_got3c"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
+[ext_resource type="Texture2D" uid="uid://couksfqnx40ce" path="res://assets/sprites/ui/2x/progression_button_glow_overlay.png" id="30_7bf1p"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
 [ext_resource type="Texture2D" uid="uid://boj3ubhrup0n1" path="res://assets/sprites/ui/icon_structure.png" id="48_mejnj"]
@@ -29,6 +30,13 @@
 [ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
 [ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="56_prog"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_progression_menu_glow"]
+shader = ExtResource("56_prog")
+shader_parameter/wave_color = Color(1, 0, 0, 1)
+shader_parameter/is_unlocked = false
+shader_parameter/is_active = false
 
 [node name="UIMenu" type="Control"]
 layout_mode = 3
@@ -544,6 +552,25 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 icon = ExtResource("28_got3c")
 icon_alignment = 1
+
+[node name="GlowIcon" type="TextureRect" parent="HBoxContainer/Button_Progression"]
+visible = false
+material = SubResource("ShaderMaterial_progression_menu_glow")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 6.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("30_7bf1p")
+stretch_mode = 6
 
 [node name="Button_Settings" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(32, 32)

@@ -40,6 +40,7 @@ const ALL_ITEMS := [
 
 @onready var _content:        Control       = $MarginContainer/MarginContainer/VBoxContainer/PanCanvas/Content
 @onready var _sidebar:        Control       = $MarginContainer/SidePanel
+@onready var _close_button:   Button        = %CloseButton
 @onready var _points_label:   RichTextLabel = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer/Label
 @onready var _points_btn:     NinePatchRect = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer/NinePatchRect
 
@@ -54,6 +55,7 @@ func _ready() -> void:
 	_connectors = tree_layout.connectors
 	_spawn_buttons()
 	_sidebar.z_index = 2
+	_close_button.pressed.connect(hide)
 	ProgressionHandler.points_changed.connect(_on_points_changed)
 	_on_points_changed(ProgressionHandler.get_points())
 

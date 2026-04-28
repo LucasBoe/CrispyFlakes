@@ -1,8 +1,6 @@
 extends Control
 class_name MenuUIHandler
 
-const PROGRESSION_STATE_SHADER := preload("res://assets/shaders/progression_state.gdshader")
-
 @onready var worker_tab = $MarginContainer/UIWorkers
 @onready var build_tab = $MarginContainer/UIBuild
 @onready var settings_tab = $MarginContainer/UISettings
@@ -12,12 +10,12 @@ const PROGRESSION_STATE_SHADER := preload("res://assets/shaders/progression_stat
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
 @onready var progression_button = $HBoxContainer/Button_Progression
+@onready var _progression_glow_icon: TextureRect = $HBoxContainer/Button_Progression/GlowIcon
 @onready var notification_dot = $HBoxContainer/Button_Build/Notification_Dot
 
 var visible_tab = null
 var all_tabs : Array
 var blink_tween : Tween
-var _progression_glow_icon: TextureRect
 var _progression_glow_material: ShaderMaterial
 
 const DOT_DEFAULT = preload("res://assets/sprites/ui/notification_dot_default.png")
@@ -35,7 +33,7 @@ func _ready():
 	build_button.mouse_entered.connect(_on_build_button_hover_enter)
 	build_button.mouse_exited.connect(_on_build_button_hover_exit)
 
-	_setup_progression_button_glow()
+	_progression_glow_material = _progression_glow_icon.material as ShaderMaterial
 	ProgressionHandler.points_changed.connect(_on_progression_points_changed)
 	progression_button.mouse_entered.connect(_refresh_progression_button_glow)
 	progression_button.mouse_exited.connect(_refresh_progression_button_glow)
@@ -89,23 +87,6 @@ func _hide_notification_dot():
 	notification_dot.modulate.a = 1.0
 	notification_dot.visible = false
 	notification_dot.texture = DOT_DEFAULT
-
-func _setup_progression_button_glow() -> void:
-	_progression_glow_icon = TextureRect.new()
-	_progression_glow_icon.name = "GlowIcon"
-	_progression_glow_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_progression_glow_icon.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_progression_glow_icon.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_progression_glow_icon.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_progression_glow_icon.texture = progression_button.icon
-	_progression_glow_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-	_progression_glow_icon.visible = false
-
-	_progression_glow_material = ShaderMaterial.new()
-	_progression_glow_material.shader = PROGRESSION_STATE_SHADER
-	_progression_glow_icon.material = _progression_glow_material
-
-	progression_button.add_child(_progression_glow_icon)
 
 func _on_progression_points_changed(_points: int) -> void:
 	_refresh_progression_button_glow()

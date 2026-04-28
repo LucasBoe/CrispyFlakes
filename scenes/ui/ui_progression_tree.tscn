@@ -1,9 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://5cq8vewjg6nc"]
+[gd_scene load_steps=16 format=3 uid="uid://5cq8vewjg6nc"]
 
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="1_7tuwu"]
 [ext_resource type="Script" uid="uid://c880icutpyv75" path="res://scripts/ui/ui_pan_canvas.gd" id="2_pancv"]
 [ext_resource type="Script" uid="uid://bdyilld1m1yth" path="res://scripts/ui/progression_tree_view.gd" id="3_layout"]
-[ext_resource type="Shader" path="res://assets/shaders/progression_state.gdshader" id="3_ly0o3"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="3_ly0o3"]
 [ext_resource type="Texture2D" uid="uid://13fb4slbkmvw" path="res://assets/sprites/ui/2x/tree_filled_button.png" id="3_wxl5x"]
 [ext_resource type="Script" uid="uid://dcre7i7a7ws1g" path="res://scripts/ui/progression_sidebar.gd" id="5_side"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="6_theme"]
@@ -11,6 +11,7 @@
 [ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="9_fwnd1"]
 [ext_resource type="Texture2D" uid="uid://dowrpukem0x38" path="res://assets/sprites/ui/2x/tree_cost_rect_frame.png" id="9_rck2a"]
 [ext_resource type="Script" uid="uid://dxmton66x401y" path="res://scripts/ui/content_sized_button.gd" id="10_size_btn"]
+[ext_resource type="Texture2D" uid="uid://cc25qv8cwb5cw" path="res://assets/sprites/ui/x_8x8.png" id="11_close"]
 [ext_resource type="Script" uid="uid://8hfkx4li5sky" path="res://scripts/ui/room_recipe_display.gd" id="recipe_display"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fwnd1"]
@@ -19,6 +20,8 @@ shader_parameter/wave_color = Color(1, 0, 0, 1)
 shader_parameter/is_unlocked = false
 shader_parameter/is_active = false
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_close"]
+
 [node name="UIProgressionTree" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -26,6 +29,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("3_layout")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -57,6 +61,13 @@ theme_override_constants/margin_bottom = 8
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
+
+[node name="HeaderRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="MarginContainer/MarginContainer/VBoxContainer/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -233,3 +244,23 @@ theme_override_font_sizes/font_size = 16
 text = "Buy"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="MarginContainer_Close" type="MarginContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+
+[node name="CloseButton" type="Button" parent="MarginContainer/MarginContainer_Close"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_close")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_close")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_close")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_close")
+icon = ExtResource("11_close")
+expand_icon = true
