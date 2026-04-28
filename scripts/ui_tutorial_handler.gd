@@ -14,7 +14,7 @@ const NAV_SMALL_FILLED = preload("res://assets/sprites/ui/2x/Tutorial_nav_small_
 const NAV_SMALL_OUTLINE = preload("res://assets/sprites/ui/2x/Tutorial_nav_small_outline.png")
 
 @onready var header_container = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header
-@onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/CenterContainer/Label
+@onready var header_label = %Title
 @onready var divider_top = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Divider
 @onready var steps_container = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step
 @onready var step_dummy = $MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer
@@ -23,6 +23,7 @@ const NAV_SMALL_OUTLINE = preload("res://assets/sprites/ui/2x/Tutorial_nav_small
 @onready var big_pill_dummy = $MarginContainer/MarginContainer/VBoxContainer/TutorialNavBig/HBoxContainer/PillDummy
 @onready var navbar_small = $MarginContainer/MarginContainer/VBoxContainer/TutorialNavSmall
 @onready var small_pill_dummy = $MarginContainer/MarginContainer/VBoxContainer/TutorialNavSmall/HBoxContainer/PillDummy
+@onready var foldout_button = %ButtonFoldout
 
 var step_instances = []
 var big_pills = []
@@ -78,7 +79,6 @@ func _rebuild_steps(visible_tasks: Array) -> void:
 		row.show()
 		wrapper.add_child(row)
 
-		var foldout_button := row.get_node("ButtonFoldout") as Button
 		var label := row.get_node("Label") as Label
 		var icon := row.get_node("TextureRect") as TextureRect
 

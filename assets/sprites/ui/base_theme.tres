@@ -1,6 +1,5 @@
-[gd_resource type="Theme" load_steps=20 format=3 uid="uid://cqa0uge758fkj"]
+[gd_resource type="Theme" load_steps=19 format=3 uid="uid://cqa0uge758fkj"]
 
-[ext_resource type="FontFile" uid="uid://7am1h57ldd6" path="res://examples_dd3d/PixelatedElegance.ttf" id="1_5wple"]
 [ext_resource type="Texture2D" uid="uid://ti7l0mjtd7hl" path="res://assets/sprites/ui/2x/button-sheet.png" id="2_trfhs"]
 [ext_resource type="FontFile" uid="uid://bl72taieefbw1" path="res://assets/fonts/Cubix.ttf" id="3_trfhs"]
 
@@ -102,8 +101,8 @@ Button/colors/icon_focus_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
 Button/colors/icon_hover_color = Color(1, 1, 1, 1)
 Button/colors/icon_normal_color = Color(0.77254903, 0.77254903, 0.77254903, 1)
 Button/constants/h_separation = 4
-Button/font_sizes/font_size = 9
-Button/fonts/font = ExtResource("1_5wple")
+Button/font_sizes/font_size = 11
+Button/fonts/font = ExtResource("3_trfhs")
 Button/styles/disabled = SubResource("StyleBoxTexture_1wyd7")
 Button/styles/disabled_mirrored = SubResource("StyleBoxEmpty_5wple")
 Button/styles/focus = SubResource("StyleBoxEmpty_28jni")

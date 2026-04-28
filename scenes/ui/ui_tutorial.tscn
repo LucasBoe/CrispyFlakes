@@ -1,13 +1,12 @@
-[gd_scene load_steps=17 format=3 uid="uid://rge7opbckgs4"]
+[gd_scene load_steps=16 format=3 uid="uid://rge7opbckgs4"]
 
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="1_26idi"]
-[ext_resource type="Texture2D" uid="uid://bqa8es1t5d77p" path="res://assets/sprites/ui/ui_circle_16.png" id="2_26idi"]
+[ext_resource type="Texture2D" uid="uid://bg7qwhqk3njmo" path="res://assets/sprites/ui/2x/panel_background.png" id="2_gsoht"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_05kn2"]
-[ext_resource type="FontFile" uid="uid://dwbhc72qylw8u" path="res://assets/fonts/WesternSwaggerDEMO.ttf" id="4_g7q1u"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_q0ngo"]
 [ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="6_q0ngo"]
 [ext_resource type="Texture2D" uid="uid://canefkwiuq73v" path="res://assets/sprites/ui/2x/Arrow_11px_down.png" id="7_05kn2"]
 [ext_resource type="Texture2D" uid="uid://bp3ehdg44n4s" path="res://assets/sprites/ui/2x/divider.png" id="7_g7q1u"]
-[ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="8_eqv5l"]
 [ext_resource type="Texture2D" uid="uid://b577csuxdgity" path="res://assets/sprites/ui/2x/Tutorial_nav_small_outline.png" id="10_gsoht"]
 [ext_resource type="Texture2D" uid="uid://cca1fpjpbgwwv" path="res://assets/sprites/ui/2x/Tutorial_nav_big_checkmark.png" id="10_q0ngo"]
 
@@ -34,6 +33,7 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -41,22 +41,21 @@ script = ExtResource("1_26idi")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 218.0
+offset_bottom = 211.0
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 96
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
-modulate = Color(0, 0, 0, 0.627451)
+self_modulate = Color(1, 1, 1, 0.78431374)
 layout_mode = 2
-texture = ExtResource("2_26idi")
+texture = ExtResource("2_gsoht")
 patch_margin_left = 8
 patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
-custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 theme_override_constants/margin_left = 12
 theme_override_constants/margin_top = 12
@@ -70,16 +69,25 @@ theme_override_constants/separation = 0
 [node name="MarginContainer_Header" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header"]
-custom_minimum_size = Vector2(0, 14)
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/CenterContainer"]
+[node name="ButtonFoldout" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+theme = SubResource("Theme_uhm2g")
+
+[node name="Title" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 theme = ExtResource("3_05kn2")
-theme_override_fonts/font = ExtResource("4_g7q1u")
-theme_override_font_sizes/font_size = 24
-text = "A new Beginning"
+theme_override_fonts/font = ExtResource("4_q0ngo")
+theme_override_font_sizes/font_size = 8
+text = "A NEW BEGINNING"
+horizontal_alignment = 1
+vertical_alignment = 2
 
 [node name="MarginContainer_Divider" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -98,24 +106,16 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step"]
 layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="ButtonFoldout" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
-custom_minimum_size = Vector2(11, 11)
-layout_mode = 2
-theme = SubResource("Theme_uhm2g")
-
-[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
-layout_mode = 2
-theme = ExtResource("3_05kn2")
-theme_override_fonts/font = ExtResource("8_eqv5l")
-theme_override_font_sizes/font_size = 16
-text = "Assign a worker to the bar"
 
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
 layout_mode = 2
 texture = ExtResource("6_q0ngo")
 stretch_mode = 3
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("3_05kn2")
+text = "Assign a worker to t"
 
 [node name="MarginContainer_Divider2" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

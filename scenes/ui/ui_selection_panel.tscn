@@ -1,6 +1,7 @@
-[gd_scene load_steps=30 format=3 uid="uid://d06nvgemi5ivv"]
+[gd_scene load_steps=32 format=3 uid="uid://d06nvgemi5ivv"]
 
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="3_qtqix"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="5_qtqix"]
 [ext_resource type="Texture2D" uid="uid://bfeiyyg0t6k4v" path="res://assets/sprites/ui/2x/ui_rect_base_open_left.png" id="7_jtsrp"]
 [ext_resource type="Texture2D" uid="uid://b01gv73kbgmqf" path="res://assets/sprites/ui/2x/module_inactive.png" id="8_jtsrp"]
 [ext_resource type="Texture2D" uid="uid://1jfwilqc3pm7" path="res://assets/sprites/ui/2x/module_active.png" id="9_qtqix"]
@@ -21,7 +22,7 @@
 [ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="70_prisui"]
 [ext_resource type="Texture2D" uid="uid://v7r04bop5lty" path="res://assets/sprites/ui/handel_8x8.png" id="71_filter"]
 [ext_resource type="Texture2D" uid="uid://cc25qv8cwb5cw" path="res://assets/sprites/ui/x_8x8.png" id="72_filter"]
-[ext_resource type="Script" path="res://scripts/ui/selection_trading_office_ui.gd" id="73_trade_ui"]
+[ext_resource type="Script" uid="uid://dvvxs1qlwko5d" path="res://scripts/ui/selection_trading_office_ui.gd" id="73_trade_ui"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3ou18"]
 
@@ -47,6 +48,7 @@ shader_parameter/sprite_index = Vector2i(361, 142)
 shader_parameter/cell_pixel_size = Vector2(24, 16)
 shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
 shader_parameter/use_apron = false
+shader_parameter/use_gun = false
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pris"]
 bg_color = Color(1, 0.89411765, 0.19607843, 1)
@@ -126,11 +128,15 @@ mouse_filter = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/HeaderRow"]
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("29_1f2rr")
-text = "NPC"
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("5_qtqix")
+theme_override_font_sizes/font_size = 8
+text = "Small PP Lucas"
 horizontal_alignment = 1
+vertical_alignment = 2
 
 [node name="CloseButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/HeaderRow"]
 custom_minimum_size = Vector2(12, 12)
@@ -234,11 +240,13 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 
 [node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-theme_override_fonts/font = ExtResource("29_1f2rr")
-theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("5_qtqix")
+theme_override_font_sizes/font_size = 8
 text = "Name"
+vertical_alignment = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/Control/MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(128, 0)
