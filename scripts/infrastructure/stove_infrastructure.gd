@@ -89,7 +89,13 @@ func set_selected(state: bool) -> void:
 func _apply_outline() -> void:
 	if _sprite.material is not ShaderMaterial:
 		return
-	var outline_color := Color.WHITE if _hovered or _selected else Color.BLACK
+	var outline_color: Color
+	if _hovered and NPCWorker.picked_up_npc != null:
+		outline_color = Color.GREEN
+	elif _hovered or _selected:
+		outline_color = Color.WHITE
+	else:
+		outline_color = Color.BLACK
 	(_sprite.material as ShaderMaterial).set_shader_parameter("outline_color", outline_color)
 
 func refuel() -> void:

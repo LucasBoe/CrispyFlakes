@@ -22,12 +22,15 @@ func _process(_delta):
 	var precise: Array = []
 	var buffer: Array = []
 	var stoves: Array = []
+	var picked_up = NPCWorker.picked_up_npc
 	for hit in hits:
 		var collider = hit.collider
 		if collider is NPC:
-			buffer.append(collider)
+			if collider != picked_up:
+				buffer.append(collider)
 		elif collider.name == "PreciseHover" and collider.get_parent() is NPC:
-			precise.append(collider.get_parent())
+			if collider.get_parent() != picked_up:
+				precise.append(collider.get_parent())
 		elif collider is Area2D and collider.get_parent() != null and collider.get_parent().get_script() == STOVE_INFRASTRUCTURE_SCRIPT:
 			stoves.append(collider.get_parent())
 
