@@ -18,6 +18,7 @@ enum Items {
 	BROOM,
 	MONEY,
 	CRATE,
+	WOOD,
 }
 
 enum Resources {
