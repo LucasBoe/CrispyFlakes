@@ -6,7 +6,7 @@ class_name UISelectionRoomModules
 @onready var details_window_describtion = $Control/MarginContainer/MarginContainer/VBoxContainer/RichTextLabel
 @onready var details_window_button = $Control/MarginContainer/MarginContainer/VBoxContainer/Button
 
-@onready var branch_dummy = $HBoxContainer/VBoxContainer
+@onready var branch_dummy = $MarginContainer/HBoxContainer/VBoxContainer
 # child 0 is button: child 1 is connector
 # for each new module, duplicate both until last, there no connector is needed
 

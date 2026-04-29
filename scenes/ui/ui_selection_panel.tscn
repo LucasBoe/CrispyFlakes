@@ -260,14 +260,32 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Buy"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
+[node name="MarginContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("5_qtqix")
+theme_override_font_sizes/font_size = 8
+text = "Upgrades"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="TextureButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="TextureButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(48, 48)
 layout_mode = 2
 theme_override_styles/normal = SubResource("StyleBoxTexture_ydpv1")
@@ -277,7 +295,7 @@ theme_override_styles/focus = SubResource("StyleBoxTexture_cm1h5")
 icon = ExtResource("35_cm1h5")
 icon_alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/HBoxContainer/VBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer/MarginContainer/HBoxContainer/VBoxContainer"]
 modulate = Color(0.5019608, 0.4862745, 0.45882353, 1)
 layout_mode = 2
 texture = ExtResource("11_qtqix")
@@ -511,7 +529,6 @@ custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 icon = ExtResource("19_3ocru")
-icon_alignment = 1
 
 [node name="HireGuestButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(20, 20)
