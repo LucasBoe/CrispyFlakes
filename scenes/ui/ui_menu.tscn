@@ -178,7 +178,7 @@ theme = ExtResource("22_hpv7r")
 text = "Hire"
 
 [node name="UIBuild" type="MarginContainer" parent="MarginContainer"]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 size_flags_horizontal = 8
 mouse_filter = 2
@@ -265,7 +265,7 @@ layout_mode = 2
 columns = 3
 
 [node name="ButtonDummy" type="Button" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(58, 58)
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_horizontal = 8
 theme = ExtResource("22_hpv7r")

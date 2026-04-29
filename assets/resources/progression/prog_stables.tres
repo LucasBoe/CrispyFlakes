@@ -9,4 +9,5 @@ script = ExtResource("1_script")
 sprite = ExtResource("3_n0bwu")
 display_name = "Stables"
 cost = 1
+unlocks_flag = 3
 depends_on = ExtResource("2_dep")

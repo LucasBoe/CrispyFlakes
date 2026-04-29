@@ -5,6 +5,7 @@ enum ProgressionFlag {
 	NONE,
 	BIG_TABLES,
 	BIG_BREWER,
+	STABLES,
 }
 
 @export var sprite: Texture2D

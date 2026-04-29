@@ -1,10 +1,15 @@
 extends RoomOutsideBase
 class_name RoomHorsePost
 
+const STABLES_FLAG := ProgressionItem.ProgressionFlag.STABLES
+
 var tied_horses := {}
 
 func init_room(_x: int, _y: int):
 	super.init_room(_x, _y)
+	if not ProgressionHandler.flag_unlocked.is_connected(_on_progression_flag_unlocked):
+		ProgressionHandler.flag_unlocked.connect(_on_progression_flag_unlocked)
+	_apply_progression_upgrade()
 	_refresh_visuals()
 
 func _on_module_bought(module) -> void:
@@ -90,3 +95,22 @@ func _notification(what):
 			if is_instance_valid(horse):
 				horse.on_post_destroyed()
 		tied_horses.clear()
+
+func _on_progression_flag_unlocked(flag: ProgressionItem.ProgressionFlag) -> void:
+	if flag == STABLES_FLAG:
+		_apply_progression_upgrade()
+
+func _apply_progression_upgrade() -> void:
+	if not ProgressionHandler.is_flag_set(STABLES_FLAG):
+		return
+	var stable_module := get_node_or_null("ModulesRoot/Structure/Stable")
+	if stable_module == null or stable_module.bought:
+		return
+	_activate_module(stable_module)
+
+func _activate_module(target_module) -> void:
+	var module_group: Node = target_module.get_parent()
+	for module in module_group.get_children():
+		if not module.has_method("set_bought"):
+			continue
+		module.set_bought(module == target_module)
