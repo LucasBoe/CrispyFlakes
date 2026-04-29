@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="InfrastructureData" load_steps=4 format=3 uid="uid://kmmg3xvl1ath"]
 
-[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="1_data"]
+[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="1_data"]
 [ext_resource type="Texture2D" uid="uid://d34cfrcpujwvt" path="res://assets/sprites/water_pipe_tiles.png" id="2_pipe"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pipe_icon"]

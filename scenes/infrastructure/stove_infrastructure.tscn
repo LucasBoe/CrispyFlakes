@@ -1,14 +1,44 @@
-[gd_scene load_steps=6 format=3 uid="uid://6licxyrqg6kc"]
+[gd_scene load_steps=12 format=3 uid="uid://6licxyrqg6kc"]
 
 [ext_resource type="Script" uid="uid://nrbr8aqyr35l" path="res://scripts/infrastructure/stove_infrastructure.gd" id="1_stove_script"]
 [ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="2_stove_tex"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="3_outline_mat"]
 [ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="4_progress"]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_heat_radius"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_warmth_light"]
+offsets = PackedFloat32Array(0, 0.96, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_warmth_light"]
+gradient = SubResource("Gradient_warmth_light")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_aura"]
+colors = PackedColorArray(1, 0.45, 0.1, 0.5, 1, 0.45, 0.1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_aura"]
+gradient = SubResource("Gradient_aura")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aura"]
+blend_mode = 1
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_stove"]
 size = Vector2(20, 26)
 
 [node name="StoveInfrastructure" type="Node2D"]
+material = SubResource("CanvasItemMaterial_heat_radius")
 script = ExtResource("1_stove_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -26,3 +56,31 @@ offset_bottom = -29.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SelectableArea"]
 shape = SubResource("RectangleShape2D_stove")
+
+[node name="WarmthLight" type="PointLight2D" parent="."]
+enabled = false
+color = Color(1, 0.66, 0.32, 1)
+energy = 0.0
+blend_mode = 0
+texture = SubResource("GradientTexture2D_warmth_light")
+texture_scale = 3.0
+
+[node name="SmokeParticles" type="CPUParticles2D" parent="."]
+position = Vector2(0, -8)
+emitting = false
+amount = 8
+lifetime = 1.2
+direction = Vector2(0, -1)
+spread = 15.0
+gravity = Vector2(0, -10)
+initial_velocity_min = 8.0
+initial_velocity_max = 16.0
+scale_amount_min = 0.8
+scale_amount_max = 1.8
+color = Color(0.7, 0.7, 0.7, 0.5)
+
+[node name="AuraSprite" type="Sprite2D" parent="."]
+visible = false
+material = SubResource("CanvasItemMaterial_aura")
+scale = Vector2(1.5, 1.5)
+texture = SubResource("GradientTexture2D_aura")
