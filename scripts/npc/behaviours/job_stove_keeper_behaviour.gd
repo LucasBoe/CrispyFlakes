@@ -33,7 +33,7 @@ func loop():
 			continue
 
 		_narrative = ["Stoking the fire...", "Feeding the stove...", "Keeping the place warm..."].pick_random()
-		await move(stove)
+		await move(stove.get_floor_position())
 		if not is_instance_valid(stove):
 			_release_stove()
 			continue

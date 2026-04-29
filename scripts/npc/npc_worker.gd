@@ -261,6 +261,16 @@ func _activate_drag():
 		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
 		available_rooms_highlights.append(highlight)
 
+	if is_instance_valid(Building.infrastructure):
+		var has_slot: bool = JobHandler.count_rooms_for(Enum.Jobs.STOVE_KEEPER) > JobHandler.count_workers_in(Enum.Jobs.STOVE_KEEPER)
+		if has_slot or current_job == Enum.Jobs.STOVE_KEEPER:
+			for stove: StoveInfrastructure in Building.infrastructure.get_all_stoves():
+				var backing_room: RoomBase = stove.get_backing_room()
+				if backing_room == null or backing_room.associated_job != null:
+					continue
+				var stove_highlight = RoomHighlighter.request_rect(backing_room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
+				available_rooms_highlights.append(stove_highlight)
+
 func _input(event):
 
 	if _drag_pending:
@@ -437,7 +447,14 @@ func _finish_drop():
 		Navigation.stop_navigation()
 		if not try_stop_fight_in_room(resolved_drop_room):
 			if not try_arrest_in_room(resolved_drop_room):
-				try_change_job_based_on_room(resolved_drop_room)
+				var drop_idx: Vector2i = Building.round_room_index_from_global_position(_fall_target)
+				if is_instance_valid(Building.infrastructure) \
+						and Building.infrastructure.get_stove_at(drop_idx) != null \
+						and resolved_drop_room.associated_job == null:
+					current_job_room = resolved_drop_room
+					change_job(Enum.Jobs.STOVE_KEEPER)
+				else:
+					try_change_job_based_on_room(resolved_drop_room)
 		Animator.direction = Vector2.ZERO
 	_fall_room = null
 	_fall_landed_room = null

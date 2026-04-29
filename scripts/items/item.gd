@@ -108,7 +108,7 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			trade_orderable = true
 
 		Enum.Items.WOOD:
-			tex = load("res://assets/sprites/item_crate.png")
+			tex = load("res://assets/sprites/ui/item_wood.png")
 			display_name = "Firewood"
 			trade_price = 8
 			trade_orderable = true

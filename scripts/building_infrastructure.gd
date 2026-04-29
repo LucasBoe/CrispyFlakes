@@ -81,7 +81,7 @@ func _can_place_stove(data, origin: Vector2i) -> bool:
 			if has_data_at(index, data.layer_name):
 				return false
 			var room := Building.get_room_from_index(index) as RoomBase
-			if room == null or room is RoomEmpty:
+			if room == null:
 				return false
 	return true
 

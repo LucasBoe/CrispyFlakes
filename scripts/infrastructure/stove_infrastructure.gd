@@ -29,14 +29,77 @@ var _fuel_remaining := 0.0
 var _ember_remaining := 0.0
 var _hovered := false
 var _selected := false
+var _aura_time := 0.0
+
+var _warmth_light: PointLight2D = null
+var _smoke_particles: CPUParticles2D = null
+var _aura_sprite: Sprite2D = null
 
 func _ready() -> void:
 	if _sprite.material is ShaderMaterial:
 		_sprite.material = (_sprite.material as ShaderMaterial).duplicate(true)
+	_setup_warmth_light()
+	_setup_smoke_particles()
+	_setup_aura()
 	_apply_outline()
 	_refresh_visual_state()
 	_refresh_progress_bar()
 	TemperatureHandler.register_source(self)
+
+func _setup_warmth_light() -> void:
+	var grad := Gradient.new()
+	grad.set_color(0, Color.WHITE)
+	grad.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 64
+	tex.height = 64
+	_warmth_light = PointLight2D.new()
+	_warmth_light.texture = tex
+	_warmth_light.texture_scale = 2.5
+	_warmth_light.color = Color(1.0, 0.55, 0.2)
+	_warmth_light.energy = 0.5
+	_warmth_light.enabled = false
+	add_child(_warmth_light)
+
+func _setup_smoke_particles() -> void:
+	_smoke_particles = CPUParticles2D.new()
+	_smoke_particles.emitting = false
+	_smoke_particles.amount = 8
+	_smoke_particles.lifetime = 1.2
+	_smoke_particles.direction = Vector2(0.0, -1.0)
+	_smoke_particles.spread = 15.0
+	_smoke_particles.gravity = Vector2(0.0, -10.0)
+	_smoke_particles.initial_velocity_min = 8.0
+	_smoke_particles.initial_velocity_max = 16.0
+	_smoke_particles.scale_amount_min = 0.8
+	_smoke_particles.scale_amount_max = 1.8
+	_smoke_particles.color = Color(0.7, 0.7, 0.7, 0.5)
+	_smoke_particles.position = Vector2(0.0, -8.0)
+	add_child(_smoke_particles)
+
+func _setup_aura() -> void:
+	var grad := Gradient.new()
+	grad.set_color(0, Color(1.0, 0.45, 0.1, 0.5))
+	grad.set_color(1, Color(1.0, 0.45, 0.1, 0.0))
+	var tex := GradientTexture2D.new()
+	tex.gradient = grad
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 32
+	tex.height = 32
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	_aura_sprite = Sprite2D.new()
+	_aura_sprite.texture = tex
+	_aura_sprite.material = mat
+	_aura_sprite.scale = Vector2(1.5, 1.5)
+	_aura_sprite.visible = false
+	add_child(_aura_sprite)
 
 func _process(delta: float) -> void:
 	var had_fuel := _fuel_remaining > 0.0
@@ -46,6 +109,10 @@ func _process(delta: float) -> void:
 			_ember_remaining = EMBER_DURATION
 	elif _ember_remaining > 0.0:
 		_ember_remaining = maxf(0.0, _ember_remaining - delta)
+
+	if _aura_sprite != null and _aura_sprite.visible:
+		_aura_time += delta * 2.0
+		_aura_sprite.scale = Vector2.ONE * (1.5 + 0.15 * sin(_aura_time))
 
 	_refresh_visual_state()
 	_refresh_progress_bar()
@@ -100,6 +167,9 @@ func get_ember_seconds_remaining() -> float:
 func get_backing_room() -> RoomBase:
 	return Building.get_room_from_index(room_index) as RoomBase
 
+func get_floor_position() -> Vector2:
+	return Building.global_position_from_room_index(room_index)
+
 func get_selection_title() -> String:
 	return data.room_name if data != null and data.room_name != "" else "Stove"
 
@@ -135,6 +205,14 @@ func _refresh_visual_state() -> void:
 	else:
 		_sprite.texture = _stove_off_texure
 		_sprite.modulate = INACTIVE_MODULATE
+
+	var heating := is_heating()
+	if _warmth_light != null:
+		_warmth_light.enabled = heating
+	if _smoke_particles != null:
+		_smoke_particles.emitting = _fuel_remaining > 0.0
+	if _aura_sprite != null:
+		_aura_sprite.visible = heating
 
 func _refresh_progress_bar() -> void:
 	_progress_bar.max_value = 100.0

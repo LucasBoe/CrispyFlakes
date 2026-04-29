@@ -163,11 +163,14 @@ func refresh_target_path() -> void:
 	refresh_room_index()
 
 	var start_room := _get_current_floor_room(global_position)
+	final_target.y = snappedf(final_target.y, 48.0)
 	var goal_room := _get_goal_floor_room(final_target)
 
 	if start_room == null or goal_room == null:
 		_fail_target_path()
 		return
+
+	final_target.y = goal_room.global_position.y
 
 	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate() and not _is_inside and not _is_outside_target(final_target):
 		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer

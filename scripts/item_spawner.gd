@@ -18,4 +18,5 @@ func create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
 	add_child(instance)
 	instance.position = pos
 	instance.play_spawn_sound()
+	LooseItemHandler.register_loose_item_instance(instance)
 	return instance
