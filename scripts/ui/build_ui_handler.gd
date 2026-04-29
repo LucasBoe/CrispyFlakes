@@ -2,6 +2,7 @@ extends MenuUITab
 class_name BuildMenuUITab
 
 const InfrastructureDataScript = preload("res://scripts/infrastructure_data.gd")
+const LOCK_ICON = preload("res://assets/sprites/ui/icon_locked.png")
 
 @onready var tab_cointainer : TabBar = $MarginContainer/GridContainer/TabBar
 @onready var room_tier_dummy : Control = $MarginContainer/GridContainer/RoomTierDummy
@@ -19,12 +20,6 @@ const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
 
 var groups = {}
 
-var all_tiers = []
-var button_dummies = []
-
-var storage_button;
-var brewery_button;
-
 var last_hover = null
 var data_to_button : Dictionary = {}
 
@@ -33,6 +28,7 @@ func _ready():
 	GlobalEventHandler.on_room_created_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
+	ProgressionHandler.room_unlocked.connect(_on_buildables_changed)
 
 	var group = room_group.new(groups)
 
@@ -45,8 +41,8 @@ func _ready():
 	create_button(group, Building.room_data_toilet)
 	create_button(group, Building.room_data_bar)
 	create_button(group, Building.room_data_entertainment)
-	brewery_button = create_button(group, Building.room_data_brewery)
-	storage_button = create_button(group, Building.room_data_storage)
+	create_button(group, Building.room_data_brewery)
+	create_button(group, Building.room_data_storage)
 	create_button(group, Building.room_data_trading_office)
 	create_button(group, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
 	create_button(group, Building.room_data_horse_post, RoomHorsePost.custom_placement_check)
@@ -60,8 +56,9 @@ func _ready():
 	create_button(group, Building.room_data_gambling)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
-	TierHandler.tier_unlocked_signal.connect(_on_tier_unlocked)
 	hover_info_room_box_root.hide()
+	hover_info_room_desc_label.bbcode_enabled = true
+	_refresh_button_availability()
 
 func create_button(group : room_group, data, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
 
@@ -77,11 +74,11 @@ func create_button(group : room_group, data, custom_placement_check = null, buil
 	instance.icon = data.room_icon if data.room_icon else data.room_preview
 	var _initial_count: int = _count_buildable(data)
 	instance.text = "" if _initial_count == 0 else str(_initial_count)
-	instance.button_down.connect(build_action.bind(data, custom_placement_check))
-	instance.button_down.connect(SoundPlayer.play_ui_click_down)
+	instance.button_down.connect(_on_build_button_pressed.bind(data, custom_placement_check, build_action))
 	instance.mouse_entered.connect(_on_hover_enter.bind(instance, data))
 	instance.mouse_exited.connect(_on_hover_exit.bind(instance, data))
 	instance.show()
+	instance.add_child(_create_locked_overlay())
 
 	if not group.button_instances.has(tier):
 		group.button_instances[tier] = []
@@ -95,12 +92,18 @@ func _on_buildables_changed(_changed = null):
 	for data in data_to_button:
 		var count: int = _count_buildable(data)
 		data_to_button[data].text = "" if count == 0 else str(count)
+	_refresh_button_availability()
 	if last_hover != null:
 		_refresh_desc(last_hover)
 
 func _refresh_desc(data):
 	var count: int = _count_buildable(data)
-	hover_info_room_desc_label.text = data.room_desc + "\nhas: " + str(count)
+	var description: String = data.room_desc + "\nhas: " + str(count)
+	if not _is_data_unlocked(data):
+		var unlock_text := _get_unlock_text(data)
+		if unlock_text != "":
+			description += "\n[color=#ff8f5a]%s[/color]" % unlock_text
+	hover_info_room_desc_label.text = description
 
 func _count_buildable(data) -> int:
 	if data != null and data.get_script() == InfrastructureDataScript:
@@ -154,12 +157,63 @@ func _on_tab_changed(tab):
 		for button in group.button_instances[tier]:
 			button.show()
 
-		group.overlays[tier].visible = tier > TierHandler.current_tier
+func _on_build_button_pressed(data, custom_placement_check, build_action: Callable) -> void:
+	if not _is_data_unlocked(data):
+		return
+	SoundPlayer.play_ui_click_down()
+	build_action.call(data, custom_placement_check)
 
-func _on_tier_unlocked(tier):
-	for g in groups.values():
-		for i in g.overlays.size():
-			g.overlays[i].visible = i > TierHandler.current_tier
+func _refresh_button_availability() -> void:
+	for data in data_to_button:
+		var button := data_to_button[data] as Button
+		var unlocked := _is_data_unlocked(data)
+		button.modulate = Color.WHITE if unlocked else Color(0.5, 0.5, 0.5, 1.0)
+		var overlay := button.get_node_or_null("LockedOverlay") as Control
+		if overlay != null:
+			overlay.visible = not unlocked
+
+func _is_data_unlocked(data) -> bool:
+	if data == Building.infrastructure_data_water_pipe:
+		return ProgressionHandler.is_room_build_unlocked(Building.room_data_water_tower)
+	if data is RoomData:
+		return ProgressionHandler.is_room_build_unlocked(data)
+	return true
+
+func _get_unlock_text(data) -> String:
+	if data == Building.infrastructure_data_water_pipe:
+		return "Unlock Water Tower in the progression tree"
+	if data is RoomData:
+		var item := ProgressionHandler.get_item_for_room(data)
+		if item != null:
+			return "Unlock %s in the progression tree" % item.display_name
+	return ""
+
+func _create_locked_overlay() -> Control:
+	var overlay := Control.new()
+	overlay.name = "LockedOverlay"
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	var shade := ColorRect.new()
+	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shade.color = Color(0.0, 0.0, 0.0, 0.55)
+	overlay.add_child(shade)
+
+	var center := CenterContainer.new()
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center)
+
+	var icon := TextureRect.new()
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.texture = LOCK_ICON
+	icon.custom_minimum_size = Vector2(16, 16)
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	center.add_child(icon)
+
+	overlay.hide()
+	return overlay
 
 class room_group:
 	var group_name : String
@@ -180,8 +234,7 @@ class room_group:
 		tiers.append(clone)
 		var overlay = clone.get_child(1)
 		overlays.append(overlay)
-		var overlay_number_label = overlay.get_child(1).get_child(0).get_child(1)
-		overlay_number_label.text = str(TierHandler.tier_visitors_needed[tier_level], " Guests")
+		overlay.hide()
 		var button_dummy = clone.get_child(0).get_child(0).get_child(0)
 		button_dummies.append(button_dummy)
 		button_dummy.hide()

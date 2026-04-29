@@ -4,14 +4,16 @@ class_name ContentSizedButton
 @export var content_path: NodePath
 
 func _ready() -> void:
-	fit_to_content()
+	call_deferred("fit_to_content")
 
 func fit_to_content() -> void:
 	var content := _get_content()
 	if content == null:
 		return
-
-	custom_minimum_size = content.get_combined_minimum_size()
+	
+	content.reset_size()
+	reset_size()
+	custom_minimum_size = content.get_combined_minimum_size().ceil()
 
 func _get_content() -> Control:
 	if content_path != NodePath():

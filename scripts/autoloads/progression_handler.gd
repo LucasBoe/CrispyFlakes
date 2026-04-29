@@ -5,6 +5,31 @@ signal room_unlocked(room: RoomData)
 signal points_changed(new_total: int)
 signal item_unlocked(item: ProgressionItem)
 
+const ALL_ITEMS := [
+	preload("res://assets/resources/progression/prog_empty_room.tres"),
+	preload("res://assets/resources/progression/prog_tables.tres"),
+	preload("res://assets/resources/progression/prog_stairs.tres"),
+	preload("res://assets/resources/progression/prog_outhouse.tres"),
+	preload("res://assets/resources/progression/prog_bar.tres"),
+	preload("res://assets/resources/progression/prog_broom_room.tres"),
+	preload("res://assets/resources/progression/prog_entertainment.tres"),
+	preload("res://assets/resources/progression/prog_horsestand.tres"),
+	preload("res://assets/resources/progression/prog_water_tower.tres"),
+	preload("res://assets/resources/progression/prog_bed_room.tres"),
+	preload("res://assets/resources/progression/prog_storage.tres"),
+	preload("res://assets/resources/progression/prog_brewery.tres"),
+	preload("res://assets/resources/progression/prog_bouncer.tres"),
+	preload("res://assets/resources/progression/prog_gambling.tres"),
+	preload("res://assets/resources/progression/prog_stables.tres"),
+	preload("res://assets/resources/progression/prog_toilets.tres"),
+	preload("res://assets/resources/progression/prog_aging_cellar.tres"),
+	preload("res://assets/resources/progression/prog_destillery.tres"),
+	preload("res://assets/resources/progression/prog_prison.tres"),
+	preload("res://assets/resources/progression/prog_safe.tres"),
+	preload("res://assets/resources/progression/prog_bath.tres"),
+	preload("res://assets/resources/progression/prog_big_brewer.tres"),
+]
+
 @onready var empty_room = preload("res://assets/resources/progression/prog_empty_room.tres")
 @onready var table_room = preload("res://assets/resources/progression/prog_tables.tres")
 @onready var broom_room = preload("res://assets/resources/progression/prog_broom_room.tres")
@@ -14,9 +39,13 @@ var _highest_guest_count_reached: int = 0
 var _unlocked_flags: Dictionary = {}
 var _unlocked_rooms: Array[RoomData] = []
 var _unlocked_items: Array[ProgressionItem] = []
+var _items_by_room: Dictionary = {}
 
 func _ready() -> void:
 	Global.NPCSpawner.spawned_guest_signal.connect(_on_spawned_guest)
+	for item: ProgressionItem in ALL_ITEMS:
+		if item.unlocks_room != null:
+			_items_by_room[item.unlocks_room] = item
 
 func unlock_default_rooms():
 	force_unlock(empty_room)
@@ -68,6 +97,12 @@ func is_flag_set(flag: ProgressionItem.ProgressionFlag) -> bool:
 
 func is_room_unlocked(room: RoomData) -> bool:
 	return room in _unlocked_rooms
+
+func get_item_for_room(room: RoomData) -> ProgressionItem:
+	return _items_by_room.get(room, null)
+
+func is_room_build_unlocked(room: RoomData) -> bool:
+	return true if get_item_for_room(room) == null else is_room_unlocked(room)
 
 func _on_spawned_guest(guest_count: int) -> void:
 	if guest_count <= _highest_guest_count_reached:
