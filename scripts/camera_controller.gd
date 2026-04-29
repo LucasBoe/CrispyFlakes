@@ -186,7 +186,7 @@ func click_and_drag():
 
 	if isDragging:
 		var move_vector = get_viewport().get_mouse_position() - drag_start_mouse_pos
-		global_position = drag_start_camera_pos - move_vector * (1.0 / zoomFactor)
+		global_position = drag_start_camera_pos - move_vector / zoom.x
 
 	if !isLMBDragging and Input.is_action_just_pressed("click"):
 		var can_lmb_pan = NPCWorker.picked_up_npc == null \
@@ -203,7 +203,7 @@ func click_and_drag():
 
 	if isLMBDragging:
 		var move_vector = get_viewport().get_mouse_position() - drag_start_mouse_pos
-		global_position = drag_start_camera_pos - move_vector * (1.0 / zoomFactor)
+		global_position = drag_start_camera_pos - move_vector / zoom.x
 
 func zoom_in_out(tween := false, duration := 0.15):
 	zoomTarget = clampf(zoomTarget, minZoom, maxZoom)
