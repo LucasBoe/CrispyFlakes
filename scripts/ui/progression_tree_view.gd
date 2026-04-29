@@ -36,6 +36,13 @@ const ALL_ITEMS := [
 	preload("res://assets/resources/progression/prog_safe.tres"),
 	preload("res://assets/resources/progression/prog_bath.tres"),
 	preload("res://assets/resources/progression/prog_big_brewer.tres"),
+	preload("res://assets/resources/progression/prog_big_table.tres"),
+	preload("res://assets/resources/progression/prog_stove.tres"),
+	preload("res://assets/resources/progression/prog_big_bucket.tres"),
+	preload("res://assets/resources/progression/prog_beer_barrel_holder.tres"),
+	preload("res://assets/resources/progression/prog_whiskey_shelf.tres"),
+	preload("res://assets/resources/progression/prog_triple_bunk_bed.tres"),
+	preload("res://assets/resources/progression/prog_trade_office.tres"),
 ]
 
 @onready var _content:        Control       = $MarginContainer/MarginContainer/VBoxContainer/PanCanvas/Content

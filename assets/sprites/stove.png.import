@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://trk4gst2vlkl"
-path="res://.godot/imported/big_brewer_preview.png-39e171453579d3640c853c1c6583c5f9.ctex"
+uid="uid://bav26pirkhx3d"
+path="res://.godot/imported/stove.png-4a5aae02c78927236fa6e3b3c256d0ea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/big_brewer_preview.png"
-dest_files=["res://.godot/imported/big_brewer_preview.png-39e171453579d3640c853c1c6583c5f9.ctex"]
+source_file="res://assets/sprites/stove.png"
+dest_files=["res://.godot/imported/stove.png-4a5aae02c78927236fa6e3b3c256d0ea.ctex"]
 
 [params]
 

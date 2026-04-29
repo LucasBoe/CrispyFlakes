@@ -19,7 +19,7 @@ func loop():
 					drinks_available = 1.0
 				else:
 					_narrative = ["Waiting for the water tower...", "Tower's dry...", "No water in the pipe..."].pick_random()
-					RoomStatusHandler.notify(bar, "no water", Color.ORANGE, Building.infrastructure_data_water_pipe.room_icon)
+					RoomStatusHandler.notify(bar, "no water", Color.ORANGE, load("res://assets/sprites/ui/icon_no_water.png"))
 					await pause(2)
 			else:
 				_narrative = "Fetching drinks..."

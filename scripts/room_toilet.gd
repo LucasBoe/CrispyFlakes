@@ -94,8 +94,8 @@ func get_unusable_status_text() -> String:
 
 func get_unusable_status_icon() -> Texture2D:
 	if not has_water_pipe():
-		return Building.infrastructure_data_water_pipe.room_icon
-	return Building.room_data_water_tower.room_icon
+		return load("res://assets/sprites/ui/icon_no_water.png")
+	return load("res://assets/sprites/ui/icon_no_water.png")
 
 func _get_next_open_stall_index() -> int:
 	for i in STALL_COUNT:

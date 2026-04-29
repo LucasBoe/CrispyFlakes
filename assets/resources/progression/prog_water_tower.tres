@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3 uid="uid://dvef3wk4o6fs"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://c0o0luogaa1km" path="res://assets/resources/rooms/room_water_tower.tres" id="2_room"]
 [ext_resource type="Texture2D" uid="uid://cp1dc4mtntdxu" path="res://assets/sprites/room_icon_water_tower.png" id="3_0o4tk"]
 [ext_resource type="Resource" uid="uid://dh4iqqe2pachn" path="res://assets/resources/progression/prog_outhouse.tres" id="3_dep"]
