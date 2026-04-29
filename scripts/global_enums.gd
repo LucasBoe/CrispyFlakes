@@ -20,6 +20,7 @@ enum Items {
 	WOOD,
 	MONEY,
 	CRATE,
+	WOOD,
 }
 
 enum Resources {

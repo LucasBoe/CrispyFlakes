@@ -121,6 +121,12 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			tex = load("res://assets/sprites/item_crate.png")
 			display_name = "Crate"
 
+		Enum.Items.WOOD:
+			tex = load("res://assets/sprites/ui/item_wood.png")
+			display_name = "Wood"
+			trade_price = 8
+			trade_orderable = true
+
 	var info = TextureInfo.new()
 	info.Tex = tex
 	info.Offset = offset
