@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_data")
 room_name = "Stove"
-room_desc = "place a stove inside any built room"
+room_desc = "place a stove inside any built room, including empty rooms"
 room_icon = ExtResource("2_stove")
 room_preview = ExtResource("2_stove")
 construction_price = 10

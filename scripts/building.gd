@@ -80,6 +80,14 @@ func erase_empty(room: RoomBase):
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
 
+func replace_with_empty(room: RoomBase):
+	set_room(room_data_empty, room.x, room.y)
+	infrastructure.clear_under_room(room)
+	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
+	update_foreground_tiles()
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
+	room.destroy()
+
 func delete_room(room: RoomBase):
 	if room.data != null and room.data.is_outdoor:
 		for col in room.data.width:

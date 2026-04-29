@@ -13,15 +13,22 @@ func _process(_delta: float) -> void:
 	spawn_item_stack(Enum.Items.WOOD, 3, 0, 10)
 	ProgressionHandler.unlock_default_rooms()
 
-	#var skip_layer := create_skip_tutorial_button()
+	var skip_layer := create_skip_tutorial_button()
+
+	RoomStatusHandler.enabled = false
+	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").hide()
 
 	#await LetterUIHandler.present()
 	#await TutorialHandler.do_first_tutorial()
 
-	#skip_layer.queue_free()
+	await get_tree().create_timer(1).timeout
 
+	RoomStatusHandler.enabled = true
+	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true
+	
+	skip_layer.queue_free()
 
 func spawn_bounties(count: int) -> void:
 	for i in count:
