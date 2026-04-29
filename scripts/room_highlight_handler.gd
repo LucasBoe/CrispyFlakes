@@ -14,8 +14,13 @@ const PRIORITY_Z_INDEX = {
 	Priority.SELECTION: 2180,
 }
 
+const TILE_PX: int = 48
+const META_ROOM := &"room"
+const META_WORLD_OFFSET_FROM_ROOM_ORIGIN := &"world_offset_from_room_origin"
+
 @onready var rect_dummy = $Rect;
 @onready var arrow_dummy = $Arrow;
+@onready var _highlight_layer: CanvasLayer = $HighlightLayer
 
 @onready var rect_texture_2px = preload("res://assets/sprites/room_highlight.png")
 @onready var rect_texture_1px = preload("res://assets/sprites/room_highlight_slim.png")
@@ -34,16 +39,7 @@ func request_rect(room, color = Color.WHITE, size = 2, priority = Priority.STATU
 
 	inst.modulate = color
 	inst.texture = texture_from_size(size)
-
-	const TILE_PX: int = 48
-	var w: float = room.data.width * TILE_PX
-	var h: float = room.data.height * TILE_PX
-	inst.anchor_left = 0.0
-	inst.anchor_top = 0.0
-	inst.anchor_right = 0.0
-	inst.anchor_bottom = 0.0
-	inst.size = Vector2(w, h)
-	inst.position = Vector2(room.global_position.x, room.global_position.y - h)
+	_position_highlight(inst, room)
 
 	return inst
 
@@ -53,23 +49,47 @@ func texture_from_size(size):
 
 	return rect_texture_1px
 
-func request_arrow(room, priority = Priority.SELECTION):
+func request_arrow(room, priority = Priority.SELECTION, world_offset_from_room_origin = null):
 	var inst = create(arrow_dummy, room, priority)
+	if world_offset_from_room_origin is Vector2:
+		inst.set_meta(META_WORLD_OFFSET_FROM_ROOM_ORIGIN, world_offset_from_room_origin)
+	_position_highlight(inst, room)
 	return inst
 
 func create(dummy, room : RoomBase, priority : Priority = Priority.STATUS):
 	var instance = dummy.duplicate()
 	instance.visible = true
-	instance.position = room.get_center_position()
 	instance.z_index = PRIORITY_Z_INDEX[priority]
-	add_child(instance)
+	instance.set_meta(META_ROOM, room)
+	_highlight_layer.add_child(instance)
 
 	if not active.has(room):
 		active[room] = []
 
 	active[room].append(instance)
+	_position_highlight(instance, room)
 
 	return instance
+
+func _position_highlight(highlight, room: RoomBase) -> void:
+	if room == null or not is_instance_valid(room):
+		return
+
+	if highlight is NinePatchRect:
+		var room_size := Vector2(room.data.width * TILE_PX, room.data.height * TILE_PX)
+		highlight.anchor_left = 0.0
+		highlight.anchor_top = 0.0
+		highlight.anchor_right = 0.0
+		highlight.anchor_bottom = 0.0
+		highlight.position = room.global_position - Vector2(0.0, room_size.y)
+		highlight.size = room_size
+	elif highlight is Node2D:
+		var world_position: Vector2 = room.get_center_position()
+		if highlight.has_meta(META_WORLD_OFFSET_FROM_ROOM_ORIGIN):
+			var world_offset = highlight.get_meta(META_WORLD_OFFSET_FROM_ROOM_ORIGIN)
+			if world_offset is Vector2:
+				world_position = room.global_position + world_offset
+		highlight.position = world_position
 
 func _on_room_deleted(room):
 

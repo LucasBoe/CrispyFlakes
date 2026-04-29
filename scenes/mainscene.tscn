@@ -63,6 +63,7 @@ modulate_color = Color(18.892157, 18.892157, 18.892157, 0.3764706)
 [node name="Environment" parent="." instance=ExtResource("packed_world")]
 
 [node name="UI" type="CanvasLayer" parent="."]
+layer = 5
 script = ExtResource("15_3fppy")
 
 [node name="UITutorial" parent="UI" instance=ExtResource("3_jj3vu")]

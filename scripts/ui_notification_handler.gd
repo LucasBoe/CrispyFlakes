@@ -4,6 +4,8 @@ extends Node2D
 @onready var need_bar_dummy = $NeedBarDummy
 @onready var npc_notification_dummy = $NPCNotificationDummy
 @onready var fight_bar_dummy = $FightBarDummy
+@onready var _world_layer: CanvasLayer = $WorldNotificationLayer
+@onready var _ui_layer: CanvasLayer = $UINotificationLayer
 
 #notification textures
 const ICON_PLUS_1 = preload("uid://be0je5p0o105l")
@@ -19,7 +21,6 @@ const ICON_KNOCKED_OUT = preload("res://assets/sprites/ui/icon_knocked_out.png")
 const ICON_FUGITIVE = preload("uid://dcde01v5i4hgb")
 
 var instances = []
-var _ui_layer: CanvasLayer
 const DEFAULT_LIFETIME = 3.0
 
 class instance_info:
@@ -35,13 +36,10 @@ func _ready():
 	need_bar_dummy.hide()
 	npc_notification_dummy.hide()
 	fight_bar_dummy.hide()
-	_ui_layer = CanvasLayer.new()
-	_ui_layer.layer = 10
-	add_child(_ui_layer)
 
 func _create_from_dummy(dummy, duration) -> instance_info:
 	var instance = dummy.duplicate()
-	dummy.get_parent().add_child(instance)
+	_world_layer.add_child(instance)
 	instance.visible = true
 
 	var i := instance_info.new()

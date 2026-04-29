@@ -286,11 +286,7 @@ func _input(event):
 		#	assignmentIndicator.visible = false
 		return
 
-	var target_pos = null
-
 	var room : RoomBase = Building.query.room_at_position(global_position) as RoomBase
-	if room:
-		target_pos = room.global_position + Vector2(24,0)
 
 	#if not assignmentIndicator.visible:
 	#	assignmentIndicator.visible = true
@@ -298,11 +294,12 @@ func _input(event):
 	if not current_job_room_highlight && current_job != Enum.Jobs.IDLE && current_job_room:
 		current_job_room_highlight = RoomHighlighter.request_rect(current_job_room, Color(1,1,0,0.5), 2, RoomHighlighter.Priority.SELECTION)
 
+	if is_instance_valid(new_room_highlight) and new_room_highlight.get_meta(&"room", null) != room:
+		RoomHighlighter.dispose(new_room_highlight)
+		new_room_highlight = null
+
 	if not new_room_highlight && room:
 		new_room_highlight = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
-
-	if target_pos && new_room_highlight:
-		new_room_highlight.global_position = Vector2(room.global_position.x, room.global_position.y - room.data.height * 48)
 
 	var mouse_on_stove := false
 	if is_instance_valid(Building.infrastructure) and room != null:
@@ -313,9 +310,11 @@ func _input(event):
 		new_room_highlight.modulate = Color.GREEN if (room.associated_job and not mouse_on_stove) else Color.WHITE
 
 	if room && room.associated_job && not mouse_on_stove:
+		if is_instance_valid(new_job_room_highlight) and new_job_room_highlight.get_meta(&"room", null) != room:
+			RoomHighlighter.dispose(new_job_room_highlight)
+			new_job_room_highlight = null
 		if not new_job_room_highlight:
-			new_job_room_highlight = RoomHighlighter.request_arrow(room)
-		new_job_room_highlight.global_position = target_pos + Vector2(0,-16)
+			new_job_room_highlight = RoomHighlighter.request_arrow(room, RoomHighlighter.Priority.SELECTION, Vector2(24, -16))
 	else:
 		RoomHighlighter.dispose(new_job_room_highlight)
 		new_job_room_highlight = null
