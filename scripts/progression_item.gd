@@ -18,5 +18,8 @@ enum ProgressionFlag {
 ## Optional: room type that becomes buildable when this item is unlocked
 @export var unlocks_room: RoomData
 
+## Optional: infrastructure type that becomes buildable when this item is unlocked
+@export var unlocks_infrastructure: InfrastructureData
+
 ## Optional: item that must be unlocked before this one is available
 @export var depends_on: ProgressionItem

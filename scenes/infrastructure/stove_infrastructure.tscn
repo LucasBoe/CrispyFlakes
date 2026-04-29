@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://6licxyrqg6kc"]
+
+[ext_resource type="Script" uid="uid://nrbr8aqyr35l" path="res://scripts/infrastructure/stove_infrastructure.gd" id="1_stove_script"]
+[ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="2_stove_tex"]
+[ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="3_outline_mat"]
+[ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="4_progress"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_stove"]
+size = Vector2(20, 26)
+
+[node name="StoveInfrastructure" type="Node2D"]
+script = ExtResource("1_stove_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = ExtResource("3_outline_mat")
+texture = ExtResource("2_stove_tex")
+
+[node name="ProgressBar" parent="." instance=ExtResource("4_progress")]
+visible = false
+offset_left = -14.0
+offset_top = -34.0
+offset_right = 14.0
+offset_bottom = -29.0
+
+[node name="SelectableArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SelectableArea"]
+shape = SubResource("RectangleShape2D_stove")

@@ -28,7 +28,7 @@ func _ready():
 	GlobalEventHandler.on_room_created_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
-	ProgressionHandler.room_unlocked.connect(_on_buildables_changed)
+	ProgressionHandler.item_unlocked.connect(_on_buildables_changed)
 
 	var group = room_group.new(groups)
 
@@ -36,6 +36,7 @@ func _ready():
 	create_button(group, Building.room_data_table)
 	create_button(group, Building.room_data_bed)
 	create_button(group, Building.room_data_stairs)
+	create_button(group, Building.infrastructure_data_stove, null, PlacementHandler.start_building_infrastructure)
 	create_button(group, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
 	create_button(group, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(group, Building.room_data_toilet)
@@ -173,15 +174,17 @@ func _refresh_button_availability() -> void:
 			overlay.visible = not unlocked
 
 func _is_data_unlocked(data) -> bool:
-	if data == Building.infrastructure_data_water_pipe:
-		return ProgressionHandler.is_room_build_unlocked(Building.room_data_water_tower)
+	if data.get_script() == InfrastructureDataScript:
+		return ProgressionHandler.is_infrastructure_build_unlocked(data)
 	if data is RoomData:
 		return ProgressionHandler.is_room_build_unlocked(data)
 	return true
 
 func _get_unlock_text(data) -> String:
-	if data == Building.infrastructure_data_water_pipe:
-		return "Unlock Water Tower in the progression tree"
+	if data.get_script() == InfrastructureDataScript:
+		var infrastructure_item := ProgressionHandler.get_item_for_infrastructure(data)
+		if infrastructure_item != null:
+			return "Unlock %s in the progression tree" % infrastructure_item.display_name
 	if data is RoomData:
 		var item := ProgressionHandler.get_item_for_room(data)
 		if item != null:

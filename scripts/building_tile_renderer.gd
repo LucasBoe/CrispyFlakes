@@ -4,6 +4,7 @@ class_name BuildingTileRenderer
 var _tiles_walls : TileMapLayer
 var _tiles_roof : TileMapLayer
 var sign_room_index: Vector2i = Vector2i(-9999, -9999)
+var roof_room_index_by_x: Dictionary = {}
 
 enum levelDifference { SAME, HIGHER, LOWER }
 enum placementContext { OUTER_LEFT = 0, LEFT = 1, MIDDLE = 2, RIGHT = 3, OUTER_RIGHT = 4, OUTER_DOUBLE = 5, MIDDLE_OUTER = 6 }
@@ -26,6 +27,7 @@ func update(floors: Dictionary) -> void:
 	_tiles_walls.clear()
 	_tiles_roof.clear()
 	sign_room_index = Vector2i(-9999, -9999)
+	roof_room_index_by_x.clear()
 
 	var list_of_x_positions = []
 	var list_of_room_indexes_on_floor = {}
@@ -77,6 +79,7 @@ func update(floors: Dictionary) -> void:
 
 	for x in list_of_x_positions:
 		var y = max_floor_height_at_x[x]
+		roof_room_index_by_x[x] = Vector2i(x, y)
 
 		var previous_level = _compare_level(max_floor_height_at_x, x, -1)
 		var next_level = _compare_level(max_floor_height_at_x, x, +1)

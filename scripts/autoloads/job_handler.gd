@@ -58,6 +58,9 @@ func count_workers_in(job):
 	return workers[job].size()
 	
 func count_rooms_for(job):
+	if job == Enum.Jobs.STOVE_KEEPER:
+		return 1 if is_instance_valid(Building.infrastructure) and Building.infrastructure.get_stove_count() > 0 else 0
+
 	var count = 0
 	for floor in Building.floors.values():
 		for room : RoomBase in floor.values():

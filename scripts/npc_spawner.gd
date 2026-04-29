@@ -29,8 +29,8 @@ func _ready():
 	Console.add_command("workers", console_spawn_workers, ["amount"])
 	Console.add_command("wagon", console_spawn_wagon, ["item", "amount"])
 	Console.add_command("trader_wagon", console_spawn_wagon, ["item", "amount"])
-	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom"]))
-	Console.add_command_autocomplete_list("trader_wagon", PackedStringArray(["beer", "whiskey", "water", "broom"]))
+	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
+	Console.add_command_autocomplete_list("trader_wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
 	Console.add_command("follow_test", console_follow_test)
 
 func _process(delta):
@@ -221,7 +221,7 @@ func console_spawn_workers(amount):
 func console_spawn_wagon(item_name = "", amount = ""):
 	var order_items := _build_console_wagon_order(str(item_name), str(amount))
 	if order_items.is_empty():
-		Console.print_error("Unknown wagon cargo. Try: beer, whiskey, water, broom")
+		Console.print_error("Unknown wagon cargo. Try: beer, whiskey, water, broom, wood")
 		return
 
 	var office: RoomTradingOffice = _find_console_trading_office()
@@ -294,6 +294,8 @@ func _parse_console_trade_item(item_name: String) -> int:
 			return Enum.Items.WATER_BUCKET
 		"broom":
 			return Enum.Items.BROOM
+		"wood", "firewood":
+			return Enum.Items.WOOD
 	return -1
 
 func _get_console_wagon_stop_x() -> float:

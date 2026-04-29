@@ -88,7 +88,7 @@ func setup(item: ProgressionItem, connector: NinePatchRect = null) -> void:
 		var mat := ShaderMaterial.new()
 		mat.shader = PROGRESSION_STATE_SHADER
 		_connector.material = mat
-	var is_big := item.unlocks_room != null or item.depends_on == null
+	var is_big := item.unlocks_room != null or item.unlocks_infrastructure != null or item.depends_on == null
 	_name_label.text = item.display_name
 	_icon_rect.texture = item.sprite
 	_frame_rect.texture = FRAME_BIG if is_big else FRAME_SMALL

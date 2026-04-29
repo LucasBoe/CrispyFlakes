@@ -44,12 +44,21 @@ func _apply_item_content(item: ProgressionItem) -> void:
 	_item_name.text = item.display_name
 	_item_cost.text = "%d pts" % item.cost
 
+	var preview_data = null
 	if item.unlocks_room != null:
+		preview_data = item.unlocks_room
+	elif item.unlocks_infrastructure != null:
+		preview_data = item.unlocks_infrastructure
+
+	if preview_data != null:
 		_room_section.show()
-		_room_preview.texture = item.unlocks_room.room_preview
-		_room_name.text = item.unlocks_room.room_name
-		_room_desc.text = item.unlocks_room.room_desc
-		_room_recipe.show_for_data(item.unlocks_room)
+		_room_preview.texture = preview_data.room_preview
+		_room_name.text = preview_data.room_name
+		_room_desc.text = preview_data.room_desc
+		if item.unlocks_room != null:
+			_room_recipe.show_for_data(item.unlocks_room)
+		else:
+			_room_recipe.hide()
 	else:
 		_room_section.hide()
 

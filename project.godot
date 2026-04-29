@@ -57,6 +57,7 @@ AnimatedUIResources="*res://scenes/animated_ui_resources.tscn"
 WeaponInventory="*res://scripts/autoloads/weapon_inventory.gd"
 TimeHandler="*res://scripts/time_handler.gd"
 LetterUIHandler="*res://scenes/autoloads/letter_ui_handler.tscn"
+TemperatureHandler="*res://scripts/autoloads/temperature_handler.gd"
 ProgressionHandler="*res://scripts/autoloads/progression_handler.gd"
 
 [display]
