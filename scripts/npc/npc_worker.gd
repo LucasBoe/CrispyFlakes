@@ -178,6 +178,7 @@ var _fall_velocity: float = 0.0
 var _fall_target: Vector2 = Vector2.ZERO
 var _fall_room: RoomBase = null
 var _fall_landed_room: RoomBase = null
+var _drop_mouse_pos: Vector2 = Vector2.ZERO
 
 func _ready():
 	super._ready()
@@ -303,10 +304,15 @@ func _input(event):
 	if target_pos && new_room_highlight:
 		new_room_highlight.global_position = Vector2(room.global_position.x, room.global_position.y - room.data.height * 48)
 
-	if room and new_room_highlight and current_job_room != room:
-		new_room_highlight.modulate = Color.GREEN if room.associated_job else Color.WHITE
+	var mouse_on_stove := false
+	if is_instance_valid(Building.infrastructure) and room != null:
+		var room_stove: StoveInfrastructure = Building.infrastructure.get_stove_at(Vector2i(room.x, room.y))
+		mouse_on_stove = room_stove != null and _is_pos_on_stove(room_stove, global_position)
 
-	if room && room.associated_job:
+	if room and new_room_highlight and current_job_room != room:
+		new_room_highlight.modulate = Color.GREEN if (room.associated_job and not mouse_on_stove) else Color.WHITE
+
+	if room && room.associated_job && not mouse_on_stove:
 		if not new_job_room_highlight:
 			new_job_room_highlight = RoomHighlighter.request_arrow(room)
 		new_job_room_highlight.global_position = target_pos + Vector2(0,-16)
@@ -315,6 +321,7 @@ func _input(event):
 		new_job_room_highlight = null
 
 	if event.is_action_released("click"):
+		_drop_mouse_pos = get_global_mouse_position()
 		_fall_room = room
 		_fall_target = _find_land_position(global_position)
 		_fall_landed_room = Building.query.room_at_floor_position(_fall_target) as RoomBase
@@ -448,9 +455,8 @@ func _finish_drop():
 		if not try_stop_fight_in_room(resolved_drop_room):
 			if not try_arrest_in_room(resolved_drop_room):
 				var drop_idx: Vector2i = Building.round_room_index_from_global_position(_fall_target)
-				if is_instance_valid(Building.infrastructure) \
-						and Building.infrastructure.get_stove_at(drop_idx) != null \
-						and resolved_drop_room.associated_job == null:
+				var dropped_stove: StoveInfrastructure = Building.infrastructure.get_stove_at(drop_idx) if is_instance_valid(Building.infrastructure) else null
+				if dropped_stove != null and _is_drop_on_stove(dropped_stove):
 					current_job_room = resolved_drop_room
 					change_job(Enum.Jobs.STOVE_KEEPER)
 				else:
@@ -459,3 +465,10 @@ func _finish_drop():
 	_fall_room = null
 	_fall_landed_room = null
 	Navigation.set_process(true)
+
+func _is_drop_on_stove(stove: StoveInfrastructure) -> bool:
+	return _is_pos_on_stove(stove, _drop_mouse_pos)
+
+func _is_pos_on_stove(stove: StoveInfrastructure, pos: Vector2) -> bool:
+	var half := Vector2(10.0, 13.0)
+	return Rect2(stove.global_position - half, half * 2.0).has_point(pos)
