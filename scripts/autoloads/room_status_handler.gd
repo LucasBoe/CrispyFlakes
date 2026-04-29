@@ -1,6 +1,7 @@
 extends Node
 
 var rooms = []
+var enabled: bool = true
 
 const REFRESH_RATE = 1.0
 
@@ -38,7 +39,7 @@ func _on_room_deleted(room : RoomBase):
 		
 func notification_loop():
 	while true:
-		if rooms.size() == 0:
+		if not enabled or rooms.size() == 0:
 			await pause(1)
 		else:
 			for r : RoomBase in rooms:

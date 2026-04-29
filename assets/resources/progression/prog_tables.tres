@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://cq2uf15slgvuo" path="res://assets/resources/rooms/room_table.tres" id="2_room"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_empty_room.tres" id="3_dep"]
+[ext_resource type="Resource" uid="uid://bowockw5e0kyp" path="res://assets/resources/progression/prog_bar.tres" id="3_dep"]
 [ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="4_sprite"]
 
 [resource]
