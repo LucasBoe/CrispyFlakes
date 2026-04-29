@@ -4,6 +4,8 @@ class_name BuildingInfrastructure
 signal on_infrastructure_changed_signal(layer_name: StringName)
 
 const WATER_LAYER := &"water"
+const STOVE_LAYER := &"stove"
+const STOVE_SCENE := preload("res://scenes/infrastructure/stove_infrastructure.tscn")
 
 const _PIPE_SOURCE_ID := 0
 const _PIPE_TEXTURE_PATH := "res://assets/sprites/water_pipe_tiles.png"
@@ -35,11 +37,22 @@ const _SUPPORT_BELOW_OFFSET := Vector2i(0, -1)
 
 var _layers: Dictionary = {}
 var _pipe_texture: Texture2D = null
+var _stove_root: Node2D = null
+var _stove_instances: Dictionary = {}
 
 func _ready() -> void:
 	_configure_pipe_tileset()
+	_ensure_stove_root()
 
 func can_place(data, origin: Vector2i) -> bool:
+	match data.layer_name:
+		STOVE_LAYER:
+			return _can_place_stove(data, origin)
+		WATER_LAYER:
+			return _can_place_water(data, origin)
+	return false
+
+func _can_place_water(data, origin: Vector2i) -> bool:
 	var pending := {}
 	for col in data.width:
 		for row in data.height:
@@ -61,6 +74,17 @@ func can_place(data, origin: Vector2i) -> bool:
 
 	return has_external_side_anchor
 
+func _can_place_stove(data, origin: Vector2i) -> bool:
+	for col in data.width:
+		for row in data.height:
+			var index := origin + Vector2i(col, row)
+			if has_data_at(index, data.layer_name):
+				return false
+			var room := Building.get_room_from_index(index) as RoomBase
+			if room == null or room is RoomEmpty:
+				return false
+	return true
+
 func place(data, origin: Vector2i) -> bool:
 	if not can_place(data, origin):
 		return false
@@ -79,12 +103,32 @@ func place(data, origin: Vector2i) -> bool:
 func clear_under_room(room: RoomBase) -> void:
 	for layer_name in _layers.keys():
 		var dirty := _remove_cells_under_room(room, layer_name)
-		while _prune_unsupported_cells(layer_name):
-			dirty = true
+		if layer_name == WATER_LAYER:
+			while _prune_unsupported_cells(layer_name):
+				dirty = true
 		if not dirty:
 			continue
 		_refresh_layer_visuals(layer_name)
 		_emit_changed(layer_name)
+
+func remove_at(index: Vector2i, layer_name: StringName) -> bool:
+	var layer: Dictionary = _layers.get(layer_name, {})
+	if not layer.has(index):
+		return false
+
+	layer.erase(index)
+	if layer.is_empty():
+		_layers.erase(layer_name)
+	else:
+		_layers[layer_name] = layer
+
+	if layer_name == WATER_LAYER:
+		while _prune_unsupported_cells(layer_name):
+			pass
+
+	_refresh_layer_visuals(layer_name)
+	_emit_changed(layer_name)
+	return true
 
 func has_data_at(index: Vector2i, layer_name: StringName) -> bool:
 	var layer: Dictionary = _layers.get(layer_name, {})
@@ -141,9 +185,36 @@ func count_cells_by_data(data) -> int:
 			count += 1
 	return count
 
+func get_stove_at(index: Vector2i):
+	return _stove_instances.get(index, null)
+
+func get_all_stoves() -> Array:
+	var stoves: Array = []
+	for stove in _stove_instances.values():
+		if is_instance_valid(stove):
+			stoves.append(stove)
+	return stoves
+
+func get_stove_count() -> int:
+	return _layers.get(STOVE_LAYER, {}).size()
+
+func get_layer_columns(layer_name: StringName) -> Array[int]:
+	var columns: Array[int] = []
+	var seen := {}
+	var layer: Dictionary = _layers.get(layer_name, {})
+	for index in layer.keys():
+		if seen.has(index.x):
+			continue
+		seen[index.x] = true
+		columns.append(index.x)
+	columns.sort()
+	return columns
+
 func refresh_visuals() -> void:
 	_configure_pipe_tileset()
+	_ensure_stove_root()
 	_refresh_water_pipe_tiles()
+	_refresh_stove_visuals()
 
 func _emit_changed(layer_name: StringName) -> void:
 	on_infrastructure_changed_signal.emit(layer_name)
@@ -280,6 +351,9 @@ func _refresh_layer_visuals(layer_name: StringName) -> void:
 		WATER_LAYER:
 			_configure_pipe_tileset()
 			_refresh_water_pipe_tiles()
+		STOVE_LAYER:
+			_ensure_stove_root()
+			_refresh_stove_visuals()
 
 func _refresh_water_pipe_tiles() -> void:
 	clear()
@@ -287,6 +361,27 @@ func _refresh_water_pipe_tiles() -> void:
 	var layer: Dictionary = _layers.get(WATER_LAYER, {})
 	for index in layer.keys():
 		set_cell(_to_tilemap_coords(index), _PIPE_SOURCE_ID, _get_water_pipe_tile(index))
+
+func _refresh_stove_visuals() -> void:
+	var stove_root := _ensure_stove_root()
+	var layer: Dictionary = _layers.get(STOVE_LAYER, {})
+	for index in _stove_instances.keys():
+		if layer.has(index):
+			continue
+		var stale = _stove_instances[index]
+		if is_instance_valid(stale):
+			stale.queue_free()
+		_stove_instances.erase(index)
+
+	for index in layer.keys():
+		var stove = _stove_instances.get(index, null)
+		if not is_instance_valid(stove):
+			stove = STOVE_SCENE.instantiate()
+			stove.setup(index, layer[index])
+			stove_root.add_child(stove)
+			_stove_instances[index] = stove
+		else:
+			stove.setup(index, layer[index])
 
 func _to_tilemap_coords(index: Vector2i) -> Vector2i:
 	return Vector2i(index.x, index.y * -1 - 1)
@@ -369,3 +464,16 @@ func _configure_pipe_tileset() -> void:
 		if source.has_tile(atlas_coords):
 			continue
 		source.create_tile(atlas_coords)
+
+func _ensure_stove_root() -> Node2D:
+	if is_instance_valid(_stove_root):
+		return _stove_root
+
+	_stove_root = get_node_or_null("StoveVisuals") as Node2D
+	if _stove_root == null:
+		_stove_root = Node2D.new()
+		_stove_root.name = "StoveVisuals"
+		_stove_root.z_as_relative = true
+		_stove_root.z_index = 1
+		add_child(_stove_root)
+	return _stove_root

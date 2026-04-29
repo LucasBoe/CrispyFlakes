@@ -91,6 +91,9 @@ material = ExtResource("4_g3pb6")
 position = Vector2(0, -23)
 tile_set = SubResource("TileSet_roof")
 
+[node name="RoofDecorations" type="Node2D" parent="."]
+z_index = 2150
+
 [node name="WaterPipeTiles" type="TileMapLayer" parent="."]
 z_index = -190
 tile_set = SubResource("TileSet_pipe")

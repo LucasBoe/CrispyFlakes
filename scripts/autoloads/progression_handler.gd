@@ -28,6 +28,13 @@ const ALL_ITEMS := [
 	preload("res://assets/resources/progression/prog_safe.tres"),
 	preload("res://assets/resources/progression/prog_bath.tres"),
 	preload("res://assets/resources/progression/prog_big_brewer.tres"),
+	preload("res://assets/resources/progression/prog_big_table.tres"),
+	preload("res://assets/resources/progression/prog_stove.tres"),
+	preload("res://assets/resources/progression/prog_big_bucket.tres"),
+	preload("res://assets/resources/progression/prog_beer_barrel_holder.tres"),
+	preload("res://assets/resources/progression/prog_whiskey_shelf.tres"),
+	preload("res://assets/resources/progression/prog_triple_bunk_bed.tres"),
+	preload("res://assets/resources/progression/prog_trade_office.tres"),
 ]
 
 @onready var empty_room = preload("res://assets/resources/progression/prog_empty_room.tres")
@@ -40,15 +47,24 @@ var _unlocked_flags: Dictionary = {}
 var _unlocked_rooms: Array[RoomData] = []
 var _unlocked_items: Array[ProgressionItem] = []
 var _items_by_room: Dictionary = {}
+var _items_by_infrastructure: Dictionary = {}
 
 func _ready() -> void:
 	Global.NPCSpawner.spawned_guest_signal.connect(_on_spawned_guest)
+	Console.add_command("tree", console_unlock_all_progression, 0, 0, "Unlocks all progression tree items.")
 	for item: ProgressionItem in ALL_ITEMS:
 		if item.unlocks_room != null:
 			_items_by_room[item.unlocks_room] = item
+		if item.unlocks_infrastructure != null:
+			_items_by_infrastructure[item.unlocks_infrastructure] = item
 
 func unlock_default_rooms():
 	force_unlock(empty_room)
+
+func console_unlock_all_progression() -> void:
+	for item: ProgressionItem in ALL_ITEMS:
+		force_unlock(item)
+	Console.print_line("unlocked all progression tree items")
 
 func force_unlock(item: ProgressionItem) -> void:
 	if is_item_unlocked(item):
@@ -103,6 +119,13 @@ func get_item_for_room(room: RoomData) -> ProgressionItem:
 
 func is_room_build_unlocked(room: RoomData) -> bool:
 	return true if get_item_for_room(room) == null else is_room_unlocked(room)
+
+func get_item_for_infrastructure(data: InfrastructureData) -> ProgressionItem:
+	return _items_by_infrastructure.get(data, null)
+
+func is_infrastructure_build_unlocked(data: InfrastructureData) -> bool:
+	var item := get_item_for_infrastructure(data)
+	return true if item == null else is_item_unlocked(item)
 
 func _on_spawned_guest(guest_count: int) -> void:
 	if guest_count <= _highest_guest_count_reached:

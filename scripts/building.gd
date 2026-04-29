@@ -2,13 +2,17 @@ extends Node2D
 
 @onready var _tiles_walls : TileMapLayer = $ForegroundTiles
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
+@onready var _roof_decorations: Node2D = $RoofDecorations
 @onready var _sign: BuildingSign = $SaloonSign
 @onready var infrastructure = $WaterPipeTiles
 
 var floors = {}
 var query : BuildingRoomQueries
 var _tile_renderer : BuildingTileRenderer
+var _roof_stove_pipes_by_x: Dictionary = {}
 const FLOOR_POSITION_Y_BIAS := -1.0
+const ROOF_STOVE_PIPE_SCENE := preload("res://scenes/building_roof_stove_pipe.tscn")
+const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
 
 # RoomData resources
 const room_data_empty := preload("res://assets/resources/rooms/room_empty.tres")
@@ -36,10 +40,13 @@ const room_data_water_tower := preload("res://assets/resources/rooms/room_water_
 const room_data_gambling := preload("res://assets/resources/rooms/room_gambling.tres")
 const room_data_trading_office := preload("res://assets/resources/rooms/room_trading_office.tres")
 const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure/infrastructure_water_pipe.tres")
+const infrastructure_data_stove := preload("res://assets/resources/infrastructure/infrastructure_stove.tres")
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
 	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
+	if is_instance_valid(infrastructure) and not infrastructure.on_infrastructure_changed_signal.is_connected(_on_infrastructure_changed):
+		infrastructure.on_infrastructure_changed_signal.connect(_on_infrastructure_changed)
 
 func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene
@@ -107,6 +114,7 @@ func update_foreground_tiles():
 	if is_instance_valid(infrastructure):
 		infrastructure.refresh_visuals()
 	_update_sign_position()
+	_update_roof_stove_pipes()
 
 func _update_sign_position():
 	var idx: Vector2i = _tile_renderer.sign_room_index
@@ -116,6 +124,40 @@ func _update_sign_position():
 	# Center of the sign tile in Building-local space
 	var sign_pos: Vector2 = Vector2(idx.x * 48 + 24, _tiles_roof.position.y + (-idx.y - 1) * 48 + 24)
 	_sign.set_target_position(sign_pos)
+
+func _on_infrastructure_changed(layer_name: StringName) -> void:
+	if layer_name == BuildingInfrastructure.STOVE_LAYER:
+		_update_roof_stove_pipes()
+
+func _update_roof_stove_pipes() -> void:
+	if _tile_renderer == null or not is_instance_valid(infrastructure):
+		return
+
+	var active_columns := {}
+	for column_x in infrastructure.get_layer_columns(BuildingInfrastructure.STOVE_LAYER):
+		if not _tile_renderer.roof_room_index_by_x.has(column_x):
+			continue
+		active_columns[column_x] = true
+
+		var pipe := _roof_stove_pipes_by_x.get(column_x, null) as Node2D
+		if not is_instance_valid(pipe):
+			pipe = ROOF_STOVE_PIPE_SCENE.instantiate() as Node2D
+			_roof_decorations.add_child(pipe)
+			_roof_stove_pipes_by_x[column_x] = pipe
+
+		pipe.position = _get_roof_stove_pipe_position(column_x)
+
+	for column_x in _roof_stove_pipes_by_x.keys():
+		if active_columns.has(column_x):
+			continue
+		var stale_pipe := _roof_stove_pipes_by_x[column_x] as Node2D
+		if is_instance_valid(stale_pipe):
+			stale_pipe.queue_free()
+		_roof_stove_pipes_by_x.erase(column_x)
+
+func _get_roof_stove_pipe_position(column_x: int) -> Vector2:
+	var roof_index: Vector2i = _tile_renderer.roof_room_index_by_x[column_x]
+	return Vector2(column_x * 48 + 24, _tiles_roof.position.y + (-roof_index.y - 1) * 48 + ROOF_STOVE_PIPE_Y_OFFSET)
 
 func _erase_room_cell(x: int, y: int) -> void:
 	if not floors.has(y):

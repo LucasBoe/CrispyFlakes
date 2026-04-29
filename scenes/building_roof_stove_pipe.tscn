@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://biou6fjujvmtn"]
+
+[ext_resource type="Texture2D" uid="uid://bttekhntsc1x3" path="res://assets/sprites/stove_pipe.png" id="1_pipe"]
+
+[node name="BuildingRoofStovePipe" type="Node2D"]
+
+[node name="PipeSprite" type="Sprite2D" parent="."]
+z_index = -1000
+position = Vector2(-5, -17)
+texture = ExtResource("1_pipe")
+centered = false
+
+[node name="SmokeOrigin" type="Marker2D" parent="."]
+position = Vector2(0, -17)

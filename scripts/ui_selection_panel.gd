@@ -2,6 +2,7 @@ extends FullscreenDragable
 class_name UISelectionPanel
 
 const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd")
+const STOVE_INFRASTRUCTURE_SCRIPT = preload("res://scripts/infrastructure/stove_infrastructure.gd")
 
 @onready var header_label = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/Label
 @onready var panel_close_button: Button = $MarginContainer/MarginContainer/VBoxContainer/HeaderRow/CloseButton
@@ -51,6 +52,7 @@ var _status_row_instance = null
 
 var selected_room_highlight_instance
 var selected_npc_highlight_instance
+var selected_stove_instance = null
 
 var _connection_line: PixelLine = null
 
@@ -115,6 +117,10 @@ func _on_click_hovered_node_signal(node):
 		selected_npc_highlight_instance.destroy()
 	selected_npc_highlight_instance = null
 
+	if is_instance_valid(selected_stove_instance):
+		selected_stove_instance.set_selected(false)
+	selected_stove_instance = null
+
 	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
 		if not is_instance_valid(npc_ref):
 			continue
@@ -136,6 +142,8 @@ func _on_click_hovered_node_signal(node):
 		_show_for_guest(target)
 	elif target is RoomBase:
 		_show_for_room(target)
+	elif _is_stove_target(target):
+		_show_for_stove(target)
 
 	#self.size = self.get_combined_minimum_size()
 	var parent = room_delete_button.get_parent()
@@ -386,6 +394,7 @@ func _show_for_room(room: RoomBase):
 	arrest_button.hide()
 	worker_fight_response_row.hide()
 	header_label.text = room.data.room_name if room.data != null and room.data.room_name != "" else room.get_script().get_global_name().trim_prefix("Room")
+	room_delete_button.text = "Delete Room"
 	room_delete_button.disabled = false
 
 	if room is RoomEmpty:
@@ -508,6 +517,77 @@ func _show_for_room(room: RoomBase):
 		trading_office_ui.bind_room(room)
 
 	room_module_ui.populate(room)
+
+func _show_for_stove(stove) -> void:
+	hire_guest_button.hide()
+	arrest_button.hide()
+	worker_fight_response_row.hide()
+	header_label.text = stove.get_selection_title()
+	describtion_label.text = stove.get_selection_description()
+	describtion_label.show()
+
+	selected_stove_instance = stove
+	selected_stove_instance.set_selected(true)
+
+	room_delete_button.text = "Remove Stove"
+	room_delete_button.show()
+	room_delete_button.disabled = false
+	Util.disconnect_all_pressed(room_delete_button)
+	room_delete_button.pressed.connect(func():
+		Global.UI.confirm.show_dialogue(
+			"You are about to remove a stove and won't get the money back.",
+			func():
+				if is_instance_valid(stove):
+					stove.remove_self()
+					do_hide()
+		)
+	)
+
+	_update_stove_status(stove)
+
+func _update_stove_status(stove) -> void:
+	if not is_instance_valid(stove):
+		return
+
+	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
+		if not is_instance_valid(npc_ref):
+			continue
+		var npc := npc_ref as NPC
+		if npc != null:
+			npc.Tint.remove_outline_for(self)
+
+	var status_text := ""
+	var status_color := Color.TRANSPARENT
+	if stove.get_fuel_seconds_remaining() > 0.0:
+		status_text = "Heating (%ds fuel left)" % int(ceili(stove.get_fuel_seconds_remaining()))
+	elif stove.get_ember_seconds_remaining() > 0.0:
+		status_text = "Cooling Down"
+		status_color = Color.DARK_GOLDENROD
+	else:
+		status_text = "Out of Wood"
+		status_color = Color.ORANGE
+
+	if is_instance_valid(stove.worker):
+		stove.worker.Tint.add_outline(Color.WHITE, 20, self)
+		_set_stove_status_row(status_text, status_color, stove.worker, stove.worker.character_name)
+	else:
+		_set_stove_status_row(status_text, status_color)
+
+func _set_stove_status_row(text: String, color: Color, link_target = null, link_text: String = "") -> void:
+	if not is_instance_valid(_status_row_instance):
+		_show_status_row(text, color, link_target, link_text)
+		return
+
+	(_status_row_instance.get_node("ColorRect") as ColorRect).color = color
+	(_status_row_instance.get_node("HBoxContainer/Label") as Label).text = str(" ", text)
+	var btn := _status_row_instance.get_node("HBoxContainer/Button") as Button
+	Util.disconnect_all_pressed(btn)
+	if link_target != null:
+		btn.text = link_text
+		btn.show()
+		btn.pressed.connect(func(): manually_select(link_target))
+	else:
+		btn.hide()
 
 func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true
@@ -665,6 +745,10 @@ func do_hide():
 	if is_instance_valid(selected_npc_highlight_instance):
 		selected_npc_highlight_instance.destroy()
 	selected_npc_highlight_instance = null
+
+	if is_instance_valid(selected_stove_instance):
+		selected_stove_instance.set_selected(false)
+	selected_stove_instance = null
 
 	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
 		if not is_instance_valid(npc_ref):
@@ -838,6 +922,10 @@ func _process(delta):
 		var room := target as RoomBase
 		if is_instance_valid(room.worker):
 			connection_target = room.worker
+	elif _is_stove_target(target):
+		var stove = target
+		if is_instance_valid(stove.worker):
+			connection_target = stove.worker
 	elif target is NPCWorker:
 		var worker := target as NPCWorker
 		if worker.current_job != Enum.Jobs.IDLE and is_instance_valid(worker.current_job_room):
@@ -845,14 +933,17 @@ func _process(delta):
 
 	if is_instance_valid(connection_target):
 		var npc_pos: Vector2
-		var room_pos: Vector2
+		var anchor_pos: Vector2
 		if target is RoomBase:
 			npc_pos = connection_target.global_position - Vector2(0, 12)
-			room_pos = _room_edge_toward(target as RoomBase, npc_pos)
+			anchor_pos = _room_edge_toward(target as RoomBase, npc_pos)
+		elif _is_stove_target(target):
+			npc_pos = connection_target.global_position - Vector2(0, 12)
+			anchor_pos = target.get_world_rect().get_center()
 		else:
 			npc_pos = target.global_position - Vector2(0, 12)
-			room_pos = _room_edge_toward(connection_target as RoomBase, npc_pos)
-		_connection_line.global_position = room_pos
+			anchor_pos = _room_edge_toward(connection_target as RoomBase, npc_pos)
+		_connection_line.global_position = anchor_pos
 		_connection_line.target_position = npc_pos
 		_connection_line.show()
 	else:
@@ -869,6 +960,9 @@ func _process(delta):
 		var stored = MoneyHandler.get_money_at(Vector2i(target.x, target.y))
 		var cap = target.data.money_capacity if target.data != null else 0
 		room_money_label.text = str("Cash stored here: ", roundi(stored), " / ", cap, "$")
+
+	if _is_stove_target(target):
+		_update_stove_status(target)
 
 	if target is RoomStorageBase and is_instance_valid(_storage_items_container):
 		_refresh_storage_items(target)
@@ -935,8 +1029,19 @@ func _get_target_ui_rect() -> Rect2:
 		var rect_size := Vector2(absf(bottom_right.x - top_left.x), absf(bottom_right.y - top_left.y))
 		return Rect2(rect_position, rect_size)
 
+	if _is_stove_target(target):
+		var stove_rect: Rect2 = target.get_world_rect()
+		var top_left: Vector2 = Util.world_to_ui_position(stove_rect.position, self, Camera)
+		var bottom_right: Vector2 = Util.world_to_ui_position(stove_rect.position + stove_rect.size, self, Camera)
+		var rect_position := Vector2(minf(top_left.x, bottom_right.x), minf(top_left.y, bottom_right.y))
+		var rect_size := Vector2(absf(bottom_right.x - top_left.x), absf(bottom_right.y - top_left.y))
+		return Rect2(rect_position, rect_size)
+
 	var npc_position: Vector2 = Util.world_to_ui_position(target.global_position + _NPC_SELECTION_OFFSET, self, Camera)
 	return Rect2(npc_position, Vector2.ZERO)
+
+func _is_stove_target(node) -> bool:
+	return node != null and node.get_script() == STOVE_INFRASTRUCTURE_SCRIPT
 
 func _sync_panel_size() -> void:
 	var min_size := get_combined_minimum_size()
