@@ -79,6 +79,29 @@ void fragment() {
 
 	float screen_aspect = (1.0 / SCREEN_PIXEL_SIZE.x) / (1.0 / SCREEN_PIXEL_SIZE.y);
 
+	// Stars — before celestial bodies and clouds so both occlude them
+	{
+		float star_fade = 0.0;
+		if (time_of_day >= 18.5)     star_fade = smoothstep(18.5, 20.5, time_of_day);
+		else if (time_of_day <= 5.5) star_fade = smoothstep(5.5, 4.0, time_of_day);
+
+		if (star_fade > 0.0) {
+			vec2 px = floor(SCREEN_UV / SCREEN_PIXEL_SIZE);
+			float cell_size = 22.0;
+			vec2 cell = floor(px / cell_size);
+			float h = fract(sin(dot(cell, vec2(127.1, 311.7))) * 43758.5453);
+			if (h > 0.78) {
+				float h2 = fract(sin(dot(cell, vec2(269.5, 183.3))) * 17381.1234);
+				float h3 = fract(sin(dot(cell, vec2(113.5, 457.3))) * 78241.4321);
+				vec2 star_px = floor(vec2(h2, h3) * cell_size);
+				vec2 local_px = mod(px, cell_size);
+				if (abs(local_px.x - star_px.x) < 0.5 && abs(local_px.y - star_px.y) < 0.5) {
+					col.rgb = mix(col.rgb, vec3(1.0), star_fade * (0.5 + h * 0.5));
+				}
+			}
+		}
+	}
+
 	// Celestial bodies — before cloud loop so clouds occlude them
 	{
 		// Sun: rises 6am, peaks noon, sets 6pm
