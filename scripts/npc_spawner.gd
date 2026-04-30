@@ -12,7 +12,7 @@ var workers = []
 
 func guests_per_day_rate() -> float:
 	return 3.0 + get_active_guest_count() * 0.1
-var next_guest_progression = 0.0
+var next_guest_progression = 1.0
 
 signal spawned_guest_signal
 

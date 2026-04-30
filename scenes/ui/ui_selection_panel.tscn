@@ -61,6 +61,7 @@ texture_margin_right = 2.0
 texture_margin_bottom = 2.0
 
 [node name="UISelectionPanel" type="MarginContainer"]
+custom_minimum_size = Vector2(128, 0)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -553,3 +554,26 @@ custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Dig Deeper"
+
+[node name="SatisfactionLogSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SatisfactionLogToggleButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "> Satisfaction Log"
+
+[node name="SatisfactionLogItems" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="NarrativeLabel" type="RichTextLabel" parent="MarginContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("22_hpv7r")
+text = "Narrative"
+fit_content = true

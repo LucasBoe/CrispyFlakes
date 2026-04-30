@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="InfrastructureData" load_steps=3 format=3 uid="uid://0h35a2587drx"]
 
-[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="1_data"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="1_data"]
 [ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="2_stove"]
 
 [resource]

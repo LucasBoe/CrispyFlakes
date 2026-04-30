@@ -34,6 +34,10 @@ const STOVE_INFRASTRUCTURE_SCRIPT = preload("res://scripts/infrastructure/stove_
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
 @onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
+@onready var satisfaction_log_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection
+@onready var satisfaction_log_toggle_button: Button = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection/SatisfactionLogToggleButton
+@onready var satisfaction_log_items: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection/SatisfactionLogItems
+@onready var narrative_label: RichTextLabel = $MarginContainer/MarginContainer/VBoxContainer/NarrativeLabel
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
 const _ROOM_TILE_SIZE := 48.0
@@ -59,8 +63,8 @@ var _connection_line: PixelLine = null
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
 var _trait_container: VBoxContainer = null
-var _satisfaction_log_container: VBoxContainer = null
 var _satisfaction_log_size: int = -1
+var _is_satisfaction_log_expanded := true
 var _equipment_container: VBoxContainer = null
 var _storage_items_container: VBoxContainer = null
 var _storage_items_signature: Array = []
@@ -70,11 +74,13 @@ var _follow_side: int = 0
 func _ready():
 	super._ready()
 	describtion_label.bbcode_enabled = true
+	narrative_label.bbcode_enabled = true
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node_signal)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_potential_target_deleted)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
 
 	panel_close_button.pressed.connect(do_hide)
+	satisfaction_log_toggle_button.pressed.connect(_on_satisfaction_log_toggle_pressed)
 
 	_connection_line = PixelLine.new()
 	_connection_line.line_color = Color(1.0, 1.0, 0.5, 0.7)
@@ -98,6 +104,9 @@ func _ready():
 	hire_guest_button.hide()
 	arrest_button.hide()
 	worker_fight_response_row.hide()
+	satisfaction_log_section.hide()
+	satisfaction_log_items.hide()
+	narrative_label.hide()
 
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
@@ -146,8 +155,7 @@ func _on_click_hovered_node_signal(node):
 		_show_for_stove(target)
 
 	#self.size = self.get_combined_minimum_size()
-	var parent = room_delete_button.get_parent()
-	parent.move_child(room_delete_button, parent.get_child_count())
+	_keep_bottom_items_last()
 	show()
 	_update_floating_panel_position()
 	call_deferred("_update_floating_panel_position")
@@ -164,8 +172,11 @@ func _clear_instances():
 
 	dig_deeper_button.hide()
 	hire_guest_button.hide()
+	narrative_label.hide()
+	narrative_label.text = ""
 	_npc_base_description = ""
 	_npc_narrative_text = ""
+	_is_satisfaction_log_expanded = true
 
 	if is_instance_valid(_trait_container):
 		_trait_container.queue_free()
@@ -193,9 +204,8 @@ func _clear_instances():
 	prisoner_item_instances.clear()
 	storage_filter_container.hide()
 
-	if is_instance_valid(_satisfaction_log_container):
-		_satisfaction_log_container.queue_free()
-	_satisfaction_log_container = null
+	satisfaction_log_section.hide()
+	_clear_satisfaction_log_items()
 	_satisfaction_log_size = -1
 
 	if is_instance_valid(_equipment_container):
@@ -208,6 +218,12 @@ func _clear_instances():
 	_storage_items_signature = []
 
 	_connection_line.hide()
+
+func _keep_bottom_items_last() -> void:
+	var parent = room_delete_button.get_parent()
+	parent.move_child(room_delete_button, parent.get_child_count())
+	parent.move_child(satisfaction_log_section, parent.get_child_count())
+	parent.move_child(narrative_label, parent.get_child_count())
 
 func _get_status_icon_entries(npc: NPC) -> Array:
 	return npc.get_state_icon_entries()
@@ -265,6 +281,7 @@ func _show_for_worker(worker: NPCWorker):
 	hire_guest_button.hide()
 	arrest_button.hide()
 	worker_fight_response_row.show()
+	_position_worker_fight_response_row()
 	_bind_worker_fight_response(worker)
 	needs = null
 	_rebuild_equipment_ui(worker)
@@ -326,6 +343,11 @@ func _rebuild_traits_ui(npc: NPC) -> void:
 	for data in npc.Traits.traits:
 		container.add_child(_create_trait_row(data))
 
+func _position_worker_fight_response_row() -> void:
+	var parent := worker_fight_response_row.get_parent()
+	var anchor: Control = _trait_container if is_instance_valid(_trait_container) else describtion_label
+	parent.move_child(worker_fight_response_row, anchor.get_index() + 1)
+
 func _create_trait_row(data) -> Control:
 	var panel := PanelContainer.new()
 	var style := StyleBoxFlat.new()
@@ -356,16 +378,15 @@ func _create_trait_row(data) -> Control:
 	return panel
 
 func _rebuild_satisfaction_log(guest: NPCGuest):
-	if is_instance_valid(_satisfaction_log_container):
-		_satisfaction_log_container.queue_free()
-	_satisfaction_log_container = VBoxContainer.new()
-	need_ui_dummy.get_parent().add_child(_satisfaction_log_container)
 	_satisfaction_log_size = guest.satisfaction_log.size()
+	_clear_satisfaction_log_items()
 
-	var title := status_icon_label_dummy.duplicate() as Label
-	title.text = "Satisfaction Log"
-	title.show()
-	_satisfaction_log_container.add_child(title)
+	if guest.satisfaction_log.is_empty():
+		satisfaction_log_section.hide()
+		satisfaction_log_items.hide()
+		return
+
+	satisfaction_log_section.show()
 
 	var by_reason: Dictionary = {}
 	for entry in guest.satisfaction_log:
@@ -385,7 +406,26 @@ func _rebuild_satisfaction_log(guest: NPCGuest):
 		lbl.text = "  %s%.2f  %s%s" % [sign_str, amount, entry.reason, count_str]
 		lbl.add_theme_color_override("font_color", Color.LIGHT_GREEN if amount >= 0 else Color.SALMON)
 		lbl.show()
-		_satisfaction_log_container.add_child(lbl)
+		satisfaction_log_items.add_child(lbl)
+
+	_update_satisfaction_log_ui()
+
+func _clear_satisfaction_log_items() -> void:
+	for child in satisfaction_log_items.get_children():
+		satisfaction_log_items.remove_child(child)
+		child.queue_free()
+
+func _update_satisfaction_log_ui() -> void:
+	var has_entries := satisfaction_log_items.get_child_count() > 0
+	satisfaction_log_section.visible = has_entries
+	satisfaction_log_toggle_button.text = "v Satisfaction Log" if _is_satisfaction_log_expanded else "> Satisfaction Log"
+	satisfaction_log_items.visible = has_entries and _is_satisfaction_log_expanded
+
+func _on_satisfaction_log_toggle_pressed() -> void:
+	if not satisfaction_log_section.visible:
+		return
+	_is_satisfaction_log_expanded = not _is_satisfaction_log_expanded
+	_update_satisfaction_log_ui()
 
 func _show_for_room(room: RoomBase):
 	#needs = null
@@ -812,17 +852,7 @@ func _rebuild_equipment_ui(npc: NPC) -> void:
 		_equipment_container.queue_free()
 	_equipment_container = null
 
-	if npc.Equipment == null:
-		return
-
-	var parent: VBoxContainer = need_ui_dummy.get_parent()
-	var container := VBoxContainer.new()
-	parent.add_child(container)
-	_equipment_container = container
-
-	# WEAPON — inventory-backed, workers only
-	if npc is NPCWorker:
-		_add_weapon_inventory_row(container, npc as NPCWorker)
+	return
 
 func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> void:
 	var inv: Node = get_node("/root/WeaponInventory")
@@ -978,7 +1008,8 @@ func _process(delta):
 		var narrative := b.get_narrative() if b != null else "..."
 		if narrative != _npc_narrative_text:
 			_npc_narrative_text = narrative
-			describtion_label.text = _npc_base_description + "\n\n[color=#888888]" + narrative + "[/color]"
+			narrative_label.text = "[color=#888888]" + narrative + "[/color]"
+			narrative_label.visible = narrative != ""
 
 	if target is NPCGuest:
 		_bind_guest_hire_button(target)
@@ -998,6 +1029,8 @@ func _process(delta):
 				var job_color = Color(0.3, 0.8, 0.3, 0.35) if has_job else Color(1.0, 0.5, 0.0, 0.35)
 				var room_name = worker.current_job_room.data.room_name if has_job and worker.current_job_room.data != null else ""
 				_show_status_row("Working at" if has_job else "No Job", job_color, worker.current_job_room if has_job else null, room_name)
+
+	_keep_bottom_items_last()
 
 func _update_floating_panel_position() -> void:
 	if target == null or not is_instance_valid(target):
