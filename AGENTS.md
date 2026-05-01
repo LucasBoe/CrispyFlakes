@@ -146,3 +146,12 @@ Recent changes since setup have concentrated around:
 - New NPC capabilities should be added as modules in `scripts/npc/modules/`
 - New behaviors should extend the `Behaviour` base class and live in `scripts/npc/behaviours/`
 - Prefer simple logic over defensive handling for impossible internal states unless a system genuinely needs the guard
+
+## UI Collaboration Rules
+- When the user is actively editing a `.tscn`, treat the current scene file as the source of truth and adapt `.gd` scripts to it unless the user explicitly asks for scene edits.
+- Do not do broad scene rewrites during UI bugfixes. Preserve node hierarchy, container sizing, anchors, margins, fonts, theme overrides, and styling unless the task specifically requires changing them.
+- If creating new UI structure, keep it minimal: use the fewest containers needed and avoid font/style/theme/layout overrides unless they are functionally necessary.
+- Do not override or reset user-made scene adjustments unless the user explicitly asks for that exact change. Prefer additive edits over replacing existing setup.
+- If a new UI element is something the user is likely to style, prefer adding a real node to the scene over creating it only in code, unless the user specifically wants it to stay runtime-only.
+- Do not remove existing UI overrides or "clean up" styling just because they look redundant; assume they are intentional unless the user asks for cleanup.
+- Before patching UI logic, re-read the live scene and verify script assumptions against actual node names, unique-name markers, node types, and parent/child relationships.

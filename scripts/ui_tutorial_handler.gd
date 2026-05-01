@@ -11,6 +11,9 @@ const GOLDEN_GLOW_SHADER = preload("res://assets/shaders/golden_glow_red_replace
 const REWARD_TINT = Color(1.0, 0.92, 0.25, 1.0)
 const HINT_TINT = Color(0.92, 0.92, 0.92, 1.0)
 const CONNECTOR_HEIGHT := 2.0
+const REVEAL_FLY_DURATION := 0.35
+const REVEAL_FLY_SCALE := Vector2(0.6, 0.6)
+const SUMMARY_LABEL_GAP := 8.0
 
 @export var reward_text := "30 $ Reward"
 @export var start_expanded := true
@@ -33,7 +36,9 @@ var _is_expanded := true
 var _revealed_marker_instances := {}
 var _hovered_section_title := ""
 var _glowing_active_sections := {}
+var _sections_animating_into_sidebar := {}
 var _shared_golden_glow_material: ShaderMaterial
+var _bubble_base_minimum_size := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -41,6 +46,7 @@ func _ready() -> void:
 	_shared_golden_glow_material.shader = GOLDEN_GLOW_SHADER
 	_is_expanded = start_expanded
 	_reward_label.self_modulate = REWARD_TINT
+	_bubble_base_minimum_size = _bubble_template.custom_minimum_size
 	_bubble_template.hide()
 	_claim_reward_button.pressed.connect(_on_claim_reward_pressed)
 	resized.connect(_update_layout)
@@ -103,12 +109,14 @@ func _rebuild_bubbles() -> void:
 		var icon := bubble.get_node("BubbleIcon") as TextureRect
 		var state_icon := bubble.get_node("BubbleStateIcon") as TextureRect
 		var connector := bubble.get_node_or_null("BubbleConnector") as ColorRect
+		var summary_label := _ensure_bubble_summary_label(bubble)
 
 		icon.visible = true
 		icon.texture = TUTORIAL_DOT_OFF
 		icon.self_modulate = Color.WHITE
 		icon.material = _shared_golden_glow_material
 		state_icon.visible = true
+		_layout_bubble_visuals(icon, state_icon, summary_label)
 		if connector != null:
 			connector.visible = false
 
@@ -134,9 +142,11 @@ func _rebuild_revealed_markers() -> void:
 		_revealed_marker_instances[tutorial.section_title] = marker
 
 func _clear_revealed_markers() -> void:
-	for marker in _revealed_marker_instances.values():
-		UiNotifications.try_kill(marker)
-	_revealed_marker_instances.clear()
+	for section_title in _revealed_marker_instances.keys().duplicate():
+		if _sections_animating_into_sidebar.has(section_title):
+			continue
+		UiNotifications.try_kill(_revealed_marker_instances[section_title])
+		_revealed_marker_instances.erase(section_title)
 
 
 func _clear_bubbles() -> void:
@@ -166,10 +176,21 @@ func _on_bubble_pressed(section_title: String) -> void:
 	call_deferred("_update_layout")
 
 func _on_revealed_marker_pressed(section_title: String) -> void:
+	if _sections_animating_into_sidebar.has(section_title):
+		return
+
+	var marker = _revealed_marker_instances.get(section_title)
+	if marker != null:
+		marker.target_object = null
+		if marker.instance is Control:
+			(marker.instance as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	_selected_section_title = section_title
 	_is_expanded = false
 	_glowing_active_sections[section_title] = true
+	_sections_animating_into_sidebar[section_title] = true
 	TutorialHandler._activate_tutorial(section_title)
+	await _play_revealed_marker_flight(section_title)
 
 func _on_bubble_mouse_entered(section_title: String) -> void:
 	_hovered_section_title = section_title
@@ -288,16 +309,85 @@ func _copy_label_style(target: Label, reference: Label, use_theme: bool) -> void
 		target.add_theme_font_override("font", font)
 
 
+func _ensure_bubble_summary_label(bubble: Button) -> Label:
+	var summary_label := bubble.get_node_or_null("BubbleSummaryLabel") as Label
+	if summary_label != null:
+		return summary_label
+
+	summary_label = Label.new()
+	summary_label.name = "BubbleSummaryLabel"
+	summary_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	summary_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	summary_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	summary_label.clip_text = false
+	summary_label.self_modulate = Color.WHITE
+	_copy_label_style(summary_label, _task_label, true)
+	bubble.add_child(summary_label)
+	return summary_label
+
+
+func _layout_bubble_visuals(background_icon: TextureRect, state_icon: TextureRect, summary_label: Label) -> void:
+	background_icon.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	background_icon.position = Vector2.ZERO
+	background_icon.size = _bubble_base_minimum_size
+
+	var state_icon_size := state_icon.size
+	if state_icon_size == Vector2.ZERO:
+		state_icon_size = Vector2(
+			state_icon.offset_right - state_icon.offset_left,
+			state_icon.offset_bottom - state_icon.offset_top
+		)
+	if state_icon_size == Vector2.ZERO:
+		state_icon_size = TODO_UNCHECKED.get_size()
+
+	state_icon.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	state_icon.size = state_icon_size
+	state_icon.position = (_bubble_base_minimum_size - state_icon_size) * 0.5
+
+	summary_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	summary_label.position = Vector2(_bubble_base_minimum_size.x + SUMMARY_LABEL_GAP, 0)
+	summary_label.custom_minimum_size = Vector2.ZERO
+	summary_label.size = Vector2(220, _bubble_base_minimum_size.y)
+
+
+func _should_show_collapsed_summary(section_title: String) -> bool:
+	return _selected_section_title == section_title and not _is_expanded
+
+
+func _get_collapsed_summary_text(section_title: String) -> String:
+	var display_tasks := _get_display_tasks(section_title)
+	var primary_task = _get_primary_display_task(display_tasks)
+	if primary_task == null:
+		return ""
+	return primary_task.text
+
+
 func _apply_bubble_states() -> void:
 	for bubble_index in range(_bubble_instances.size()):
 		var bubble := _bubble_instances[bubble_index]
 		var tutorial = _sidebar_tutorials[bubble_index]
 		var background_icon := bubble.get_node("BubbleIcon") as TextureRect
 		var state_icon := bubble.get_node("BubbleStateIcon") as TextureRect
+		var summary_label := _ensure_bubble_summary_label(bubble)
+		var bubble_width := _bubble_base_minimum_size.x
+
+		if _sections_animating_into_sidebar.has(tutorial.section_title):
+			bubble.modulate = Color(1.0, 1.0, 1.0, 0.0)
+			bubble.disabled = true
+			summary_label.visible = false
+			continue
+
 		background_icon.texture = _get_bubble_dot_texture(tutorial.section_title, tutorial)
 		state_icon.texture = _get_bubble_state_icon_texture(tutorial)
 		state_icon.self_modulate = _get_bubble_state_icon_modulate(tutorial.section_title, tutorial)
+		summary_label.text = _get_collapsed_summary_text(tutorial.section_title)
+		summary_label.visible = _should_show_collapsed_summary(tutorial.section_title) and not summary_label.text.is_empty()
+		if summary_label.visible:
+			bubble_width += SUMMARY_LABEL_GAP + summary_label.get_combined_minimum_size().x
+
+		bubble.custom_minimum_size = Vector2(bubble_width, _bubble_base_minimum_size.y)
 		bubble.modulate = Color.WHITE
+		bubble.disabled = false
 
 func _get_bubble_dot_texture(section_title: String, tutorial) -> Texture2D:
 	if _should_glow_bubble(section_title, tutorial):
@@ -340,6 +430,10 @@ func _prune_bubble_state() -> void:
 		if not valid_section_titles.has(section_title):
 			_glowing_active_sections.erase(section_title)
 
+	for section_title in _sections_animating_into_sidebar.keys():
+		if not valid_section_titles.has(section_title):
+			_sections_animating_into_sidebar.erase(section_title)
+
 
 func _apply_expanded_state() -> void:
 	var tutorial = TutorialHandler.get_tutorial(_selected_section_title)
@@ -368,19 +462,7 @@ func _update_layout() -> void:
 
 	_hide_all_bubble_connectors()
 
-	var bubble_rect := selected_bubble.get_global_rect()
-	var quest_window_rect := _quest_window.get_global_rect()
-	var bubble_size := selected_bubble.size if selected_bubble.size != Vector2.ZERO else selected_bubble.custom_minimum_size
-
 	connector.visible = true
-	connector.position = Vector2(
-		bubble_size.x,
-		(bubble_size.y - CONNECTOR_HEIGHT) * 0.5
-	)
-	connector.size = Vector2(
-		max(quest_window_rect.position.x - bubble_rect.end.x, 0.0),
-		CONNECTOR_HEIGHT
-	)
 
 
 func _get_selected_bubble() -> Button:
@@ -399,6 +481,57 @@ func _hide_all_bubble_connectors() -> void:
 		var connector := _get_bubble_connector(bubble)
 		if connector != null:
 			connector.visible = false
+
+
+func _get_bubble_for_section(section_title: String) -> Button:
+	for bubble_index in range(_sidebar_tutorials.size()):
+		if _sidebar_tutorials[bubble_index].section_title == section_title:
+			return _bubble_instances[bubble_index]
+	return null
+
+
+func _play_revealed_marker_flight(section_title: String) -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	var bubble := _get_bubble_for_section(section_title)
+	var marker = _revealed_marker_instances.get(section_title)
+	if bubble == null or marker == null or not (marker.instance is Control):
+		_finish_revealed_marker_flight(section_title)
+		return
+
+	var target_center := bubble.get_global_rect().get_center()
+	var flying_marker := marker.instance as Control
+	var marker_size := flying_marker.size
+	if marker_size == Vector2.ZERO:
+		marker_size = REVEALED_MARKER_TEXTURE.get_size()
+	var target_position_ui := target_center - (marker_size * REVEAL_FLY_SCALE) * 0.5
+	var target_position_world := Util.ui_to_world_position(target_position_ui, self, Camera)
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.parallel().tween_property(
+		flying_marker,
+		"global_position",
+		target_position_world,
+		REVEAL_FLY_DURATION
+	)
+	tween.parallel().tween_property(flying_marker, "scale", REVEAL_FLY_SCALE, REVEAL_FLY_DURATION)
+	await tween.finished
+
+	_finish_revealed_marker_flight(section_title)
+
+
+func _finish_revealed_marker_flight(section_title: String) -> void:
+	var marker = _revealed_marker_instances.get(section_title)
+	if marker != null:
+		UiNotifications.try_kill(marker)
+		_revealed_marker_instances.erase(section_title)
+
+	_sections_animating_into_sidebar.erase(section_title)
+	_apply_bubble_states()
+	call_deferred("_update_layout")
 
 
 func _on_claim_reward_pressed() -> void:
