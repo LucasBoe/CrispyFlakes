@@ -1,155 +1,183 @@
-[gd_scene load_steps=16 format=3 uid="uid://rge7opbckgs4"]
+[gd_scene load_steps=8 format=3 uid="uid://rge7opbckgs4"]
 
 [ext_resource type="Script" uid="uid://cf4vjuisj6myv" path="res://scripts/ui_tutorial_handler.gd" id="1_26idi"]
-[ext_resource type="Texture2D" uid="uid://bg7qwhqk3njmo" path="res://assets/sprites/ui/2x/panel_background.png" id="2_gsoht"]
-[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_05kn2"]
-[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_q0ngo"]
-[ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="6_q0ngo"]
-[ext_resource type="Texture2D" uid="uid://canefkwiuq73v" path="res://assets/sprites/ui/2x/Arrow_11px_down.png" id="7_05kn2"]
-[ext_resource type="Texture2D" uid="uid://bp3ehdg44n4s" path="res://assets/sprites/ui/2x/divider.png" id="7_g7q1u"]
-[ext_resource type="Texture2D" uid="uid://b577csuxdgity" path="res://assets/sprites/ui/2x/Tutorial_nav_small_outline.png" id="10_gsoht"]
-[ext_resource type="Texture2D" uid="uid://cca1fpjpbgwwv" path="res://assets/sprites/ui/2x/Tutorial_nav_big_checkmark.png" id="10_q0ngo"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_05kn2"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="3_q0ngo"]
+[ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="4_gsoht"]
+[ext_resource type="Texture2D" uid="uid://rpvs1authe8r" path="res://assets/sprites/ui/2x/tutorial_dot_off.png" id="5_revealed"]
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="6_panel"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_eqv5l"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gsoht"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q0ngo"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_335db"]
-texture = ExtResource("7_05kn2")
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1ts76"]
-
-[sub_resource type="Theme" id="Theme_uhm2g"]
-Button/styles/disabled = SubResource("StyleBoxEmpty_eqv5l")
-Button/styles/focus = SubResource("StyleBoxEmpty_gsoht")
-Button/styles/hover = SubResource("StyleBoxEmpty_q0ngo")
-Button/styles/normal = SubResource("StyleBoxTexture_335db")
-Button/styles/pressed = SubResource("StyleBoxEmpty_1ts76")
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
 [node name="UITutorial" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_26idi")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="LayoutRoot" type="Control" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(370, 188)
 layout_mode = 1
-offset_right = 218.0
-offset_bottom = 211.0
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 96
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
-[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
-self_modulate = Color(1, 1, 1, 0.78431374)
+[node name="QuestWindow" type="MarginContainer" parent="LayoutRoot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(192, 128)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -64.0
+offset_right = 242.0
+offset_bottom = 64.0
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Background" type="NinePatchRect" parent="LayoutRoot/QuestWindow"]
 layout_mode = 2
-texture = ExtResource("2_gsoht")
+texture = ExtResource("6_panel")
 patch_margin_left = 8
 patch_margin_top = 8
 patch_margin_right = 8
 patch_margin_bottom = 8
 
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
+[node name="ContentMargin" type="MarginContainer" parent="LayoutRoot/QuestWindow"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="LayoutRoot/QuestWindow/ContentMargin"]
 layout_mode = 2
-theme_override_constants/separation = 0
+mouse_filter = 2
 
-[node name="MarginContainer_Header" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header"]
-layout_mode = 2
-
-[node name="ButtonFoldout" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/HBoxContainer"]
+[node name="SectionLabel" type="Label" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(11, 11)
+custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
-theme = SubResource("Theme_uhm2g")
-
-[node name="Title" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Header/HBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 8)
-layout_mode = 2
-theme = ExtResource("3_05kn2")
-theme_override_fonts/font = ExtResource("4_q0ngo")
+theme = ExtResource("2_05kn2")
+theme_override_fonts/font = ExtResource("3_q0ngo")
 theme_override_font_sizes/font_size = 8
-text = "A NEW BEGINNING"
+text = "\"A New Beginning\""
 horizontal_alignment = 1
 vertical_alignment = 2
 
-[node name="MarginContainer_Divider" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_bottom = 8
-
-[node name="Divider" type="NinePatchRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Divider"]
-custom_minimum_size = Vector2(0, 5)
-layout_mode = 2
-texture = ExtResource("7_g7q1u")
-patch_margin_left = 5
-patch_margin_right = 5
-
-[node name="VBoxContainer_Step" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+[node name="ObjectiveRow" type="HBoxContainer" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer"]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step"]
+[node name="TaskIcon" type="TextureRect" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer/ObjectiveRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
-layout_mode = 2
-texture = ExtResource("6_q0ngo")
+texture = ExtResource("4_gsoht")
 stretch_mode = 3
 
-[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/VBoxContainer_Step/HBoxContainer"]
+[node name="TaskLabel" type="Label" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer/ObjectiveRow"]
+unique_name_in_owner = true
 layout_mode = 2
-theme = ExtResource("3_05kn2")
-text = "Assign a worker to t"
+size_flags_horizontal = 3
+theme = ExtResource("2_05kn2")
+text = "Clean up the mess"
+autowrap_mode = 3
 
-[node name="MarginContainer_Divider2" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+[node name="HintsContainer" type="VBoxContainer" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/separation = 6
 
-[node name="Divider" type="NinePatchRect" parent="MarginContainer/MarginContainer/VBoxContainer/MarginContainer_Divider2"]
-custom_minimum_size = Vector2(0, 5)
+[node name="Control" type="Control" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
-texture = ExtResource("7_g7q1u")
-patch_margin_left = 5
-patch_margin_right = 5
+size_flags_vertical = 3
 
-[node name="TutorialNavBig" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = -2
-theme_override_constants/margin_right = -2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/TutorialNavBig"]
-layout_mode = 2
-theme_override_constants/separation = 0
-
-[node name="PillDummy" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/TutorialNavBig/HBoxContainer"]
-layout_mode = 2
-texture = ExtResource("10_q0ngo")
-
-[node name="TutorialNavSmall" type="MarginContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/margin_top = 9
-theme_override_constants/margin_bottom = -12
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/TutorialNavSmall"]
+[node name="RewardRow" type="HBoxContainer" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer"]
 layout_mode = 2
 
-[node name="PillDummy" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/TutorialNavSmall/HBoxContainer"]
+[node name="RewardLabel" type="Label" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer/RewardRow"]
+unique_name_in_owner = true
+modulate = Color(1, 0.92, 0.25, 1)
 layout_mode = 2
-texture = ExtResource("10_gsoht")
+size_flags_horizontal = 3
+theme = ExtResource("2_05kn2")
+text = "30 $ Reward"
+
+[node name="ClaimRewardButton" type="Button" parent="LayoutRoot/QuestWindow/ContentMargin/VBoxContainer/RewardRow"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme = ExtResource("2_05kn2")
+text = "Claim Reward"
+
+[node name="BubbleSidebar" type="VFlowContainer" parent="LayoutRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_right = 40.0
+grow_vertical = 2
+alignment = 1
+
+[node name="BubbleTemplate" type="Button" parent="LayoutRoot/BubbleSidebar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+focus_mode = 0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+
+[node name="BubbleIcon" type="TextureRect" parent="LayoutRoot/BubbleSidebar/BubbleTemplate"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_revealed")
+stretch_mode = 3
+
+[node name="BubbleStateIcon" type="TextureRect" parent="LayoutRoot/BubbleSidebar/BubbleTemplate"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_gsoht")
+stretch_mode = 3
+
+[node name="BubbleConnector" type="ColorRect" parent="LayoutRoot/BubbleSidebar/BubbleTemplate"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 32.0
+offset_top = -1.0
+offset_right = 41.0
+offset_bottom = 1.0
+grow_vertical = 2
+mouse_filter = 2

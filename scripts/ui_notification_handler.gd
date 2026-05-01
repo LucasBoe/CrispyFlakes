@@ -116,6 +116,30 @@ func create_npc_notification(target: Node2D, texture: Texture2D, permanent: bool
 	tex.texture = texture
 
 	return i
+
+func create_npc_action_button(target: Node2D, texture: Texture2D, pressed_callback: Callable, permanent: bool = false, offset := Vector2(0, -24), duration := DEFAULT_LIFETIME) -> instance_info:
+	var button := TextureButton.new()
+	button.texture_normal = texture
+	button.texture_hover = texture
+	button.texture_pressed = texture
+	button.ignore_texture_size = false
+	button.stretch_mode = TextureButton.STRETCH_KEEP_CENTERED
+	button.size = texture.get_size()
+	button.focus_mode = Control.FOCUS_NONE
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.z_index = 4100
+	if pressed_callback.is_valid():
+		button.pressed.connect(pressed_callback)
+	_world_layer.add_child(button)
+
+	var i := instance_info.new()
+	i.instance = button
+	i.target_object = target
+	i.offset = offset - Vector2(texture.get_width() / 2, texture.get_height())
+	i.is_permanent = permanent
+	i.lifetime_left = duration if not permanent else INF
+	instances.append(i)
+	return i
 	
 func create_npc_health_bar(npc: NPC, color: Color) -> instance_info:
 	var i := _create_from_dummy(fight_bar_dummy, INF)
@@ -137,8 +161,11 @@ func update_npc_health_bar(i : instance_info, health_value : float):
 func _process(delta):
 	speechbubbe_dummy.global_position = get_global_mouse_position() - speechbubbe_dummy.pivot_offset
 
-	for i in instances:
+	for i in instances.duplicate():
 		if i.target_object != null:
+			if not is_instance_valid(i.target_object):
+				try_kill(i)
+				continue
 			var p = i.target_object.global_position + i.offset
 			i.instance.global_position = p
 

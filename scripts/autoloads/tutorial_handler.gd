@@ -2,6 +2,15 @@ extends Node
 
 signal tasks_changed
 signal tutorial_finished
+signal tutorial_claimed(section_title: String)
+
+enum TutorialPhase {
+	HIDDEN,
+	REVEALED,
+	ACTIVE,
+	COMPLETED,
+	DONE,
+}
 
 var skip_requested: bool = false
 
@@ -10,6 +19,23 @@ func _poll_until(condition: Callable) -> bool:
 	while not condition.call() and not skip_requested:
 		await get_tree().process_frame
 	return skip_requested
+
+
+class TutorialEntry:
+	extends RefCounted
+
+	var section_title: String
+	var reward_money: int
+	var reward_text: String
+	var phase: int
+	var reveal_target: Node2D
+
+	func _init(new_section_title: String, new_reward_money: int = 0, new_reward_text: String = "", new_phase: int = 0, new_reveal_target: Node2D = null):
+		section_title = new_section_title
+		reward_money = new_reward_money
+		reward_text = new_reward_text
+		phase = new_phase
+		reveal_target = new_reveal_target
 
 
 class TutorialTask:
@@ -32,19 +58,21 @@ class TutorialTask:
 		if is_started:
 			return
 		is_started = true
-		_handler._notify_tasks_changed()
+		_handler._on_task_state_changed(self)
 
 	func finish() -> void:
 		if is_done:
 			return
 		is_started = true
 		is_done = true
-		_handler._notify_tasks_changed()
+		_handler._on_task_state_changed(self)
 
 	func set_done(done := true) -> void:
+		var changed := not is_started or is_done != done
 		is_started = true
 		is_done = done
-		_handler._notify_tasks_changed()
+		if changed:
+			_handler._on_task_state_changed(self)
 
 	func set_text(new_text: String) -> void:
 		if text == new_text:
@@ -54,9 +82,43 @@ class TutorialTask:
 
 
 var tasks: Array[TutorialTask] = []
+var tutorials := {}
+var tutorial_order: Array[String] = []
+
+
+func create_tutorial(section_title: String, reward_money: int = -1, reward_override_text: String = "", initial_phase: int = TutorialPhase.HIDDEN, reveal_target: Node2D = null) -> TutorialEntry:
+	var tutorial := tutorials.get(section_title) as TutorialEntry
+	if tutorial == null:
+		var resolved_reward := 0 if reward_money < 0 else reward_money
+		tutorial = TutorialEntry.new(section_title, resolved_reward, reward_override_text, initial_phase, reveal_target)
+		tutorials[section_title] = tutorial
+		tutorial_order.append(section_title)
+		_notify_tasks_changed()
+		return tutorial
+
+	if reward_money >= 0:
+		tutorial.reward_money = reward_money
+	if not reward_override_text.is_empty():
+		tutorial.reward_text = reward_override_text
+	if reveal_target != null:
+		tutorial.reveal_target = reveal_target
+	return tutorial
+
+
+func ensure_tutorial(section_title: String, reward_money: int = -1, reward_override_text: String = "") -> TutorialEntry:
+	var tutorial := tutorials.get(section_title) as TutorialEntry
+	if tutorial == null:
+		return create_tutorial(section_title, reward_money, reward_override_text)
+
+	if reward_money >= 0:
+		tutorial.reward_money = reward_money
+	if not reward_override_text.is_empty():
+		tutorial.reward_text = reward_override_text
+	return tutorial
 
 
 func create_task(section_title: String, text: String, hints: Array[String] = []) -> TutorialTask:
+	ensure_tutorial(section_title)
 	var task := TutorialTask.new(self, section_title, text, hints)
 	tasks.append(task)
 	_notify_tasks_changed()
@@ -65,18 +127,56 @@ func create_task(section_title: String, text: String, hints: Array[String] = [])
 
 func clear_tasks() -> void:
 	tasks.clear()
+	tutorials.clear()
+	tutorial_order.clear()
 	_notify_tasks_changed()
 
 
-func get_current_section_title() -> String:
-	for task in tasks:
-		if task.is_started and not task.is_done:
-			return task.section_title
+func get_tutorial(section_title: String) -> TutorialEntry:
+	return tutorials.get(section_title) as TutorialEntry
 
-	for i in range(tasks.size() - 1, -1, -1):
-		var task = tasks[i]
-		if task.is_started or task.is_done:
-			return task.section_title
+
+func get_sidebar_tutorials() -> Array:
+	var visible_tutorials: Array = []
+	for section_title in tutorial_order:
+		var tutorial := get_tutorial(section_title)
+		if tutorial == null:
+			continue
+		if tutorial.phase == TutorialPhase.HIDDEN or tutorial.phase == TutorialPhase.REVEALED or tutorial.phase == TutorialPhase.DONE:
+			continue
+		visible_tutorials.append(tutorial)
+	return visible_tutorials
+
+
+func get_revealed_tutorials() -> Array:
+	var revealed_tutorials: Array = []
+	for section_title in tutorial_order:
+		var tutorial := get_tutorial(section_title)
+		if tutorial == null:
+			continue
+		if tutorial.phase != TutorialPhase.REVEALED:
+			continue
+		if not is_instance_valid(tutorial.reveal_target):
+			continue
+		revealed_tutorials.append(tutorial)
+	return revealed_tutorials
+
+
+func get_current_section_title() -> String:
+	for section_title in tutorial_order:
+		var tutorial := get_tutorial(section_title)
+		if tutorial != null and tutorial.phase == TutorialPhase.ACTIVE:
+			return section_title
+
+	for section_title in tutorial_order:
+		var tutorial := get_tutorial(section_title)
+		if tutorial != null and tutorial.phase == TutorialPhase.COMPLETED:
+			return section_title
+
+	for section_title in tutorial_order:
+		var tutorial := get_tutorial(section_title)
+		if tutorial != null and tutorial.phase == TutorialPhase.REVEALED:
+			return section_title
 
 	return ""
 
@@ -92,87 +192,93 @@ func get_section_tasks(section_title: String) -> Array[TutorialTask]:
 	return section_tasks
 
 
+func get_tutorial_reward_text(section_title: String) -> String:
+	var tutorial := get_tutorial(section_title)
+	if tutorial == null:
+		return ""
+	if not tutorial.reward_text.is_empty():
+		return tutorial.reward_text
+	if tutorial.reward_money > 0:
+		return "%d $ Reward" % tutorial.reward_money
+	return ""
+
+func set_tutorial_reveal_target(section_title: String, target: Node2D) -> void:
+	var tutorial := ensure_tutorial(section_title)
+	tutorial.reveal_target = target
+	_notify_tasks_changed()
+
+
+func reveal_tutorial(section_title: String) -> void:
+	var tutorial := ensure_tutorial(section_title)
+	if tutorial.phase == TutorialPhase.DONE:
+		return
+	tutorial.phase = TutorialPhase.REVEALED
+	_notify_tasks_changed()
+
+
+func _activate_tutorial(section_title: String) -> void:
+	var tutorial := ensure_tutorial(section_title)
+	if tutorial.phase == TutorialPhase.DONE:
+		return
+	tutorial.phase = TutorialPhase.ACTIVE
+	_notify_tasks_changed()
+
+
+func complete_tutorial(section_title: String) -> void:
+	var tutorial := ensure_tutorial(section_title)
+	if tutorial.phase == TutorialPhase.DONE:
+		return
+	tutorial.phase = TutorialPhase.COMPLETED
+	_notify_tasks_changed()
+
+
+func claim_tutorial_reward(section_title: String) -> void:
+	var tutorial := get_tutorial(section_title)
+	if tutorial == null or tutorial.phase != TutorialPhase.COMPLETED:
+		return
+
+	if tutorial.reward_money > 0:
+		ResourceHandler.change_money(tutorial.reward_money)
+
+	mark_tutorial_done(section_title)
+	tutorial_claimed.emit(section_title)
+
+
+func set_tutorial_reward(section_title: String, reward_money: int, reward_override_text: String = "") -> void:
+	var tutorial := ensure_tutorial(section_title)
+	tutorial.reward_money = reward_money
+	if not reward_override_text.is_empty():
+		tutorial.reward_text = reward_override_text
+	_notify_tasks_changed()
+
+
+func mark_tutorial_done(section_title: String) -> void:
+	var tutorial := get_tutorial(section_title)
+	if tutorial == null:
+		return
+
+	tutorial.phase = TutorialPhase.DONE
+	_remove_tutorial(section_title)
+	_notify_tasks_changed()
+
+
+func _remove_tutorial(section_title: String) -> void:
+	tutorials.erase(section_title)
+	tutorial_order.erase(section_title)
+
+	var remaining_tasks: Array[TutorialTask] = []
+	for task in tasks:
+		if task.section_title != section_title:
+			remaining_tasks.append(task)
+	tasks = remaining_tasks
+
+
+func _on_task_state_changed(task: TutorialTask) -> void:
+	_notify_tasks_changed()
+
+
 func _notify_tasks_changed() -> void:
 	tasks_changed.emit()
-
-
-func do_first_tutorial():
-	skip_requested = false
-	clear_tasks()
-
-	var hire_worker_task = TutorialHandler.create_task("A new Beginning", "Hire a new worker", ["click on guest","click hire from contex menu"])
-	var asign_job_task = TutorialHandler.create_task("A new Beginning", "Asign a job to your worker", ["click and hold LMB to pick up worker","drop worker to valid room"])
-
-	var tutorial_guest = Global.NPCSpawner.spawn_new_guest() as NPCGuest
-	var positive_traits := TraitLibrary.get_all_traits().filter(func(t): return t.is_positive())
-	positive_traits.shuffle()
-	tutorial_guest.Traits.traits = [positive_traits[0]]
-	tutorial_guest.manual_behaviour = true
-	tutorial_guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
-	await get_tree().process_frame
-
-	var reached_bar := [false]
-	if is_instance_valid(tutorial_guest):
-		tutorial_guest.Navigation.target_reached_signal.connect(func(): reached_bar[0] = true, CONNECT_ONE_SHOT)
-		if await _poll_until(func(): return reached_bar[0] or not is_instance_valid(tutorial_guest)):
-			return
-	if is_instance_valid(tutorial_guest):
-		await Global.UI.dialogue.print_dialogue("This was such a nice place long ago what a shame...", tutorial_guest)
-	if skip_requested:
-		return
-
-	hire_worker_task.start()
-	if await _poll_until(func(): return Global.NPCSpawner.workers.size() > 0):
-		return
-	hire_worker_task.finish()
-
-	asign_job_task.start()
-	if await _poll_until(func(): return Global.NPCSpawner.workers.any(func(w: NPCWorker): return w.current_job == Enum.Jobs.BAR)):
-		return
-	asign_job_task.finish()
-
-	var inspect_guest = Global.NPCSpawner.spawn_new_guest() as NPCGuest
-	inspect_guest.manual_behaviour = true
-	await get_tree().process_frame
-	inspect_guest.Behaviour.set_behaviour(IdleBehaviour)
-
-	var guest_clicked := [false]
-	var click_conn := func(node: Node): if node is NPCGuest: guest_clicked[0] = true
-	HoverHandler.click_hovered_node_signal.connect(click_conn)
-	var check_needs_task = TutorialHandler.create_task("A new Beginning", "Click on a guest to inspect their needs", ["left-click on any guest"])
-	check_needs_task.start()
-	if await _poll_until(func(): return guest_clicked[0]):
-		HoverHandler.click_hovered_node_signal.disconnect(click_conn)
-		return
-	HoverHandler.click_hovered_node_signal.disconnect(click_conn)
-	check_needs_task.finish()
-
-	inspect_guest.manual_behaviour = false
-
-	var wait_for_drink_task = TutorialHandler.create_task("A new Beginning", "Wait for the guest to receive their drink")
-	wait_for_drink_task.start()
-	if await _poll_until(func(): return Global.NPCSpawner.guests.any(npc_has_item)):
-		return
-	wait_for_drink_task.finish()
-
-	var build_table_task = TutorialHandler.create_task("A new Beginning", "Build a Table so guests have somewhere to sit", ["open the Build menu", "find Tables under Furniture"])
-	build_table_task.start()
-	if await _poll_until(func(): return Building.query.all_rooms_of_type(RoomTable).size() > 0):
-		return
-	build_table_task.finish()
-
-	Global.should_auto_spawn_guests = true
-
-	var open_workers_task = TutorialHandler.create_task("A new Beginning", "Open the Workers panel to manage your staff", ["click the Workers button in the menu"])
-	open_workers_task.start()
-	TimeHandler.set_time(0)
-	if await _poll_until(func(): return Global.UI.menu.worker_tab.visible):
-		TimeHandler.set_time(1)
-		return
-	TimeHandler.set_time(1)
-	open_workers_task.finish()
-	clear_tasks()
-	tutorial_finished.emit()
 
 # this function is deprecated but for some lookup it MIGHT be useful or not since a lot of stuff has changed since then
 func start_tutorial():
@@ -307,21 +413,27 @@ func start_tutorial():
 func junk_text(text, amount_done, amount_needed):
 	return str(text, " (", amount_done, "/", amount_needed, ")")
 
+
 func worker_is_working_at_bar(worker : NPCWorker):
 	return worker.Behaviour.behaviour_instance is JobBarBehaviour
+
 
 func worker_is_working_at_bar_or_brewery(worker : NPCWorker):
 	var bi = worker.Behaviour.behaviour_instance
 	return bi is JobBarBehaviour or bi is JobBreweryBehaviour
 
+
 func npc_has_item(npc : NPC):
 	return npc.Item.current_item
+
 
 func npc_has_beer(npc : NPC):
 	return npc.Item.current_item and npc.Item.current_item.itemType == Enum.Items.BEER_BARREL
 
+
 func bar_has_beer(bar : RoomBar):
 	return bar.drink_type == Enum.Items.BEER_BARREL
+
 
 func end_of_frame():
 	await get_tree().process_frame
