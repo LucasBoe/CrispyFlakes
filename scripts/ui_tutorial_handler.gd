@@ -31,7 +31,7 @@ const SUMMARY_LABEL_GAP := 8.0
 var _hint_rows: Array[Control] = []
 var _bubble_instances: Array[Button] = []
 var _selected_section_title := ""
-var _sidebar_tutorials: Array = []
+var _sidebar_quests: Array = []
 var _is_expanded := true
 var _revealed_marker_instances := {}
 var _hovered_section_title := ""
@@ -52,8 +52,8 @@ func _ready() -> void:
 	resized.connect(_update_layout)
 
 	var refresh_callable := Callable(self, "refresh_ui")
-	if not TutorialHandler.tasks_changed.is_connected(refresh_callable):
-		TutorialHandler.tasks_changed.connect(refresh_callable)
+	if not TutorialHandler.quests_changed.is_connected(refresh_callable):
+		TutorialHandler.quests_changed.connect(refresh_callable)
 
 	refresh_ui()
 	call_deferred("_update_layout")
@@ -65,10 +65,10 @@ func _exit_tree() -> void:
 func refresh_ui() -> void:
 	_prune_bubble_state()
 	_rebuild_revealed_markers()
-	_sidebar_tutorials = TutorialHandler.get_sidebar_tutorials()
+	_sidebar_quests = TutorialHandler.get_sidebar_quests()
 	_rebuild_bubbles()
 
-	if _sidebar_tutorials.is_empty():
+	if _sidebar_quests.is_empty():
 		_selected_section_title = ""
 		_clear_hint_rows()
 		hide()
@@ -83,28 +83,29 @@ func refresh_ui() -> void:
 
 
 func _ensure_selected_section() -> void:
-	for tutorial in _sidebar_tutorials:
-		if tutorial.section_title == _selected_section_title:
+	for quest in _sidebar_quests:
+		if quest.section_title == _selected_section_title:
 			return
 
-	var preferred_section := TutorialHandler.get_current_section_title()
-	for tutorial in _sidebar_tutorials:
-		if tutorial.section_title == preferred_section:
-			_selected_section_title = preferred_section
-			return
+	var preferred_quest = TutorialHandler.get_current_quest()
+	if preferred_quest != null:
+		for quest in _sidebar_quests:
+			if quest == preferred_quest:
+				_selected_section_title = preferred_quest.section_title
+				return
 
-	_selected_section_title = _sidebar_tutorials[0].section_title
+	_selected_section_title = _sidebar_quests[0].section_title
 
 
 func _rebuild_bubbles() -> void:
 	_clear_bubbles()
 
-	for tutorial_index in range(_sidebar_tutorials.size()):
-		var tutorial = _sidebar_tutorials[tutorial_index]
+	for tutorial_index in range(_sidebar_quests.size()):
+		var quest = _sidebar_quests[tutorial_index]
 		var bubble := _bubble_template.duplicate() as Button
 		bubble.name = "Bubble_%d" % tutorial_index
 		bubble.show()
-		bubble.tooltip_text = tutorial.section_title
+		bubble.tooltip_text = quest.section_title
 
 		var icon := bubble.get_node("BubbleIcon") as TextureRect
 		var state_icon := bubble.get_node("BubbleStateIcon") as TextureRect
@@ -120,26 +121,26 @@ func _rebuild_bubbles() -> void:
 		if connector != null:
 			connector.visible = false
 
-		bubble.mouse_entered.connect(_on_bubble_mouse_entered.bind(tutorial.section_title))
-		bubble.mouse_exited.connect(_on_bubble_mouse_exited.bind(tutorial.section_title))
-		bubble.pressed.connect(_on_bubble_pressed.bind(tutorial.section_title))
+		bubble.mouse_entered.connect(_on_bubble_mouse_entered.bind(quest.section_title))
+		bubble.mouse_exited.connect(_on_bubble_mouse_exited.bind(quest.section_title))
+		bubble.pressed.connect(_on_bubble_pressed.bind(quest.section_title))
 		_bubble_sidebar.add_child(bubble)
 		_bubble_instances.append(bubble)
 
 func _rebuild_revealed_markers() -> void:
 	_clear_revealed_markers()
 
-	for tutorial in TutorialHandler.get_revealed_tutorials():
+	for quest in TutorialHandler.get_revealed_quests():
 		var marker = UiNotifications.create_npc_action_button(
-			tutorial.reveal_target,
+			quest.reveal_target,
 			REVEALED_MARKER_TEXTURE,
-			Callable(self, "_on_revealed_marker_pressed").bind(tutorial.section_title),
+			Callable(self, "_on_revealed_marker_pressed").bind(quest.section_title),
 			true,
 			Vector2(0, -30)
 		)
 		if marker != null and marker.instance is CanvasItem:
 			(marker.instance as CanvasItem).material = _shared_golden_glow_material
-		_revealed_marker_instances[tutorial.section_title] = marker
+		_revealed_marker_instances[quest.section_title] = marker
 
 func _clear_revealed_markers() -> void:
 	for section_title in _revealed_marker_instances.keys().duplicate():
@@ -156,8 +157,8 @@ func _clear_bubbles() -> void:
 
 
 func _on_bubble_pressed(section_title: String) -> void:
-	var tutorial = TutorialHandler.get_tutorial(section_title)
-	if tutorial == null:
+	var quest = TutorialHandler.get_quest(section_title)
+	if quest == null:
 		return
 
 	var will_reveal_details := _selected_section_title != section_title or not _is_expanded
@@ -176,6 +177,9 @@ func _on_bubble_pressed(section_title: String) -> void:
 	call_deferred("_update_layout")
 
 func _on_revealed_marker_pressed(section_title: String) -> void:
+	var quest = TutorialHandler.get_quest(section_title)
+	if quest == null:
+		return
 	if _sections_animating_into_sidebar.has(section_title):
 		return
 
@@ -189,7 +193,7 @@ func _on_revealed_marker_pressed(section_title: String) -> void:
 	_is_expanded = false
 	_glowing_active_sections[section_title] = true
 	_sections_animating_into_sidebar[section_title] = true
-	TutorialHandler._activate_tutorial(section_title)
+	TutorialHandler.activate_quest(quest)
 	await _play_revealed_marker_flight(section_title)
 
 func _on_bubble_mouse_entered(section_title: String) -> void:
@@ -205,76 +209,45 @@ func _on_bubble_mouse_exited(section_title: String) -> void:
 func _refresh_selected_section_content() -> void:
 	_clear_hint_rows()
 
-	var tutorial = TutorialHandler.get_tutorial(_selected_section_title)
-	if tutorial == null:
+	var quest = TutorialHandler.get_quest(_selected_section_title)
+	if quest == null:
 		return
 
-	var display_tasks := _get_display_tasks(tutorial.section_title)
-	var primary_task = _get_primary_display_task(display_tasks)
+	_section_label.text = "\"%s\"" % quest.section_title
+	_task_label.text = quest.text
+	_task_icon.texture = _get_task_icon_texture(quest)
 
-	_section_label.text = "\"%s\"" % tutorial.section_title
-	_task_label.text = "" if primary_task == null else primary_task.text
-	_task_icon.texture = _get_task_icon_texture(tutorial, primary_task)
-
-	var display_hints := _get_display_hints(tutorial, primary_task, display_tasks)
+	var display_hints := _get_display_hints(quest)
 	_hints_container.visible = not display_hints.is_empty()
 	for hint_index in range(display_hints.size()):
 		var row := _create_hint_row(hint_index + 1, display_hints[hint_index])
 		_hints_container.add_child(row)
 		_hint_rows.append(row)
 
-	var tutorial_reward_text := TutorialHandler.get_tutorial_reward_text(tutorial.section_title)
-	if tutorial_reward_text.is_empty():
-		tutorial_reward_text = reward_text
+	var quest_reward_text := TutorialHandler.get_quest_reward_text(quest)
+	if quest_reward_text.is_empty():
+		quest_reward_text = reward_text
 
-	_reward_label.visible = not tutorial_reward_text.is_empty()
-	_reward_label.text = tutorial_reward_text
-	_claim_reward_button.visible = tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED
-
-
-func _get_display_tasks(section_title: String) -> Array:
-	var active_tasks := TutorialHandler.get_section_tasks(section_title).filter(
-		func(task): return task.is_started and not task.is_done
-	)
-	if not active_tasks.is_empty():
-		return active_tasks
-	return TutorialHandler.get_section_tasks(section_title)
+	_reward_label.visible = not quest_reward_text.is_empty()
+	_reward_label.text = quest_reward_text
+	_claim_reward_button.visible = quest.phase == TutorialHandler.TutorialPhase.COMPLETED
 
 
-func _get_primary_display_task(display_tasks: Array):
-	if display_tasks.is_empty():
-		return null
-
-	for task in display_tasks:
-		if not task.is_done:
-			return task
-
-	return display_tasks[0]
-
-
-func _get_task_icon_texture(tutorial, primary_task) -> Texture2D:
-	if tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED:
+func _get_task_icon_texture(quest) -> Texture2D:
+	if quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
 		return TODO_CHECKED
-	if primary_task != null and primary_task.is_done:
+	if quest.is_done:
 		return TODO_CHECKED
 	return TODO_UNCHECKED
 
 
-func _get_display_hints(tutorial, primary_task, display_tasks: Array) -> Array[String]:
-	if primary_task == null:
+func _get_display_hints(quest) -> Array[String]:
+	if quest == null:
 		return []
-	if tutorial != null and tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED:
+	if quest != null and quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
 		return []
 
-	if not primary_task.hints.is_empty():
-		return primary_task.hints.duplicate()
-
-	var fallback_hints: Array[String] = []
-	for task in display_tasks:
-		if task == primary_task:
-			continue
-		fallback_hints.append(task.text)
-	return fallback_hints
+	return quest.hints.duplicate()
 
 
 func _create_hint_row(step_number: int, hint: String) -> HBoxContainer:
@@ -357,33 +330,32 @@ func _should_show_collapsed_summary(section_title: String) -> bool:
 
 
 func _get_collapsed_summary_text(section_title: String) -> String:
-	var display_tasks := _get_display_tasks(section_title)
-	var primary_task = _get_primary_display_task(display_tasks)
-	if primary_task == null:
+	var quest = TutorialHandler.get_quest(section_title)
+	if quest == null:
 		return ""
-	return primary_task.text
+	return quest.text
 
 
 func _apply_bubble_states() -> void:
 	for bubble_index in range(_bubble_instances.size()):
 		var bubble := _bubble_instances[bubble_index]
-		var tutorial = _sidebar_tutorials[bubble_index]
+		var quest = _sidebar_quests[bubble_index]
 		var background_icon := bubble.get_node("BubbleIcon") as TextureRect
 		var state_icon := bubble.get_node("BubbleStateIcon") as TextureRect
 		var summary_label := _ensure_bubble_summary_label(bubble)
 		var bubble_width := _bubble_base_minimum_size.x
 
-		if _sections_animating_into_sidebar.has(tutorial.section_title):
+		if _sections_animating_into_sidebar.has(quest.section_title):
 			bubble.modulate = Color(1.0, 1.0, 1.0, 0.0)
 			bubble.disabled = true
 			summary_label.visible = false
 			continue
 
-		background_icon.texture = _get_bubble_dot_texture(tutorial.section_title, tutorial)
-		state_icon.texture = _get_bubble_state_icon_texture(tutorial)
-		state_icon.self_modulate = _get_bubble_state_icon_modulate(tutorial.section_title, tutorial)
-		summary_label.text = _get_collapsed_summary_text(tutorial.section_title)
-		summary_label.visible = _should_show_collapsed_summary(tutorial.section_title) and not summary_label.text.is_empty()
+		background_icon.texture = _get_bubble_dot_texture(quest.section_title, quest)
+		state_icon.texture = _get_bubble_state_icon_texture(quest)
+		state_icon.self_modulate = _get_bubble_state_icon_modulate(quest.section_title, quest)
+		summary_label.text = _get_collapsed_summary_text(quest.section_title)
+		summary_label.visible = _should_show_collapsed_summary(quest.section_title) and not summary_label.text.is_empty()
 		if summary_label.visible:
 			bubble_width += SUMMARY_LABEL_GAP + summary_label.get_combined_minimum_size().x
 
@@ -391,27 +363,27 @@ func _apply_bubble_states() -> void:
 		bubble.modulate = Color.WHITE
 		bubble.disabled = false
 
-func _get_bubble_dot_texture(section_title: String, tutorial) -> Texture2D:
-	if _should_glow_bubble(section_title, tutorial):
+func _get_bubble_dot_texture(section_title: String, quest) -> Texture2D:
+	if _should_glow_bubble(section_title, quest):
 		return TUTORIAL_DOT_GLOW
 	if _is_bubble_highlighted(section_title):
 		return TUTORIAL_DOT_SELECTED
 	return TUTORIAL_DOT_OFF
 
-func _get_bubble_state_icon_texture(tutorial) -> Texture2D:
-	if tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED:
+func _get_bubble_state_icon_texture(quest) -> Texture2D:
+	if quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
 		return TODO_CHECKED
 	return TODO_UNCHECKED
 
-func _get_bubble_state_icon_modulate(section_title: String, tutorial) -> Color:
-	if _should_glow_bubble(section_title, tutorial):
+func _get_bubble_state_icon_modulate(section_title: String, quest) -> Color:
+	if _should_glow_bubble(section_title, quest):
 		return Color.BLACK
 	if _is_bubble_highlighted(section_title):
 		return Color.BLACK
 	return Color.WHITE
 
-func _should_glow_bubble(section_title: String, tutorial) -> bool:
-	if tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED:
+func _should_glow_bubble(section_title: String, quest) -> bool:
+	if quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
 		return true
 	return _glowing_active_sections.has(section_title)
 
@@ -421,11 +393,11 @@ func _is_bubble_highlighted(section_title: String) -> bool:
 	return _selected_section_title == section_title and _quest_window.visible and _is_expanded
 
 func _prune_bubble_state() -> void:
-	if not _hovered_section_title.is_empty() and TutorialHandler.get_tutorial(_hovered_section_title) == null:
+	if not _hovered_section_title.is_empty() and TutorialHandler.get_quest(_hovered_section_title) == null:
 		_hovered_section_title = ""
 
 	var valid_section_titles := {}
-	for section_title in TutorialHandler.tutorial_order:
+	for section_title in TutorialHandler.get_quest_titles():
 		valid_section_titles[section_title] = true
 
 	for section_title in _glowing_active_sections.keys():
@@ -438,8 +410,8 @@ func _prune_bubble_state() -> void:
 
 
 func _apply_expanded_state() -> void:
-	var tutorial = TutorialHandler.get_tutorial(_selected_section_title)
-	var can_show_details: bool = tutorial != null and tutorial.phase != TutorialHandler.TutorialPhase.REVEALED
+	var quest = TutorialHandler.get_quest(_selected_section_title)
+	var can_show_details: bool = quest != null and quest.phase != TutorialHandler.TutorialPhase.REVEALED
 	_quest_window.visible = can_show_details and _is_expanded
 	if not _quest_window.visible:
 		_hide_all_bubble_connectors()
@@ -468,8 +440,8 @@ func _update_layout() -> void:
 
 
 func _get_selected_bubble() -> Button:
-	for bubble_index in range(_sidebar_tutorials.size()):
-		if _sidebar_tutorials[bubble_index].section_title == _selected_section_title:
+	for bubble_index in range(_sidebar_quests.size()):
+		if _sidebar_quests[bubble_index].section_title == _selected_section_title:
 			return _bubble_instances[bubble_index]
 	return null
 
@@ -486,8 +458,8 @@ func _hide_all_bubble_connectors() -> void:
 
 
 func _get_bubble_for_section(section_title: String) -> Button:
-	for bubble_index in range(_sidebar_tutorials.size()):
-		if _sidebar_tutorials[bubble_index].section_title == section_title:
+	for bubble_index in range(_sidebar_quests.size()):
+		if _sidebar_quests[bubble_index].section_title == section_title:
 			return _bubble_instances[bubble_index]
 	return null
 
@@ -539,7 +511,10 @@ func _finish_revealed_marker_flight(section_title: String) -> void:
 func _on_claim_reward_pressed() -> void:
 	if _selected_section_title.is_empty():
 		return
-	TutorialHandler.claim_tutorial_reward(_selected_section_title)
+	var quest = TutorialHandler.get_quest(_selected_section_title)
+	if quest == null:
+		return
+	TutorialHandler.claim_quest_reward(quest)
 
 func _on_ui_close() -> void:
 	if not visible or not _quest_window.visible or not _is_expanded:

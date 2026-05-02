@@ -1,17 +1,13 @@
 extends Node
 
-const CLEANUP_TUTORIAL_TITLE := "What a shithole"
-const BUILD_BAR_TUTORIAL_TITLE := "This place needs a Bar"
-const SERVE_GUESTS_TUTORIAL_TITLE := "A new Beginning"
+const STARTUP_QUESTS := preload("res://scripts/startup/startup_quests.gd")
 const BAR_PROGRESSION_ITEM := preload("res://assets/resources/progression/prog_bar.tres")
+const TABLE_PROGRESSION_ITEM := preload("res://assets/resources/progression/prog_tables.tres")
 const ARROW_RED_DOWN_PATH := "res://assets/sprites/ui/2x/arrow_red_down.png"
 const GOLDEN_GLOW_SHADER := preload("res://assets/shaders/golden_glow_red_replace.gdshader")
 const STARTUP_WAIT_BEHAVIOUR := preload("res://scripts/npc/behaviours/startup_wait_behaviour.gd")
-const CLEANUP_REWARD := 30
-const BUILD_BAR_REWARD := 30
-const SERVE_GUESTS_REWARD := 50
-const SERVE_GUESTS_TARGET := 5
 const TUTORIAL_WORKER_TARGET := Vector2(-128, 0)
+const STARTUP_INITIAL_MONEY := 30
 const OUTSIDE_OVERLAY_FADE_DURATION := 1.0
 const MENU_ARROW_OFFSET := Vector2(-2, -52)
 const MENU_ARROW_HOVER_HEIGHT := 3.0
@@ -22,7 +18,14 @@ var _menu_tutorial_arrow: TextureRect
 var _menu_tutorial_arrow_hover_tween: Tween
 var _menu_tutorial_arrow_material: ShaderMaterial
 var _menu_tutorial_arrow_texture: Texture2D
+var _quests
+var _skip_requested := false
+var _startup_content_ready := false
+var _served_startup_guests: Array[NPCGuest] = []
 
+
+func _ready() -> void:
+	_prepare_startup_content()
 
 func _process(_delta: float) -> void:
 	if done:
@@ -32,24 +35,143 @@ func _process(_delta: float) -> void:
 	await _run_startup_sequence()
 
 func _run_startup_sequence() -> void:
-	setup_building()
+	if not _startup_content_ready:
+		await _poll_until(func(): return _startup_content_ready)
+
 	_reset_outside_overlay()
 	spawn_bounties(3)
 	spawn_item_stack(Enum.Items.WOOD, 3, 0, 10)
+	_set_startup_money(STARTUP_INITIAL_MONEY)
 	ProgressionHandler.unlock_default_rooms()
 	Global.should_auto_spawn_guests = false
-	TutorialHandler.skip_requested = false
-	TutorialHandler.clear_tasks()
+	_skip_requested = false
 
 	var skip_layer := create_skip_tutorial_button()
 
 	RoomStatusHandler.enabled = false
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").hide()
 	var tutorial_worker := await _spawn_tutorial_worker()
-	if not TutorialHandler.skip_requested and is_instance_valid(tutorial_worker):
-		await _run_worker_tutorial_sequence(tutorial_worker)
+	if not _skip_requested and is_instance_valid(tutorial_worker):
+		_reveal_quest_for_target(_quests.cleanup, tutorial_worker)
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.cleanup)):
+			return
+		_quests.cleanup.start()
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_cleanup_completion(_quests.cleanup)):
+			return
+		_quests.cleanup.set_done()
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.cleanup)):
+			return
+
+		ProgressionHandler.add_points(BAR_PROGRESSION_ITEM.cost)
+		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_bar)):
+			return
+		_quests.build_bar.start()
+		if _finish_startup_if_aborted(
+			skip_layer,
+			await _wait_for_menu_arrow_step(
+				Global.UI.menu.progression_button,
+				func(): return ProgressionHandler.is_item_unlocked(BAR_PROGRESSION_ITEM)
+			)
+		):
+			return
+		if _finish_startup_if_aborted(
+			skip_layer,
+			await _wait_for_menu_arrow_step(
+				Global.UI.menu.build_button,
+				func(): return not Building.query.all_rooms_of_type(RoomBar).is_empty()
+			)
+		):
+			return
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_bar_setup_completion(tutorial_worker)):
+			return
+		_quests.build_bar.set_done()
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.build_bar)):
+			return
+
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_initial_bar_water_stock(tutorial_worker)):
+			return
+
+		_reveal_quest_for_target(_quests.serve_guests, tutorial_worker)
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.serve_guests)):
+			return
+		_quests.serve_guests.start()
+
+		RoomStatusHandler.enabled = true
+		Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
+		Global.UI.resources.show()
+		Global.should_auto_spawn_guests = true
+
+		_reset_startup_served_guest_tracking()
+		await _spawn_tutorial_guest_wave(
+			maxi(
+				STARTUP_QUESTS.SERVE_GUESTS_TARGET,
+				STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT
+			)
+		)
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_served_guest_completion(_quests.serve_guests)):
+			return
+		_quests.serve_guests.set_done()
+
+		if _finish_startup_if_aborted(
+			skip_layer,
+			await _wait_for_served_guest_milestone(STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT)
+		):
+			return
+
+		ProgressionHandler.add_points(TABLE_PROGRESSION_ITEM.cost)
+		var table_quest_target: Node2D = _get_served_guest_for_milestone(STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT)
+		if not is_instance_valid(table_quest_target):
+			table_quest_target = tutorial_worker
+		if is_instance_valid(table_quest_target):
+			_reveal_quest_for_target(_quests.build_table, table_quest_target)
+			if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_table)):
+				return
+		else:
+			TutorialHandler.activate_quest(_quests.build_table)
+
+		_quests.build_table.start()
+		if _finish_startup_if_aborted(
+			skip_layer,
+			await _wait_for_menu_arrow_step(
+				Global.UI.menu.progression_button,
+				func(): return ProgressionHandler.is_item_unlocked(TABLE_PROGRESSION_ITEM)
+			)
+		):
+			return
+		if _finish_startup_if_aborted(
+			skip_layer,
+			await _wait_for_menu_arrow_step(
+				Global.UI.menu.build_button,
+				func(): return not Building.query.all_rooms_of_type(RoomTable).is_empty()
+			)
+		):
+			return
+		_quests.build_table.set_done()
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.build_table)):
+			return
 
 	_finish_startup(skip_layer)
+
+
+func _prepare_startup_content() -> void:
+	await get_tree().process_frame
+	setup_building()
+	_create_startup_quests()
+	_startup_content_ready = true
+
+
+func _set_startup_money(amount: int) -> void:
+	var current_money := int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0))
+	var delta := amount - current_money
+	ResourceHandler.resources[Enum.Resources.MONEY] = amount
+	ResourceHandler.money_transaction_history.clear()
+	ResourceHandler.on_resource_changed.emit(Enum.Resources.MONEY, amount, delta)
+	ResourceHandler.on_money_changed.emit()
+
+	MoneyHandler.free_pool = amount
+	MoneyHandler.location_money.clear()
+	MoneyHandler.changed.emit()
 
 func spawn_bounties(count: int) -> void:
 	for i in count:
@@ -83,10 +205,10 @@ func create_skip_tutorial_button() -> CanvasLayer:
 	skip_button.offset_right = 100.0
 	skip_button.offset_bottom = -8.0
 	skip_button.pressed.connect(func():
-		TutorialHandler.skip_requested = true
+		_skip_requested = true
 		LetterUIHandler.skip()
 		Global.UI.dialogue.finish_dialogue()
-		TutorialHandler.clear_tasks()
+		TutorialHandler.clear_quests()
 	, CONNECT_ONE_SHOT)
 	skip_layer.add_child(skip_button)
 	add_child(skip_layer)
@@ -144,12 +266,12 @@ func _wait_for_menu_arrow_step(button: Button, completion_condition: Callable) -
 		return await _poll_until(completion_condition)
 
 	_show_menu_tutorial_arrow(button)
-	while not TutorialHandler.skip_requested and not completion_condition.call():
+	while not _skip_requested and not completion_condition.call():
 		_update_menu_tutorial_arrow_visibility()
 		await get_tree().process_frame
 
 	_destroy_menu_tutorial_arrow()
-	return TutorialHandler.skip_requested
+	return _skip_requested
 
 
 func _show_menu_tutorial_arrow(button: Button) -> void:
@@ -217,112 +339,30 @@ func _get_menu_tutorial_arrow_texture() -> Texture2D:
 	_menu_tutorial_arrow_texture = ImageTexture.create_from_image(image)
 	return _menu_tutorial_arrow_texture
 
-func _run_worker_tutorial_sequence(worker: NPCWorker) -> void:
-	var cleanup_task = _create_cleanup_tutorial(worker)
-	var build_bar_task = _create_build_bar_tutorial(worker)
-	var serve_guests_task = _create_serve_guests_tutorial(worker)
+func _create_startup_quests() -> void:
+	_quests = STARTUP_QUESTS.new(Building.query.all_rooms_of_type(RoomJunk).size())
 
-	TutorialHandler.reveal_tutorial(CLEANUP_TUTORIAL_TITLE)
-	if await _wait_for_tutorial_activation(CLEANUP_TUTORIAL_TITLE):
-		return
-	cleanup_task.start()
-	if await _wait_for_cleanup_completion(cleanup_task):
-		return
-	cleanup_task.set_done()
-	TutorialHandler.complete_tutorial(CLEANUP_TUTORIAL_TITLE)
-	if await _wait_for_tutorial_claim(CLEANUP_TUTORIAL_TITLE):
-		return
 
-	ProgressionHandler.add_points(BAR_PROGRESSION_ITEM.cost)
-	TutorialHandler.reveal_tutorial(BUILD_BAR_TUTORIAL_TITLE)
-	if await _wait_for_tutorial_activation(BUILD_BAR_TUTORIAL_TITLE):
-		return
-	build_bar_task.start()
-	if await _wait_for_menu_arrow_step(
-		Global.UI.menu.progression_button,
-		func(): return ProgressionHandler.is_item_unlocked(BAR_PROGRESSION_ITEM)
-	):
-		return
-	if await _wait_for_menu_arrow_step(
-		Global.UI.menu.build_button,
-		func(): return not Building.query.all_rooms_of_type(RoomBar).is_empty()
-	):
-		return
-	if await _wait_for_bar_setup_completion(worker):
-		return
-	build_bar_task.set_done()
-	TutorialHandler.complete_tutorial(BUILD_BAR_TUTORIAL_TITLE)
-	if await _wait_for_tutorial_claim(BUILD_BAR_TUTORIAL_TITLE):
-		return
+func _reveal_quest_for_target(quest, target: Node2D) -> void:
+	TutorialHandler.set_quest_reveal_target(quest, target)
+	TutorialHandler.reveal_quest(quest)
 
-	TutorialHandler.reveal_tutorial(SERVE_GUESTS_TUTORIAL_TITLE)
-	if await _wait_for_tutorial_activation(SERVE_GUESTS_TUTORIAL_TITLE):
-		return
-	serve_guests_task.start()
-
-	RoomStatusHandler.enabled = true
-	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
-	Global.UI.resources.show()
-	Global.should_auto_spawn_guests = true
-
-	await _spawn_tutorial_guest_wave(SERVE_GUESTS_TARGET)
-	if await _wait_for_served_guest_completion(serve_guests_task):
-		return
-	serve_guests_task.set_done()
-	TutorialHandler.complete_tutorial(SERVE_GUESTS_TUTORIAL_TITLE)
-
-func _create_cleanup_tutorial(worker: NPCWorker):
-	TutorialHandler.create_tutorial(CLEANUP_TUTORIAL_TITLE, CLEANUP_REWARD, "30 $ Reward + 1 Point", TutorialHandler.TutorialPhase.HIDDEN, worker)
-	TutorialHandler.set_tutorial_reveal_target(CLEANUP_TUTORIAL_TITLE, worker)
-	return TutorialHandler.create_task(
-		CLEANUP_TUTORIAL_TITLE,
-		junk_text("Clean Up the Mess", 0, Building.query.all_rooms_of_type(RoomJunk).size()),
-		[
-			"Click and hold the worker",
-			"Move it onto the junk to assign them for cleanup",
-		]
-	)
-
-func _create_build_bar_tutorial(worker: NPCWorker):
-	TutorialHandler.create_tutorial(BUILD_BAR_TUTORIAL_TITLE, BUILD_BAR_REWARD, "30 $ Reward", TutorialHandler.TutorialPhase.HIDDEN, worker)
-	TutorialHandler.set_tutorial_reveal_target(BUILD_BAR_TUTORIAL_TITLE, worker)
-	return TutorialHandler.create_task(
-		BUILD_BAR_TUTORIAL_TITLE,
-		"Build a Bar",
-		[
-			"Open the progression menu",
-			"Unlock the bar",
-			"Place the bar in an empty room",
-			"Drop the worker onto the bar",
-		]
-	)
-
-func _create_serve_guests_tutorial(worker: NPCWorker):
-	TutorialHandler.create_tutorial(SERVE_GUESTS_TUTORIAL_TITLE, SERVE_GUESTS_REWARD, "50 $ Reward", TutorialHandler.TutorialPhase.HIDDEN, worker)
-	TutorialHandler.set_tutorial_reveal_target(SERVE_GUESTS_TUTORIAL_TITLE, worker)
-	return TutorialHandler.create_task(
-		SERVE_GUESTS_TUTORIAL_TITLE,
-		_serve_guest_text(0, SERVE_GUESTS_TARGET),
-		[
-			"Wait until 5 guests have had a drink",
-		]
-	)
-
-func _wait_for_tutorial_activation(section_title: String) -> bool:
+func _wait_for_tutorial_activation(quest) -> bool:
 	return await _poll_until(func():
-		var tutorial = TutorialHandler.get_tutorial(section_title)
-		return tutorial != null and tutorial.phase == TutorialHandler.TutorialPhase.ACTIVE
+		return quest != null and quest.phase == TutorialHandler.TutorialPhase.ACTIVE
 	)
 
-func _wait_for_tutorial_claim(section_title: String) -> bool:
-	return await _poll_until(func(): return TutorialHandler.get_tutorial(section_title) == null)
+func _wait_for_tutorial_claim(quest) -> bool:
+	return await _poll_until(func():
+		return quest == null or not TutorialHandler.has_quest(quest)
+	)
 
 func _wait_for_cleanup_completion(task) -> bool:
 	var total_rooms: int = Building.query.all_rooms_of_type(RoomJunk).size()
-	while not TutorialHandler.skip_requested:
+	while not _skip_requested:
 		var missing_rooms: int = Building.query.all_rooms_of_type(RoomJunk).size()
 		var cleaned_rooms: int = maxi(total_rooms - missing_rooms, 0)
-		task.set_text(junk_text("Clean Up the Mess", cleaned_rooms, total_rooms))
+		task.set_text(STARTUP_QUESTS.cleanup_text(cleaned_rooms, total_rooms))
 		if missing_rooms == 0:
 			return false
 		await get_tree().process_frame
@@ -334,44 +374,98 @@ func _wait_for_bar_setup_completion(worker: NPCWorker) -> bool:
 		return not bars.is_empty() and is_instance_valid(worker) and worker.current_job == Enum.Jobs.BAR and worker.current_job_room is RoomBar
 	)
 
+
+func _wait_for_initial_bar_water_stock(worker: NPCWorker) -> bool:
+	return await _poll_until(func():
+		if not is_instance_valid(worker):
+			return false
+		if worker.current_job != Enum.Jobs.BAR or worker.current_job_room is not RoomBar:
+			return false
+
+		var behaviour_module := worker.Behaviour
+		if behaviour_module == null or behaviour_module.behaviour_instance is not JobBarBehaviour:
+			return false
+
+		var bar_behaviour := behaviour_module.behaviour_instance as JobBarBehaviour
+		return bar_behaviour.drinks_available > 0.0
+	)
+
+
 func _spawn_tutorial_guest_wave(count: int) -> void:
 	for _guest_index in count:
-		if TutorialHandler.skip_requested:
+		if _skip_requested:
 			return
 		var guest := Global.NPCSpawner.spawn_new_guest() as NPCGuest
 		if guest == null:
 			continue
-		guest.manual_behaviour = true
-		await get_tree().process_frame
-		if is_instance_valid(guest):
-			guest.Behaviour.set_behaviour(NeedDrinkingBehaviour)
+		await get_tree().create_timer(3).timeout
 
 func _wait_for_served_guest_completion(task) -> bool:
-	var served_guests: Array[NPCGuest] = []
-	while not TutorialHandler.skip_requested:
-		for guest in Global.NPCSpawner.guests:
-			if guest is not NPCGuest:
-				continue
-			if not is_instance_valid(guest):
-				continue
-			if guest in served_guests:
-				continue
-			if guest.Item != null and guest.Item.current_item != null:
-				served_guests.append(guest)
-				guest.manual_behaviour = false
-				task.set_text(_serve_guest_text(served_guests.size(), SERVE_GUESTS_TARGET))
-		if served_guests.size() >= SERVE_GUESTS_TARGET:
+	while not _skip_requested:
+		var served_guest_count := _get_startup_served_guest_count()
+		task.set_text(
+			STARTUP_QUESTS.serve_guests_text(
+				mini(served_guest_count, STARTUP_QUESTS.SERVE_GUESTS_TARGET),
+				STARTUP_QUESTS.SERVE_GUESTS_TARGET
+			)
+		)
+		if served_guest_count >= STARTUP_QUESTS.SERVE_GUESTS_TARGET:
 			return false
 		await get_tree().process_frame
 	return true
 
-func _serve_guest_text(amount_done: int, amount_needed: int) -> String:
-	return "Serve %d Guests (%d/%d)" % [amount_needed, amount_done, amount_needed]
+
+func _wait_for_served_guest_milestone(served_guest_count: int) -> bool:
+	return await _poll_until(func():
+		return _get_startup_served_guest_count() >= served_guest_count
+	)
+
+
+func _reset_startup_served_guest_tracking() -> void:
+	_served_startup_guests.clear()
+
+
+func _get_startup_served_guest_count() -> int:
+	_track_served_startup_guests()
+	return _served_startup_guests.size()
+
+
+func _get_served_guest_for_milestone(served_guest_count: int) -> NPCGuest:
+	_track_served_startup_guests()
+	var milestone_index := maxi(served_guest_count - 1, 0)
+	if milestone_index >= _served_startup_guests.size():
+		return null
+	var guest := _served_startup_guests[milestone_index]
+	if not is_instance_valid(guest):
+		return null
+	return guest
+
+
+func _track_served_startup_guests() -> void:
+	for guest in Global.NPCSpawner.guests:
+		if guest is not NPCGuest:
+			continue
+		if not is_instance_valid(guest):
+			continue
+		if guest in _served_startup_guests:
+			continue
+		if guest.Item == null or guest.Item.current_item == null:
+			continue
+		_served_startup_guests.append(guest)
+		guest.manual_behaviour = false
 
 func _poll_until(condition: Callable) -> bool:
-	while not TutorialHandler.skip_requested and not condition.call():
+	while not _skip_requested and not condition.call():
 		await get_tree().process_frame
-	return TutorialHandler.skip_requested
+	return _skip_requested
+
+
+func _finish_startup_if_aborted(skip_layer: CanvasLayer, aborted: bool) -> bool:
+	if not aborted:
+		return false
+	_finish_startup(skip_layer)
+	return true
+
 
 func _finish_startup(skip_layer: CanvasLayer) -> void:
 	_destroy_menu_tutorial_arrow()
@@ -381,7 +475,7 @@ func _finish_startup(skip_layer: CanvasLayer) -> void:
 	Global.should_auto_spawn_guests = true
 	if is_instance_valid(skip_layer):
 		skip_layer.queue_free()
-	TutorialHandler.skip_requested = false
+	_skip_requested = false
 
 func spawn_item_stack(item_type: Enum.Items, room_x: int, room_y: int, amount: int = 1) -> void:
 	const COLS := 4
@@ -399,6 +493,3 @@ func spawn_item_stack(item_type: Enum.Items, room_x: int, room_y: int, amount: i
 		if col >= COLS:
 			col = 0
 			row += 1
-
-func junk_text(text, amount_done, amount_needed):
-	return str(text, " (", amount_done, "/", amount_needed, ")")
