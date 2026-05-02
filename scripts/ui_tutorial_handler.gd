@@ -216,7 +216,7 @@ func _refresh_selected_section_content() -> void:
 	_task_label.text = "" if primary_task == null else primary_task.text
 	_task_icon.texture = _get_task_icon_texture(tutorial, primary_task)
 
-	var display_hints := _get_display_hints(primary_task, display_tasks)
+	var display_hints := _get_display_hints(tutorial, primary_task, display_tasks)
 	_hints_container.visible = not display_hints.is_empty()
 	for hint_index in range(display_hints.size()):
 		var row := _create_hint_row(hint_index + 1, display_hints[hint_index])
@@ -260,8 +260,10 @@ func _get_task_icon_texture(tutorial, primary_task) -> Texture2D:
 	return TODO_UNCHECKED
 
 
-func _get_display_hints(primary_task, display_tasks: Array) -> Array[String]:
+func _get_display_hints(tutorial, primary_task, display_tasks: Array) -> Array[String]:
 	if primary_task == null:
+		return []
+	if tutorial != null and tutorial.phase == TutorialHandler.TutorialPhase.COMPLETED:
 		return []
 
 	if not primary_task.hints.is_empty():

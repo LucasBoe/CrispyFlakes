@@ -4,14 +4,24 @@ const CLEANUP_TUTORIAL_TITLE := "What a shithole"
 const BUILD_BAR_TUTORIAL_TITLE := "This place needs a Bar"
 const SERVE_GUESTS_TUTORIAL_TITLE := "A new Beginning"
 const BAR_PROGRESSION_ITEM := preload("res://assets/resources/progression/prog_bar.tres")
+const ARROW_RED_DOWN_PATH := "res://assets/sprites/ui/2x/arrow_red_down.png"
+const GOLDEN_GLOW_SHADER := preload("res://assets/shaders/golden_glow_red_replace.gdshader")
 const STARTUP_WAIT_BEHAVIOUR := preload("res://scripts/npc/behaviours/startup_wait_behaviour.gd")
 const CLEANUP_REWARD := 30
 const BUILD_BAR_REWARD := 30
 const SERVE_GUESTS_REWARD := 50
 const SERVE_GUESTS_TARGET := 5
-const TUTORIAL_WORKER_TARGET := Vector2(-108, 0)
+const TUTORIAL_WORKER_TARGET := Vector2(-128, 0)
+const OUTSIDE_OVERLAY_FADE_DURATION := 1.0
+const MENU_ARROW_OFFSET := Vector2(-2, -52)
+const MENU_ARROW_HOVER_HEIGHT := 3.0
+const MENU_ARROW_HOVER_DURATION := 0.5
 
 var done: bool = false
+var _menu_tutorial_arrow: TextureRect
+var _menu_tutorial_arrow_hover_tween: Tween
+var _menu_tutorial_arrow_material: ShaderMaterial
+var _menu_tutorial_arrow_texture: Texture2D
 
 
 func _process(_delta: float) -> void:
@@ -23,6 +33,7 @@ func _process(_delta: float) -> void:
 
 func _run_startup_sequence() -> void:
 	setup_building()
+	_reset_outside_overlay()
 	spawn_bounties(3)
 	spawn_item_stack(Enum.Items.WOOD, 3, 0, 10)
 	ProgressionHandler.unlock_default_rooms()
@@ -95,7 +106,116 @@ func _spawn_tutorial_worker() -> NPCWorker:
 			worker.Navigation.stop_navigation()
 			worker.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 		return worker
+
+	await _fade_outside_overlay()
 	return worker
+
+
+func _get_outside_overlay() -> CanvasItem:
+	return Building.get_node_or_null("OutsideOverlay") as CanvasItem
+
+
+func _reset_outside_overlay() -> void:
+	var overlay := _get_outside_overlay()
+	if overlay == null:
+		return
+
+	overlay.visible = true
+	overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+
+func _fade_outside_overlay() -> void:
+	var overlay := _get_outside_overlay()
+	if overlay == null or not overlay.visible:
+		return
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(overlay, "modulate:a", 0.0, OUTSIDE_OVERLAY_FADE_DURATION)
+	await tween.finished
+
+	if is_instance_valid(overlay):
+		overlay.visible = false
+
+
+func _wait_for_menu_arrow_step(button: Button, completion_condition: Callable) -> bool:
+	if button == null:
+		return await _poll_until(completion_condition)
+
+	_show_menu_tutorial_arrow(button)
+	while not TutorialHandler.skip_requested and not completion_condition.call():
+		_update_menu_tutorial_arrow_visibility()
+		await get_tree().process_frame
+
+	_destroy_menu_tutorial_arrow()
+	return TutorialHandler.skip_requested
+
+
+func _show_menu_tutorial_arrow(button: Button) -> void:
+	_destroy_menu_tutorial_arrow()
+	if button == null:
+		return
+
+	var arrow_texture := _get_menu_tutorial_arrow_texture()
+	if arrow_texture == null:
+		return
+
+	if _menu_tutorial_arrow_material == null:
+		_menu_tutorial_arrow_material = ShaderMaterial.new()
+		_menu_tutorial_arrow_material.shader = GOLDEN_GLOW_SHADER
+
+	var arrow := TextureRect.new()
+	arrow.name = "TutorialMenuArrow"
+	arrow.texture = arrow_texture
+	arrow.material = _menu_tutorial_arrow_material
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrow.stretch_mode = TextureRect.STRETCH_KEEP
+	arrow.size = arrow_texture.get_size()
+	arrow.position = MENU_ARROW_OFFSET
+	button.add_child(arrow)
+	_menu_tutorial_arrow = arrow
+
+	var tween := create_tween()
+	tween.set_loops()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(arrow, "position:y", MENU_ARROW_OFFSET.y - MENU_ARROW_HOVER_HEIGHT, MENU_ARROW_HOVER_DURATION)
+	tween.tween_property(arrow, "position:y", MENU_ARROW_OFFSET.y, MENU_ARROW_HOVER_DURATION)
+	_menu_tutorial_arrow_hover_tween = tween
+	_update_menu_tutorial_arrow_visibility()
+
+
+func _update_menu_tutorial_arrow_visibility() -> void:
+	if _menu_tutorial_arrow == null or not is_instance_valid(_menu_tutorial_arrow):
+		return
+	var menu := Global.UI.menu
+	_menu_tutorial_arrow.visible = menu != null and menu.visible_tab == null
+
+
+func _destroy_menu_tutorial_arrow() -> void:
+	if _menu_tutorial_arrow_hover_tween != null:
+		_menu_tutorial_arrow_hover_tween.kill()
+		_menu_tutorial_arrow_hover_tween = null
+
+	if _menu_tutorial_arrow != null and is_instance_valid(_menu_tutorial_arrow):
+		_menu_tutorial_arrow.queue_free()
+	_menu_tutorial_arrow = null
+
+
+func _get_menu_tutorial_arrow_texture() -> Texture2D:
+	if _menu_tutorial_arrow_texture != null:
+		return _menu_tutorial_arrow_texture
+
+	var image := Image.new()
+	var error := image.load(ProjectSettings.globalize_path(ARROW_RED_DOWN_PATH))
+	if error != OK:
+		push_error("Failed to load tutorial arrow texture: %s" % ARROW_RED_DOWN_PATH)
+		return null
+
+	_menu_tutorial_arrow_texture = ImageTexture.create_from_image(image)
+	return _menu_tutorial_arrow_texture
 
 func _run_worker_tutorial_sequence(worker: NPCWorker) -> void:
 	var cleanup_task = _create_cleanup_tutorial(worker)
@@ -118,6 +238,16 @@ func _run_worker_tutorial_sequence(worker: NPCWorker) -> void:
 	if await _wait_for_tutorial_activation(BUILD_BAR_TUTORIAL_TITLE):
 		return
 	build_bar_task.start()
+	if await _wait_for_menu_arrow_step(
+		Global.UI.menu.progression_button,
+		func(): return ProgressionHandler.is_item_unlocked(BAR_PROGRESSION_ITEM)
+	):
+		return
+	if await _wait_for_menu_arrow_step(
+		Global.UI.menu.build_button,
+		func(): return not Building.query.all_rooms_of_type(RoomBar).is_empty()
+	):
+		return
 	if await _wait_for_bar_setup_completion(worker):
 		return
 	build_bar_task.set_done()
@@ -244,6 +374,7 @@ func _poll_until(condition: Callable) -> bool:
 	return TutorialHandler.skip_requested
 
 func _finish_startup(skip_layer: CanvasLayer) -> void:
+	_destroy_menu_tutorial_arrow()
 	RoomStatusHandler.enabled = true
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
 	Global.UI.resources.show()
