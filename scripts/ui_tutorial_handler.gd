@@ -14,6 +14,16 @@ const CONNECTOR_HEIGHT := 2.0
 const REVEAL_FLY_DURATION := 0.35
 const REVEAL_FLY_SCALE := Vector2(0.6, 0.6)
 const SUMMARY_LABEL_GAP := 8.0
+const REVEALED_MARKER_OFFSET := Vector2(0, -26)
+const REVEALED_MARKER_HOVER_HEIGHT := 1.0
+const REVEALED_MARKER_HOVER_SPEED := 6.0
+const CURSOR_HINT_TEXTURE = preload("res://assets/sprites/ui/cursor_hint_click_sheet.png")
+const CURSOR_HINT_FRAME_COUNT := 5
+const CURSOR_HINT_IDLE_DELAY := 5.0
+const CURSOR_HINT_REPEAT_DELAY := 2.5
+const CURSOR_HINT_FADE_DURATION := 0.45
+const CURSOR_HINT_CLICK_FRAME_DURATION := 0.14
+const CURSOR_HINT_MOVE_DURATION := 0.4
 
 @export var reward_text := "30 $ Reward"
 @export var start_expanded := true
@@ -37,6 +47,9 @@ var _revealed_marker_instances := {}
 var _hovered_section_title := ""
 var _glowing_active_sections := {}
 var _sections_animating_into_sidebar := {}
+var _revealed_marker_base_offsets := {}
+var _revealed_marker_hint_timers: Dictionary = {}
+var _revealed_marker_hint_animating: Dictionary = {}
 var _shared_golden_glow_material: ShaderMaterial
 var _bubble_base_minimum_size := Vector2.ZERO
 
@@ -55,10 +68,18 @@ func _ready() -> void:
 	if not TutorialHandler.quests_changed.is_connected(refresh_callable):
 		TutorialHandler.quests_changed.connect(refresh_callable)
 
+	HoverHandler.add_click_interceptor(_try_intercept_world_click)
+
 	refresh_ui()
 	call_deferred("_update_layout")
+	_refresh_shader_time()
+
+func _process(_delta: float) -> void:
+	_refresh_shader_time()
+	_refresh_revealed_marker_hover()
 
 func _exit_tree() -> void:
+	HoverHandler.remove_click_interceptor(_try_intercept_world_click)
 	_clear_revealed_markers()
 
 
@@ -77,8 +98,8 @@ func refresh_ui() -> void:
 	show()
 	_ensure_selected_section()
 	_refresh_selected_section_content()
-	_apply_bubble_states()
 	_apply_expanded_state()
+	_apply_bubble_states()
 	call_deferred("_update_layout")
 
 
@@ -136,11 +157,13 @@ func _rebuild_revealed_markers() -> void:
 			REVEALED_MARKER_TEXTURE,
 			Callable(self, "_on_revealed_marker_pressed").bind(quest.section_title),
 			true,
-			Vector2(0, -30)
+			REVEALED_MARKER_OFFSET
 		)
 		if marker != null and marker.instance is CanvasItem:
 			(marker.instance as CanvasItem).material = _shared_golden_glow_material
+			_revealed_marker_base_offsets[quest.section_title] = marker.offset
 		_revealed_marker_instances[quest.section_title] = marker
+		_revealed_marker_hint_timers[quest.section_title] = Time.get_ticks_msec()
 
 func _clear_revealed_markers() -> void:
 	for section_title in _revealed_marker_instances.keys().duplicate():
@@ -148,6 +171,9 @@ func _clear_revealed_markers() -> void:
 			continue
 		UiNotifications.try_kill(_revealed_marker_instances[section_title])
 		_revealed_marker_instances.erase(section_title)
+		_revealed_marker_base_offsets.erase(section_title)
+		_revealed_marker_hint_timers.erase(section_title)
+		_revealed_marker_hint_animating.erase(section_title)
 
 
 func _clear_bubbles() -> void:
@@ -172,8 +198,8 @@ func _on_bubble_pressed(section_title: String) -> void:
 		_is_expanded = true
 
 	_refresh_selected_section_content()
-	_apply_bubble_states()
 	_apply_expanded_state()
+	_apply_bubble_states()
 	call_deferred("_update_layout")
 
 func _on_revealed_marker_pressed(section_title: String) -> void:
@@ -188,13 +214,28 @@ func _on_revealed_marker_pressed(section_title: String) -> void:
 		marker.target_object = null
 		if marker.instance is Control:
 			(marker.instance as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_revealed_marker_base_offsets.erase(section_title)
 
+	_revealed_marker_hint_timers.erase(section_title)
+	_revealed_marker_hint_animating.erase(section_title)
 	_selected_section_title = section_title
 	_is_expanded = false
 	_glowing_active_sections[section_title] = true
 	_sections_animating_into_sidebar[section_title] = true
 	TutorialHandler.activate_quest(quest)
 	await _play_revealed_marker_flight(section_title)
+
+func _try_intercept_world_click(node) -> bool:
+	if node == null:
+		return false
+	for section_title in _revealed_marker_instances.keys():
+		if _sections_animating_into_sidebar.has(section_title):
+			continue
+		var quest = TutorialHandler.get_quest(section_title)
+		if quest != null and quest.reveal_target == node:
+			_on_revealed_marker_pressed(section_title)
+			return true
+	return false
 
 func _on_bubble_mouse_entered(section_title: String) -> void:
 	_hovered_section_title = section_title
@@ -228,9 +269,11 @@ func _refresh_selected_section_content() -> void:
 	if quest_reward_text.is_empty():
 		quest_reward_text = reward_text
 
-	_reward_label.visible = not quest_reward_text.is_empty()
+	var show_claim: bool = quest.phase == TutorialHandler.TutorialPhase.COMPLETED
+	_reward_label.visible = not quest_reward_text.is_empty() and not show_claim
 	_reward_label.text = quest_reward_text
-	_claim_reward_button.visible = quest.phase == TutorialHandler.TutorialPhase.COMPLETED
+	_claim_reward_button.visible = show_claim
+	_claim_reward_button.text = ("Claim " + quest_reward_text) if not quest_reward_text.is_empty() else "Claim Reward"
 
 
 func _get_task_icon_texture(quest) -> Texture2D:
@@ -283,6 +326,34 @@ func _copy_label_style(target: Label, reference: Label, use_theme: bool) -> void
 	if font != null:
 		target.add_theme_font_override("font", font)
 
+
+func _ensure_bubble_claim_button(bubble: Button, section_title: String) -> Button:
+	var btn := bubble.get_node_or_null("BubbleClaimButton") as Button
+	if btn != null:
+		return btn
+
+	btn = Button.new()
+	btn.name = "BubbleClaimButton"
+	btn.focus_mode = Control.FOCUS_NONE
+	btn.mouse_filter = Control.MOUSE_FILTER_STOP
+	btn.text = "Claim Reward"
+	btn.self_modulate = REWARD_TINT
+	btn.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	btn.position = Vector2(_bubble_base_minimum_size.x + SUMMARY_LABEL_GAP, 0)
+	btn.custom_minimum_size = Vector2(0, _bubble_base_minimum_size.y)
+	btn.pressed.connect(_on_bubble_claim_pressed.bind(section_title))
+	bubble.add_child(btn)
+	return btn
+
+func _on_bubble_claim_pressed(section_title: String) -> void:
+	var quest = TutorialHandler.get_quest(section_title)
+	if quest == null:
+		return
+	var bubble := _get_bubble_for_section(section_title)
+	var source: Control = bubble if bubble != null else _claim_reward_button
+	var source_center_ui := source.global_position + source.size * 0.5
+	var reward_source_position := Util.ui_to_world_position(source_center_ui, self, Camera)
+	TutorialHandler.claim_quest_reward(quest, reward_source_position)
 
 func _ensure_bubble_summary_label(bubble: Button) -> Label:
 	var summary_label := bubble.get_node_or_null("BubbleSummaryLabel") as Label
@@ -345,18 +416,32 @@ func _apply_bubble_states() -> void:
 		var summary_label := _ensure_bubble_summary_label(bubble)
 		var bubble_width := _bubble_base_minimum_size.x
 
+		var claim_button := _ensure_bubble_claim_button(bubble, quest.section_title)
+
 		if _sections_animating_into_sidebar.has(quest.section_title):
 			bubble.modulate = Color(1.0, 1.0, 1.0, 0.0)
 			bubble.disabled = true
 			summary_label.visible = false
+			claim_button.visible = false
 			continue
 
 		background_icon.texture = _get_bubble_dot_texture(quest.section_title, quest)
 		state_icon.texture = _get_bubble_state_icon_texture(quest)
 		state_icon.self_modulate = _get_bubble_state_icon_modulate(quest.section_title, quest)
-		summary_label.text = _get_collapsed_summary_text(quest.section_title)
-		summary_label.visible = _should_show_collapsed_summary(quest.section_title) and not summary_label.text.is_empty()
-		if summary_label.visible:
+
+		var is_completed: bool = quest.phase == TutorialHandler.TutorialPhase.COMPLETED
+		var window_open: bool = _selected_section_title == quest.section_title and _is_expanded and _quest_window.visible
+		var reward_str := TutorialHandler.get_quest_reward_text(quest)
+		if reward_str.is_empty():
+			reward_str = reward_text
+		claim_button.text = ("Claim " + reward_str) if not reward_str.is_empty() else "Claim Reward"
+		claim_button.visible = is_completed and not window_open
+		summary_label.visible = not is_completed and _should_show_collapsed_summary(quest.section_title)
+		summary_label.text = _get_collapsed_summary_text(quest.section_title) if summary_label.visible else ""
+
+		if claim_button.visible:
+			bubble_width += SUMMARY_LABEL_GAP + claim_button.get_combined_minimum_size().x
+		elif summary_label.visible and not summary_label.text.is_empty():
 			bubble_width += SUMMARY_LABEL_GAP + summary_label.get_combined_minimum_size().x
 
 		bubble.custom_minimum_size = Vector2(bubble_width, _bubble_base_minimum_size.y)
@@ -502,6 +587,7 @@ func _finish_revealed_marker_flight(section_title: String) -> void:
 	if marker != null:
 		UiNotifications.try_kill(marker)
 		_revealed_marker_instances.erase(section_title)
+		_revealed_marker_base_offsets.erase(section_title)
 
 	_sections_animating_into_sidebar.erase(section_title)
 	_apply_bubble_states()
@@ -514,15 +600,17 @@ func _on_claim_reward_pressed() -> void:
 	var quest = TutorialHandler.get_quest(_selected_section_title)
 	if quest == null:
 		return
-	TutorialHandler.claim_quest_reward(quest)
+	var button_center_ui := _claim_reward_button.global_position + _claim_reward_button.size * 0.5
+	var reward_source_position := Util.ui_to_world_position(button_center_ui, self, Camera)
+	TutorialHandler.claim_quest_reward(quest, reward_source_position)
 
 func _on_ui_close() -> void:
 	if not visible or not _quest_window.visible or not _is_expanded:
 		return
 
 	_is_expanded = false
-	_apply_bubble_states()
 	_apply_expanded_state()
+	_apply_bubble_states()
 	call_deferred("_update_layout")
 
 
@@ -530,3 +618,95 @@ func _clear_hint_rows() -> void:
 	for row in _hint_rows:
 		row.queue_free()
 	_hint_rows.clear()
+
+func _refresh_shader_time() -> void:
+	if _shared_golden_glow_material == null:
+		return
+	_shared_golden_glow_material.set_shader_parameter("ui_time", float(Time.get_ticks_msec()) / 1000.0)
+
+func _refresh_revealed_marker_hover() -> void:
+	var t := float(Time.get_ticks_msec()) / 1000.0
+	for section_title in _revealed_marker_instances.keys():
+		if _sections_animating_into_sidebar.has(section_title):
+			continue
+		var marker = _revealed_marker_instances.get(section_title)
+		if marker == null:
+			continue
+		var base_offset: Vector2 = _revealed_marker_base_offsets.get(section_title, marker.offset)
+		var phase := float(abs(String(section_title).hash()) % 1000) / 1000.0 * TAU
+		marker.offset = base_offset + Vector2(0.0, sin(t * REVEALED_MARKER_HOVER_SPEED + phase) * REVEALED_MARKER_HOVER_HEIGHT)
+
+		if _revealed_marker_hint_animating.get(section_title, false):
+			continue
+		var hint_start_msec: int = _revealed_marker_hint_timers.get(section_title, Time.get_ticks_msec())
+		if (Time.get_ticks_msec() - hint_start_msec) / 1000.0 >= CURSOR_HINT_IDLE_DELAY:
+			_revealed_marker_hint_timers[section_title] = Time.get_ticks_msec()
+			_play_cursor_hint_animation(section_title)
+
+
+func _play_cursor_hint_animation(section_title: String) -> void:
+	_revealed_marker_hint_animating[section_title] = true
+
+	var marker = _revealed_marker_instances.get(section_title)
+	if marker == null or not (marker.instance is TextureButton):
+		_revealed_marker_hint_animating.erase(section_title)
+		return
+
+	var button := marker.instance as TextureButton
+	var frame_w := float(CURSOR_HINT_TEXTURE.get_width()) / CURSOR_HINT_FRAME_COUNT
+	var frame_h := float(CURSOR_HINT_TEXTURE.get_height())
+	var frame_size := Vector2(frame_w, frame_h)
+
+	var hint := TextureRect.new()
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hint.size = frame_size
+	hint.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	_set_hint_atlas_frame(hint, frame_size, 0)
+
+	var center_x := button.size.x * 0.5 - frame_size.x * 0.5
+	var hint_y := 4
+	hint.position = Vector2(center_x + 40.0, hint_y + 32.0)
+	button.add_child(hint)
+
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(hint, "modulate:a", 1.0, CURSOR_HINT_FADE_DURATION)
+	tween.tween_property(hint, "position", Vector2(center_x, hint_y), CURSOR_HINT_MOVE_DURATION)
+	await tween.finished
+
+	if not is_instance_valid(button) or not _revealed_marker_instances.has(section_title):
+		if is_instance_valid(hint):
+			hint.queue_free()
+		_revealed_marker_hint_animating.erase(section_title)
+		return
+
+	for frame in range(1, CURSOR_HINT_FRAME_COUNT):
+		_set_hint_atlas_frame(hint, frame_size, frame)
+		await get_tree().create_timer(CURSOR_HINT_CLICK_FRAME_DURATION, true, false, true).timeout
+		if not is_instance_valid(button) or not _revealed_marker_instances.has(section_title):
+			if is_instance_valid(hint):
+				hint.queue_free()
+			_revealed_marker_hint_animating.erase(section_title)
+			return
+
+	_set_hint_atlas_frame(hint, frame_size, 0)
+	await get_tree().create_timer(CURSOR_HINT_CLICK_FRAME_DURATION * 2.0, true, false, true).timeout
+
+	if is_instance_valid(hint):
+		var fade_out := create_tween()
+		fade_out.tween_property(hint, "modulate:a", 0.0, CURSOR_HINT_FADE_DURATION)
+		await fade_out.finished
+		hint.queue_free()
+
+	await get_tree().create_timer(CURSOR_HINT_REPEAT_DELAY, true, false, true).timeout
+	_revealed_marker_hint_animating.erase(section_title)
+	if _revealed_marker_instances.has(section_title) and not _sections_animating_into_sidebar.has(section_title):
+		_revealed_marker_hint_timers[section_title] = Time.get_ticks_msec()
+
+
+func _set_hint_atlas_frame(hint: TextureRect, frame_size: Vector2, frame: int) -> void:
+	var atlas := hint.texture as AtlasTexture
+	if atlas == null:
+		atlas = AtlasTexture.new()
+		atlas.atlas = CURSOR_HINT_TEXTURE
+		hint.texture = atlas
+	atlas.region = Rect2(frame_size.x * frame, 0.0, frame_size.x, frame_size.y)

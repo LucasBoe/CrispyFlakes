@@ -37,6 +37,7 @@ shader = ExtResource("56_prog")
 shader_parameter/wave_color = Color(1, 0, 0, 1)
 shader_parameter/is_unlocked = false
 shader_parameter/is_active = false
+shader_parameter/ui_time = 0.0
 
 [node name="UIMenu" type="Control"]
 layout_mode = 3
@@ -523,6 +524,7 @@ offset_right = -8.0
 offset_bottom = -9.0
 grow_horizontal = 0
 grow_vertical = 0
+alignment = 2
 
 [node name="Button_Workers" type="Button" parent="HBoxContainer"]
 custom_minimum_size = Vector2(32, 32)

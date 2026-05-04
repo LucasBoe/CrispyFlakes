@@ -33,9 +33,9 @@ func _ready():
 	_last_shake_update_usec = Time.get_ticks_usec()
 	camera_offset_base = offset
 	
-	zoomTarget = 3
-	zoom = Vector2(3,3)
-	global_position = Vector2(0,0)
+	zoomTarget = 2
+	zoom = Vector2(2,2)
+	global_position = Vector2(-24,-48)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

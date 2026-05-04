@@ -105,7 +105,7 @@ func _play_content_transition() -> void:
 	if _content_tween != null:
 		_content_tween.kill()
 	_panel_content.modulate = Color(1.0, 1.0, 1.0, 0.0)
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_property(_panel_content, "modulate:a", 1.0, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_content_tween = tween
 
@@ -113,7 +113,7 @@ func _play_buy_press() -> void:
 	if _buy_feedback_tween != null:
 		_buy_feedback_tween.kill()
 	_buy_content.scale = Vector2.ONE
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_property(_buy_content, "scale", Vector2(1.06, 0.94), 0.05).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(_buy_content, "scale", Vector2.ONE, 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	_buy_feedback_tween = tween
@@ -123,7 +123,7 @@ func _play_buy_feedback(tint: Color) -> void:
 		_buy_feedback_tween.kill()
 	_buy_content.position = _buy_content_rest_position
 	_buy_content.modulate = Color.WHITE
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_property(_buy_content, "position:x", _buy_content_rest_position.x - 2.0, 0.03)
 	tween.parallel().tween_property(_buy_content, "modulate", tint, 0.05)
 	tween.tween_property(_buy_content, "position:x", _buy_content_rest_position.x + 2.0, 0.03)
@@ -131,3 +131,6 @@ func _play_buy_feedback(tint: Color) -> void:
 	tween.tween_property(_buy_content, "position:x", _buy_content_rest_position.x, 0.02)
 	tween.tween_property(_buy_content, "modulate", Color.WHITE, 0.08)
 	_buy_feedback_tween = tween
+
+func _create_ui_tween() -> Tween:
+	return create_tween().set_ignore_time_scale(true)

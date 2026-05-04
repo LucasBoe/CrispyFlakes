@@ -2,12 +2,12 @@
 
 importer="aseprite_wizard.plugin.static-texture"
 type="PortableCompressedTexture2D"
-uid="uid://boca2hk30ecvv"
+uid="uid://o8wi3jl48pcu"
 valid=false
 
 [deps]
 
-source_file="res://assets/sprites/ui/speechbubble.aseprite"
+source_file="res://assets/sprites/ui/cursor_hint_click_sheet.aseprite"
 
 [params]
 

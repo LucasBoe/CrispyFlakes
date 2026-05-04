@@ -36,10 +36,14 @@ func _ready() -> void:
 	var mat := ShaderMaterial.new()
 	mat.shader = PROGRESSION_STATE_SHADER
 	_frame_rect.material = mat
+	_refresh_shader_time()
 	mouse_entered.connect(func(): _hovered = true;  _apply_state())
 	mouse_exited.connect( func(): _hovered = false; _apply_state())
 	ProgressionHandler.item_unlocked.connect(_on_item_unlocked)
 	call_deferred("_refresh_visual_pivots")
+
+func _process(_delta: float) -> void:
+	_refresh_shader_time()
 
 func _refresh_visual_pivots() -> void:
 	pivot_offset = size * 0.5
@@ -88,6 +92,7 @@ func setup(item: ProgressionItem, connector: NinePatchRect = null) -> void:
 		var mat := ShaderMaterial.new()
 		mat.shader = PROGRESSION_STATE_SHADER
 		_connector.material = mat
+		_refresh_shader_time()
 	var is_big := item.unlocks_room != null or item.unlocks_infrastructure != null or item.depends_on == null
 	_name_label.text = item.display_name
 	_icon_rect.texture = item.sprite
@@ -118,7 +123,7 @@ func play_cost_ready_pulse(delay: float = 0.0) -> void:
 		_cost_tween.kill()
 	_cost_badge.scale = Vector2.ONE
 	_cost_badge.modulate = Color.WHITE
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	if delay > 0.0:
 		tween.tween_interval(delay)
 	tween.tween_property(_cost_badge, "scale", Vector2(1.14, 1.14), 0.06) \
@@ -136,7 +141,7 @@ func play_cost_error_pulse() -> void:
 		_cost_tween.kill()
 	_cost_badge.position = _cost_badge_rest_position
 	_cost_badge.modulate = Color.WHITE
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_property(_cost_badge, "position:x", _cost_badge_rest_position.x - 2.0, 0.03)
 	tween.parallel().tween_property(_cost_badge, "modulate", Color(1.0, 0.55, 0.55, 1.0), 0.05)
 	tween.tween_property(_cost_badge, "position:x", _cost_badge_rest_position.x + 2.0, 0.03)
@@ -151,7 +156,7 @@ func _play_frame_pulse(peak_scale: Vector2, settle_scale: Vector2, delay: float)
 	scale = Vector2.ONE
 	_flash_active = false
 	_apply_state()
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	if delay > 0.0:
 		tween.tween_interval(delay)
 	tween.tween_callback(func():
@@ -166,6 +171,21 @@ func _play_frame_pulse(peak_scale: Vector2, settle_scale: Vector2, delay: float)
 		_apply_state()
 	)
 	_frame_tween = tween
+
+func _create_ui_tween() -> Tween:
+	return create_tween().set_ignore_time_scale(true)
+
+func _refresh_shader_time() -> void:
+	var ui_time := float(Time.get_ticks_msec()) / 1000.0
+	_set_shader_ui_time(_frame_rect.material, ui_time)
+	if _connector != null:
+		_set_shader_ui_time(_connector.material, ui_time)
+
+func _set_shader_ui_time(material: Material, ui_time: float) -> void:
+	var shader_material := material as ShaderMaterial
+	if shader_material == null:
+		return
+	shader_material.set_shader_parameter("ui_time", ui_time)
 
 func _apply_state() -> void:
 	$MarginContainer.visible = not _unlocked

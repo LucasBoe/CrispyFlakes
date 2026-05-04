@@ -70,6 +70,7 @@ var _storage_items_container: VBoxContainer = null
 var _storage_items_signature: Array = []
 var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
+var _context_menu_blocked := false
 
 func _ready():
 	super._ready()
@@ -111,7 +112,16 @@ func _ready():
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
 
+func set_context_menu_blocked(blocked: bool) -> void:
+	_context_menu_blocked = blocked
+	if blocked:
+		do_hide()
+
 func _on_click_hovered_node_signal(node):
+	if _context_menu_blocked:
+		do_hide()
+		return
+
 	_clear_instances()
 
 	if node == null:

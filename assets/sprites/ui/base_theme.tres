@@ -20,9 +20,9 @@ region_rect = Rect2(48, 0, 16, 16)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_28jni"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_trfhs"]
-content_margin_left = 3.0
+content_margin_left = 5.0
 content_margin_top = 3.0
-content_margin_right = 7.0
+content_margin_right = 9.0
 content_margin_bottom = 7.0
 texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
@@ -38,9 +38,9 @@ region_rect = Rect2(16, 0, 16, 16)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7qa4f"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5wple"]
-content_margin_left = 3.0
+content_margin_left = 5.0
 content_margin_top = 3.0
-content_margin_right = 7.0
+content_margin_right = 9.0
 content_margin_bottom = 7.0
 texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
@@ -52,9 +52,9 @@ region_rect = Rect2(0, 0, 16, 16)
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c80o7"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7qa4f"]
-content_margin_left = 5.0
+content_margin_left = 7.0
 content_margin_top = 5.0
-content_margin_right = 5.0
+content_margin_right = 7.0
 content_margin_bottom = 5.0
 texture = ExtResource("2_trfhs")
 texture_margin_left = 8.0
@@ -132,3 +132,5 @@ RichTextLabel/fonts/normal_font = ExtResource("3_trfhs")
 TabBar/constants/h_separation = 2
 TabBar/constants/tab_separation = -1
 TabBar/styles/tab_focus = SubResource("StyleBoxEmpty_s6nds")
+TooltipLabel/font_sizes/font_size = 11
+TooltipLabel/fonts/font = ExtResource("3_trfhs")

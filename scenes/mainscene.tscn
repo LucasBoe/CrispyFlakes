@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=42 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -25,6 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://pstb0wurhta1" path="res://assets/sprites/ui/icon_idle_workers.png" id="63_pd6sg"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
 [ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
+[ext_resource type="PackedScene" uid="uid://btb30iurf8iky" path="res://scenes/ui/ui_controls.tscn" id="ui_controls"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
 
@@ -463,6 +464,8 @@ stretch_mode = 3
 
 [node name="UIMenu" parent="UI" instance=ExtResource("ui_menu")]
 unique_name_in_owner = true
+
+[node name="UIControls" parent="UI" instance=ExtResource("ui_controls")]
 
 [node name="UIFullscreen" parent="UI" instance=ExtResource("ui_fullscreen")]
 unique_name_in_owner = true

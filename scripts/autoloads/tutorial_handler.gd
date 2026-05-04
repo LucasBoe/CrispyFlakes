@@ -200,11 +200,14 @@ func activate_quest(quest: TutorialQuest) -> void:
 	_notify_quests_changed()
 
 
-func claim_quest_reward(quest: TutorialQuest) -> void:
+func claim_quest_reward(quest: TutorialQuest, reward_source_position = null) -> void:
 	if not has_quest(quest) or quest.phase != TutorialPhase.COMPLETED:
 		return
 	if quest.reward_money > 0:
-		ResourceHandler.change_money(quest.reward_money)
+		if reward_source_position is Vector2:
+			ResourceHandler.add_animated(Enum.Resources.MONEY, quest.reward_money, reward_source_position)
+		else:
+			ResourceHandler.change_money(quest.reward_money)
 
 	mark_quest_done(quest)
 	quest_claimed.emit(quest.section_title)

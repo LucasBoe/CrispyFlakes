@@ -23,6 +23,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme = ExtResource("2_05kn2")
 script = ExtResource("1_26idi")
 
 [node name="LayoutRoot" type="Control" parent="."]
@@ -142,6 +143,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 focus_mode = 0
+theme = ExtResource("2_05kn2")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
 theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")

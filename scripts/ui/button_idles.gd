@@ -3,6 +3,7 @@ extends Button
 func _ready():
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
 	pressed.connect(_select_next_idle)
+	_on_jobs_changed()
 	
 func _on_jobs_changed():
 	var idles = JobHandler.count_workers_in(Enum.Jobs.IDLE)
@@ -10,7 +11,12 @@ func _on_jobs_changed():
 	visible = idles > 0
 
 func _select_next_idle():
-	var idle = Global.NPCSpawner.workers.filter(func(w:NPCWorker):return w.current_job == Enum.Jobs.IDLE).pick_random()
+	var idle_workers = Global.NPCSpawner.workers.filter(func(w:NPCWorker):return w.current_job == Enum.Jobs.IDLE)
+	if idle_workers.is_empty():
+		_on_jobs_changed()
+		return
+
+	var idle = idle_workers.pick_random()
 	Camera.zoomTarget = 2.0
 	Camera.zoom_in_out(true, 0.1)
 	Camera.position = idle.position

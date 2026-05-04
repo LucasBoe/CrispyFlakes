@@ -39,6 +39,8 @@ func _run_startup_sequence() -> void:
 		await _poll_until(func(): return _startup_content_ready)
 
 	_reset_outside_overlay()
+	Global.UI.menu.start_tutorial_menu_gating()
+	Global.UI.selection.set_context_menu_blocked(true)
 	spawn_bounties(3)
 	spawn_item_stack(Enum.Items.WOOD, 3, 0, 10)
 	_set_startup_money(STARTUP_INITIAL_MONEY)
@@ -59,14 +61,14 @@ func _run_startup_sequence() -> void:
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_cleanup_completion(_quests.cleanup)):
 			return
 		_quests.cleanup.set_done()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.cleanup)):
-			return
+		Global.UI.selection.set_context_menu_blocked(false)
 
 		ProgressionHandler.add_points(BAR_PROGRESSION_ITEM.cost)
 		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_bar)):
 			return
 		_quests.build_bar.start()
+		Global.UI.menu.unlock_tutorial_progression_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(
@@ -75,6 +77,7 @@ func _run_startup_sequence() -> void:
 			)
 		):
 			return
+		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(
@@ -86,9 +89,6 @@ func _run_startup_sequence() -> void:
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_bar_setup_completion(tutorial_worker)):
 			return
 		_quests.build_bar.set_done()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.build_bar)):
-			return
-
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_initial_bar_water_stock(tutorial_worker)):
 			return
 
@@ -131,6 +131,7 @@ func _run_startup_sequence() -> void:
 			TutorialHandler.activate_quest(_quests.build_table)
 
 		_quests.build_table.start()
+		Global.UI.menu.unlock_tutorial_progression_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(
@@ -139,6 +140,7 @@ func _run_startup_sequence() -> void:
 			)
 		):
 			return
+		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(
@@ -148,8 +150,6 @@ func _run_startup_sequence() -> void:
 		):
 			return
 		_quests.build_table.set_done()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.build_table)):
-			return
 
 	_finish_startup(skip_layer)
 
@@ -469,6 +469,8 @@ func _finish_startup_if_aborted(skip_layer: CanvasLayer, aborted: bool) -> bool:
 
 func _finish_startup(skip_layer: CanvasLayer) -> void:
 	_destroy_menu_tutorial_arrow()
+	Global.UI.menu.finish_tutorial_menu_gating()
+	Global.UI.selection.set_context_menu_blocked(false)
 	RoomStatusHandler.enabled = true
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
 	Global.UI.resources.show()

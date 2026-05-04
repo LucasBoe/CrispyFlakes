@@ -9,6 +9,20 @@ var worker_ui_active: bool = false
 
 signal click_hovered_node_signal
 
+var _click_interceptors: Array[Callable] = []
+
+func add_click_interceptor(interceptor: Callable) -> void:
+	_click_interceptors.append(interceptor)
+
+func remove_click_interceptor(interceptor: Callable) -> void:
+	_click_interceptors.erase(interceptor)
+
+func _run_interceptors(node) -> bool:
+	for interceptor in _click_interceptors:
+		if interceptor.call(node):
+			return true
+	return false
+
 func _process(_delta):
 	var mouse_pos = get_global_mouse_position()
 
@@ -85,13 +99,17 @@ func _unhandled_input(event):
 		if currently_hovered is NPC:
 			currently_hovered.click_on()
 
+		if _run_interceptors(currently_hovered):
+			return
+
 		# For NPCWorker: defer selection to release so we can tell if it was a drag
 		if not (currently_hovered is NPCWorker) and NPCWorker.picked_up_npc == null:
 			click_hovered_node_signal.emit(currently_hovered)
 
 	elif event.is_action_released("click"):
 		if currently_hovered is NPCWorker and not NPCWorker.was_dragging:
-			click_hovered_node_signal.emit(currently_hovered)
+			if not _run_interceptors(currently_hovered):
+				click_hovered_node_signal.emit(currently_hovered)
 
 func _get_closest_stove(stoves: Array, mouse_pos: Vector2):
 	var best = null

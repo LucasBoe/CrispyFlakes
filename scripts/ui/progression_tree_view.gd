@@ -80,6 +80,10 @@ func _ready() -> void:
 	ProgressionHandler.item_unlocked.connect(_on_item_unlocked)
 	ProgressionHandler.points_changed.connect(_on_points_changed)
 	_on_points_changed(ProgressionHandler.get_points())
+	_refresh_shader_time()
+
+func _process(_delta: float) -> void:
+	_refresh_shader_time()
 
 func _on_points_changed(pts: int) -> void:
 	var has_points := pts > 0
@@ -149,7 +153,7 @@ func _pulse_connector(item: ProgressionItem, delay: float = 0.0) -> void:
 	var material := connector.material as ShaderMaterial
 	if material == null:
 		return
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	if delay > 0.0:
 		tween.tween_interval(delay)
 	tween.tween_callback(func(): material.set_shader_parameter("is_active", true))
@@ -174,7 +178,7 @@ func _pulse_points_pill(error: bool) -> void:
 	_points_pill.scale = Vector2.ONE
 	_points_pill.modulate = Color.WHITE
 	var tint := Color(1.0, 0.72, 0.72, 1.0) if error else Color(1.0, 0.92, 0.92, 1.0)
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_property(_points_pill, "scale", Vector2(1.06, 1.06), 0.06).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(_points_pill, "modulate", tint, 0.06)
 	tween.tween_property(_points_pill, "scale", Vector2.ONE, 0.08).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
@@ -193,14 +197,14 @@ func _on_visibility_changed() -> void:
 func _play_open_buildup() -> void:
 	_points_pill.scale = Vector2(0.96, 0.96)
 	_points_pill.self_modulate = Color(1.0, 1.0, 1.0, 0.0)
-	var pill_tween := create_tween()
+	var pill_tween := _create_ui_tween()
 	pill_tween.tween_property(_points_pill, "scale", Vector2.ONE, 0.09).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	pill_tween.parallel().tween_property(_points_pill, "self_modulate:a", 1.0, 0.08).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_track_open_buildup_tween(pill_tween)
 
 	if _sidebar.visible:
 		_sidebar.self_modulate = Color(1.0, 1.0, 1.0, 0.0)
-		var sidebar_tween := create_tween()
+		var sidebar_tween := _create_ui_tween()
 		sidebar_tween.tween_interval(0.08)
 		sidebar_tween.tween_property(_sidebar, "self_modulate:a", 1.0, 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		_track_open_buildup_tween(sidebar_tween)
@@ -217,7 +221,7 @@ func _play_open_buildup_for_button(item: ProgressionItem, button: ProgressionIte
 	button.position = target_position + Vector2(0.0, 4.0)
 	button.scale = Vector2(0.0, 0.0)
 	button.self_modulate = Color(1.0, 1.0, 1.0, 0.0)
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_interval(delay)
 	tween.tween_property(button, "position", target_position, 0.1).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.parallel().tween_property(button, "scale", Vector2.ONE, 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -227,10 +231,19 @@ func _play_open_buildup_for_button(item: ProgressionItem, button: ProgressionIte
 func _play_open_buildup_for_connector(item: ProgressionItem, connector: NinePatchRect) -> void:
 	var delay := 0.1 + _get_item_depth(item) * 0.1
 	connector.visible = false
-	var tween := create_tween()
+	var tween := _create_ui_tween()
 	tween.tween_interval(delay)
 	tween.tween_callback(connector.show)
 	_track_open_buildup_tween(tween)
+
+func _create_ui_tween() -> Tween:
+	return create_tween().set_ignore_time_scale(true)
+
+func _refresh_shader_time() -> void:
+	var material := _points_btn.material as ShaderMaterial
+	if material == null:
+		return
+	material.set_shader_parameter("ui_time", float(Time.get_ticks_msec()) / 1000.0)
 
 func _track_open_buildup_tween(tween: Tween) -> void:
 	_open_buildup_tweens.append(tween)
