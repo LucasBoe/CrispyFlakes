@@ -4,7 +4,7 @@ extends Node2D
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
 @onready var _roof_decorations: Node2D = $RoofDecorations
 @onready var _sign: BuildingSign = $SaloonSign
-@onready var infrastructure = $WaterPipeTiles
+@onready var infrastructure = $Infrastructure
 
 var floors = {}
 var query : BuildingRoomQueries

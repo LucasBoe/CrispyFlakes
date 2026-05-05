@@ -37,6 +37,9 @@ func _on_module_bought(module) -> void:
 func uses_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and drink_type == Enum.Items.WATER_BUCKET and Building.infrastructure.room_has_service(self, &"water")
 
+func wants_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water" and drink_type == Enum.Items.WATER_BUCKET
+
 func try_receive(item) -> bool:
 	item.destroy()
 	return true

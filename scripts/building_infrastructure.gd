@@ -1,89 +1,38 @@
-extends TileMapLayer
+extends Node2D
 class_name BuildingInfrastructure
 
 signal on_infrastructure_changed_signal(layer_name: StringName)
 
 const WATER_LAYER := &"water"
 const STOVE_LAYER := &"stove"
-const STOVE_SCENE := preload("res://scenes/infrastructure/stove_infrastructure.tscn")
 
-const _PIPE_SOURCE_ID := 0
-const _PIPE_TEXTURE_PATH := "res://assets/sprites/water_pipe_tiles.png"
-const _PIPE_TILE_COUNT := 11
-enum pipeTileIndexMap {
-	TOWER_OUTPUT_RIGHT = 0,
-	INDOOR_COMPLETE = 1,
-	OUTDOOR_COMPLETE = 2,
-	TOWER_OUTPUT_LEFT = 3,
-	OUTDOOR_LEFT_END = 4,
-	OUTDOOR_RIGHT_END = 5,
-	INDOOR_LEFT_END = 6,
-	INDOOR_RIGHT_END = 7,
-	FAUCET_LEFT = 8,
-	FAUCET_COMPLETE = 9,
-	FAUCET_RIGHT = 10,
-}
 const _CARDINAL_DIRECTIONS := [
 	Vector2i.LEFT,
 	Vector2i.RIGHT,
 	Vector2i.UP,
 	Vector2i.DOWN,
 ]
-const _HORIZONTAL_DIRECTIONS := [
-	Vector2i.LEFT,
-	Vector2i.RIGHT,
-]
-const _SUPPORT_BELOW_OFFSET := Vector2i(0, -1)
 
 var _layers: Dictionary = {}
-var _pipe_texture: Texture2D = null
-var _stove_root: Node2D = null
-var _stove_instances: Dictionary = {}
+var _water: RefCounted
+var _stove: RefCounted
+var _water_info_requests: int = 0
 
 func _ready() -> void:
-	_configure_pipe_tileset()
-	_ensure_stove_root()
+	_water = BuildingInfrastructureWater.new()
+	_stove = BuildingInfrastructureStove.new()
+	_water.setup(self, $WaterPipeTiles)
+	_stove.setup(self, $StoveTiles)
+
+# --- Placement ---
 
 func can_place(data, origin: Vector2i) -> bool:
 	match data.layer_name:
-		STOVE_LAYER:
-			return _can_place_stove(data, origin)
 		WATER_LAYER:
-			return _can_place_water(data, origin)
+			return _water.can_place(data, origin)
+		STOVE_LAYER:
+			return _stove.can_place(data, origin)
 	return false
-
-func _can_place_water(data, origin: Vector2i) -> bool:
-	var pending := {}
-	for col in data.width:
-		for row in data.height:
-			var index := origin + Vector2i(col, row)
-			if has_data_at(index, data.layer_name):
-				return false
-			pending[index] = true
-
-	var supported := _collect_supported_cells(data.layer_name, pending)
-	var has_external_side_anchor := false
-
-	for index in pending.keys():
-		if not supported.has(index):
-			return false
-		if not _has_side_network_neighbor(index, data.layer_name, pending):
-			return false
-		if _has_external_side_network_neighbor(index, data.layer_name):
-			has_external_side_anchor = true
-
-	return has_external_side_anchor
-
-func _can_place_stove(data, origin: Vector2i) -> bool:
-	for col in data.width:
-		for row in data.height:
-			var index := origin + Vector2i(col, row)
-			if has_data_at(index, data.layer_name):
-				return false
-			var room := Building.get_room_from_index(index) as RoomBase
-			if room == null:
-				return false
-	return true
 
 func place(data, origin: Vector2i) -> bool:
 	if not can_place(data, origin):
@@ -104,7 +53,7 @@ func clear_under_room(room: RoomBase) -> void:
 	for layer_name in _layers.keys():
 		var dirty := _remove_cells_under_room(room, layer_name)
 		if layer_name == WATER_LAYER:
-			while _prune_unsupported_cells(layer_name):
+			while _water.prune():
 				dirty = true
 		if not dirty:
 			continue
@@ -117,18 +66,17 @@ func remove_at(index: Vector2i, layer_name: StringName) -> bool:
 		return false
 
 	layer.erase(index)
-	if layer.is_empty():
-		_layers.erase(layer_name)
-	else:
-		_layers[layer_name] = layer
+	compact_layer(layer_name)
 
 	if layer_name == WATER_LAYER:
-		while _prune_unsupported_cells(layer_name):
+		while _water.prune():
 			pass
 
 	_refresh_layer_visuals(layer_name)
 	_emit_changed(layer_name)
 	return true
+
+# --- Queries ---
 
 func has_data_at(index: Vector2i, layer_name: StringName) -> bool:
 	var layer: Dictionary = _layers.get(layer_name, {})
@@ -142,7 +90,7 @@ func room_has_layer(room: RoomBase, layer_name: StringName) -> bool:
 	return false
 
 func room_has_service(room: RoomBase, layer_name: StringName) -> bool:
-	if _room_provides_layer(room, layer_name):
+	if room_provides_layer(room, layer_name):
 		return true
 	return get_connected_provider(room, layer_name) != null
 
@@ -163,7 +111,7 @@ func get_connected_provider(room: RoomBase, layer_name: StringName):
 		visited[index] = true
 
 		var current_room := Building.get_room_from_index(index) as RoomBase
-		if _room_provides_layer(current_room, layer_name):
+		if room_provides_layer(current_room, layer_name):
 			return current_room
 
 		var adjacent_provider := _get_adjacent_provider(index, layer_name)
@@ -185,19 +133,6 @@ func count_cells_by_data(data) -> int:
 			count += 1
 	return count
 
-func get_stove_at(index: Vector2i):
-	return _stove_instances.get(index, null)
-
-func get_all_stoves() -> Array:
-	var stoves: Array = []
-	for stove in _stove_instances.values():
-		if is_instance_valid(stove):
-			stoves.append(stove)
-	return stoves
-
-func get_stove_count() -> int:
-	return _layers.get(STOVE_LAYER, {}).size()
-
 func get_layer_columns(layer_name: StringName) -> Array[int]:
 	var columns: Array[int] = []
 	var seen := {}
@@ -210,72 +145,84 @@ func get_layer_columns(layer_name: StringName) -> Array[int]:
 	columns.sort()
 	return columns
 
+# --- Stove pass-throughs ---
+
+func get_stove_at(index: Vector2i):
+	return _stove.get_stove_at(index)
+
+func get_all_stoves() -> Array:
+	return _stove.get_all_stoves()
+
+func get_stove_count() -> int:
+	return _stove.get_stove_count()
+
+# --- Water info overlay ---
+
+func show_water_info() -> void:
+	_water_info_requests += 1
+	if _water_info_requests == 1:
+		_water.show_info()
+
+func hide_water_info() -> void:
+	_water_info_requests = max(0, _water_info_requests - 1)
+	if _water_info_requests == 0:
+		_water.hide_info()
+
+# --- Visuals ---
+
 func refresh_visuals() -> void:
-	_configure_pipe_tileset()
-	_ensure_stove_root()
-	_refresh_water_pipe_tiles()
-	_refresh_stove_visuals()
+	_water.configure_tileset()
+	_water.refresh_visuals()
+	_stove.refresh_visuals()
+
+# --- Layer helpers used by handlers ---
+
+func get_layer(layer_name: StringName) -> Dictionary:
+	return _layers.get(layer_name, {})
+
+func get_layer_cells(layer_name: StringName) -> Array[Vector2i]:
+	var cells: Array[Vector2i] = []
+	var layer: Dictionary = _layers.get(layer_name, {})
+	for index in layer.keys():
+		cells.append(index)
+	return cells
+
+func compact_layer(layer_name: StringName) -> void:
+	if _layers.get(layer_name, {}).is_empty():
+		_layers.erase(layer_name)
+
+func room_provides_layer(room: RoomBase, layer_name: StringName) -> bool:
+	if room == null:
+		return false
+	return room.get_provided_infrastructure_layers().has(layer_name)
+
+func get_provider_rooms(layer_name: StringName) -> Array[RoomBase]:
+	var providers: Array[RoomBase] = []
+	var visited := {}
+	for floor_dict in Building.floors.values():
+		for room in floor_dict.values():
+			var provider := room as RoomBase
+			if provider == null or not room_provides_layer(provider, layer_name):
+				continue
+			var provider_id := provider.get_instance_id()
+			if visited.has(provider_id):
+				continue
+			visited[provider_id] = true
+			providers.append(provider)
+	return providers
+
+# --- Private ---
 
 func _emit_changed(layer_name: StringName) -> void:
 	on_infrastructure_changed_signal.emit(layer_name)
 	GlobalEventHandler.on_infrastructure_changed_signal.emit(layer_name)
 
-func _has_support_room(index: Vector2i) -> bool:
-	var room := Building.get_room_from_index(index) as RoomBase
-	return room != null and room is not RoomEmpty
-
-func _collect_supported_cells(layer_name: StringName, pending: Dictionary = {}) -> Dictionary:
-	var all_cells := {}
-	var layer: Dictionary = _layers.get(layer_name, {})
-
-	for index in layer.keys():
-		all_cells[index] = true
-	for index in pending.keys():
-		all_cells[index] = true
-
-	var open: Array[Vector2i] = []
-	var visited := {}
-
-	for index in all_cells.keys():
-		if _is_locally_supported(index, layer_name):
-			open.append(index)
-
-	while not open.is_empty():
-		var index: Vector2i = open.pop_back()
-		if visited.has(index):
-			continue
-		visited[index] = true
-
-		for direction in _HORIZONTAL_DIRECTIONS:
-			var next: Vector2i = index + direction
-			if all_cells.has(next) and not visited.has(next):
-				open.append(next)
-
-	return visited
-
-func _prune_unsupported_cells(layer_name: StringName) -> bool:
-	var layer: Dictionary = _layers.get(layer_name, {})
-	if layer.is_empty():
-		return false
-
-	var supported := _collect_supported_cells(layer_name)
-	var dirty := false
-
-	for index in layer.keys():
-		if supported.has(index) and _has_side_network_neighbor(index, layer_name):
-			continue
-		layer.erase(index)
-		dirty = true
-
-	if not dirty:
-		return false
-
-	if layer.is_empty():
-		_layers.erase(layer_name)
-	else:
-		_layers[layer_name] = layer
-
-	return true
+func _refresh_layer_visuals(layer_name: StringName) -> void:
+	match layer_name:
+		WATER_LAYER:
+			_water.refresh_visuals()
+		STOVE_LAYER:
+			_stove.refresh_visuals()
 
 func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
 	var layer: Dictionary = _layers.get(layer_name, {})
@@ -294,186 +241,12 @@ func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
 	if not dirty:
 		return false
 
-	if layer.is_empty():
-		_layers.erase(layer_name)
-	else:
-		_layers[layer_name] = layer
-
+	compact_layer(layer_name)
 	return true
 
-func _is_locally_supported(index: Vector2i, layer_name: StringName) -> bool:
-	if index.y <= 0:
-		return true
-	if _has_support_room(index):
-		return true
-	return _has_support_below(index, layer_name)
-
-func _has_support_below(index: Vector2i, layer_name: StringName) -> bool:
-	var below := index + _SUPPORT_BELOW_OFFSET
-	if _has_support_room(below):
-		return true
-	return has_data_at(below, layer_name)
-
-func _has_side_network_neighbor(index: Vector2i, layer_name: StringName, pending: Dictionary = {}) -> bool:
-	for direction in _HORIZONTAL_DIRECTIONS:
-		var neighbor: Vector2i = index + direction
-		if pending.has(neighbor):
-			return true
-		if has_data_at(neighbor, layer_name):
-			return true
-		if _room_provides_layer(Building.get_room_from_index(neighbor) as RoomBase, layer_name):
-			return true
-	return false
-
-func _has_external_side_network_neighbor(index: Vector2i, layer_name: StringName) -> bool:
-	for direction in _HORIZONTAL_DIRECTIONS:
-		var neighbor: Vector2i = index + direction
-		if has_data_at(neighbor, layer_name):
-			return true
-		if _room_provides_layer(Building.get_room_from_index(neighbor) as RoomBase, layer_name):
-			return true
-	return false
-
 func _get_adjacent_provider(index: Vector2i, layer_name: StringName) -> RoomBase:
-	for direction in _HORIZONTAL_DIRECTIONS:
+	for direction in [Vector2i.LEFT, Vector2i.RIGHT]:
 		var room := Building.get_room_from_index(index + direction) as RoomBase
-		if _room_provides_layer(room, layer_name):
+		if room_provides_layer(room, layer_name):
 			return room
 	return null
-
-func _room_provides_layer(room: RoomBase, layer_name: StringName) -> bool:
-	if room == null:
-		return false
-	return room.get_provided_infrastructure_layers().has(layer_name)
-
-func _refresh_layer_visuals(layer_name: StringName) -> void:
-	match layer_name:
-		WATER_LAYER:
-			_configure_pipe_tileset()
-			_refresh_water_pipe_tiles()
-		STOVE_LAYER:
-			_ensure_stove_root()
-			_refresh_stove_visuals()
-
-func _refresh_water_pipe_tiles() -> void:
-	clear()
-	_refresh_provider_output_tiles(WATER_LAYER)
-	var layer: Dictionary = _layers.get(WATER_LAYER, {})
-	for index in layer.keys():
-		set_cell(_to_tilemap_coords(index), _PIPE_SOURCE_ID, _get_water_pipe_tile(index))
-
-func _refresh_stove_visuals() -> void:
-	var stove_root := _ensure_stove_root()
-	var layer: Dictionary = _layers.get(STOVE_LAYER, {})
-	for index in _stove_instances.keys():
-		if layer.has(index):
-			continue
-		var stale = _stove_instances[index]
-		if is_instance_valid(stale):
-			stale.queue_free()
-		_stove_instances.erase(index)
-
-	for index in layer.keys():
-		var stove = _stove_instances.get(index, null)
-		if not is_instance_valid(stove):
-			stove = STOVE_SCENE.instantiate()
-			stove.setup(index, layer[index])
-			stove_root.add_child(stove)
-			_stove_instances[index] = stove
-		else:
-			stove.setup(index, layer[index])
-
-func _to_tilemap_coords(index: Vector2i) -> Vector2i:
-	return Vector2i(index.x, index.y * -1 - 1)
-
-func _get_water_pipe_tile(index: Vector2i) -> Vector2i:
-	return Vector2i(_get_water_pipe_tile_index(index), 0)
-
-func _get_water_pipe_tile_index(index: Vector2i) -> int:
-	var provider_left := _room_provides_layer(Building.get_room_from_index(index + Vector2i.LEFT) as RoomBase, WATER_LAYER)
-	var provider_right := _room_provides_layer(Building.get_room_from_index(index + Vector2i.RIGHT) as RoomBase, WATER_LAYER)
-	var has_left := provider_left or has_data_at(index + Vector2i.LEFT, WATER_LAYER)
-	var has_right := provider_right or has_data_at(index + Vector2i.RIGHT, WATER_LAYER)
-	var uses_water := _is_water_consumer_backing(index)
-	var outdoor := _is_outdoor_backing(index)
-
-	if uses_water:
-		if has_left and has_right:
-			return pipeTileIndexMap.FAUCET_COMPLETE
-		if has_right:
-			return pipeTileIndexMap.FAUCET_LEFT
-		if has_left:
-			return pipeTileIndexMap.FAUCET_RIGHT
-		return pipeTileIndexMap.FAUCET_COMPLETE
-	if has_left and has_right:
-		return pipeTileIndexMap.OUTDOOR_COMPLETE if outdoor else pipeTileIndexMap.INDOOR_COMPLETE
-	if has_right:
-		return pipeTileIndexMap.OUTDOOR_LEFT_END if outdoor else pipeTileIndexMap.INDOOR_LEFT_END
-	if has_left:
-		return pipeTileIndexMap.OUTDOOR_RIGHT_END if outdoor else pipeTileIndexMap.INDOOR_RIGHT_END
-	return pipeTileIndexMap.OUTDOOR_COMPLETE if outdoor else pipeTileIndexMap.INDOOR_COMPLETE
-
-func _is_outdoor_backing(index: Vector2i) -> bool:
-	var room := Building.get_room_from_index(index) as RoomBase
-	return room == null or room.is_outside_room
-
-func _is_water_consumer_backing(index: Vector2i) -> bool:
-	var room := Building.get_room_from_index(index) as RoomBase
-	return room != null and room.uses_infrastructure_layer(WATER_LAYER)
-
-func _refresh_provider_output_tiles(layer_name: StringName) -> void:
-	for provider in _get_provider_rooms(layer_name):
-		provider.clear_infrastructure_output_tiles(layer_name)
-		var provider_index := Vector2i(provider.x, provider.y)
-		provider.add_infrastructure_output_tile(layer_name, provider_index, pipeTileIndexMap.TOWER_OUTPUT_LEFT)
-		provider.add_infrastructure_output_tile(layer_name, provider_index, pipeTileIndexMap.TOWER_OUTPUT_RIGHT)
-
-func _get_provider_rooms(layer_name: StringName) -> Array[RoomBase]:
-	var providers: Array[RoomBase] = []
-	var visited := {}
-	for floor in Building.floors.values():
-		for room in floor.values():
-			var provider := room as RoomBase
-			if provider == null or not _room_provides_layer(provider, layer_name):
-				continue
-			var provider_id := provider.get_instance_id()
-			if visited.has(provider_id):
-				continue
-			visited[provider_id] = true
-			providers.append(provider)
-	return providers
-
-func _configure_pipe_tileset() -> void:
-	var pipe_tile_set := tile_set
-	if pipe_tile_set == null:
-		return
-
-	var source := pipe_tile_set.get_source(_PIPE_SOURCE_ID) as TileSetAtlasSource
-	if source == null:
-		return
-
-	var image := Image.load_from_file(ProjectSettings.globalize_path(_PIPE_TEXTURE_PATH))
-	if image == null or image.is_empty():
-		return
-
-	if _pipe_texture == null:
-		_pipe_texture = ImageTexture.create_from_image(image)
-	source.texture = _pipe_texture
-	for tile_index in _PIPE_TILE_COUNT:
-		var atlas_coords := Vector2i(tile_index, 0)
-		if source.has_tile(atlas_coords):
-			continue
-		source.create_tile(atlas_coords)
-
-func _ensure_stove_root() -> Node2D:
-	if is_instance_valid(_stove_root):
-		return _stove_root
-
-	_stove_root = get_node_or_null("StoveVisuals") as Node2D
-	if _stove_root == null:
-		_stove_root = Node2D.new()
-		_stove_root.name = "StoveVisuals"
-		_stove_root.z_as_relative = true
-		_stove_root.z_index = 1
-		add_child(_stove_root)
-	return _stove_root

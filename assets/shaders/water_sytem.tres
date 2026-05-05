@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cjkrt8sogbyn5"]
+
+[ext_resource type="Shader" uid="uid://qahdcao33duu" path="res://assets/shaders/outline_water_system.gdshader" id="1_45wbk"]
+
+[resource]
+shader = ExtResource("1_45wbk")
+shader_parameter/enabled = false
+shader_parameter/brightness_threshold = 0.20999999530608
+shader_parameter/highlight_color = Color(0.35686275, 0.16078432, 0.09019608, 1)
+shader_parameter/outline_size = 1.0
+shader_parameter/corner_pixel = false

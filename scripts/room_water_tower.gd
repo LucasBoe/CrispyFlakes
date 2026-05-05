@@ -9,6 +9,7 @@ const _PIPE_TILE_TEXTURE_PATH := "res://assets/sprites/water_pipe_tiles.png"
 const _PIPE_TILE_SIZE := 48.0
 const _PIPE_OUTPUTS_Z_INDEX := 2050
 const _PIPE_OUTPUTS_ROOT_OFFSET := Vector2(-24, -49)
+const _PIPE_MATERIAL := preload("res://assets/shaders/water_sytem.tres")
 
 @onready var fill_rect: ColorRect = $ModulesRoot/Tower/Basic/WaterTower/ColorRectFill
 @onready var tower_sprite: Sprite2D = $ModulesRoot/Tower/Basic/WaterTower
@@ -54,6 +55,7 @@ func add_infrastructure_output_tile(layer_name: StringName, room_index: Vector2i
 	var sprite := Sprite2D.new()
 	sprite.centered = false
 	sprite.texture = _create_pipe_tile_texture(tile_index)
+	sprite.material = _PIPE_MATERIAL
 	sprite.position = Vector2((room_index.x - x) * _PIPE_TILE_SIZE, (room_index.y - y) * -_PIPE_TILE_SIZE)
 	outputs_root.add_child(sprite)
 

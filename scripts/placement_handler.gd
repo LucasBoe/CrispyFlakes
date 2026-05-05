@@ -33,10 +33,14 @@ func start_building_infrastructure(data, check = null):
 	self.custom_placement_check = check
 	is_placing = true
 	_prepare_highlights(data.width * data.height)
+	if data.layer_name == BuildingInfrastructure.WATER_LAYER:
+		Building.infrastructure.show_water_info()
 
 func stop_building():
 	is_placing = false
 	build_mode = BuildMode.NONE
+	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.WATER_LAYER:
+		Building.infrastructure.hide_water_info()
 	building_data = null
 	infrastructure_data = null
 	_clear_highlights()

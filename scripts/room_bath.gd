@@ -16,6 +16,9 @@ func init_room(_x : int, _y : int):
 func uses_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and Building.infrastructure.room_has_service(self, &"water")
 
+func wants_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water"
+
 func clean_customer():
 
 	if customers.size() == 0:

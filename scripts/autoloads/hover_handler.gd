@@ -75,11 +75,17 @@ func change_hover(new_hover):
 		
 	if previously_hovered == currently_hovered:
 		return
-		
-	if previously_hovered:
+
+	if is_instance_valid(previously_hovered) and previously_hovered is RoomWaterTower:
+		Building.infrastructure.hide_water_info()
+
+	if is_instance_valid(previously_hovered):
 		_set_outline(previously_hovered, false)
-			
-	if currently_hovered:
+
+	if is_instance_valid(currently_hovered) and currently_hovered is RoomWaterTower:
+		Building.infrastructure.show_water_info()
+
+	if is_instance_valid(currently_hovered):
 		_set_outline(currently_hovered, true)
 
 func _set_outline(node, state) -> void:
@@ -96,18 +102,18 @@ func _set_outline(node, state) -> void:
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
-		if currently_hovered is NPC:
+		if is_instance_valid(currently_hovered) and currently_hovered is NPC:
 			currently_hovered.click_on()
 
 		if _run_interceptors(currently_hovered):
 			return
 
 		# For NPCWorker: defer selection to release so we can tell if it was a drag
-		if not (currently_hovered is NPCWorker) and NPCWorker.picked_up_npc == null:
+		if not (is_instance_valid(currently_hovered) and currently_hovered is NPCWorker) and NPCWorker.picked_up_npc == null:
 			click_hovered_node_signal.emit(currently_hovered)
 
 	elif event.is_action_released("click"):
-		if currently_hovered is NPCWorker and not NPCWorker.was_dragging:
+		if is_instance_valid(currently_hovered) and currently_hovered is NPCWorker and not NPCWorker.was_dragging:
 			if not _run_interceptors(currently_hovered):
 				click_hovered_node_signal.emit(currently_hovered)
 

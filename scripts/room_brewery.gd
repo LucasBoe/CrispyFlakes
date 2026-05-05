@@ -21,6 +21,9 @@ func _on_module_bought(module) -> void:
 func uses_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and current_module != null and Building.infrastructure.room_has_service(self, &"water")
 
+func wants_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water" and current_module != null
+
 func _on_progression_flag_unlocked(flag: ProgressionItem.ProgressionFlag) -> void:
 	if flag == BIG_BREWER_FLAG:
 		_apply_progression_upgrade()

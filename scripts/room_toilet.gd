@@ -85,6 +85,12 @@ func get_connected_water_tower() -> RoomWaterTower:
 func uses_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and get_connected_water_tower() != null
 
+func wants_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water"
+
+func requires_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == &"water"
+
 func get_unusable_status_text() -> String:
 	if not has_water_pipe():
 		return "needs pipe"

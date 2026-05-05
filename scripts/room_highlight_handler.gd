@@ -1,17 +1,19 @@
 extends Node2D
 
 enum Priority {
-	STATUS = 0,    # General status indicators (e.g. no worker assigned)
-	ARREST = 1,    # NPC pending arrest
-	FIGHT = 2,     # Active fight in room
-	SELECTION = 3, # Player hover / selection / drag
+	STATUS = 0,           # General status indicators (e.g. no worker assigned)
+	ARREST = 1,           # NPC pending arrest
+	FIGHT = 2,            # Active fight in room
+	SELECTION = 3,        # Player hover / selection / drag
+	TEMP_INFO_OVERLAY = 4, # Temporary full-screen info overlays (e.g. water system)
 }
 
 const PRIORITY_Z_INDEX = {
-	Priority.STATUS:    2150,
-	Priority.ARREST:   2160,
-	Priority.FIGHT:    2170,
-	Priority.SELECTION: 2180,
+	Priority.STATUS:           2150,
+	Priority.ARREST:           2160,
+	Priority.FIGHT:            2170,
+	Priority.SELECTION:        2180,
+	Priority.TEMP_INFO_OVERLAY: 2190,
 }
 
 const TILE_PX: int = 48

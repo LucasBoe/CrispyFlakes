@@ -128,6 +128,12 @@ func get_provided_infrastructure_layers() -> Array[StringName]:
 func uses_infrastructure_layer(_layer_name: StringName) -> bool:
 	return false
 
+func wants_infrastructure_layer(_layer_name: StringName) -> bool:
+	return false
+
+func requires_infrastructure_layer(_layer_name: StringName) -> bool:
+	return false
+
 func refresh_infrastructure_visuals() -> void:
 	if is_instance_valid(Building.infrastructure):
 		Building.infrastructure.refresh_visuals()
