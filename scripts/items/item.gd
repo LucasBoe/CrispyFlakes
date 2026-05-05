@@ -158,6 +158,10 @@ static func get_money_texture() -> AtlasTexture:
 func play_spawn_sound() -> void:
 	if itemType == Enum.Items.WATER_BUCKET:
 		SoundPlayer.play_water(global_position)
+	elif itemType == Enum.Items.BEER_BARREL:
+		SoundPlayer.play_barrel(global_position)
+	elif itemType == Enum.Items.WISKEY_BOX or itemType == Enum.Items.WISKEY_BOX_RAW:
+		SoundPlayer.play_crate(global_position)
 
 func destroy():
 	play_spawn_sound()

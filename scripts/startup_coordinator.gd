@@ -52,7 +52,8 @@ func _run_startup_sequence() -> void:
 
 	RoomStatusHandler.enabled = false
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").hide()
-	var tutorial_worker := await _spawn_tutorial_worker()
+	var tutorial_worker := await _spawn_tutorial_worker()	
+	await _fade_outside_overlay()
 	if not _skip_requested and is_instance_valid(tutorial_worker):
 		_reveal_quest_for_target(_quests.cleanup, tutorial_worker)
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.cleanup)):
@@ -228,8 +229,6 @@ func _spawn_tutorial_worker() -> NPCWorker:
 			worker.Navigation.stop_navigation()
 			worker.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 		return worker
-
-	await _fade_outside_overlay()
 	return worker
 
 
@@ -251,12 +250,19 @@ func _fade_outside_overlay() -> void:
 	if overlay == null or not overlay.visible:
 		return
 
+	if _skip_requested:
+		overlay.visible = false
+		return
+
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_OUT)
 	tween.tween_property(overlay, "modulate:a", 0.0, OUTSIDE_OVERLAY_FADE_DURATION)
-	await tween.finished
 
+	while tween.is_running() and not _skip_requested:
+		await get_tree().process_frame
+
+	tween.kill()
 	if is_instance_valid(overlay):
 		overlay.visible = false
 

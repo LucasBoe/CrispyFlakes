@@ -13,6 +13,8 @@ const _BREWERY_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/b
 const _PIANO_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/piano_loop.wav")
 const _PUNCH_STREAM : AudioStream = preload("res://assets/sounds/sounds/punch.wav")
 const _SERVE_DRINK_STREAM : AudioStream = preload("res://assets/sounds/sounds/serve_drink.wav")
+const _BARREL_STREAM : AudioStream = preload("res://assets/sounds/sounds/barrel.wav")
+const _CRATE_STREAM : AudioStream = preload("res://assets/sounds/sounds/crate.wav")
 const _WATER_STREAM : AudioStream = preload("res://assets/sounds/sounds/water.wav")
 const _USE_WELL_STREAM : AudioStream = preload("res://assets/sounds/sounds/use_well.wav")
 const _BROOM_STREAM : AudioStream = preload("res://assets/sounds/sounds/broom.wav")
@@ -51,6 +53,12 @@ func play_punch(world_position: Vector2) -> void:
 
 func play_serve_drink(world_position: Vector2) -> void:
 	_play_2d(_SERVE_DRINK_STREAM, world_position, -6.0, 0.9, 1.1)
+
+func play_barrel(world_position: Vector2) -> void:
+	_play_2d(_BARREL_STREAM, world_position, -6.0, 0.85, 1.15)
+
+func play_crate(world_position: Vector2) -> void:
+	_play_2d(_CRATE_STREAM, world_position, -6.0, 0.85, 1.15)
 
 func play_water(world_position: Vector2) -> void:
 	_play_2d(_WATER_STREAM, world_position, -6.0, 0.9, 1.1)
