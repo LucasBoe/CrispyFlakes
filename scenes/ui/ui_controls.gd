@@ -16,13 +16,28 @@ enum ControlHint {
 @onready var _container: VBoxContainer = %Container
 @onready var _dummy: HBoxContainer = %Dummy
 
+const PAN_MOVEMENT_THRESHOLD := 2.0
+const ZOOM_MOVEMENT_THRESHOLD := 0.01
+
 var _rows: Array[HBoxContainer] = []
 var _completed: Dictionary = {}
+var _camera: Camera2D
+var _previous_camera_position := Vector2.ZERO
+var _previous_camera_zoom := Vector2.ONE
+var _previous_time_scale := 1.0
 var _mouse_drag_start := Vector2.ZERO
 var _tracking_mouse_drag := false
 var _fade_tween: Tween
 
 func _ready() -> void:
+	set_process(true)
+	_camera = get_viewport().get_camera_2d() as Camera2D
+	if _camera != null:
+		_previous_camera_position = _camera.global_position
+		_previous_camera_zoom = _camera.zoom
+	_previous_time_scale = Engine.time_scale
+	TimeHandler.on_time_changed_signal.connect(_on_time_changed)
+
 	for index in CONTROL_HINTS.size():
 		var row: HBoxContainer = _dummy if index == 0 else _dummy.duplicate()
 		if index > 0:
@@ -35,19 +50,26 @@ func _ready() -> void:
 		row.show()
 		_rows.append(row)
 
-func _input(event: InputEvent) -> void:
+func _process(delta: float) -> void:
 	if not visible:
 		return
 
-	if event is InputEventKey and event.pressed and not event.echo:
-		match event.keycode:
-			KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN:
-				_complete(ControlHint.PAN)
-			KEY_1, KEY_2, KEY_3, KEY_4:
-				_complete(ControlHint.TIME)
+	if _camera == null:
+		_camera = get_viewport().get_camera_2d() as Camera2D
 
-	if event.is_action_pressed("zoom_in") or event.is_action_pressed("zoom_out"):
-		_complete(ControlHint.ZOOM)
+	if _camera != null:
+		if not _completed.get(ControlHint.PAN, false):
+			if _camera.global_position.distance_to(_previous_camera_position) >= PAN_MOVEMENT_THRESHOLD:
+				_complete(ControlHint.PAN)
+		if not _completed.get(ControlHint.ZOOM, false):
+			if abs(_camera.zoom.x - _previous_camera_zoom.x) >= ZOOM_MOVEMENT_THRESHOLD or abs(_camera.zoom.y - _previous_camera_zoom.y) >= ZOOM_MOVEMENT_THRESHOLD:
+				_complete(ControlHint.ZOOM)
+		_previous_camera_position = _camera.global_position
+		_previous_camera_zoom = _camera.zoom
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
 
 	if event is InputEventMouseButton:
 		var mouse_event := event as InputEventMouseButton
@@ -55,15 +77,12 @@ func _input(event: InputEvent) -> void:
 			if mouse_event.pressed:
 				_tracking_mouse_drag = _can_track_mouse_drag()
 				_mouse_drag_start = mouse_event.position
-				if _is_time_button_hovered():
-					_complete(ControlHint.TIME)
 			else:
 				_tracking_mouse_drag = false
 
 	if event is InputEventMouseMotion and _tracking_mouse_drag:
 		var motion_event := event as InputEventMouseMotion
 		if motion_event.position.distance_to(_mouse_drag_start) >= DRAG_DISTANCE_TO_COMPLETE:
-			_complete(ControlHint.PAN)
 			_tracking_mouse_drag = false
 
 func _complete(hint: int) -> void:
@@ -91,12 +110,7 @@ func _fade_out() -> void:
 func _can_track_mouse_drag() -> bool:
 	return get_viewport().gui_get_hovered_control() == null
 
-func _is_time_button_hovered() -> bool:
-	var control := get_viewport().gui_get_hovered_control()
-	while control != null:
-		if control is TimeButton:
-			return true
-		if control.name == "UITime":
-			return true
-		control = control.get_parent() as Control
-	return false
+func _on_time_changed(time: float) -> void:
+	if time != _previous_time_scale:
+		_complete(ControlHint.TIME)
+		_previous_time_scale = time

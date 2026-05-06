@@ -37,6 +37,10 @@ script = ExtResource("1_a1pht")
 layer = 2
 follow_viewport_enabled = true
 
+[node name="DragLayer" type="CanvasLayer" parent="."]
+layer = 4
+follow_viewport_enabled = true
+
 [node name="Rect" type="NinePatchRect" parent="."]
 z_index = 3500
 texture_filter = 1
@@ -54,7 +58,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-mouse_filter = 2
 texture = ExtResource("2_p2okt")
 region_rect = Rect2(0, 0, 48, 48)
 patch_margin_left = 4

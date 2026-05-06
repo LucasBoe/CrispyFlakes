@@ -32,7 +32,7 @@ follow_viewport_enabled = true
 layer = 10
 
 [node name="SpeechbubbleDummy" type="PanelContainer" parent="."]
-z_index = 4000
+z_index = 3000
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0

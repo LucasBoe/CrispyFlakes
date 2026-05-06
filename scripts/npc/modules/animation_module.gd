@@ -81,7 +81,12 @@ func _update_texture():
 		texture = TEX_STAND
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
+var _drag_canvas_wrapper: Node2D = null
+
 func _process(_delta):
+	if _drag_canvas_wrapper != null:
+		_drag_canvas_wrapper.position = npc.global_position
+
 	var time_in_seconds = Global.time_now + random_instance_offset
 
 	_update_texture()
@@ -187,9 +192,28 @@ func knocked_out_tween():
 	var x = -1 if is_sleeping else x_orientation
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x, Vector2.ONE)
 
-func set_z(z : Enum.ZLayer):
+func set_z(z: Enum.ZLayer) -> void:
+	if z == Enum.ZLayer.NPC_DRAGGED:
+		_enter_drag_canvas()
+	elif _drag_canvas_wrapper != null:
+		_exit_drag_canvas()
 	z_index = z
-	#UiNotifications.create_notification_dynamic(Enum.ZLayer.find_key(z), get_parent() as Node2D, Vector2(0, -48), null, Color.SADDLE_BROWN, 1.5)
+
+func _enter_drag_canvas() -> void:
+	if _drag_canvas_wrapper != null:
+		return
+	_drag_canvas_wrapper = Node2D.new()
+	RoomHighlighter.get_drag_layer().add_child(_drag_canvas_wrapper)
+	_drag_canvas_wrapper.position = npc.global_position
+	get_parent().remove_child(self)
+	_drag_canvas_wrapper.add_child(self)
+
+func _exit_drag_canvas() -> void:
+	var wrapper: Node2D = _drag_canvas_wrapper
+	_drag_canvas_wrapper = null
+	wrapper.remove_child(self)
+	npc.add_child(self)
+	wrapper.queue_free()
 
 static func set_music_sway_enabled(value: bool) -> void:
 	if value:

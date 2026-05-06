@@ -23,6 +23,7 @@ const META_WORLD_OFFSET_FROM_ROOM_ORIGIN := &"world_offset_from_room_origin"
 @onready var rect_dummy = $Rect;
 @onready var arrow_dummy = $Arrow;
 @onready var _highlight_layer: CanvasLayer = $HighlightLayer
+@onready var _drag_layer: CanvasLayer = $DragLayer
 
 @onready var rect_texture_2px = preload("res://assets/sprites/room_highlight.png")
 @onready var rect_texture_1px = preload("res://assets/sprites/room_highlight_slim.png")
@@ -35,6 +36,9 @@ func _ready():
 	arrow_dummy.visible = false
 
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
+
+func get_drag_layer() -> CanvasLayer:
+	return _drag_layer
 
 func request_rect(room, color = Color.WHITE, size = 2, priority = Priority.STATUS):
 	var inst: NinePatchRect = create(rect_dummy, room, priority)
