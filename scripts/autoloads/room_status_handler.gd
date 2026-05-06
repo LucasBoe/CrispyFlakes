@@ -67,18 +67,6 @@ func notification_loop():
 					await pause(REFRESH_RATE / rooms.size() - .01)
 				await pause(0)
 
-		if is_instance_valid(Building.infrastructure) \
-				and JobHandler.count_workers_in(Enum.Jobs.STOVE_KEEPER) == 0:
-			var stoves: Array = Building.infrastructure.get_all_stoves()
-			for stove: StoveInfrastructure in stoves:
-				if not stove.needs_refuel():
-					continue
-				var backing_room: RoomBase = stove.get_backing_room()
-				if is_instance_valid(backing_room):
-					notify(backing_room, "no stove keeper", Color.ORANGE)
-					await pause(REFRESH_RATE)
-				break
-
 func notify(room : RoomBase, text, color, icon = null):
 	UiNotifications.create_notification_static(text, room.get_notification_position(), icon, color, REFRESH_RATE)
 	var rect = RoomHighlighter.request_rect(room, color)

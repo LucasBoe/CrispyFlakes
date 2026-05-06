@@ -1,6 +1,5 @@
-[gd_scene load_steps=12 format=3 uid="uid://6licxyrqg6kc"]
+[gd_scene load_steps=11 format=3 uid="uid://cijytecf1fhxu"]
 
-[ext_resource type="Script" uid="uid://nrbr8aqyr35l" path="res://scripts/infrastructure/stove_infrastructure.gd" id="1_stove_script"]
 [ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="2_stove_tex"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="3_outline_mat"]
 [ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="4_progress"]
@@ -37,7 +36,6 @@ fill_to = Vector2(1, 0.5)
 
 [node name="StoveInfrastructure" type="Node2D"]
 material = SubResource("CanvasItemMaterial_heat_radius")
-script = ExtResource("1_stove_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = ExtResource("3_outline_mat")

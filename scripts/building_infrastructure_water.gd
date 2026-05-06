@@ -3,7 +3,7 @@ extends RefCounted
 
 const _PIPE_SOURCE_ID := 0
 const _PIPE_TEXTURE_PATH := "res://assets/sprites/water_pipe_tiles.png"
-const _PIPE_TILE_COUNT := 11
+const _PIPE_TILE_COUNT := 18
 
 enum PipeTile {
 	TOWER_OUTPUT_RIGHT = 0,
@@ -17,6 +17,13 @@ enum PipeTile {
 	FAUCET_LEFT = 8,
 	FAUCET_COMPLETE = 9,
 	FAUCET_RIGHT = 10,
+	OUTDOOR_TOWER_OUTPUT_DOUBLE = 11,
+	INDOOR_TOWER_OUTPUT_DOUBLE = 12,
+	OUTDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW = 13,
+	INDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW = 14,
+	OUTDOOR_LEFT_END_IF_ABOVE = 15,
+	OUTDOOR_COMPLETE_IF_ABOVE = 16,
+	OUTDOOR_RIGHT_END_IF_ABOVE = 17,
 }
 
 const _HORIZONTAL_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT]
@@ -170,9 +177,15 @@ func refresh_visuals() -> void:
 func _refresh_provider_output_tiles() -> void:
 	for provider in _infra.get_provider_rooms(BuildingInfrastructure.WATER_LAYER):
 		provider.clear_infrastructure_output_tiles(BuildingInfrastructure.WATER_LAYER)
-		var provider_index := Vector2i(provider.x, provider.y)
-		provider.add_infrastructure_output_tile(BuildingInfrastructure.WATER_LAYER, provider_index, PipeTile.TOWER_OUTPUT_LEFT)
-		provider.add_infrastructure_output_tile(BuildingInfrastructure.WATER_LAYER, provider_index, PipeTile.TOWER_OUTPUT_RIGHT)
+		var scaffold_count: int = provider.data.height - 1
+		for i in range(scaffold_count):
+			var floor_y: int = provider.y + i
+			var floor_index := Vector2i(provider.x, floor_y)
+			var outdoor: bool = floor_y >= 0
+			var has_below: bool = i > 0 or _infra.has_data_at(floor_index + Vector2i(0, -1), BuildingInfrastructure.WATER_LAYER)
+			var tile: int = (PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW) if has_below \
+				else (PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE)
+			provider.add_infrastructure_output_tile(BuildingInfrastructure.WATER_LAYER, floor_index, tile)
 
 func _collect_supported_cells(pending: Dictionary = {}) -> Dictionary:
 	var all_cells := {}
@@ -224,29 +237,47 @@ func _has_side_network_neighbor(index: Vector2i, pending: Dictionary = {}) -> bo
 			return true
 		if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
 			return true
-		if _infra.room_provides_layer(Building.get_room_from_index(neighbor) as RoomBase, BuildingInfrastructure.WATER_LAYER):
+		if _tower_provides_at(Building.get_room_from_index(neighbor) as RoomBase, index.y):
 			return true
+	var above := index + Vector2i(0, 1)
+	if _tower_provides_at(Building.get_room_from_index(above) as RoomBase, index.y + 1):
+		return true
 	return false
 
 func _has_external_side_network_neighbor(index: Vector2i) -> bool:
+	var above := index + Vector2i(0, 1)
+	if _tower_provides_at(Building.get_room_from_index(above) as RoomBase, index.y + 1):
+		return true
 	for direction in _HORIZONTAL_DIRECTIONS:
 		var neighbor: Vector2i = index + direction
 		if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
 			return true
-		if _infra.room_provides_layer(Building.get_room_from_index(neighbor) as RoomBase, BuildingInfrastructure.WATER_LAYER):
+		if _tower_provides_at(Building.get_room_from_index(neighbor) as RoomBase, index.y):
 			return true
 	return false
+
+func _tower_provides_at(room: RoomBase, y_idx: int) -> bool:
+	if room is RoomWaterTower:
+		return y_idx < room.y + room.data.height - 1
+	return _infra.room_provides_layer(room, BuildingInfrastructure.WATER_LAYER)
 
 func _get_tile(index: Vector2i) -> Vector2i:
 	return Vector2i(_get_tile_index(index), 0)
 
 func _get_tile_index(index: Vector2i) -> int:
-	var provider_left: bool = _infra.room_provides_layer(Building.get_room_from_index(index + Vector2i.LEFT) as RoomBase, BuildingInfrastructure.WATER_LAYER)
-	var provider_right: bool = _infra.room_provides_layer(Building.get_room_from_index(index + Vector2i.RIGHT) as RoomBase, BuildingInfrastructure.WATER_LAYER)
+	var outdoor: bool = _is_outdoor_backing(index)
+	var above_room := Building.get_room_from_index(index + Vector2i(0, 1)) as RoomBase
+	if above_room is RoomWaterTower and _tower_provides_at(above_room, index.y + 1):
+		var has_pipe_below: bool = _infra.has_data_at(index + Vector2i(0, -1), BuildingInfrastructure.WATER_LAYER)
+		if has_pipe_below:
+			return PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW
+		return PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE
+
+	var provider_left: bool = _tower_provides_at(Building.get_room_from_index(index + Vector2i.LEFT) as RoomBase, index.y)
+	var provider_right: bool = _tower_provides_at(Building.get_room_from_index(index + Vector2i.RIGHT) as RoomBase, index.y)
 	var has_left: bool = provider_left or _infra.has_data_at(index + Vector2i.LEFT, BuildingInfrastructure.WATER_LAYER)
 	var has_right: bool = provider_right or _infra.has_data_at(index + Vector2i.RIGHT, BuildingInfrastructure.WATER_LAYER)
 	var uses_water := _is_water_consumer_backing(index)
-	var outdoor := _is_outdoor_backing(index)
 
 	if uses_water:
 		if has_left and has_right:
@@ -256,15 +287,18 @@ func _get_tile_index(index: Vector2i) -> int:
 		if has_left:
 			return PipeTile.FAUCET_RIGHT
 		return PipeTile.FAUCET_COMPLETE
+	var has_above: bool = _infra.has_data_at(index + Vector2i(0, 1), BuildingInfrastructure.WATER_LAYER)
 	if has_left and has_right:
-		return PipeTile.OUTDOOR_COMPLETE if outdoor else PipeTile.INDOOR_COMPLETE
+		return PipeTile.OUTDOOR_COMPLETE_IF_ABOVE if outdoor and has_above else (PipeTile.OUTDOOR_COMPLETE if outdoor else PipeTile.INDOOR_COMPLETE)
 	if has_right:
-		return PipeTile.OUTDOOR_LEFT_END if outdoor else PipeTile.INDOOR_LEFT_END
+		return PipeTile.OUTDOOR_LEFT_END_IF_ABOVE if outdoor and has_above else (PipeTile.OUTDOOR_LEFT_END if outdoor else PipeTile.INDOOR_LEFT_END)
 	if has_left:
-		return PipeTile.OUTDOOR_RIGHT_END if outdoor else PipeTile.INDOOR_RIGHT_END
-	return PipeTile.OUTDOOR_COMPLETE if outdoor else PipeTile.INDOOR_COMPLETE
+		return PipeTile.OUTDOOR_RIGHT_END_IF_ABOVE if outdoor and has_above else (PipeTile.OUTDOOR_RIGHT_END if outdoor else PipeTile.INDOOR_RIGHT_END)
+	return PipeTile.OUTDOOR_COMPLETE_IF_ABOVE if outdoor and has_above else (PipeTile.OUTDOOR_COMPLETE if outdoor else PipeTile.INDOOR_COMPLETE)
 
 func _is_outdoor_backing(index: Vector2i) -> bool:
+	if index.y < 0:
+		return false
 	var room := Building.get_room_from_index(index) as RoomBase
 	return room == null or room.is_outside_room
 

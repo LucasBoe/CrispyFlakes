@@ -38,6 +38,15 @@ const _TALK_STREAMS : Array[AudioStream] = [
 	preload("res://assets/sounds/sounds/talk5.wav"),
 	preload("res://assets/sounds/sounds/talk6.wav"),
 ]
+const _PIPE_STREAMS : Array[AudioStream] = [
+	preload("res://assets/sounds/sounds/pipe1.wav"),
+	preload("res://assets/sounds/sounds/pipe2.wav"),
+	preload("res://assets/sounds/sounds/pipe3.wav"),
+	preload("res://assets/sounds/sounds/pipe4.wav"),
+	preload("res://assets/sounds/sounds/pipe5.wav"),
+	preload("res://assets/sounds/sounds/pipe6.wav"),
+	preload("res://assets/sounds/sounds/pipe7.wav"),
+]
 
 func play_talk(world_position: Vector2) -> void:
 	_play_2d(_TALK_STREAMS.pick_random(), world_position, -12.0, 0.8, 1.2)
@@ -89,6 +98,9 @@ func play_ui_click_up(_value = null) -> void:
 
 func play_construction_placed() -> void:
 	_construction_placed.play_random_pitch()
+	
+func play_pipe_placed(world_position: Vector2) -> void:
+	_play_2d(_PIPE_STREAMS.pick_random(), world_position, -6.0, 1.0, 1.0)
 
 func play_coin() -> void:
 	_coin.play_random_pitch()

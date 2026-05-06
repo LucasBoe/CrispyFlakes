@@ -36,7 +36,7 @@ func _ready():
 	create_button(group, Building.room_data_table)
 	create_button(group, Building.room_data_bed)
 	create_button(group, Building.room_data_stairs)
-	create_button(group, Building.infrastructure_data_stove, null, PlacementHandler.start_building_infrastructure)
+	create_button(group, Building.room_data_stove)
 	create_button(group, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
 	create_button(group, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(group, Building.room_data_toilet)

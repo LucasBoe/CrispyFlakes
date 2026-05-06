@@ -1,0 +1,89 @@
+[gd_scene load_steps=12 format=3 uid="uid://cstov3rm0s001"]
+
+[ext_resource type="Script" path="res://scripts/room_stove.gd" id="1_roomscript"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="4_stovetex"]
+[ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="5_progress"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_heat"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_warmth"]
+offsets = PackedFloat32Array(0, 0.96, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_warmth"]
+gradient = SubResource("Gradient_warmth")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aura"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_aura"]
+colors = PackedColorArray(1, 0.45, 0.1, 0.5, 1, 0.45, 0.1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_aura"]
+gradient = SubResource("Gradient_aura")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[node name="Room_Stove" type="Node2D"]
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_heat")
+script = ExtResource("1_roomscript")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_backwall")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_outline")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(8, -22)
+texture = ExtResource("4_stovetex")
+
+[node name="ProgressBar" parent="." instance=ExtResource("5_progress")]
+visible = false
+offset_left = -6.0
+offset_top = -46.0
+offset_right = 22.0
+offset_bottom = -41.0
+
+[node name="WarmthLight" type="PointLight2D" parent="."]
+position = Vector2(8, -22)
+enabled = false
+color = Color(1, 0.66, 0.32, 1)
+energy = 0.0
+texture = SubResource("GradientTexture2D_warmth")
+texture_scale = 3.0
+
+[node name="SmokeParticles" type="CPUParticles2D" parent="."]
+position = Vector2(8, -30)
+emitting = false
+lifetime = 1.2
+direction = Vector2(0, -1)
+spread = 15.0
+gravity = Vector2(0, -10)
+initial_velocity_min = 8.0
+initial_velocity_max = 16.0
+scale_amount_min = 0.8
+scale_amount_max = 1.8
+color = Color(0.7, 0.7, 0.7, 0.5)
+
+[node name="AuraSprite" type="Sprite2D" parent="."]
+position = Vector2(8, -22)
+visible = false
+material = SubResource("CanvasItemMaterial_aura")
+scale = Vector2(1.5, 1.5)
+texture = SubResource("GradientTexture2D_aura")

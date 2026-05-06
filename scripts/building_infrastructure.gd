@@ -4,7 +4,6 @@ class_name BuildingInfrastructure
 signal on_infrastructure_changed_signal(layer_name: StringName)
 
 const WATER_LAYER := &"water"
-const STOVE_LAYER := &"stove"
 
 const _CARDINAL_DIRECTIONS := [
 	Vector2i.LEFT,
@@ -15,14 +14,11 @@ const _CARDINAL_DIRECTIONS := [
 
 var _layers: Dictionary = {}
 var _water: RefCounted
-var _stove: RefCounted
 var _water_info_requests: int = 0
 
 func _ready() -> void:
 	_water = BuildingInfrastructureWater.new()
-	_stove = BuildingInfrastructureStove.new()
 	_water.setup(self, $WaterPipeTiles)
-	_stove.setup(self, $StoveTiles)
 
 # --- Placement ---
 
@@ -30,8 +26,6 @@ func can_place(data, origin: Vector2i) -> bool:
 	match data.layer_name:
 		WATER_LAYER:
 			return _water.can_place(data, origin)
-		STOVE_LAYER:
-			return _stove.can_place(data, origin)
 	return false
 
 func place(data, origin: Vector2i) -> bool:
@@ -145,17 +139,6 @@ func get_layer_columns(layer_name: StringName) -> Array[int]:
 	columns.sort()
 	return columns
 
-# --- Stove pass-throughs ---
-
-func get_stove_at(index: Vector2i):
-	return _stove.get_stove_at(index)
-
-func get_all_stoves() -> Array:
-	return _stove.get_all_stoves()
-
-func get_stove_count() -> int:
-	return _stove.get_stove_count()
-
 # --- Water info overlay ---
 
 func show_water_info() -> void:
@@ -173,7 +156,6 @@ func hide_water_info() -> void:
 func refresh_visuals() -> void:
 	_water.configure_tileset()
 	_water.refresh_visuals()
-	_stove.refresh_visuals()
 
 # --- Layer helpers used by handlers ---
 
@@ -221,8 +203,6 @@ func _refresh_layer_visuals(layer_name: StringName) -> void:
 	match layer_name:
 		WATER_LAYER:
 			_water.refresh_visuals()
-		STOVE_LAYER:
-			_stove.refresh_visuals()
 
 func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
 	var layer: Dictionary = _layers.get(layer_name, {})

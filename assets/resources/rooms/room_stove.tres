@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://cstov3rm0s002"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
+[ext_resource type="PackedScene" uid="uid://cstov3rm0s001" path="res://scenes/rooms/room_stove.tscn" id="2_roomscene"]
+[ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="3_icon"]
+
+[resource]
+script = ExtResource("1_roomdata")
+packed_scene = ExtResource("2_roomscene")
+room_name = "Stove"
+room_desc = "Keeps nearby rooms warm while fueled with wood."
+room_icon = ExtResource("3_icon")
+room_preview = ExtResource("3_icon")
+construction_price = 10
+tier = 2

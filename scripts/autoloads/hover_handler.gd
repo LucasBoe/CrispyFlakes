@@ -1,7 +1,5 @@
 extends Node2D
 
-const STOVE_INFRASTRUCTURE_SCRIPT = preload("res://scripts/infrastructure/stove_infrastructure.gd")
-
 var previously_hovered = null
 var currently_hovered = null
 
@@ -35,7 +33,6 @@ func _process(_delta):
 
 	var precise: Array = []
 	var buffer: Array = []
-	var stoves: Array = []
 	var picked_up = NPCWorker.picked_up_npc
 	for hit in hits:
 		var collider = hit.collider
@@ -45,8 +42,6 @@ func _process(_delta):
 		elif collider.name == "PreciseHover" and collider.get_parent() is NPC:
 			if collider.get_parent() != picked_up:
 				precise.append(collider.get_parent())
-		elif collider is Area2D and collider.get_parent() != null and collider.get_parent().get_script() == STOVE_INFRASTRUCTURE_SCRIPT:
-			stoves.append(collider.get_parent())
 
 	var candidates: Array = precise if not precise.is_empty() else buffer
 
@@ -64,8 +59,6 @@ func _process(_delta):
 		change_hover(best_guest)
 	elif best_worker != null:
 		change_hover(best_worker)
-	elif not stoves.is_empty():
-		change_hover(_get_closest_stove(stoves, mouse_pos))
 	else:
 		change_hover(Building.query.room_at_position(mouse_pos))
 
@@ -116,16 +109,3 @@ func _unhandled_input(event):
 		if is_instance_valid(currently_hovered) and currently_hovered is NPCWorker and not NPCWorker.was_dragging:
 			if not _run_interceptors(currently_hovered):
 				click_hovered_node_signal.emit(currently_hovered)
-
-func _get_closest_stove(stoves: Array, mouse_pos: Vector2):
-	var best = null
-	var best_distance := INF
-	for stove_ref in stoves:
-		var stove = stove_ref
-		if not is_instance_valid(stove):
-			continue
-		var distance: float = stove.global_position.distance_squared_to(mouse_pos)
-		if best == null or distance < best_distance:
-			best = stove
-			best_distance = distance
-	return best

@@ -10,7 +10,7 @@ var is_placing = false
 var has_valid_target = false
 var build_mode: BuildMode = BuildMode.NONE
 var building_data: RoomData
-var infrastructure_data = null
+var infrastructure_data : InfrastructureData = null
 var location : Vector2i
 var landed_location : Vector2i
 var highlights : Array = []
@@ -228,7 +228,10 @@ func _input(event):
 					if placed_post != null:
 						Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
 			else:
-				SoundPlayer.play_construction_placed()
+				if infrastructure_data.layer_name == &"water":
+					SoundPlayer.play_pipe_placed(mouse)
+				else:
+					SoundPlayer.play_construction_placed()
 				Building.infrastructure.place(infrastructure_data, placement_location)
 				Camera.add_shake(2.0, 0.08)
 

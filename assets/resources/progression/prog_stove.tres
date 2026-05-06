@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://celm23tj47x2j" path="res://assets/resources/progression/prog_stairs.tres" id="2_dep"]
 [ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="3_sprite"]
-[ext_resource type="Resource" path="res://assets/resources/infrastructure/infrastructure_stove.tres" id="4_infra"]
+[ext_resource type="Resource" uid="uid://cstov3rm0s002" path="res://assets/resources/rooms/room_stove.tres" id="4_room"]
 
 [resource]
 script = ExtResource("1_script")
 sprite = ExtResource("3_sprite")
 display_name = "Stove"
 cost = 2
-unlocks_infrastructure = ExtResource("4_infra")
+unlocks_room = ExtResource("4_room")
 depends_on = ExtResource("2_dep")

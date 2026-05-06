@@ -39,8 +39,8 @@ const room_data_bouncer := preload("res://assets/resources/rooms/room_bouncer.tr
 const room_data_water_tower := preload("res://assets/resources/rooms/room_water_tower.tres")
 const room_data_gambling := preload("res://assets/resources/rooms/room_gambling.tres")
 const room_data_trading_office := preload("res://assets/resources/rooms/room_trading_office.tres")
+const room_data_stove := preload("res://assets/resources/rooms/room_stove.tres")
 const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure/infrastructure_water_pipe.tres")
-const infrastructure_data_stove := preload("res://assets/resources/infrastructure/infrastructure_stove.tres")
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
@@ -133,27 +133,30 @@ func _update_sign_position():
 	var sign_pos: Vector2 = Vector2(idx.x * 48 + 24, _tiles_roof.position.y + (-idx.y - 1) * 48 + 24)
 	_sign.set_target_position(sign_pos)
 
-func _on_infrastructure_changed(layer_name: StringName) -> void:
-	if layer_name == BuildingInfrastructure.STOVE_LAYER:
-		_update_roof_stove_pipes()
+func _on_infrastructure_changed(_layer_name: StringName) -> void:
+	pass
 
 func _update_roof_stove_pipes() -> void:
-	if _tile_renderer == null or not is_instance_valid(infrastructure):
+	if _tile_renderer == null:
 		return
 
 	var active_columns := {}
-	for column_x in infrastructure.get_layer_columns(BuildingInfrastructure.STOVE_LAYER):
-		if not _tile_renderer.roof_room_index_by_x.has(column_x):
-			continue
-		active_columns[column_x] = true
+	for floor_dict in floors.values():
+		for room: RoomBase in floor_dict.values():
+			if room is not RoomStove:
+				continue
+			var column_x: int = room.x
+			if not _tile_renderer.roof_room_index_by_x.has(column_x):
+				continue
+			active_columns[column_x] = true
 
-		var pipe := _roof_stove_pipes_by_x.get(column_x, null) as Node2D
-		if not is_instance_valid(pipe):
-			pipe = ROOF_STOVE_PIPE_SCENE.instantiate() as Node2D
-			_roof_decorations.add_child(pipe)
-			_roof_stove_pipes_by_x[column_x] = pipe
+			var pipe := _roof_stove_pipes_by_x.get(column_x, null) as Node2D
+			if not is_instance_valid(pipe):
+				pipe = ROOF_STOVE_PIPE_SCENE.instantiate() as Node2D
+				_roof_decorations.add_child(pipe)
+				_roof_stove_pipes_by_x[column_x] = pipe
 
-		pipe.position = _get_roof_stove_pipe_position(column_x)
+			pipe.position = _get_roof_stove_pipe_position(column_x)
 
 	for column_x in _roof_stove_pipes_by_x.keys():
 		if active_columns.has(column_x):

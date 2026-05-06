@@ -262,16 +262,6 @@ func _activate_drag():
 		var highlight = RoomHighlighter.request_rect(room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
 		available_rooms_highlights.append(highlight)
 
-	if is_instance_valid(Building.infrastructure):
-		var has_slot: bool = JobHandler.count_rooms_for(Enum.Jobs.STOVE_KEEPER) > JobHandler.count_workers_in(Enum.Jobs.STOVE_KEEPER)
-		if has_slot or current_job == Enum.Jobs.STOVE_KEEPER:
-			for stove: StoveInfrastructure in Building.infrastructure.get_all_stoves():
-				var backing_room: RoomBase = stove.get_backing_room()
-				if backing_room == null or backing_room.associated_job != null:
-					continue
-				var stove_highlight = RoomHighlighter.request_rect(backing_room, Color.GREEN_YELLOW, 1, RoomHighlighter.Priority.SELECTION)
-				available_rooms_highlights.append(stove_highlight)
-
 func _input(event):
 
 	if _drag_pending:
@@ -301,15 +291,10 @@ func _input(event):
 	if not new_room_highlight && room:
 		new_room_highlight = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 
-	var mouse_on_stove := false
-	if is_instance_valid(Building.infrastructure) and room != null:
-		var room_stove: StoveInfrastructure = Building.infrastructure.get_stove_at(Vector2i(room.x, room.y))
-		mouse_on_stove = room_stove != null and _is_pos_on_stove(room_stove, global_position)
-
 	if room and new_room_highlight and current_job_room != room:
-		new_room_highlight.modulate = Color.GREEN if (room.associated_job and not mouse_on_stove) else Color.WHITE
+		new_room_highlight.modulate = Color.GREEN if room.associated_job else Color.WHITE
 
-	if room && room.associated_job && not mouse_on_stove:
+	if room && room.associated_job:
 		if is_instance_valid(new_job_room_highlight) and new_job_room_highlight.get_meta(&"room", null) != room:
 			RoomHighlighter.dispose(new_job_room_highlight)
 			new_job_room_highlight = null
@@ -453,21 +438,8 @@ func _finish_drop():
 		Navigation.stop_navigation()
 		if not try_stop_fight_in_room(resolved_drop_room):
 			if not try_arrest_in_room(resolved_drop_room):
-				var drop_idx: Vector2i = Building.round_room_index_from_global_position(_fall_target)
-				var dropped_stove: StoveInfrastructure = Building.infrastructure.get_stove_at(drop_idx) if is_instance_valid(Building.infrastructure) else null
-				if dropped_stove != null and _is_drop_on_stove(dropped_stove):
-					current_job_room = resolved_drop_room
-					change_job(Enum.Jobs.STOVE_KEEPER)
-				else:
-					try_change_job_based_on_room(resolved_drop_room)
+				try_change_job_based_on_room(resolved_drop_room)
 		Animator.direction = Vector2.ZERO
 	_fall_room = null
 	_fall_landed_room = null
 	Navigation.set_process(true)
-
-func _is_drop_on_stove(stove: StoveInfrastructure) -> bool:
-	return _is_pos_on_stove(stove, _drop_mouse_pos)
-
-func _is_pos_on_stove(stove: StoveInfrastructure, pos: Vector2) -> bool:
-	var half := Vector2(10.0, 13.0)
-	return Rect2(stove.global_position - half, half * 2.0).has_point(pos)
