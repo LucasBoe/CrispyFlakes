@@ -59,16 +59,17 @@ func _find_root() -> ProgressionItem:
 func _subtree_width(item: ProgressionItem) -> float:
 	var children: Array = children_map[item]
 	if children.is_empty():
-		return _node_w
+		return _item_width(item)
 
 	var total := 0.0
 	for child: ProgressionItem in children:
 		total += _subtree_width(child)
 	total += _h_gap * (children.size() - 1)
-	return maxf(_node_w, total)
+	return maxf(_item_width(item), total)
 
 func _compute_layout(item: ProgressionItem, center_x: float, depth: int) -> void:
-	positions[item] = Vector2(center_x - _node_w * 0.5, depth * (_node_h + _v_gap))
+	var item_width := _item_width(item)
+	positions[item] = Vector2(center_x - item_width * 0.5, depth * (_node_h + _v_gap))
 
 	var children: Array = children_map[item]
 	if children.is_empty():
@@ -84,6 +85,9 @@ func _compute_layout(item: ProgressionItem, center_x: float, depth: int) -> void
 		var child_w := _subtree_width(child)
 		_compute_layout(child, child_x + child_w * 0.5, depth + 1)
 		child_x += child_w + _h_gap
+
+func _item_width(item: ProgressionItem) -> float:
+	return ProgressionItemButton.get_visual_width(item)
 
 func _normalize_positions() -> void:
 	if positions.is_empty():
@@ -105,9 +109,11 @@ func _spawn_connectors(item: ProgressionItem, content: Control, connector_down: 
 func _add_connector(parent_item: ProgressionItem, child_item: ProgressionItem, content: Control, connector_down: Texture2D, connector_left: Texture2D, connector_right: Texture2D) -> void:
 	var parent_pos: Vector2 = positions[parent_item]
 	var child_pos: Vector2 = positions[child_item]
+	var parent_width := _item_width(parent_item)
+	var child_width := _item_width(child_item)
 
-	var from := Vector2(parent_pos.x + _node_w * 0.5, parent_pos.y + _node_h)
-	var to := Vector2(child_pos.x + _node_w * 0.5, child_pos.y)
+	var from := Vector2(parent_pos.x + parent_width * 0.5, parent_pos.y + _node_h)
+	var to := Vector2(child_pos.x + child_width * 0.5, child_pos.y)
 	var dx := to.x - from.x
 
 	var connector := NinePatchRect.new()

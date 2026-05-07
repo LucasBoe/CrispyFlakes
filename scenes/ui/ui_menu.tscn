@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
-[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="16_p76uh"]
+[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="16_p76uh"]
 [ext_resource type="Texture2D" uid="uid://br2d8r00vl7bg" path="res://assets/sprites/ui/2x/ui_rect_base_open_right.png" id="18_p76uh"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
@@ -37,7 +37,6 @@ shader = ExtResource("56_prog")
 shader_parameter/wave_color = Color(1, 0, 0, 1)
 shader_parameter/is_unlocked = false
 shader_parameter/is_active = false
-shader_parameter/ui_time = 0.0
 
 [node name="UIMenu" type="Control"]
 layout_mode = 3

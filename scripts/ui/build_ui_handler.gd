@@ -181,14 +181,20 @@ func _is_data_unlocked(data) -> bool:
 	return true
 
 func _get_unlock_text(data) -> String:
+	var item: ProgressionItem = null
 	if data.get_script() == InfrastructureDataScript:
-		var infrastructure_item := ProgressionHandler.get_item_for_infrastructure(data)
-		if infrastructure_item != null:
-			return "Unlock %s in the progression tree" % infrastructure_item.display_name
-	if data is RoomData:
-		var item := ProgressionHandler.get_item_for_room(data)
-		if item != null:
-			return "Unlock %s in the progression tree" % item.display_name
+		item = ProgressionHandler.get_item_for_infrastructure(data)
+	elif data is RoomData:
+		item = ProgressionHandler.get_item_for_room(data)
+
+	if item != null:
+		var missing := ProgressionHandler.get_missing_requirements(item)
+		if not missing.is_empty():
+			var names: Array[String] = []
+			for requirement in missing:
+				names.append(requirement.display_name)
+			return "Complete %s to unlock this group" % ", ".join(names)
+		return "This becomes available through the progression tree"
 	return ""
 
 func _create_locked_overlay() -> Control:

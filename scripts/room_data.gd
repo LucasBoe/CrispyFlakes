@@ -18,3 +18,6 @@ class_name RoomData
 @export var produces_money : bool = false
 @export var width : int = 1
 @export var height : int = 1
+
+func get_display_icon() -> Texture:
+	return room_icon if room_icon != null else room_preview

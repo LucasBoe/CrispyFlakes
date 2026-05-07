@@ -1,12 +1,14 @@
-[gd_scene load_steps=10 format=3 uid="uid://cxmwbe18bacqa"]
+[gd_scene load_steps=12 format=3 uid="uid://cxmwbe18bacqa"]
 
 [ext_resource type="Script" uid="uid://dk8tkbxeylykp" path="res://scripts/ui/progression_item_button.gd" id="1_scr"]
-[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="2_xj46g"]
-[ext_resource type="Shader" path="res://assets/shaders/progression_state.gdshader" id="3_cqxqj"]
+[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="2_xj46g"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="3_cqxqj"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_thm"]
 [ext_resource type="Texture2D" uid="uid://cj7ythbeh0kju" path="res://assets/sprites/ui/2x/tree_frame_rect.png" id="3_xj46g"]
 [ext_resource type="Texture2D" uid="uid://bubf6vi6l3jh6" path="res://assets/sprites/ui/2x/tree_empty_button.png" id="6_4fn8j"]
 [ext_resource type="Texture2D" uid="uid://dowrpukem0x38" path="res://assets/sprites/ui/2x/tree_cost_rect_frame.png" id="7_vtd3u"]
+[ext_resource type="Texture2D" uid="uid://dii64jeebkfxm" path="res://assets/sprites/ui/2x/tree_frame_divider.png" id="8_divdr"]
+[ext_resource type="Texture2D" uid="uid://btwsaje1fecqq" path="res://assets/sprites/ui/2x/tree_done_marker_not_done.png" id="10_not_done"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4fn8j"]
 shader = ExtResource("3_cqxqj")
@@ -21,71 +23,143 @@ shader_parameter/is_unlocked = false
 shader_parameter/is_active = false
 
 [node name="ProgressionItemButton" type="Control"]
-custom_minimum_size = Vector2(48, 48)
+custom_minimum_size = Vector2(58, 58)
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_scr")
 
-[node name="IconRect" type="TextureRect" parent="."]
+[node name="PreviewRow" type="HBoxContainer" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -24.0
-offset_right = 24.0
-offset_bottom = 24.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = -5.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_xj46g")
+theme_override_constants/separation = -1
 
-[node name="FrameRect" type="TextureRect" parent="."]
+[node name="Preview1" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_xj46g")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Marker" type="TextureRect" parent="PreviewRow/Preview1"]
+layout_mode = 1
+offset_right = 9.0
+offset_bottom = 9.0
+texture = ExtResource("10_not_done")
+
+[node name="Divider1" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(5, 48)
+layout_mode = 2
+texture = ExtResource("8_divdr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Preview2" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_xj46g")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Marker" type="TextureRect" parent="PreviewRow/Preview2"]
+layout_mode = 1
+offset_right = 9.0
+offset_bottom = 9.0
+texture = ExtResource("10_not_done")
+
+[node name="Divider2" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(5, 48)
+layout_mode = 2
+texture = ExtResource("8_divdr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Preview3" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_xj46g")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Marker" type="TextureRect" parent="PreviewRow/Preview3"]
+layout_mode = 1
+offset_right = 9.0
+offset_bottom = 9.0
+texture = ExtResource("10_not_done")
+
+[node name="Divider3" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(5, 48)
+layout_mode = 2
+texture = ExtResource("8_divdr")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Preview4" type="TextureRect" parent="PreviewRow"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_xj46g")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Marker" type="TextureRect" parent="PreviewRow/Preview4"]
+layout_mode = 1
+offset_right = 9.0
+offset_bottom = 9.0
+texture = ExtResource("10_not_done")
+
+[node name="FrameRect" type="NinePatchRect" parent="."]
 material = SubResource("ShaderMaterial_4fn8j")
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -29.0
-offset_top = -29.0
-offset_right = 29.0
-offset_bottom = 29.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("3_xj46g")
+draw_center = false
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
 
 [node name="NameLabel" type="Label" parent="."]
 visible = false
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -10.0
-offset_top = -15.0
-offset_right = 10.0
-offset_bottom = -3.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("3_thm")
 text = "Item"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(28, 8)
 layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
-anchor_right = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -12.0
-offset_top = -13.0
-offset_right = 10.0
-offset_bottom = 9.0
-grow_horizontal = 0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 7.0
+grow_horizontal = 2
 grow_vertical = 0
 
 [node name="CostFrameRect" type="NinePatchRect" parent="MarginContainer"]
@@ -97,11 +171,15 @@ patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
 
-[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
-custom_minimum_size = Vector2(16, 16)
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/MarginContainer"]
+layout_mode = 2
 texture = ExtResource("7_vtd3u")
 draw_center = false
 patch_margin_left = 1
@@ -111,10 +189,9 @@ patch_margin_bottom = 1
 axis_stretch_horizontal = 1
 axis_stretch_vertical = 1
 
-[node name="CostLabel" type="Label" parent="MarginContainer"]
+[node name="CostLabel" type="Label" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
 theme = ExtResource("3_thm")
-theme_override_colors/font_color = Color(1, 0, 0.33333334, 1)
-text = "1"
+text = "0/0"
 horizontal_alignment = 1
 vertical_alignment = 1

@@ -1,8 +1,6 @@
 extends Node
 
 const STARTUP_QUESTS := preload("res://scripts/startup/startup_quests.gd")
-const BAR_PROGRESSION_ITEM := preload("res://assets/resources/progression/prog_bar.tres")
-const TABLE_PROGRESSION_ITEM := preload("res://assets/resources/progression/prog_tables.tres")
 const ARROW_RED_DOWN_PATH := "res://assets/sprites/ui/2x/arrow_red_down.png"
 const GOLDEN_GLOW_SHADER := preload("res://assets/shaders/golden_glow_red_replace.gdshader")
 const STARTUP_WAIT_BEHAVIOUR := preload("res://scripts/npc/behaviours/startup_wait_behaviour.gd")
@@ -64,21 +62,10 @@ func _run_startup_sequence() -> void:
 		_quests.cleanup.set_done()
 		Global.UI.selection.set_context_menu_blocked(false)
 
-		ProgressionHandler.add_points(BAR_PROGRESSION_ITEM.cost)
 		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_bar)):
 			return
 		_quests.build_bar.start()
-		Global.UI.menu.unlock_tutorial_progression_menu()
-		if _finish_startup_if_aborted(
-			skip_layer,
-			await _wait_for_menu_arrow_step(
-				Global.UI.menu.progression_button,
-				func(): return ProgressionHandler.is_item_unlocked(BAR_PROGRESSION_ITEM)
-			)
-		):
-			return
-		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(
@@ -120,7 +107,6 @@ func _run_startup_sequence() -> void:
 		):
 			return
 
-		ProgressionHandler.add_points(TABLE_PROGRESSION_ITEM.cost)
 		var table_quest_target: Node2D = _get_served_guest_for_milestone(STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT)
 		if not is_instance_valid(table_quest_target):
 			table_quest_target = tutorial_worker
@@ -132,15 +118,6 @@ func _run_startup_sequence() -> void:
 			TutorialHandler.activate_quest(_quests.build_table)
 
 		_quests.build_table.start()
-		Global.UI.menu.unlock_tutorial_progression_menu()
-		if _finish_startup_if_aborted(
-			skip_layer,
-			await _wait_for_menu_arrow_step(
-				Global.UI.menu.progression_button,
-				func(): return ProgressionHandler.is_item_unlocked(TABLE_PROGRESSION_ITEM)
-			)
-		):
-			return
 		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
@@ -481,6 +458,7 @@ func _finish_startup(skip_layer: CanvasLayer) -> void:
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
 	Global.UI.resources.show()
 	Global.should_auto_spawn_guests = true
+	Global.UI.controls.hide()
 	if is_instance_valid(skip_layer):
 		skip_layer.queue_free()
 	_skip_requested = false

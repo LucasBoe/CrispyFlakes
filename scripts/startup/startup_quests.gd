@@ -21,7 +21,7 @@ const BUILD_TABLE_REWARD := 10
 const SERVE_GUESTS_TARGET := 3
 const BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT := 4
 
-const CLEANUP_REWARD_TEXT := "10 $ Reward + 1 Point"
+const CLEANUP_REWARD_TEXT := "10 $ Reward"
 const BUILD_BAR_REWARD_TEXT := "10 $ Reward"
 const SERVE_GUESTS_REWARD_TEXT := "10 $ Reward"
 const BUILD_TABLE_REWARD_TEXT := "10 $ Reward"
@@ -127,8 +127,6 @@ static func _cleanup_hints() -> Array[String]:
 
 static func _build_bar_hints() -> Array[String]:
 	return [
-		"Open the progression menu",
-		"Unlock the bar",
 		"Pick the bar from build menu",
 		"Place the bar in an empty room",
 		"Asign a worker onto the bar",
@@ -143,8 +141,7 @@ static func _serve_guests_hints() -> Array[String]:
 
 static func _build_table_hints() -> Array[String]:
 	return [
-		"Select progression menu",
-		"Unlock table",
+		"Open the build menu",
 		"Place table",
 	]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dtksou44na6y1"
-path="res://.godot/imported/room_toilet_icon.svg-3c36c779ab3b50301765520b8850a2b5.ctex"
+uid="uid://b0x2lmvp36xmd"
+path="res://.godot/imported/room_bar_wiskey_preview.png-25cdb47db6b750e9b46021e28ea6438b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/room_toilet_icon.svg"
-dest_files=["res://.godot/imported/room_toilet_icon.svg-3c36c779ab3b50301765520b8850a2b5.ctex"]
+source_file="res://assets/sprites/ui/room_bar_wiskey_preview.png"
+dest_files=["res://.godot/imported/room_bar_wiskey_preview.png-25cdb47db6b750e9b46021e28ea6438b.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

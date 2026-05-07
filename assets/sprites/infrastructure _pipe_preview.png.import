@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhdbictoygf0c"
-path="res://.godot/imported/module_icon_faucet.png-67317d1cc1007d240f8962f15c8a9bc3.ctex"
+uid="uid://brobcug8aysj4"
+path="res://.godot/imported/infrastructure _pipe_preview.png-dd27dd200a512678fb724b6665856faf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/module_icon_faucet.png"
-dest_files=["res://.godot/imported/module_icon_faucet.png-67317d1cc1007d240f8962f15c8a9bc3.ctex"]
+source_file="res://assets/sprites/infrastructure _pipe_preview.png"
+dest_files=["res://.godot/imported/infrastructure _pipe_preview.png-dd27dd200a512678fb724b6665856faf.ctex"]
 
 [params]
 

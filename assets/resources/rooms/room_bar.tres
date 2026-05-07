@@ -1,16 +1,18 @@
 [gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://ludsn8pgd8c3"]
 
 [ext_resource type="PackedScene" uid="uid://dvvvnn4s5rhak" path="res://scenes/rooms/room_bar.tscn" id="1_hgofh"]
-[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_preview.png" id="3_o33vy"]
+[ext_resource type="Texture2D" uid="uid://14mj1ho0m0k7" path="res://assets/sprites/room_bar_water_preview.png" id="2_2xxwi"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_r7qge"]
 
 [resource]
 script = ExtResource("4_r7qge")
 packed_scene = ExtResource("1_hgofh")
-room_name = "Bar"
-room_desc = "serve drinks to guests"
-room_preview = ExtResource("3_o33vy")
+room_name = "Water Bar"
+room_desc = "serve water to guests"
+room_preview = ExtResource("2_2xxwi")
 construction_price = 40
 money_capacity = 250
+has_consumed_item = true
+consumed_item_type = 3
 produces_money = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

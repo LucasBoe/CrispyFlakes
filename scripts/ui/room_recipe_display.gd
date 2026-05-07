@@ -6,7 +6,7 @@ class_name RoomRecipeDisplay
 @onready var _produced_icon: TextureRect = $ProducedIcon
 
 
-func show_for_data(data: RoomData) -> void:
+func show_for_data(data) -> void:
 	if data == null or not (data.has_consumed_item or data.produces_item or data.produces_money):
 		hide()
 		return
@@ -15,9 +15,9 @@ func show_for_data(data: RoomData) -> void:
 	_arrow.visible = data.has_consumed_item and (data.produces_item or data.produces_money)
 	_produced_icon.visible = data.produces_item or data.produces_money
 
-	if data.has_consumed_item:
+	if data is RoomData and data.has_consumed_item:
 		_consumed_icon.texture = Item.get_info(data.consumed_item_type).Tex
-	if data.produces_item:
+	if data is RoomData and data.produces_item:
 		_produced_icon.texture = Item.get_info(data.produced_item_type).Tex
 	elif data.produces_money:
 		var coin_tex := AtlasTexture.new()

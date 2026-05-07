@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_brewery.tres" id="2_brewery"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_bar_beer.tres" id="3_beer_bar"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_tables_water_bar_stairs.tres" id="4_dep"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_brewery_preview.png" id="5_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("5_sprite")
+display_name = "Brewery / Beer Bar"
+description = "Brew and serve beer once the basics of the saloon are in place."
+unlocks_rooms = [ExtResource("2_brewery"), ExtResource("3_beer_bar")]
+depends_on = ExtResource("4_dep")

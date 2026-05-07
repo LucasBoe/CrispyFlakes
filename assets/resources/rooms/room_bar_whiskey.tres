@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://cwskybartres1"]
+
+[ext_resource type="PackedScene" uid="uid://cwskybartscn1" path="res://scenes/rooms/room_bar_whiskey.tscn" id="1_wisk"]
+[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="2_0mlyq"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="3_data"]
+
+[resource]
+script = ExtResource("3_data")
+packed_scene = ExtResource("1_wisk")
+room_name = "Whiskey Bar"
+room_desc = "serve whiskey to guests"
+room_preview = ExtResource("2_0mlyq")
+construction_price = 80
+money_capacity = 500
+has_consumed_item = true
+consumed_item_type = 1
+produces_money = true
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

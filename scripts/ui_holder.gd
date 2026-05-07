@@ -10,6 +10,7 @@ class_name UIHolder
 @onready var menu: MenuUIHandler = %UIMenu
 #@onready var fullscreen: UIFullscreen = $UIFullscreen
 @onready var selection :  = %UISelectionPanel
+@onready var controls: Control = $UIControls
 @onready var hire : UIHire = %UIFullscreen.get_node("UIHire") as UIHire
 @onready var confirm : UIConfirm = %UIFullscreen.get_node("UIConfirm") as UIConfirm
 @onready var rename: UIRename = %UIFullscreen.get_node("UIRename") as UIRename

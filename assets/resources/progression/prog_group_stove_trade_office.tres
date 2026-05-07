@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_stove.tres" id="2_stove"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_trading_office.tres" id="3_trade_office"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="4_dep"]
+[ext_resource type="Texture2D" path="res://assets/sprites/stove.png" id="5_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("5_sprite")
+display_name = "Stove / Trade Office"
+description = "Heat and trading are available here. The orange Saloon note is intentionally left out for now."
+unlocks_rooms = [ExtResource("2_stove"), ExtResource("3_trade_office")]
+depends_on = ExtResource("4_dep")

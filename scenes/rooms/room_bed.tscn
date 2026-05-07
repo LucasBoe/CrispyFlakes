@@ -13,10 +13,15 @@
 texture_filter = 1
 script = ExtResource("4_mdimi")
 
-[node name="Back-wall" type="Sprite2D" parent="."]
+[node name="Back-wall" type="NinePatchRect" parent="."]
 z_index = -200
-position = Vector2(24, -23)
+custom_minimum_size = Vector2(48, 48)
+offset_top = -48.0
+offset_right = 48.0
 texture = ExtResource("2_mdimi")
+patch_margin_left = 17
+patch_margin_right = 15
+axis_stretch_horizontal = 1
 
 [node name="Outline" type="Sprite2D" parent="."]
 visible = false

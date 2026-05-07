@@ -11,6 +11,9 @@ class_name InfrastructureData
 @export var height: int = 1
 @export var layer_name: StringName = &""
 
+func get_display_icon() -> Texture2D:
+	return room_icon if room_icon != null else room_preview
+
 @export var has_consumed_item: bool = false
 @export var produces_item: bool = false
 @export var produces_money: bool = false

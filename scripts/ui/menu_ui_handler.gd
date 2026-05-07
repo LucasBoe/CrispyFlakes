@@ -28,13 +28,10 @@ func _ready():
 	set_tab(null)
 
 	_progression_glow_material = _progression_glow_icon.material as ShaderMaterial
-	ProgressionHandler.points_changed.connect(_on_progression_points_changed)
-	progression_button.mouse_entered.connect(_refresh_progression_button_glow)
-	progression_button.mouse_exited.connect(_refresh_progression_button_glow)
 	progression_tab.visibility_changed.connect(_on_progression_tab_visibility_changed)
-	_on_progression_points_changed(ProgressionHandler.get_points())
 	_refresh_menu_gating()
 	_refresh_progression_shader_time()
+	_hide_progression_glow_overlay()
 
 func _process(_delta: float) -> void:
 	_refresh_progression_shader_time()
@@ -124,26 +121,14 @@ func _on_progression_tab_visibility_changed() -> void:
 		TimeHandler.pop_pause_lock(progression_tab)
 	_refresh_progression_button_glow()
 
-func _on_progression_points_changed(_points: int) -> void:
-	_refresh_progression_button_glow()
-
 func _refresh_progression_button_glow() -> void:
 	if _progression_glow_icon == null or _progression_glow_material == null:
 		return
 
-	var should_notify: bool = _is_tab_available(progression_tab) and ProgressionHandler.get_points() > 0 and not progression_tab.visible
-	var is_hovered: bool = progression_button.is_hovered()
-	_progression_glow_material.set_shader_parameter("is_unlocked", should_notify)
-	_progression_glow_material.set_shader_parameter("is_active", should_notify and is_hovered)
-
-	if not should_notify:
-		_stop_progression_glow_pulse()
-		_hide_progression_glow_overlay()
-	elif is_hovered:
-		_stop_progression_glow_pulse()
-		_show_progression_glow_overlay()
-	else:
-		_start_progression_glow_pulse()
+	_progression_glow_material.set_shader_parameter("is_unlocked", false)
+	_progression_glow_material.set_shader_parameter("is_active", false)
+	_stop_progression_glow_pulse()
+	_hide_progression_glow_overlay()
 
 func _start_progression_glow_pulse() -> void:
 	if _progression_glow_tween != null:

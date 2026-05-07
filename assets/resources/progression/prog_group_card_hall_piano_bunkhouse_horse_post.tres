@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_gambling.tres" id="2_card_hall"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_entertainment.tres" id="3_piano"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_bed.tres" id="4_bunkhouse"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_horse_post.tres" id="5_horse_post"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="6_dep"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_bed_preview.png" id="7_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("7_sprite")
+display_name = "Card Hall / Piano / Bunkhouse / Horse Post"
+description = "Entertainment, lodging, and outdoor guest support branch from the utility path."
+unlocks_rooms = [ExtResource("2_card_hall"), ExtResource("3_piano"), ExtResource("4_bunkhouse"), ExtResource("5_horse_post")]
+depends_on = ExtResource("6_dep")

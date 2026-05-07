@@ -10,7 +10,7 @@ var is_outside_room = false
 var worker : NPCWorker = null
 var current_module = null
 
-@onready var back_wall_sprite_2d = get_node_or_null("Back-wall") as Sprite2D
+@onready var back_wall_sprite_2d = get_node_or_null("Back-wall")
 
 const backwallDefault = preload("res://assets/sprites/back-wall.png");
 const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_safe.tres" id="2_safe"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_bouncer.tres" id="3_bouncer"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_prison.tres" id="4_prison"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="5_dep"]
+[ext_resource type="Texture2D" path="res://assets/sprites/room_safe_preview.png" id="6_sprite"]
+
+[resource]
+script = ExtResource("1_script")
+sprite = ExtResource("6_sprite")
+display_name = "Safe / Bouncer / Prison"
+description = "Security and money handling open up from the same support branch."
+unlocks_rooms = [ExtResource("2_safe"), ExtResource("3_bouncer"), ExtResource("4_prison")]
+depends_on = ExtResource("5_dep")

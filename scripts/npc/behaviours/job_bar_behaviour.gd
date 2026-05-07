@@ -34,7 +34,7 @@ func loop():
 						item.destroy()
 						drinks_available = 1.0
 				else:
-					RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.current_module.icon if bar.current_module else null)
+					RoomStatusHandler.notify(bar, "no item", Color.ORANGE, bar.drink_icon)
 		else:
 			npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 			await move(bar.get_center_floor_position())
