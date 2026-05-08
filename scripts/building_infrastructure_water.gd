@@ -46,7 +46,7 @@ func _on_infrastructure_changed(layer_name: StringName) -> void:
 
 func show_info() -> void:
 	_info_active = true
-	hide_info()
+	_clear_display()
 
 	_tilemap.z_index = Enum.ZLayer.INFO_LAYER
 	var mat := _tilemap.material as ShaderMaterial
@@ -77,6 +77,9 @@ func hide_info() -> void:
 	var mat := _tilemap.material as ShaderMaterial
 	if mat != null:
 		mat.set_shader_parameter(&"enabled", false)
+	_clear_display()
+
+func _clear_display() -> void:
 	for highlight in _info_highlights:
 		RoomHighlighter.dispose(highlight)
 	_info_highlights.clear()
