@@ -24,7 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://cud3lh35rfmqh" path="res://scenes/foliage/bush_b.tscn" id="22_wwugl"]
 [ext_resource type="Texture2D" uid="uid://cadgme2j6i348" path="res://assets/sprites/foliage/tumble_wheet.png" id="23_affbb"]
 [ext_resource type="Texture2D" uid="uid://ce7kfhlakajks" path="res://assets/sprites/moon.png" id="23_moon1"]
-[ext_resource type="Script" uid="uid://ccp0asawve4si" path="res://scenes/main/tumble_wheet.gd" id="24_bgj18"]
+[ext_resource type="Script" path="res://scenes/main/tumble_wheet.gd" id="24_bgj18"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_157or"]
 shader = ExtResource("2_8d0p8")
@@ -60,7 +60,7 @@ shader_parameter/cloud_scale = 2.00000009174012
 shader_parameter/reference_resolution = Vector2(640, 360)
 shader_parameter/sun_tex = ExtResource("22_sun01")
 shader_parameter/moon_tex = ExtResource("23_moon1")
-shader_parameter/celestial_scale = 0.5
+shader_parameter/celestial_scale = 2.00000009174012
 shader_parameter/arc_center_y = 0.78000003705
 shader_parameter/arc_radius_x = 0.4
 shader_parameter/arc_radius_y = 0.7030000333925
