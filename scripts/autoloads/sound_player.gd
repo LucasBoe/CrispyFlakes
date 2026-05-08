@@ -64,7 +64,7 @@ func play_serve_drink(world_position: Vector2) -> void:
 	_play_2d(_SERVE_DRINK_STREAM, world_position, -6.0, 0.9, 1.1)
 
 func play_barrel(world_position: Vector2) -> void:
-	_play_2d(_BARREL_STREAM, world_position, -6.0, 0.85, 1.15)
+	_play_2d(_BARREL_STREAM, world_position, -8.0, 0.85, 1.15)
 
 func play_crate(world_position: Vector2) -> void:
 	_play_2d(_CRATE_STREAM, world_position, -6.0, 0.85, 1.15)
@@ -76,7 +76,7 @@ func play_use_well(world_position: Vector2) -> void:
 	_play_2d(_USE_WELL_STREAM, world_position, -10.0, 0.9, 1.1)
 
 func play_broom(world_position: Vector2) -> void:
-	_play_2d(_BROOM_STREAM, world_position, -12.0, 0.9, 1.1)
+	_play_2d(_BROOM_STREAM, world_position, -14.0, 0.9, 1.1)
 
 func play_outhouse_door(world_position: Vector2) -> void:
 	_play_2d(_OUTHOUSE_DOOR_STREAM, world_position, -12.0, 0.9, 1.1)
@@ -88,7 +88,7 @@ func play_puke(world_position: Vector2) -> void:
 	_play_2d(_PUKE_STREAMS.pick_random(), world_position, -10.0, 0.8, 1.2)
 
 func play_horse(world_position: Vector2) -> void:
-	_play_2d(_HORSE_STREAMS.pick_random(), world_position, -10.0, 0.9, 1.1)
+	_play_2d(_HORSE_STREAMS.pick_random(), world_position, -14.0, 0.9, 1.1)
 
 func play_ui_click_down(_value = null) -> void:
 	_mouse_click_down.play_random_pitch()
