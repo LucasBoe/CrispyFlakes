@@ -12,4 +12,4 @@ room_desc = "Keeps nearby rooms warm while fueled with wood."
 room_icon = ExtResource("3_icon")
 room_preview = ExtResource("3_icon")
 construction_price = 10
-tier = 2
+tier = 6

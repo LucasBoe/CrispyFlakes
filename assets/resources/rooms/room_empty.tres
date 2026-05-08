@@ -11,5 +11,6 @@ room_name = "Empty"
 room_desc = "An empty room slot. Can be removed if nothing is built above it."
 room_preview = ExtResource("2_7e4wl")
 construction_price = 0
+tier = 0
 money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

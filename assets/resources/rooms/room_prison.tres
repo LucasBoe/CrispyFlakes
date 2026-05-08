@@ -11,5 +11,5 @@ room_name = "Prison"
 room_desc = "holds arrested troublemakers"
 room_preview = ExtResource("3_qm158")
 construction_price = 40
-tier = 3
+tier = 5
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

@@ -11,6 +11,6 @@ room_name = "Horse Post"
 room_desc = "tie up guest horses"
 room_preview = ExtResource("3_ko88o")
 construction_price = 20
-tier = 1
+tier = 4
 is_outdoor = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

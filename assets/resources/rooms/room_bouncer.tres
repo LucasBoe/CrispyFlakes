@@ -11,5 +11,5 @@ room_name = "Bouncer Post"
 room_desc = "stations bouncers to stop fights"
 room_preview = ExtResource("3_roompreview")
 construction_price = 150
-tier = 2
+tier = 5
 money_capacity = 0

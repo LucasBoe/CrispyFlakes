@@ -11,5 +11,6 @@ room_name = "Stairs"
 room_desc = "connects floors"
 room_preview = ExtResource("3_s7fj4")
 construction_price = 15
+tier = 1
 money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

@@ -11,6 +11,6 @@ room_name = "Storage"
 room_desc = "stores items"
 room_preview = ExtResource("3_tfq55")
 construction_price = 20
-tier = 1
+tier = 2
 money_capacity = 0
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

@@ -11,6 +11,7 @@ room_name = "Beer Bar"
 room_desc = "serve beer to guests"
 room_preview = ExtResource("2_xmcjc")
 construction_price = 60
+tier = 3
 money_capacity = 350
 has_consumed_item = true
 produces_money = true

@@ -13,5 +13,5 @@ room_desc = "order supplies from the trader and unpack crates into storage"
 room_icon = ExtResource("2_icon")
 room_preview = ExtResource("3_preview")
 construction_price = 60
-tier = 2
+tier = 6
 metadata/_custom_type_script = "res://scripts/room_data.gd"

@@ -10,5 +10,5 @@ room_desc = "run a water line across existing rooms and connect water-using room
 room_icon = ExtResource("2_pipe")
 room_preview = ExtResource("2_pipe")
 construction_price = 5
-tier = 2
+tier = 8
 layer_name = &"water"

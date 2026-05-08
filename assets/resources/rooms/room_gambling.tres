@@ -9,6 +9,7 @@ packed_scene = ExtResource("1_gambl")
 room_name = "Gambling Table"
 room_desc = "guests try their luck"
 construction_price = 50
+tier = 4
 money_capacity = 150
 produces_money = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

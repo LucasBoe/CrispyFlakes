@@ -11,5 +11,5 @@ room_name = "Broom Closet"
 room_desc = "stores brooms for cleaners"
 room_preview = ExtResource("3_roompreview")
 construction_price = 20
-tier = 1
+tier = 2
 money_capacity = 0
