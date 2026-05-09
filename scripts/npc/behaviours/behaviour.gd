@@ -73,6 +73,34 @@ func get_random_room_of_type(type):
 		return null
 	return rooms.pick_random()
 
+func get_least_loaded_room_of_type(type, filter_fn: Callable = Callable(), load_fn: Callable = Callable(), capacity_fn: Callable = Callable()) -> RoomBase:
+	var reachable = npc.Navigation.get_reachable_rooms()
+	var rooms = Building.query.all_rooms_of_type(type, reachable)
+	return get_least_loaded_room_from_list(rooms, filter_fn, load_fn, capacity_fn)
+
+func get_least_loaded_room_from_list(rooms: Array, filter_fn: Callable = Callable(), load_fn: Callable = Callable(), capacity_fn: Callable = Callable()) -> RoomBase:
+	var best_room: RoomBase = null
+	var best_load_ratio := INF
+	var best_distance := INF
+
+	for room: RoomBase in rooms:
+		if not is_instance_valid(room):
+			continue
+		if not filter_fn.is_null() and not filter_fn.call(room):
+			continue
+
+		var load_value: float = float(load_fn.call(room)) if not load_fn.is_null() else 0.0
+		var capacity_value: float = maxf(1.0, float(capacity_fn.call(room))) if not capacity_fn.is_null() else 1.0
+		var load_ratio := load_value / capacity_value
+		var distance := npc.global_position.distance_to(room.get_center_floor_position())
+
+		if load_ratio < best_load_ratio or (is_equal_approx(load_ratio, best_load_ratio) and distance < best_distance):
+			best_room = room
+			best_load_ratio = load_ratio
+			best_distance = distance
+
+	return best_room
+
 func get_guest_allowed_random_floor_position(drunkenness: float) -> Vector2:
 	var reachable = npc.Navigation.get_reachable_rooms()
 	var allowed: Array[RoomBase] = []

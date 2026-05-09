@@ -34,7 +34,7 @@ vec2 pixel_pos_from_uv(vec2 uv, vec2 texture_pixel_size) {
 	return uv / texture_pixel_size - vec2(0.5);
 }
 
-vec4 sample_wagon_body(sampler2D tex, vec2 uv, vec2 texture_pixel_size) {
+vec4 sample_wagon_body(vec4 raw_body, vec2 uv, vec2 texture_pixel_size) {
 	if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
 		return vec4(0.0);
 	}
@@ -44,7 +44,7 @@ vec4 sample_wagon_body(sampler2D tex, vec2 uv, vec2 texture_pixel_size) {
 		return vec4(0.0);
 	}
 
-	return texture(tex, uv);
+	return raw_body;
 }
 
 vec4 sample_wheel_instance(
@@ -87,7 +87,7 @@ vec4 composite_over(vec4 base, vec4 overlay) {
 	return vec4(out_rgb, out_alpha);
 }
 
-vec4 sample_composite(sampler2D tex, vec2 uv, vec2 texture_pixel_size) {
+vec4 sample_composite(vec2 uv, vec2 texture_pixel_size, vec4 raw_body) {
 	vec4 result = vec4(0.0);
 	vec2 pixel_pos = pixel_pos_from_uv(uv, texture_pixel_size);
 	float angle = TIME * wheel_spin_speed + wheel_phase;
@@ -106,7 +106,7 @@ vec4 sample_composite(sampler2D tex, vec2 uv, vec2 texture_pixel_size) {
 		back_right_wheel_center_px,
 		angle
 	);
-	vec4 body = sample_wagon_body(tex, uv, texture_pixel_size);
+	vec4 body = sample_wagon_body(raw_body, uv, texture_pixel_size);
 	vec4 front_left_wheel = sample_wheel_instance(
 		front_wheel_texture,
 		front_wheel_texture_size,
@@ -131,7 +131,8 @@ vec4 sample_composite(sampler2D tex, vec2 uv, vec2 texture_pixel_size) {
 }
 
 void fragment() {
-	vec4 composite = sample_composite(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
+	vec4 raw_body = texture(TEXTURE, UV);
+	vec4 composite = sample_composite(UV, TEXTURE_PIXEL_SIZE, raw_body);
 
 	if (composite.a > 0.0) {
 		COLOR = composite * modulate_color;
@@ -139,16 +140,16 @@ void fragment() {
 		vec2 step = TEXTURE_PIXEL_SIZE * outline_size;
 
 		bool valid_side =
-			sample_composite(TEXTURE, UV + vec2(-step.x, 0.0), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2( step.x, 0.0), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2(0.0, -step.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2(0.0,  step.y), TEXTURE_PIXEL_SIZE).a > 0.0;
+			sample_composite(UV + vec2(-step.x, 0.0), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2(-step.x, 0.0))).a > 0.0 ||
+			sample_composite(UV + vec2( step.x, 0.0), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2( step.x, 0.0))).a > 0.0 ||
+			sample_composite(UV + vec2(0.0, -step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2(0.0, -step.y))).a > 0.0 ||
+			sample_composite(UV + vec2(0.0,  step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2(0.0,  step.y))).a > 0.0;
 
 		bool valid_corner =
-			sample_composite(TEXTURE, UV + vec2(-step.x, -step.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2( step.x, -step.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2(-step.x,  step.y), TEXTURE_PIXEL_SIZE).a > 0.0 ||
-			sample_composite(TEXTURE, UV + vec2( step.x,  step.y), TEXTURE_PIXEL_SIZE).a > 0.0;
+			sample_composite(UV + vec2(-step.x, -step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2(-step.x, -step.y))).a > 0.0 ||
+			sample_composite(UV + vec2( step.x, -step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2( step.x, -step.y))).a > 0.0 ||
+			sample_composite(UV + vec2(-step.x,  step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2(-step.x,  step.y))).a > 0.0 ||
+			sample_composite(UV + vec2( step.x,  step.y), TEXTURE_PIXEL_SIZE, texture(TEXTURE, UV + vec2( step.x,  step.y))).a > 0.0;
 
 		if (valid_side || (corner_pixel && valid_corner)) {
 			COLOR = outline_color * modulate_color;

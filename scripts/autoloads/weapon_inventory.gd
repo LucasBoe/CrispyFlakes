@@ -18,6 +18,14 @@ func _ready() -> void:
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
+func _exit_tree() -> void:
+	for inst: WeaponInstance in instances:
+		if inst == null:
+			continue
+		inst.equipped_by = null
+		inst.data = null
+	instances.clear()
+
 func add_instance(data) -> void:
 	var inst := WeaponInstance.new()
 	inst.data = data

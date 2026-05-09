@@ -9,7 +9,11 @@ static func get_probability_by_needs(needs : NeedsModule):
 
 func loop():
 	_narrative = ["Thirsty...", "Parched...", "Craving a drink..."].pick_random()
-	bar = get_random_room_of_type(RoomBar)
+	bar = get_least_loaded_room_of_type(
+		RoomBar,
+		Callable(),
+		func(candidate: RoomBar): return candidate.drink_requests.size()
+	)
 
 	if not bar:
 		await pause(3)
@@ -42,11 +46,12 @@ func loop():
 		var item = Global.ItemSpawner.create(Enum.Items.DRINK, bar.get_random_floor_position())
 		npc.Item.pick_up(item)
 
-		var tables = get_all_rooms_of_type_ordered_by_distance(RoomTable)
-		for t : RoomTable in tables:
-			if t.is_free():
-				table = t
-				break
+		table = get_least_loaded_room_of_type(
+			RoomTable,
+			func(candidate: RoomTable): return candidate.is_free(),
+			func(candidate: RoomTable): return candidate.max_guest_count - candidate.get_free_count(),
+			func(candidate: RoomTable): return candidate.max_guest_count
+		)
 
 		if table:
 			await move(table.sit(npc))

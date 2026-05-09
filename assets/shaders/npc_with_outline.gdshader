@@ -46,8 +46,7 @@ float hue_dist(float a, float b) {
     return min(d, 1.0 - d);
 }
 
-vec4 tint_rgb(vec4 base, sampler2D tex, vec2 uv, vec3 filter) {
-    vec4 raw = texture(tex, uv);
+vec4 tint_rgb(vec4 base, vec4 raw, vec3 filter) {
     vec3 hsv = rgb2hsv(raw.rgb);
 
     float target = mask_to_float(rgbh, filter);
@@ -64,16 +63,15 @@ vec4 tint_rgb(vec4 base, sampler2D tex, vec2 uv, vec3 filter) {
     return mix(base, raw, mask);
 }
 
-vec4 base_color(sampler2D tex, vec2 uv) {
-    vec4 raw = texture(tex, uv);
-	raw = tint_rgb(raw, tex, uv, vec3(1.0, 0.0, 0.0));
-	raw = tint_rgb(raw, tex, uv, vec3(0.0, 1.0, 0.0));
-	raw = tint_rgb(raw, tex, uv, vec3(0.0, 0.0, 1.0));
+vec4 base_color(vec4 raw, vec2 uv) {
+	raw = tint_rgb(raw, raw, vec3(1.0, 0.0, 0.0));
+	raw = tint_rgb(raw, raw, vec3(0.0, 1.0, 0.0));
+	raw = tint_rgb(raw, raw, vec3(0.0, 0.0, 1.0));
 	return raw;
 }
 
-vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
-    vec4 base = base_color(tex, uv);
+vec4 composite(vec4 raw, vec2 uv, vec2 tex_pixel_size) {
+    vec4 base = base_color(raw, uv);
 
     vec2 region_pixel_size = 1.0 / tex_pixel_size;
 
@@ -103,14 +101,15 @@ vec4 composite(sampler2D tex, vec2 uv, vec2 tex_pixel_size) {
     }
     return result;
 }
-vec4 sample_composite(sampler2D tex, vec2 uv, vec2 px_size) {
+vec4 sample_composite(vec2 uv, vec2 px_size, vec4 raw) {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
         return vec4(0.0);
-    return composite(tex, uv, px_size);
+    return composite(raw, uv, px_size);
 }
 
 void fragment() {
-    vec4 comp = sample_composite(TEXTURE, UV, TEXTURE_PIXEL_SIZE);
+	vec4 raw = texture(TEXTURE, UV);
+    vec4 comp = sample_composite(UV, TEXTURE_PIXEL_SIZE, raw);
 
     if (comp.a > 0.0) {
         COLOR = comp * modulate_color;
@@ -118,16 +117,16 @@ void fragment() {
         vec2 px = TEXTURE_PIXEL_SIZE;
 
         bool valid_side =
-            sample_composite(TEXTURE, UV + vec2(-px.x, 0.0), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2( px.x, 0.0), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2(0.0, -px.y), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2(0.0,  px.y), px).a > 0.0;
+            sample_composite(UV + vec2(-px.x, 0.0), px, texture(TEXTURE, UV + vec2(-px.x, 0.0))).a > 0.0 ||
+            sample_composite(UV + vec2( px.x, 0.0), px, texture(TEXTURE, UV + vec2( px.x, 0.0))).a > 0.0 ||
+            sample_composite(UV + vec2(0.0, -px.y), px, texture(TEXTURE, UV + vec2(0.0, -px.y))).a > 0.0 ||
+            sample_composite(UV + vec2(0.0,  px.y), px, texture(TEXTURE, UV + vec2(0.0,  px.y))).a > 0.0;
 
         bool valid_corner =
-            sample_composite(TEXTURE, UV + vec2(-px.x, -px.y), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2( px.x, -px.y), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2(-px.x,  px.y), px).a > 0.0 ||
-            sample_composite(TEXTURE, UV + vec2( px.x,  px.y), px).a > 0.0;
+            sample_composite(UV + vec2(-px.x, -px.y), px, texture(TEXTURE, UV + vec2(-px.x, -px.y))).a > 0.0 ||
+            sample_composite(UV + vec2( px.x, -px.y), px, texture(TEXTURE, UV + vec2( px.x, -px.y))).a > 0.0 ||
+            sample_composite(UV + vec2(-px.x,  px.y), px, texture(TEXTURE, UV + vec2(-px.x,  px.y))).a > 0.0 ||
+            sample_composite(UV + vec2( px.x,  px.y), px, texture(TEXTURE, UV + vec2( px.x,  px.y))).a > 0.0;
 
         if (valid_side || (corner_pixel && valid_corner)) {
             COLOR = outline_color * modulate_color;

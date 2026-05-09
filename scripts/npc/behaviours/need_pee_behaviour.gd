@@ -42,20 +42,20 @@ func stop_loop() -> BehaviourSaveData:
 	return super.stop_loop()
 
 func _get_usable_toilet() -> RoomToilet:
-	var reachable = npc.Navigation.get_reachable_rooms()
-	var toilets = Building.query.all_rooms_of_type(RoomToilet, reachable)
-	toilets = toilets.filter(func(t: RoomToilet): return t.has_working_water_supply())
-	if toilets.is_empty():
-		return null
-	return toilets.pick_random()
+	return get_least_loaded_room_of_type(
+		RoomToilet,
+		func(candidate: RoomToilet): return candidate.has_working_water_supply(),
+		func(candidate: RoomToilet): return candidate.queue.size() + candidate.users.size(),
+		func(_candidate: RoomToilet): return RoomToilet.STALL_COUNT
+	) as RoomToilet
 
 func _get_usable_outhouse() -> RoomOuthouse:
-	var reachable = npc.Navigation.get_reachable_rooms()
-	var outhouses = Building.query.all_rooms_of_type(RoomOuthouse, reachable)
-	outhouses = outhouses.filter(func(o: RoomOuthouse): return not o.is_full())
-	if outhouses.is_empty():
-		return null
-	return outhouses.pick_random()
+	return get_least_loaded_room_of_type(
+		RoomOuthouse,
+		func(candidate: RoomOuthouse): return not candidate.is_full(),
+		func(candidate: RoomOuthouse): return candidate.queue.size() + (1 if candidate.is_occupied() else 0),
+		func(_candidate: RoomOuthouse): return 1
+	) as RoomOuthouse
 
 func _use_outhouse() -> bool:
 	if outhouse.is_full():

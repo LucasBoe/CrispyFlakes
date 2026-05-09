@@ -54,6 +54,12 @@ func is_available_for(npc: NPC) -> bool:
 			return true
 	return false
 
+func get_total_bed_count() -> int:
+	return _active_beds.size()
+
+func get_occupied_bed_count() -> int:
+	return current_guests.size()
+
 func occupy(guest: NPCGuest):
 	for i in _active_beds.size():
 		var occupied := false

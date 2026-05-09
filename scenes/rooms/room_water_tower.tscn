@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://c3igaq668wmq6" path="res://assets/sprites/room_highlight_slim_2x1.png" id="3_r2fwd"]
 [ext_resource type="Script" uid="uid://dkcadcxntbb6f" path="res://scripts/room_water_tower.gd" id="3_script"]
 [ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="5_pjwhn"]
-[ext_resource type="Texture2D" uid="uid://nmvdi1x55hwq" path="res://assets/sprites/ui/room_watertower_icon.png" id="5_r2fwd"]
+[ext_resource type="Texture2D" uid="uid://cp1dc4mtntdxu" path="res://assets/sprites/room_icon_water_tower.png" id="5_r2fwd"]
 
 [node name="Room_WaterTower" type="Node2D"]
 texture_filter = 1

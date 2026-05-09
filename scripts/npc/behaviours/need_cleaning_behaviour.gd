@@ -9,7 +9,11 @@ static func get_probability_by_needs(needs : NeedsModule):
 	
 func loop():
 	_narrative = ["In need of a bath...", "Feeling grimy...", "Smelling ripe..."].pick_random()
-	bath = get_random_room_of_type(RoomBath)
+	bath = get_least_loaded_room_of_type(
+		RoomBath,
+		Callable(),
+		func(candidate: RoomBath): return candidate.customers.size()
+	)
 	
 	if bath == null:
 		return

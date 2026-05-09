@@ -56,10 +56,12 @@ func loop():
 	add_satisfaction(0.7 - npc.Needs.satisfaction.strength, "Slept")
 
 func _find_available_bed() -> RoomBed:
-	for candidate: RoomBed in get_all_rooms_of_type_ordered_by_distance(RoomBed):
-		if candidate.is_available_for(npc):
-			return candidate
-	return null
+	return get_least_loaded_room_of_type(
+		RoomBed,
+		func(candidate: RoomBed): return candidate.is_available_for(npc),
+		func(candidate: RoomBed): return candidate.get_occupied_bed_count(),
+		func(candidate: RoomBed): return candidate.get_total_bed_count()
+	) as RoomBed
 
 func stop_loop() -> BehaviourSaveData:
 	if is_instance_valid(npc) and npc.Animator.is_sleeping:

@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bgjasdt1lfkyv" path="res://assets/sprites/well_simple.png" id="6_0i7x7"]
 [ext_resource type="Texture2D" uid="uid://buyglaurncwbt" path="res://assets/sprites/well_sheet_back.png" id="6_3vav0"]
 [ext_resource type="Texture2D" uid="uid://d18uy6yfwjagu" path="res://assets/sprites/well_sheet_front.png" id="7_ghqru"]
-[ext_resource type="Texture2D" uid="uid://cybskoaa44wxo" path="res://assets/sprites/ui/module_icon_crank.png" id="7_wma58"]
+[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_well_icon.png" id="7_wma58"]
 
 [node name="Room_Well" type="Node2D"]
 texture_filter = 1
