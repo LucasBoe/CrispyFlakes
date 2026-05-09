@@ -23,6 +23,7 @@ const room_data_storage := preload("res://assets/resources/rooms/room_storage.tr
 const room_data_bath := preload("res://assets/resources/rooms/room_bath.tres")
 const room_data_toilet := preload("res://assets/resources/rooms/room_toilet.tres")
 const room_data_bar := preload("res://assets/resources/rooms/room_bar.tres")
+const room_data_saloon := preload("res://assets/resources/rooms/room_saloon.tres")
 const room_data_bar_beer := preload("res://assets/resources/rooms/room_bar_beer.tres")
 const room_data_bar_whiskey := preload("res://assets/resources/rooms/room_bar_whiskey.tres")
 const room_data_entertainment := preload("res://assets/resources/rooms/room_entertainment.tres")
@@ -99,6 +100,8 @@ func delete_room(room: RoomBase):
 		for col in room.data.width:
 			for row in room.data.height:
 				var above = get_room_from_index(Vector2i(room.x + col, room.y + row + 1))
+				if above == room:
+					above = null
 				if above == null or above is RoomEmpty:
 					_erase_room_cell(room.x + col, room.y + row)
 				else:

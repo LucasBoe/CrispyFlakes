@@ -33,6 +33,7 @@ func _ready():
 	create_button(group, Building.room_data_empty)
 	create_button(group, Building.room_data_table)
 	create_button(group, Building.room_data_bar)
+	create_button(group, Building.room_data_saloon)
 	create_button(group, Building.room_data_stairs)
 	create_button(group, Building.room_data_broom_closet)
 	create_button(group, Building.room_data_storage)

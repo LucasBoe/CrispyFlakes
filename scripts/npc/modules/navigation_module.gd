@@ -21,6 +21,8 @@ var _leave_gate_position: Vector2 = Vector2.ZERO
 const DEFAULT_MOVE_SPEED = 32
 var move_speed = DEFAULT_MOVE_SPEED
 
+const no_path_icon = preload("uid://byc8yljqbcmo4")
+
 signal target_reached_signal
 
 func _ready():
@@ -154,7 +156,9 @@ func refresh_target_path() -> void:
 		#var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
 		#final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
 	if target_final is RoomBase:
-		final_target = (target_final as RoomBase).get_center_floor_position()
+		var target_room := target_final as RoomBase
+		refresh_room_index()
+		final_target = _get_room_center_floor_position(target_room, target_room.y)
 	elif target_final is Node2D:
 		final_target = (target_final as Node2D).global_position
 	else:
@@ -170,7 +174,7 @@ func refresh_target_path() -> void:
 		_fail_target_path()
 		return
 
-	final_target.y = goal_room.global_position.y
+	final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
 
 	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate() and not _is_inside and not _is_outside_target(final_target):
 		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
@@ -200,7 +204,7 @@ func refresh_target_path() -> void:
 
 	var room_path := _find_room_path(start_room, goal_room)
 	if room_path.is_empty():
-		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Building.room_data_stairs.room_icon)
+		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), no_path_icon)
 		_fail_target_path()
 		return
 
@@ -245,30 +249,27 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 		return result
 
 	# 1. Ground floor rooms are all mutually reachable
+	var room_width = room.data.width if room.data != null else 1
 	if room.y == 0:
 		var all_rooms = Building.query.all_rooms_of_type(RoomBase)
 		for other in all_rooms:
-			if is_instance_valid(other) and other != room and other.y == 0:
-				result.append(other)
+			if is_instance_valid(other) and other != room and _is_walkable_room_on_floor(other, 0):
+				_append_connected_room(result, other, 0)
 
 	# 2. Horizontal adjacency — skip over the room's own footprint
-	var w = room.data.width if room.data != null else 1
 	var left_room = Building.get_room_from_index(Vector2i(room.x - 1, room.y))
-	var right_room = Building.get_room_from_index(Vector2i(room.x + w, room.y))
-	if left_room is RoomBase:
-		result.append(left_room)
-	if right_room is RoomBase:
-		result.append(right_room)
+	var right_room = Building.get_room_from_index(Vector2i(room.x + room_width, room.y))
+	_append_connected_room(result, left_room, room.y)
+	_append_connected_room(result, right_room, room.y)
 
 	# 3. Vertical movement via stairs on the lower floor
 	if room is RoomStairs:
 		var room_above := _get_room_above_stairs(room as RoomStairs)
-		if room_above != null:
-			result.append(room_above)
+		_append_connected_room(result, room_above, room.y + 1)
 
 	for stair_below in _get_stairs_below(room):
 		if stair_below != room:
-			result.append(stair_below)
+			_append_connected_room(result, stair_below, stair_below.y)
 
 	return result
 
@@ -297,7 +298,7 @@ func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, i
 			)
 		_append_stairs_transition(transition_stairs, to_room.y < from_room.y)
 		if not is_final and to_room is not RoomStairs:
-			target_path.append(to_room.get_center_floor_position())
+			target_path.append(_get_transition_waypoint(from_room, to_room))
 		return
 
 	# Skip center waypoint when entering stairs (zig-zag provides the entry point)
@@ -305,7 +306,7 @@ func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, i
 	if to_room is RoomStairs or is_final:
 		return
 
-	target_path.append(to_room.get_center_floor_position())
+	target_path.append(_get_transition_waypoint(from_room, to_room))
 
 
 func _append_stairs_transition(stairs: RoomStairs, go_downwards: bool) -> void:
@@ -372,7 +373,8 @@ func _fail_target_path() -> void:
 	target_path.clear()
 	var current_room := _get_current_floor_room(global_position)
 	if current_room != null:
-		target_path.append(current_room.get_random_floor_position())
+		var floor_y: int = Building.round_floor_index_from_global_position(global_position).y
+		target_path.append(_get_room_random_floor_position(current_room, floor_y))
 
 
 func _reconstruct_path(came_from: Dictionary, goal_room: RoomBase) -> Array[RoomBase]:
@@ -447,10 +449,10 @@ func _check_inside_outside_transition() -> void:
 		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
 func _get_current_floor_room(pos: Vector2) -> RoomBase:
-	return Building.query.closest_on_current_floor(RoomBase, pos) as RoomBase
+	return _get_walkable_room_on_position_floor(pos)
 
 func _get_goal_floor_room(pos: Vector2) -> RoomBase:
-	return Building.query.closest_on_position_floor(RoomBase, pos) as RoomBase
+	return _get_walkable_room_on_position_floor(pos)
 
 
 func _get_room_above_stairs(stairs: RoomStairs) -> RoomBase:
@@ -481,6 +483,86 @@ func _get_transition_stairs(from_room: RoomBase, to_room: RoomBase) -> RoomStair
 		return to_room as RoomStairs
 
 	return null
+
+
+func _append_connected_room(result: Array[RoomBase], room, floor_y: int) -> void:
+	if room is RoomBase and _is_walkable_room_on_floor(room, floor_y) and room not in result:
+		result.append(room)
+
+
+func _get_walkable_room_on_position_floor(pos: Vector2) -> RoomBase:
+	var floor_index: Vector2i = Building.round_floor_index_from_global_position(pos)
+	var exact := Building.query.room_at_floor_position(pos) as RoomBase
+	if exact != null:
+		return exact if _is_walkable_room_on_floor(exact, floor_index.y) else null
+
+	var closest_room: RoomBase = null
+	var shortest_distance: float = INF
+	if not Building.floors.has(floor_index.y):
+		return null
+
+	for x in Building.floors[floor_index.y]:
+		var room := Building.floors[floor_index.y][x] as RoomBase
+		if not _is_walkable_room_on_floor(room, floor_index.y):
+			continue
+		var distance := room.global_position.distance_to(pos)
+		if distance < shortest_distance:
+			shortest_distance = distance
+			closest_room = room
+
+	return closest_room
+
+
+func _is_walkable_room_on_floor(room: RoomBase, floor_y: int) -> bool:
+	if room == null or room.data == null:
+		return false
+	return floor_y == room.y
+
+
+func _get_best_floor_y_for_room(room: RoomBase, preferred_floor_y: int) -> int:
+	if _is_walkable_room_on_floor(room, preferred_floor_y):
+		return preferred_floor_y
+	return room.y if room != null else preferred_floor_y
+
+
+func _get_transition_waypoint(from_room: RoomBase, to_room: RoomBase) -> Vector2:
+	var floor_y := _get_shared_floor_y(from_room, to_room)
+	return _get_room_center_floor_position(to_room, floor_y)
+
+
+func _get_shared_floor_y(from_room: RoomBase, to_room: RoomBase) -> int:
+	if from_room == null:
+		return to_room.y if to_room != null else 0
+	if to_room == null:
+		return from_room.y
+
+	var from_height := from_room.data.height if from_room.data != null else 1
+	for row in range(from_height):
+		var floor_y: int = from_room.y + row
+		if _is_walkable_room_on_floor(from_room, floor_y) and _is_walkable_room_on_floor(to_room, floor_y):
+			return floor_y
+
+	return _get_best_floor_y_for_room(to_room, from_room.y)
+
+
+func _get_room_center_floor_position(room: RoomBase, floor_y: int) -> Vector2:
+	if room == null:
+		return Vector2.ZERO
+	var width := room.data.width if room.data != null else 1
+	return Vector2(room.global_position.x + width * 24.0, _get_room_floor_y_world(room, floor_y))
+
+
+func _get_room_random_floor_position(room: RoomBase, floor_y: int) -> Vector2:
+	if room == null:
+		return Vector2.ZERO
+	var width := room.data.width if room.data != null else 1
+	return Vector2(room.global_position.x + randi_range(4, width * 48 - 4), _get_room_floor_y_world(room, floor_y))
+
+
+func _get_room_floor_y_world(room: RoomBase, floor_y: int) -> float:
+	if room == null:
+		return floor_y * -48.0
+	return room.global_position.y - float(floor_y - room.y) * 48.0
 
 
 func _debug_room_label(room: RoomBase) -> String:

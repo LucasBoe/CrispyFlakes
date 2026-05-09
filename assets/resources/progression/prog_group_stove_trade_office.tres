@@ -1,15 +1,18 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=9 format=3 uid="uid://bdx3rar4y8tkm"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_stove.tres" id="2_stove"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_trading_office.tres" id="3_trade_office"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://cstov3rm0s002" path="res://assets/resources/rooms/room_stove.tres" id="2_stove"]
+[ext_resource type="Resource" uid="uid://bucf8au433od2" path="res://assets/resources/rooms/room_trading_office.tres" id="3_trade_office"]
 [ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="4_dep"]
-[ext_resource type="Texture2D" path="res://assets/sprites/stove.png" id="5_sprite"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="4_n8tv7"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="5_kxikt"]
+[ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="5_sprite"]
+[ext_resource type="Resource" uid="uid://csaloonrtres1" path="res://assets/resources/rooms/room_saloon.tres" id="6_saloon"]
 
 [resource]
 script = ExtResource("1_script")
 sprite = ExtResource("5_sprite")
-display_name = "Stove / Trade Office"
-description = "Heat and trading are available here. The orange Saloon note is intentionally left out for now."
-unlocks_rooms = [ExtResource("2_stove"), ExtResource("3_trade_office")]
+display_name = "Stove / Trade Office / Saloon"
+description = "Heat, trading, and the larger saloon floor open up together."
+unlocks_rooms = Array[ExtResource("5_kxikt")]([ExtResource("2_stove"), ExtResource("3_trade_office"), ExtResource("6_saloon")])
 depends_on = ExtResource("4_dep")

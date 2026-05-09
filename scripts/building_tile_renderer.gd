@@ -56,8 +56,17 @@ func update(floors: Dictionary) -> void:
 
 	for y in floors.keys():
 		for x in list_of_room_indexes_on_floor[y]:
+			var room := floors[y][x] as RoomBase
 			var has_left: bool = check_at_indoor_room_at(x - 1, y, floors)
 			var has_right: bool = check_at_indoor_room_at(x + 1, y, floors)
+			var ignores_foreground_tiles := _ignores_foreground_tiles(room)
+
+			if ignores_foreground_tiles:
+				if _is_room_left_edge(room, x) and not has_left:
+					set_wall(x - 1, y, placementContext.OUTER_LEFT)
+				if _is_room_right_edge(room, x) and not has_right:
+					set_wall(x + 1, y, placementContext.OUTER_RIGHT)
+				continue
 
 			if not has_left:
 				set_wall(x - 1, y,
@@ -130,6 +139,21 @@ func check_at_indoor_room_at(x, y, list):
 		return false
 			
 	return not list[y][x].is_outside_room
+
+func _ignores_foreground_tiles(room: RoomBase) -> bool:
+	if room == null or room.data == null:
+		return false
+	if not room.data.ignore_foreground_tiles:
+		return false
+	return room.data.width > 1 or room.data.height > 1
+
+func _is_room_left_edge(room: RoomBase, x: int) -> bool:
+	return room != null and x == room.x
+
+func _is_room_right_edge(room: RoomBase, x: int) -> bool:
+	if room == null or room.data == null:
+		return false
+	return x == room.x + room.data.width - 1
 
 func set_wall(x: int, y: int, context: int = -1) -> void:
 	_tiles_walls.set_cell(Vector2i(x, y * -1 - 1), 1 if y < 0 else 0, Vector2i(context, 0))
