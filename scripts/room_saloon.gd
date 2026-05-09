@@ -1,4 +1,4 @@
-extends RoomBase
+extends RoomTable
 class_name RoomSaloon
 
 func get_random_floor_position():

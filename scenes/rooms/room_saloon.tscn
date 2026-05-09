@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://csaloonrtscn1"]
+[gd_scene load_steps=10 format=3 uid="uid://csaloonrtscn1"]
 
 [ext_resource type="Script" uid="uid://bnh133tax2kms" path="res://scripts/room_saloon.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://dge7w3r65t5up" path="res://assets/sprites/table_stool.png" id="5_stool"]
 [ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="6_light"]
 [ext_resource type="Material" uid="uid://dfa4jw2438l1m" path="res://assets/materials/mat_light_overlay.tres" id="7_light_mat"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="8_module"]
 
 [node name="Room_Saloon" type="Node2D"]
 texture_filter = 1
@@ -39,7 +40,7 @@ patch_margin_bottom = 4
 
 [node name="Foreground" type="Sprite2D" parent="."]
 z_index = 1990
-position = Vector2(48, -48)
+position = Vector2(48, -47)
 texture = ExtResource("4_ls4d6")
 
 [node name="LightOverlay" type="Sprite2D" parent="."]
@@ -47,6 +48,18 @@ z_index = 2100
 material = ExtResource("7_light_mat")
 position = Vector2(48, -48)
 texture = ExtResource("6_light")
+
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Tables" type="Node2D" parent="ModulesRoot"]
+
+[node name="SaloonTables" type="Node2D" parent="ModulesRoot/Tables"]
+script = ExtResource("8_module")
+module_name = "Saloon Seating"
+describtion = "seats 6 guests"
+max_guests = 6
+seat_positions = Array[Vector2]([Vector2(6, -1), Vector2(32, -1), Vector2(65, -1), Vector2(91, -1), Vector2(36, -1), Vector2(63, -1)])
+bought = true
 
 [node name="Table" type="Sprite2D" parent="."]
 z_index = -10
