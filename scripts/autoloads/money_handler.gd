@@ -32,11 +32,28 @@ func deposit(location: Vector2i, amount: float) -> void:
 	location_money[location] = location_money.get(location, 0.0) + to_add
 	changed.emit()
 
-# Deposit unattributed money (bounties, fines, etc.), capped at total capacity.
+# Deposit unattributed money (bounties, fines, etc.) split evenly across all rooms.
 func deposit_free(amount: float) -> void:
-	var space = maxf(0.0, total_capacity() - _total())
-	free_pool += minf(amount, space)
-	changed.emit()
+	var locations: Array[Vector2i] = _room_locations()
+	if locations.is_empty():
+		var space = maxf(0.0, total_capacity() - _total())
+		free_pool += minf(amount, space)
+		changed.emit()
+		return
+	var per_room: float = amount / locations.size()
+	for loc in locations:
+		deposit(loc, per_room)
+
+func _room_locations() -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	if not is_instance_valid(Building):
+		return result
+	for y in Building.floors:
+		for x in Building.floors[y]:
+			var room = Building.floors[y][x]
+			if room is RoomBase and room.data != null and room.data.money_capacity > 0:
+				result.append(Vector2i(x, y))
+	return result
 
 # Transfer all money from `source` to `target` location (safe worker collecting).
 func collect_to(source: Vector2i, target: Vector2i) -> float:

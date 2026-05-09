@@ -43,9 +43,9 @@ func place(data, origin: Vector2i) -> bool:
 	_emit_changed(data.layer_name)
 	return true
 
-func clear_under_room(room: RoomBase) -> void:
+func prune_infrastructure() -> void:
 	for layer_name in _layers.keys():
-		var dirty := _remove_cells_under_room(room, layer_name)
+		var dirty := false
 		if layer_name == WATER_LAYER:
 			while _water.prune():
 				dirty = true
@@ -104,13 +104,9 @@ func get_connected_provider(room: RoomBase, layer_name: StringName):
 			continue
 		visited[index] = true
 
-		var current_room := Building.get_room_from_index(index) as RoomBase
-		if room_provides_layer(current_room, layer_name):
-			return current_room
-
-		var adjacent_provider := _get_adjacent_provider(index, layer_name)
-		if adjacent_provider != null:
-			return adjacent_provider
+		var provider := _get_provider_for_index(index, layer_name)
+		if provider != null:
+			return provider
 
 		for direction in _CARDINAL_DIRECTIONS:
 			var next: Vector2i = index + direction
@@ -230,3 +226,13 @@ func _get_adjacent_provider(index: Vector2i, layer_name: StringName) -> RoomBase
 		if room_provides_layer(room, layer_name):
 			return room
 	return null
+
+func _get_provider_for_index(index: Vector2i, layer_name: StringName) -> RoomBase:
+	if layer_name == WATER_LAYER:
+		return _water.get_provider_neighbor(index)
+
+	var current_room := Building.get_room_from_index(index) as RoomBase
+	if room_provides_layer(current_room, layer_name):
+		return current_room
+
+	return _get_adjacent_provider(index, layer_name)

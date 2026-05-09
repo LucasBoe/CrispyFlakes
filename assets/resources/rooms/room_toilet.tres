@@ -7,10 +7,10 @@
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
+money_capacity = 20
 room_name = "Toilet"
 room_desc = "two indoor stalls, needs a water line"
 room_preview = ExtResource("3_ckra1")
 construction_price = 35
 tier = 8
-money_capacity = 20
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

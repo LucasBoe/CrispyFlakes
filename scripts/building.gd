@@ -77,14 +77,14 @@ func initialize_all_rooms():
 
 func erase_empty(room: RoomBase):
 	_erase_room_cell(room.x, room.y)
-	infrastructure.clear_under_room(room)
+	infrastructure.prune_infrastructure()
 	update_foreground_tiles()
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
 
 func replace_with_empty(room: RoomBase):
 	set_room(room_data_empty, room.x, room.y)
-	infrastructure.clear_under_room(room)
+	infrastructure.prune_infrastructure()
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
@@ -103,7 +103,7 @@ func delete_room(room: RoomBase):
 					_erase_room_cell(room.x + col, room.y + row)
 				else:
 					set_room(room_data_empty, room.x + col, room.y + row)
-	infrastructure.clear_under_room(room)
+	infrastructure.prune_infrastructure()
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
 	GlobalEventHandler.on_room_deleted_signal.emit(room)

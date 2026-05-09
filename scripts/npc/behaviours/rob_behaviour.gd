@@ -30,6 +30,8 @@ func loop():
 
 	var stolen: int = MoneyHandler.steal(_target_location)
 	if stolen > 0:
+		ResourceHandler.notify_stolen(stolen)
+		(npc as NPCGuest).stolen_amount = stolen
 		UiNotifications.create_notification_dynamic("$%d stolen!" % stolen, npc, Vector2(0, -40), UiNotifications.ICON_MINUS_3)
 	if npc.has_meta("horse"):
 		npc.force_behaviour(LeaveOnHorseBehaviour)

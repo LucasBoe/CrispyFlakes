@@ -7,15 +7,15 @@
 [resource]
 script = ExtResource("4_4hwfa")
 packed_scene = ExtResource("1_ussxi")
-room_name = "Aging Cellar"
-room_desc = "age whiskey for the bar"
-room_preview = ExtResource("3_2t72g")
-construction_price = 30
-tier = 7
 money_capacity = 0
 has_consumed_item = true
 consumed_item_type = 4
 produces_item = true
 produced_item_type = 1
 produced_item_name = "Aged Wiskey"
+room_name = "Aging Cellar"
+room_desc = "age whiskey for the bar"
+room_preview = ExtResource("3_2t72g")
+construction_price = 30
+tier = 7
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

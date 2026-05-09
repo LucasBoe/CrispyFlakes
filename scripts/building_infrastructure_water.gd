@@ -27,7 +27,10 @@ enum PipeTile {
 }
 
 const _HORIZONTAL_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT]
-const _SUPPORT_BELOW_OFFSET := Vector2i(0, -1)
+const _GRID_ABOVE_OFFSET := Vector2i(0, 1)
+const _GRID_BELOW_OFFSET := Vector2i(0, -1)
+const _NETWORK_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT, _GRID_ABOVE_OFFSET, _GRID_BELOW_OFFSET]
+const _SUPPORT_BELOW_OFFSET := _GRID_BELOW_OFFSET
 
 var _infra
 var _tilemap: TileMapLayer
@@ -112,20 +115,20 @@ func can_place(data, origin: Vector2i) -> bool:
 			var index := origin + Vector2i(col, row)
 			if _infra.has_data_at(index, BuildingInfrastructure.WATER_LAYER):
 				return false
+			if _is_provider_room_cell(index):
+				return false
 			pending[index] = true
 
 	var supported := _collect_supported_cells(pending)
-	var has_external_side_anchor := false
+	var provider_connected := _collect_provider_connected_cells(pending)
 
 	for index in pending.keys():
 		if not supported.has(index):
 			return false
-		if not _has_side_network_neighbor(index, pending):
+		if not provider_connected.has(index):
 			return false
-		if _has_external_side_network_neighbor(index):
-			has_external_side_anchor = true
 
-	return has_external_side_anchor
+	return true
 
 func prune() -> bool:
 	var layer: Dictionary = _infra.get_layer(BuildingInfrastructure.WATER_LAYER)
@@ -133,10 +136,11 @@ func prune() -> bool:
 		return false
 
 	var supported := _collect_supported_cells()
+	var provider_connected := _collect_provider_connected_cells()
 	var dirty := false
 
 	for index in layer.keys():
-		if supported.has(index) and _has_side_network_neighbor(index):
+		if supported.has(index) and provider_connected.has(index):
 			continue
 		layer.erase(index)
 		dirty = true
@@ -216,6 +220,32 @@ func _collect_supported_cells(pending: Dictionary = {}) -> Dictionary:
 
 	return visited
 
+func _collect_provider_connected_cells(pending: Dictionary = {}) -> Dictionary:
+	var all_cells := {}
+	for index in _infra.get_layer_cells(BuildingInfrastructure.WATER_LAYER):
+		all_cells[index] = true
+	for index in pending.keys():
+		all_cells[index] = true
+
+	var open: Array[Vector2i] = []
+	var visited := {}
+
+	for index in all_cells.keys():
+		if get_provider_neighbor(index) != null:
+			open.append(index)
+
+	while not open.is_empty():
+		var index: Vector2i = open.pop_back()
+		if visited.has(index):
+			continue
+		visited[index] = true
+		for direction in _NETWORK_DIRECTIONS:
+			var next: Vector2i = index + direction
+			if all_cells.has(next) and not visited.has(next):
+				open.append(next)
+
+	return visited
+
 func _is_locally_supported(index: Vector2i) -> bool:
 	if index.y <= 0:
 		return true
@@ -233,31 +263,25 @@ func _has_support_below(index: Vector2i) -> bool:
 		return true
 	return _infra.has_data_at(below, BuildingInfrastructure.WATER_LAYER)
 
-func _has_side_network_neighbor(index: Vector2i, pending: Dictionary = {}) -> bool:
-	for direction in _HORIZONTAL_DIRECTIONS:
-		var neighbor: Vector2i = index + direction
-		if pending.has(neighbor):
-			return true
-		if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
-			return true
-		if _tower_provides_at(Building.get_room_from_index(neighbor) as RoomBase, index.y):
-			return true
-	var above := index + Vector2i(0, 1)
-	if _tower_provides_at(Building.get_room_from_index(above) as RoomBase, index.y + 1):
-		return true
-	return false
+func get_provider_neighbor(index: Vector2i) -> RoomBase:
+	var current_room := Building.get_room_from_index(index) as RoomBase
+	if _tower_provides_at(current_room, index.y):
+		return current_room
 
-func _has_external_side_network_neighbor(index: Vector2i) -> bool:
-	var above := index + Vector2i(0, 1)
-	if _tower_provides_at(Building.get_room_from_index(above) as RoomBase, index.y + 1):
-		return true
 	for direction in _HORIZONTAL_DIRECTIONS:
-		var neighbor: Vector2i = index + direction
-		if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
-			return true
-		if _tower_provides_at(Building.get_room_from_index(neighbor) as RoomBase, index.y):
-			return true
-	return false
+		var room := Building.get_room_from_index(index + direction) as RoomBase
+		if _tower_provides_at(room, index.y):
+			return room
+
+	var above_room := Building.get_room_from_index(index + _GRID_ABOVE_OFFSET) as RoomBase
+	if _tower_provides_at(above_room, index.y + 1):
+		return above_room
+
+	return null
+
+func _is_provider_room_cell(index: Vector2i) -> bool:
+	var room := Building.get_room_from_index(index) as RoomBase
+	return _infra.room_provides_layer(room, BuildingInfrastructure.WATER_LAYER)
 
 func _tower_provides_at(room: RoomBase, y_idx: int) -> bool:
 	if room is RoomWaterTower:
@@ -269,8 +293,7 @@ func _get_tile(index: Vector2i) -> Vector2i:
 
 func _get_tile_index(index: Vector2i) -> int:
 	var outdoor: bool = _is_outdoor_backing(index)
-	var above_room := Building.get_room_from_index(index + Vector2i(0, 1)) as RoomBase
-	if above_room is RoomWaterTower and _tower_provides_at(above_room, index.y + 1):
+	if _is_tower_drop_pipe(index):
 		var has_pipe_below: bool = _infra.has_data_at(index + Vector2i(0, -1), BuildingInfrastructure.WATER_LAYER)
 		if has_pipe_below:
 			return PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE_AND_BELOW
@@ -308,6 +331,14 @@ func _is_outdoor_backing(index: Vector2i) -> bool:
 func _is_water_consumer_backing(index: Vector2i) -> bool:
 	var room := Building.get_room_from_index(index) as RoomBase
 	return room != null and room.uses_infrastructure_layer(BuildingInfrastructure.WATER_LAYER)
+
+func _is_tower_drop_pipe(index: Vector2i) -> bool:
+	var probe := index + _GRID_ABOVE_OFFSET
+	while _infra.has_data_at(probe, BuildingInfrastructure.WATER_LAYER):
+		probe += _GRID_ABOVE_OFFSET
+
+	var room := Building.get_room_from_index(probe) as RoomBase
+	return room is RoomWaterTower and _tower_provides_at(room, probe.y)
 
 func _to_tilemap_coords(index: Vector2i) -> Vector2i:
 	return Vector2i(index.x, index.y * -1 - 1)

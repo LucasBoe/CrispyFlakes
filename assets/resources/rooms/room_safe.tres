@@ -8,12 +8,12 @@
 [resource]
 script = ExtResource("1_safe")
 packed_scene = ExtResource("2_safe")
+money_capacity = 1000
 room_name = "Safe"
 room_desc = "stores money from your rooms"
 room_icon = ExtResource("2_33fqc")
 room_preview = ExtResource("3_lmm1q")
 construction_price = 150
 tier = 5
-money_capacity = 1000
 width = 2
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

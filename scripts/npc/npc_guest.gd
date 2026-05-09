@@ -8,6 +8,7 @@ var manual_behaviour = false
 
 var is_known_fugitive: bool = false
 var is_robber: bool = false
+var stolen_amount: int = 0
 
 var needs_to_pee: float = 0.0
 const INITIAL_MAX_PEE_URGE: float = 0.9
@@ -84,6 +85,8 @@ func _append_state_icon_entries(entries: Array) -> void:
 		entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = "Arrested (Call Sherrif)"})
 	if has_visible_bounty:
 		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = str("Known Fugitive (", bounty, "$)")})
+	if stolen_amount > 0:
+		entries.append({icon = UiNotifications.ICON_ROBBER, label = str("Carrying stolen loot ($", stolen_amount, ")")})
 	if fine != null:
 		entries.append({label = str("Outstanding Fine (", fine, "$)")})
 	elif (ConflictResponseHandler.is_marked_for_arrest(self) or is_arrested) and bounty == null:
@@ -92,6 +95,9 @@ func _append_state_icon_entries(entries: Array) -> void:
 func counts_towards_guest_total() -> bool:
 	var behaviour = Behaviour.behaviour_instance
 	return not (behaviour is ArrestedBehaviour or behaviour is FollowSheriffBehaviour)
+
+func is_on_horse() -> bool:
+	return Animator != null and Animator.is_riding
 
 func get_next_behaviour():
 

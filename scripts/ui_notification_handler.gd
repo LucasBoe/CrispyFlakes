@@ -19,6 +19,7 @@ const ICON_HANDCUFFS = preload("uid://cl2jtn5jtk0yh")
 const ICON_HANDCUFFED = preload("uid://d2mm1tn7w7oot")
 const ICON_KNOCKED_OUT = preload("res://assets/sprites/ui/icon_knocked_out.png")
 const ICON_FUGITIVE = preload("uid://dcde01v5i4hgb")
+const ICON_ROBBER = preload("uid://ccudedp2r2ik6")
 
 var instances = []
 const DEFAULT_LIFETIME = 3.0

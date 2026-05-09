@@ -4,6 +4,18 @@ class_name ArrestedBehaviour
 var cell : RoomPrison = null
 var is_in_cell = false
 
+func start_loop() -> void:
+	_return_stolen_money()
+
+func _return_stolen_money() -> void:
+	if not npc is NPCGuest:
+		return
+	var guest := npc as NPCGuest
+	if guest.stolen_amount <= 0:
+		return
+	ResourceHandler.add_animated(Enum.Resources.MONEY, guest.stolen_amount, npc.global_position)
+	guest.stolen_amount = 0
+
 func loop():
 	_narrative = ["Handcuffed and waiting...", "Under arrest!"].pick_random()
 	npc.Animator.handcuffs.show()

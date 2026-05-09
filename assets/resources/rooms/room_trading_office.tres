@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="RoomData" load_steps=5 format=3 uid="uid://bucf8au433od2"]
 
 [ext_resource type="PackedScene" path="res://scenes/rooms/room_trading_office.tscn" id="1_scene"]
 [ext_resource type="Texture2D" uid="uid://cuo44xrownjje" path="res://assets/sprites/ui/room_bar_icon.png" id="2_icon"]

@@ -732,8 +732,7 @@ func _show_bounty_board():
 		instance.show()
 	bounty_item_container.show()
 
-	var has_prison = Building.count_rooms_by_data(Building.room_data_prison) > 0
-	call_sheriff_button.visible = not has_prison
+	call_sheriff_button.show()
 
 	Util.disconnect_all_pressed(call_sheriff_button)
 	call_sheriff_button.pressed.connect(func():
@@ -803,6 +802,11 @@ func _bind_guest_arrest_button(guest: NPCGuest):
 
 	if guest.Behaviour.behaviour_instance is ArrestedBehaviour:
 		arrest_button.text = "Arrested"
+		arrest_button.disabled = true
+		return
+
+	if not ConflictResponseHandler.can_be_arrested(guest):
+		arrest_button.text = "On Horse"
 		arrest_button.disabled = true
 		return
 
@@ -910,19 +914,20 @@ func _bind_guest_hire_button(guest: NPCGuest):
 		hire_guest_button.hide()
 		return
 
+	var cost = guest.Traits.get_hire_cost()
 	Util.disconnect_all_pressed(hire_guest_button)
 	hire_guest_button.disabled = false
-	hire_guest_button.text = "Hire for 5$"
+	hire_guest_button.text = "Hire for %d$" % cost
 	hire_guest_button.pressed.connect(func():
 		if not is_instance_valid(guest):
 			return
-		if not ResourceHandler.has_money(5):
+		if not ResourceHandler.has_money(cost):
 			var btn_center = hire_guest_button.global_position + hire_guest_button.size / 2
 			UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 			return
 
 		hire_guest_button.disabled = true
-		ResourceHandler.change_money(-5)
+		ResourceHandler.change_money(-cost)
 		var worker := Global.NPCSpawner.hire_guest_as_worker(guest)
 		if is_instance_valid(worker):
 			manually_select(worker)

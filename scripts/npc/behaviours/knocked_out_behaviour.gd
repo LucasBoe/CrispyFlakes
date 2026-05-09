@@ -12,6 +12,16 @@ func start_loop():
 	_narrative = ["Down for the count...", "Out cold...", "Seeing stars..."].pick_random()
 	notification_instance = UiNotifications.create_npc_notification(npc, UiNotifications.ICON_KNOCKED_OUT, true)
 	_set_collision_rotation(PI / 2.0)
+	_return_stolen_money()
+
+func _return_stolen_money() -> void:
+	if not npc is NPCGuest:
+		return
+	var guest := npc as NPCGuest
+	if guest.stolen_amount <= 0:
+		return
+	ResourceHandler.add_animated(Enum.Resources.MONEY, guest.stolen_amount, npc.global_position)
+	guest.stolen_amount = 0
 
 func loop():
 	time_remaining = DURATION

@@ -104,7 +104,7 @@ func spawn_new_guest():
 
 	#robber stuff
 	if guests.size() > 10 and workers.size() > 2:
-		if randf() < 0.1:
+		if randf() < 1.1:
 			guest.is_robber = true
 
 	# bounty stuff

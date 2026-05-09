@@ -72,6 +72,11 @@ func add_animated(resource, amount, global_pos, room_location: Vector2i = Vector
 			MoneyHandler.deposit_free(amount)
 	
 
+func notify_stolen(amount: int) -> void:
+	resources[Enum.Resources.MONEY] -= amount
+	on_resource_changed.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], -amount)
+	on_money_changed.emit()
+
 func spend_animated(amount: int, global_pos: Vector2) -> void:
 	change_money(-amount)
 	SoundPlayer.play_treasure()

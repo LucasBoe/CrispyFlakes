@@ -7,10 +7,10 @@
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_bedscene")
+money_capacity = 20
 room_name = "Bunkhouse"
 room_desc = "guests sleep and recover here"
 room_preview = ExtResource("3_ibbrn")
 construction_price = 25
 tier = 4
-money_capacity = 20
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

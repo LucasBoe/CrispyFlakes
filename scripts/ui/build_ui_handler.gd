@@ -46,7 +46,6 @@ func _ready():
 	create_button(group, Building.room_data_safe)
 	create_button(group, Building.room_data_bouncer, RoomBouncer.custom_placement_check)
 	create_button(group, Building.room_data_prison)
-	create_button(group, Building.room_data_stove)
 	create_button(group, Building.room_data_trading_office)
 	create_button(group, Building.room_data_destillery)
 	create_button(group, Building.room_data_aging_cellar)

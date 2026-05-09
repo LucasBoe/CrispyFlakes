@@ -7,15 +7,15 @@
 [resource]
 script = ExtResource("4_f5lxu")
 packed_scene = ExtResource("1_hax0f")
-room_name = "Destillery"
-room_desc = "distill whiskey from water"
-room_preview = ExtResource("3_fjh5f")
-construction_price = 70
-tier = 7
 money_capacity = 0
 has_consumed_item = true
 consumed_item_type = 3
 produces_item = true
 produced_item_type = 4
 produced_item_name = "Fresh Wiskey"
+room_name = "Destillery"
+room_desc = "distill whiskey from water"
+room_preview = ExtResource("3_fjh5f")
+construction_price = 70
+tier = 7
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

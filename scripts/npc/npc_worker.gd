@@ -223,6 +223,11 @@ func should_fight_conflicts() -> bool:
 		return true
 	return saloon_fight_response == SaloonFightResponse.FIGHT
 
+func destroy():
+	for j: Array in JobHandler.workers.values():
+		j.erase(self)
+	super.destroy()
+
 func change_job(new):
 	current_job = new
 	Behaviour.set_behaviour_from_job(current_job);

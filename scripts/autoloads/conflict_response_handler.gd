@@ -3,6 +3,8 @@ extends Node
 var potential_arrests: Array[NPCGuest] = []
 
 func mark_for_arrest(guest: NPCGuest) -> void:
+	if not can_be_arrested(guest):
+		return
 	if not potential_arrests.has(guest):
 		potential_arrests.append(guest)
 
@@ -10,7 +12,10 @@ func unmark_for_arrest(guest: NPCGuest) -> void:
 	potential_arrests.erase(guest)
 
 func is_marked_for_arrest(guest: NPCGuest) -> bool:
-	return potential_arrests.has(guest)
+	return can_be_arrested(guest) and potential_arrests.has(guest)
+
+func can_be_arrested(guest: NPCGuest) -> bool:
+	return is_instance_valid(guest) and not guest.is_on_horse()
 
 func _process(_delta: float) -> void:
 	if Global.NPCSpawner == null:
@@ -45,7 +50,7 @@ func try_join_brawl(fight: Fight) -> bool:
 func _refresh_potential_arrests() -> void:
 	for i: int in range(potential_arrests.size() - 1, -1, -1):
 		var guest: NPCGuest = potential_arrests[i]
-		if not is_instance_valid(guest):
+		if not can_be_arrested(guest):
 			potential_arrests.remove_at(i)
 
 func _try_pair_arrests() -> void:

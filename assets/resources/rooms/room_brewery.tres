@@ -7,14 +7,14 @@
 [resource]
 script = ExtResource("1_gyx31")
 packed_scene = ExtResource("1_cut2x")
-room_name = "Brewery"
-room_desc = "brew beer from water"
-room_preview = ExtResource("3_yg3vf")
-construction_price = 30
-tier = 3
 money_capacity = 0
 has_consumed_item = true
 consumed_item_type = 3
 produces_item = true
 produced_item_name = "Beer Barrels"
+room_name = "Brewery"
+room_desc = "brew beer from water"
+room_preview = ExtResource("3_yg3vf")
+construction_price = 30
+tier = 3
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

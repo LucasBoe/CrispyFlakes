@@ -7,13 +7,13 @@
 [resource]
 script = ExtResource("4_r7qge")
 packed_scene = ExtResource("1_hgofh")
+money_capacity = 250
+has_consumed_item = true
+consumed_item_type = 3
+produces_money = true
 room_name = "Water Bar"
 room_desc = "serve water to guests"
 room_preview = ExtResource("2_2xxwi")
 construction_price = 40
 tier = 1
-money_capacity = 250
-has_consumed_item = true
-consumed_item_type = 3
-produces_money = true
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

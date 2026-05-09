@@ -34,6 +34,8 @@ func get_or_create_fight(npc: NPC) -> Fight:
 	return fight
 
 func create_or_join_drunk_fight(guest: NPCGuest) -> void:
+	if guest.is_on_horse():
+		return
 	if not _is_in_active_fight(guest):
 		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
 	get_or_create_fight(guest)
@@ -183,7 +185,7 @@ func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
 	if current != null and current.get_script() == PanicBehaviourScript:
 		_debug_gutless_panic(npc, fight, "skip already panicking")
 		return false
-	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour:
+	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
 		_debug_gutless_panic(npc, fight, "skip blocked behaviour %s" % _behaviour_name(current))
 		return false
 	return true
