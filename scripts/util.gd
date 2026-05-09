@@ -39,3 +39,13 @@ static func delete_all_children_execept_index_0(parent):
 static func disconnect_all_pressed(btn: BaseButton) -> void:
 	for c in btn.pressed.get_connections():
 		btn.pressed.disconnect(c.callable)
+
+static func get_closest(array: Array, position: Vector2):
+	var closest = null
+	var closest_dist := INF
+	for item in array:
+		var dist := position.distance_squared_to(item.global_position)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest = item
+	return closest

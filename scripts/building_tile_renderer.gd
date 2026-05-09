@@ -7,7 +7,7 @@ var sign_room_index: Vector2i = Vector2i(-9999, -9999)
 var roof_room_index_by_x: Dictionary = {}
 
 enum levelDifference { SAME, HIGHER, LOWER }
-enum placementContext { OUTER_LEFT = 0, LEFT = 1, MIDDLE = 2, RIGHT = 3, OUTER_RIGHT = 4, OUTER_DOUBLE = 5, MIDDLE_OUTER = 6 }
+enum placementContext { OUTER_LEFT = 0, LEFT = 1, LEFT_ONLY =2, RIGHT_ONLY = 3, MIDDLE = 4, RIGHT = 5, OUTER_RIGHT = 6, OUTER_DOUBLE = 7, MIDDLE_OUTER = 8, OUTER_LEFT_ONLY = 9, OUTER_RIGHT_ONLY = 10 }
 enum roofIndexMap {
 	OUTER_LEFT_LOWER = 0,
 	RIGHT_END_HIGHER = 1,
@@ -79,7 +79,14 @@ func update(floors: Dictionary) -> void:
 					if check_at_indoor_room_at(x + 2, y, floors) else
 					placementContext.OUTER_RIGHT)
 
-			if has_left and has_right:
+			var same_room_left: bool = has_left and floors[y].get(x - 1) == room
+			var same_room_right: bool = has_right and floors[y].get(x + 1) == room
+
+			if same_room_right and not same_room_left:
+				set_wall(x, y, placementContext.OUTER_LEFT_ONLY if not has_left else placementContext.LEFT_ONLY)
+			elif same_room_left and not same_room_right:
+				set_wall(x, y, placementContext.OUTER_RIGHT_ONLY if not has_right else placementContext.RIGHT_ONLY)
+			elif has_left and has_right:
 				set_wall(x, y, placementContext.MIDDLE)
 			elif not has_left and has_right:
 				set_wall(x, y, placementContext.LEFT)

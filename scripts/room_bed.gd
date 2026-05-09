@@ -73,6 +73,18 @@ func occupy(guest: NPCGuest):
 			_refresh_visual()
 			return
 
+func get_random_floor_position():
+	var room_width := data.width if data != null else 1
+	return global_position + Vector2(randi_range(4, room_width * 48 - 4), 0)
+
+func get_center_position():
+	var room_width := data.width if data != null else 1
+	return global_position + Vector2(room_width * 24, -24)
+
+func get_center_floor_position():
+	var room_width := data.width if data != null else 1
+	return global_position + Vector2(room_width * 24, 0)
+
 func get_sleep_position():
 	return get_center_floor_position() + Vector2(10, -6)
 

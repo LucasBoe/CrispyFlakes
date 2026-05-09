@@ -30,10 +30,7 @@ func loop():
 		npc.destroy()
 
 func _get_next_arrested() -> NPCGuest:
-	for guest : NPCGuest in Global.NPCSpawner.guests:
-		if is_instance_valid(guest) and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
-			return guest
-	return null
+	return Util.get_closest(_get_all_arrested(), npc.global_position)
 
 func _get_all_arrested() -> Array:
 	var result = []

@@ -6,7 +6,7 @@
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_bed.tres" id="4_bunkhouse"]
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_horse_post.tres" id="5_horse_post"]
 [ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="6_dep"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_bed_preview.png" id="7_sprite"]
+[ext_resource type="Texture2D" uid="uid://b2l5ocx5si76c" path="res://assets/sprites/room_bunkhouse_preview.png" id="7_sprite"]
 
 [resource]
 script = ExtResource("1_script")

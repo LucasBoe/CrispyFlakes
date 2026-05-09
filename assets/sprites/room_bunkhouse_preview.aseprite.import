@@ -1,0 +1,15 @@
+[remap]
+
+importer="aseprite_wizard.plugin.static-texture"
+type="PortableCompressedTexture2D"
+uid="uid://yuajdfototok"
+valid=false
+
+[deps]
+
+source_file="res://assets/sprites/room_bunkhouse_preview.aseprite"
+
+[params]
+
+layer/exclude_layers_pattern=""
+layer/only_visible_layers=false
