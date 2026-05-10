@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dfa4jw2438l1m"]
 
-[ext_resource type="Shader" uid="uid://c7tcykh2qmqho" path="res://assets/shaders/light_overlay.gdshader" id="1_shader"]
+[ext_resource type="Shader" path="res://assets/shaders/light_overlay.gdshader" id="1_shader"]
 
 [resource]
 resource_local_to_scene = true
