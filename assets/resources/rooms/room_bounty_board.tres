@@ -6,8 +6,9 @@
 [resource]
 script = ExtResource("4_hc611")
 packed_scene = ExtResource("1_rqija")
-room_name = "Bounty Board"
-room_desc = "check current bounties"
 is_outdoor = true
 money_capacity = 0
+room_name = "Bounty Board"
+room_type = 2
+room_desc = "check current bounties"
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

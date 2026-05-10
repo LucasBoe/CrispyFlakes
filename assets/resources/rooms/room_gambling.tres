@@ -9,6 +9,7 @@ packed_scene = ExtResource("1_gambl")
 money_capacity = 150
 produces_money = true
 room_name = "Gambling Table"
+room_type = 3
 room_desc = "guests try their luck"
 construction_price = 50
 tier = 4

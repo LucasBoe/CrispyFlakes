@@ -14,6 +14,7 @@ produces_item = true
 produced_item_type = 1
 produced_item_name = "Aged Wiskey"
 room_name = "Aging Cellar"
+room_type = 1
 room_desc = "age whiskey for the bar"
 room_preview = ExtResource("3_2t72g")
 construction_price = 30

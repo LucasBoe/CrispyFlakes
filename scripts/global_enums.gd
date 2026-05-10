@@ -27,6 +27,13 @@ enum Resources {
 	GUEST
 }
 
+enum RoomType {
+	INFRASTRUCTURE,
+	BEVERAGES,
+	SAFETY,
+	ENTERTAINMENT,
+}
+
 enum Jobs {
 	IDLE,
 	BREWERY,

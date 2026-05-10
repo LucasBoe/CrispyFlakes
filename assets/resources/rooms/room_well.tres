@@ -7,13 +7,13 @@
 [resource]
 script = ExtResource("2_t8pn5")
 packed_scene = ExtResource("1_ger4k")
+money_capacity = 0
+produces_item = true
+produced_item_type = 3
+produced_item_name = "Water"
 room_name = "Well"
 room_desc = "fetch water here"
 room_preview = ExtResource("3_60cnm")
 construction_price = 20
 tier = 2
-money_capacity = 0
-produces_item = true
-produced_item_type = 3
-produced_item_name = "Water"
 metadata/_custom_type_script = "uid://cxphvsfo6076a"

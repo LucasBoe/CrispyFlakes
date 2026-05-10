@@ -8,6 +8,7 @@
 script = ExtResource("2_38wrn")
 packed_scene = ExtResource("1_cmppg")
 room_name = "Prison"
+room_type = 2
 room_desc = "holds arrested troublemakers"
 room_preview = ExtResource("3_qm158")
 construction_price = 40

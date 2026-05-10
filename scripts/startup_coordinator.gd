@@ -66,6 +66,7 @@ func _run_startup_sequence() -> void:
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_bar)):
 			return
 		_quests.build_bar.start()
+		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
 			await _wait_for_menu_arrow_step(

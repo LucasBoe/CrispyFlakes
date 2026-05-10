@@ -12,6 +12,7 @@ has_consumed_item = true
 consumed_item_type = 3
 produces_money = true
 room_name = "Water Bar"
+room_type = 1
 room_desc = "serve water to guests"
 room_preview = ExtResource("2_2xxwi")
 construction_price = 40

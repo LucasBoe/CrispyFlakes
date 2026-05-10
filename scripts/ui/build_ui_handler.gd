@@ -29,40 +29,43 @@ func _ready():
 	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
 	ProgressionHandler.item_unlocked.connect(_on_buildables_changed)
 
-	var group = room_group.new(groups)
-	create_button(group, Building.room_data_empty)
-	create_button(group, Building.room_data_table)
-	create_button(group, Building.room_data_bar)
-	create_button(group, Building.room_data_stairs)
-	create_button(group, Building.room_data_broom_closet)
-	create_button(group, Building.room_data_storage)
-	create_button(group, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
-	create_button(group, Building.room_data_brewery)
-	create_button(group, Building.room_data_bar_beer)
-	create_button(group, Building.room_data_gambling)
-	create_button(group, Building.room_data_entertainment)
-	create_button(group, Building.room_data_bed)
-	create_button(group, Building.room_data_horse_post, RoomHorsePost.custom_placement_check)
-	create_button(group, Building.room_data_safe)
-	create_button(group, Building.room_data_bouncer, RoomBouncer.custom_placement_check)
-	create_button(group, Building.room_data_prison)
-	create_button(group, Building.room_data_trading_office)
-	create_button(group, Building.room_data_destillery)
-	create_button(group, Building.room_data_aging_cellar)
-	create_button(group, Building.room_data_bar_whiskey)
-	create_button(group, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
-	create_button(group, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
-	create_button(group, Building.room_data_toilet)
-	create_button(group, Building.room_data_bath)
+	for t in Enum.RoomType.values():
+		groups[t] = room_group.new(t)
+	
+	create_button(groups, Building.room_data_empty)
+	create_button(groups, Building.room_data_table)
+	create_button(groups, Building.room_data_bar)
+	create_button(groups, Building.room_data_stairs)
+	create_button(groups, Building.room_data_broom_closet)
+	create_button(groups, Building.room_data_storage)
+	create_button(groups, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
+	create_button(groups, Building.room_data_brewery)
+	create_button(groups, Building.room_data_bar_beer)
+	create_button(groups, Building.room_data_gambling)
+	create_button(groups, Building.room_data_entertainment)
+	create_button(groups, Building.room_data_bed)
+	create_button(groups, Building.room_data_horse_post, RoomHorsePost.custom_placement_check)
+	create_button(groups, Building.room_data_safe)
+	create_button(groups, Building.room_data_bouncer, RoomBouncer.custom_placement_check)
+	create_button(groups, Building.room_data_prison)
+	create_button(groups, Building.room_data_trading_office)
+	create_button(groups, Building.room_data_destillery)
+	create_button(groups, Building.room_data_aging_cellar)
+	create_button(groups, Building.room_data_bar_whiskey)
+	create_button(groups, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
+	create_button(groups, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
+	create_button(groups, Building.room_data_toilet)
+	create_button(groups, Building.room_data_bath)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	hover_info_room_box_root.hide()
 	hover_info_room_desc_label.bbcode_enabled = true
 	_refresh_button_availability()
 
-func create_button(group : room_group, data, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
+func create_button(groups : Dictionary, data : BuildableData, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
 
-	var tier = data.tier
+	var group = groups[data.room_type]
+	var tier = 0
 	while group.tiers.size() <= tier:
 		group.create_new_tier_dummy(room_tier_dummy)
 
@@ -150,15 +153,18 @@ func _on_tab_changed(tab):
 
 	var group = groups[tab]
 
-	#hide previous
 	for g in groups.values():
+		for tier_node in g.tiers:
+			tier_node.hide()
 		for x in g.button_instances.values():
-				for button in x:
-					button.hide()
+			for button in x:
+				button.hide()
 
 	for tier in group.button_instances.keys():
 		for button in group.button_instances[tier]:
 			button.show()
+		if group.button_instances[tier].any(func(b): return b.visible):
+			group.tiers[tier].show()
 
 func _on_build_button_pressed(data, custom_placement_check, build_action: Callable) -> void:
 	if not _is_data_unlocked(data):
@@ -227,14 +233,16 @@ func _create_locked_overlay() -> Control:
 	return overlay
 
 class room_group:
+	var room_type : Enum.RoomType
 	var group_name : String
 	var tiers = []
 	var overlays = []
 	var button_dummies = []
 	var button_instances = {}
 
-	func _init(groups):
-		groups[groups.size()] = self
+	func _init(type : Enum.RoomType):
+		room_type = type
+		group_name = Enum.RoomType.keys()[type]
 
 	func create_new_tier_dummy(tier_dummy : Control):
 

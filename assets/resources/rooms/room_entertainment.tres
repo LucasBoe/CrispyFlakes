@@ -9,6 +9,7 @@ script = ExtResource("1_roomdata")
 packed_scene = ExtResource("1_roomscene")
 money_capacity = 0
 room_name = "Entertainment"
+room_type = 3
 room_desc = "keeps guests happy on this floor"
 room_preview = ExtResource("3_80qpi")
 construction_price = 30

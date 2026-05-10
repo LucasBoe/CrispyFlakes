@@ -2,6 +2,7 @@ extends Resource
 class_name BuildableData
 
 @export var room_name: String
+@export var room_type: Enum.RoomType = Enum.RoomType.INFRASTRUCTURE
 @export var room_desc: String
 @export var room_icon: Texture2D
 @export var room_preview: Texture2D

@@ -13,6 +13,7 @@ consumed_item_type = 3
 produces_item = true
 produced_item_name = "Beer Barrels"
 room_name = "Brewery"
+room_type = 1
 room_desc = "brew beer from water"
 room_preview = ExtResource("3_yg3vf")
 construction_price = 30
