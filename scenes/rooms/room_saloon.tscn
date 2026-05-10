@@ -1,0 +1,113 @@
+[gd_scene load_steps=10 format=3 uid="uid://csaloonrtscn1"]
+
+[ext_resource type="Script" uid="uid://bnh133tax2kms" path="res://scripts/room_saloon.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://c3igaq668wmq6" path="res://assets/sprites/room_highlight_slim_2x1.png" id="3_e40df"]
+[ext_resource type="Texture2D" uid="uid://codtykqhxr46i" path="res://assets/sprites/room_saloon_custom_foreground.png" id="4_ls4d6"]
+[ext_resource type="Texture2D" uid="uid://bd3lo375f5wvb" path="res://assets/sprites/table_heavy.png" id="5_bnsfd"]
+[ext_resource type="Texture2D" uid="uid://dge7w3r65t5up" path="res://assets/sprites/table_stool.png" id="5_stool"]
+[ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="6_light"]
+[ext_resource type="Material" uid="uid://dfa4jw2438l1m" path="res://assets/materials/mat_light_overlay.tres" id="7_light_mat"]
+[ext_resource type="Script" uid="uid://celrclk3rtjee" path="res://scripts/room_module.gd" id="8_module"]
+
+[node name="Room_Saloon" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_script")
+
+[node name="Back-wall" type="NinePatchRect" parent="."]
+z_index = -200
+texture_repeat = 2
+offset_top = -96.0
+offset_right = 96.0
+texture = ExtResource("2_backwall")
+patch_margin_left = 17
+patch_margin_top = 15
+patch_margin_right = 15
+patch_margin_bottom = 16
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Outline" type="NinePatchRect" parent="."]
+z_index = 4000
+custom_minimum_size = Vector2(96, 96)
+offset_top = -96.0
+offset_right = 96.0
+texture = ExtResource("3_e40df")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="Foreground" type="Sprite2D" parent="."]
+z_index = 1990
+position = Vector2(48, -47)
+texture = ExtResource("4_ls4d6")
+
+[node name="LightOverlay" type="Sprite2D" parent="."]
+z_index = 2100
+material = ExtResource("7_light_mat")
+position = Vector2(48, -48)
+texture = ExtResource("6_light")
+
+[node name="ModulesRoot" type="Node2D" parent="."]
+
+[node name="Tables" type="Node2D" parent="ModulesRoot"]
+
+[node name="SaloonTables" type="Node2D" parent="ModulesRoot/Tables"]
+script = ExtResource("8_module")
+module_name = "Saloon Seating"
+describtion = "seats 6 guests"
+max_guests = 6
+seat_positions = Array[Vector2]([Vector2(6, -1), Vector2(32, -1), Vector2(65, -1), Vector2(91, -1), Vector2(36, -1), Vector2(63, -1)])
+bought = true
+
+[node name="Table" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(18.5, -6.5)
+texture = ExtResource("5_bnsfd")
+
+[node name="Stool" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(6, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool2" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(32, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Table2" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(77.5, -6.5)
+texture = ExtResource("5_bnsfd")
+
+[node name="Stool3" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(65, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool4" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(91, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Table3" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(48.5, -6.5)
+texture = ExtResource("5_bnsfd")
+
+[node name="Stool5" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(36, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool6" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(63, -1)
+texture = ExtResource("5_stool")
+offset = Vector2(-0.5, -3.5)

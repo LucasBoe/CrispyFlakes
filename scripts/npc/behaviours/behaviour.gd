@@ -151,7 +151,7 @@ func move(target, custom_speed = -1):
 				await end_of_frame()
 			if not is_instance_valid(npc):
 				return
-			UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Building.room_data_stairs.room_icon)
+			UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), NavigationModule.no_path_icon)
 			await pause(3)
 
 	if not is_instance_valid(npc):

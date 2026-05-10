@@ -10,7 +10,7 @@ func start_loop():
 
 func loop():
 	while true:
-		var to_arrest := get_npc_to_arrest()
+		var to_arrest := get_npc_to_arrest(npc.global_position)
 		if to_arrest != null:
 			if ConflictResponseHandler.is_marked_for_arrest(to_arrest):
 				_narrative = ["Going after them...", "Making an arrest...", "They're not getting away..."].pick_random()
@@ -43,13 +43,19 @@ func loop():
 			RoomStatusHandler.notify(room, "no prisoners", Color.ORANGE)
 			await pause(RoomStatusHandler.REFRESH_RATE - .5)
 
-static func get_npc_to_arrest() -> NPCGuest:
+static func get_npc_to_arrest(position: Vector2) -> NPCGuest:
+	var marked: Array = []
+	var unescorted: Array = []
 	for g : NPCGuest in Global.NPCSpawner.guests:
 		if ConflictResponseHandler.is_marked_for_arrest(g):
-			return g
-		if g.Behaviour.behaviour_instance is ArrestedBehaviour \
+			marked.append(g)
+		elif g.Behaviour.behaviour_instance is ArrestedBehaviour \
 		and not (g.Behaviour.behaviour_instance as ArrestedBehaviour).cell:
-			return g
+			unescorted.append(g)
+	if not marked.is_empty():
+		return Util.get_closest(marked, position)
+	if not unescorted.is_empty():
+		return Util.get_closest(unescorted, position)
 	return null
 
 static func count_people_that_need_arrestment() -> int:

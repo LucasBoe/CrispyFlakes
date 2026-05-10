@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://h6js6a66xoeh" path="res://assets/resources/rooms/room_bed.tres" id="2_room"]
 [ext_resource type="Resource" uid="uid://d3t0fuhxaqhib" path="res://assets/resources/progression/prog_broom_room.tres" id="3_dep"]
-[ext_resource type="Texture2D" uid="uid://ibq8x4oe2pky" path="res://assets/sprites/ui/room_bed_preview.png" id="4_sprite"]
+[ext_resource type="Texture2D" uid="uid://b2l5ocx5si76c" path="res://assets/sprites/room_bunkhouse_preview.png" id="4_sprite"]
 
 [resource]
 script = ExtResource("1_script")
 sprite = ExtResource("4_sprite")
-display_name = "Bed Room"
+display_name = "Bunkhouse"
 cost = 1
 unlocks_room = ExtResource("2_room")
 depends_on = ExtResource("3_dep")
