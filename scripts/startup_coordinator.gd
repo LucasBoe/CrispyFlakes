@@ -69,8 +69,11 @@ func _run_startup_sequence() -> void:
 		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
-			await _wait_for_menu_arrow_step(
+			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
+				Global.UI.menu.build_tab.tab_cointainer,
+				1,
+				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_bar),
 				func(): return not Building.query.all_rooms_of_type(RoomBar).is_empty()
 			)
 		):
@@ -122,8 +125,11 @@ func _run_startup_sequence() -> void:
 		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
 			skip_layer,
-			await _wait_for_menu_arrow_step(
+			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
+				Global.UI.menu.build_tab.tab_cointainer,
+				0,
+				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_table),
 				func(): return not Building.query.all_rooms_of_type(RoomTable).is_empty()
 			)
 		):
@@ -258,6 +264,71 @@ func _wait_for_menu_arrow_step(button: Button, completion_condition: Callable) -
 	return _skip_requested
 
 
+func _wait_for_tab_arrow_step(button: Button, tab_bar: TabBar, tab_index: int, tab_content_button: Button, completion_condition: Callable) -> bool:
+	var current_state := -1
+	while not _skip_requested and not completion_condition.call():
+		var menu := Global.UI.menu
+		var new_state: int
+		if menu.visible_tab != menu.build_tab:
+			new_state = 0
+		elif tab_bar.current_tab != tab_index:
+			new_state = 1
+		else:
+			new_state = 2
+		if new_state != current_state:
+			current_state = new_state
+			match current_state:
+				0: _show_menu_tutorial_arrow(button)
+				1: _show_menu_tutorial_arrow_at_tab(tab_bar, tab_index)
+				2: _show_menu_tutorial_arrow(tab_content_button)
+		if current_state == 0:
+			_update_menu_tutorial_arrow_visibility()
+		await get_tree().process_frame
+	_destroy_menu_tutorial_arrow()
+	return _skip_requested
+
+
+func _show_menu_tutorial_arrow_at_tab(tab_bar: TabBar, tab_index: int) -> void:
+	_destroy_menu_tutorial_arrow()
+	if tab_bar == null:
+		return
+
+	var arrow_texture := _get_menu_tutorial_arrow_texture()
+	if arrow_texture == null:
+		return
+
+	if _menu_tutorial_arrow_material == null:
+		_menu_tutorial_arrow_material = ShaderMaterial.new()
+		_menu_tutorial_arrow_material.shader = GOLDEN_GLOW_SHADER
+
+	var tab_rect := tab_bar.get_tab_rect(tab_index)
+	var arrow_size := arrow_texture.get_size()
+
+	var arrow := TextureRect.new()
+	arrow.name = "TutorialMenuArrow"
+	arrow.texture = arrow_texture
+	arrow.material = _menu_tutorial_arrow_material
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrow.stretch_mode = TextureRect.STRETCH_KEEP
+	arrow.size = arrow_size
+	arrow.position = Vector2(
+		tab_rect.position.x + tab_rect.size.x * 0.5 - arrow_size.x * 0.5 + MENU_ARROW_OFFSET.x,
+		MENU_ARROW_OFFSET.y
+	)
+	tab_bar.add_child(arrow)
+	_menu_tutorial_arrow = arrow
+
+	var base_y := MENU_ARROW_OFFSET.y
+	var tween := create_tween()
+	tween.set_loops()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(arrow, "position:y", base_y - MENU_ARROW_HOVER_HEIGHT, MENU_ARROW_HOVER_DURATION)
+	tween.tween_property(arrow, "position:y", base_y, MENU_ARROW_HOVER_DURATION)
+	_menu_tutorial_arrow_hover_tween = tween
+
+
 func _show_menu_tutorial_arrow(button: Button) -> void:
 	_destroy_menu_tutorial_arrow()
 	if button == null:
@@ -290,7 +361,6 @@ func _show_menu_tutorial_arrow(button: Button) -> void:
 	tween.tween_property(arrow, "position:y", MENU_ARROW_OFFSET.y - MENU_ARROW_HOVER_HEIGHT, MENU_ARROW_HOVER_DURATION)
 	tween.tween_property(arrow, "position:y", MENU_ARROW_OFFSET.y, MENU_ARROW_HOVER_DURATION)
 	_menu_tutorial_arrow_hover_tween = tween
-	_update_menu_tutorial_arrow_visibility()
 
 
 func _update_menu_tutorial_arrow_visibility() -> void:
