@@ -9,6 +9,10 @@ const JOB_STOVE_KEEPER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_sto
 @onready var need_icon_mood = preload("res://assets/sprites/ui/icon_mood.png")
 @onready var need_icon_drunk = preload("res://assets/sprites/ui/icon_drunk.png")
 
+@onready var placement_icon_above_or_below = preload("res://assets/sprites/ui/2x/icon_above_and_below.png")
+@onready var placement_icon_above_ground = preload("res://assets/sprites/ui/2x/icon_above.png")
+@onready var placement_icon_below_ground = preload("res://assets/sprites/ui/2x/icon_below_ground.png")
+
 
 enum Items {
 	BEER_BARREL,
@@ -32,6 +36,12 @@ enum RoomType {
 	BEVERAGES,
 	SAFETY,
 	ENTERTAINMENT,
+}
+
+enum PlacementLimit {
+	ABOVE_OR_BELOW,
+	ABOVE_GROUND,
+	BELOW_GROUND,
 }
 
 enum Jobs {
@@ -141,6 +151,16 @@ enum FireRate {
 	MEDIUM,
 	FAST,
 }
+func placement_limit_to_icon(limit : Enum.PlacementLimit) -> Texture:
+	match limit:
+		Enum.PlacementLimit.ABOVE_OR_BELOW:
+			return Enum.placement_icon_above_or_below
+		Enum.PlacementLimit.ABOVE_GROUND:
+			return Enum.placement_icon_above_ground
+		Enum.PlacementLimit.BELOW_GROUND:
+			return Enum.placement_icon_below_ground
+	return Enum.placement_icon_above_or_below
+
 static func need_to_icon(need : Enum.Need) -> Texture:
 	match need:
 		Enum.Need.ENERGY:

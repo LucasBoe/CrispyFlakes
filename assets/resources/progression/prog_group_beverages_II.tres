@@ -4,13 +4,11 @@
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_destillery.tres" id="2_destillery"]
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_aging_cellar.tres" id="3_aging_cellar"]
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_bar_whiskey.tres" id="4_whiskey_bar"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_brewery_beer_bar.tres" id="5_dep"]
-[ext_resource type="Texture2D" path="res://assets/sprites/ui/room_destillery_preview.png" id="6_sprite"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_beverages_I.tres" id="5_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-sprite = ExtResource("6_sprite")
-display_name = "Destillery / Aging Cellar / Whiskey Bar"
-description = "Distill, age, and serve stronger drinks once the beer line is established."
-unlocks_rooms = [ExtResource("2_destillery"), ExtResource("3_aging_cellar"), ExtResource("4_whiskey_bar")]
+display_name = "Beverages II."
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_destillery"), ExtResource("3_aging_cellar"), ExtResource("4_whiskey_bar")])
 depends_on = ExtResource("5_dep")

@@ -12,6 +12,7 @@ produces_item = true
 produced_item_type = 3
 produced_item_name = "Water"
 room_name = "Well"
+placement_limit = 1
 room_desc = "fetch water here"
 room_preview = ExtResource("3_60cnm")
 construction_price = 20

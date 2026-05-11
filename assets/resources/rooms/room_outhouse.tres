@@ -10,6 +10,7 @@ packed_scene = ExtResource("1_yl5fg")
 is_outdoor = true
 money_capacity = 20
 room_name = "Outhouse"
+placement_limit = 1
 room_desc = "guests relieve themselves here"
 room_preview = ExtResource("2_ayx33")
 construction_price = 10

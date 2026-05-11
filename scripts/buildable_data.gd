@@ -3,6 +3,7 @@ class_name BuildableData
 
 @export var room_name: String
 @export var room_type: Enum.RoomType = Enum.RoomType.INFRASTRUCTURE
+@export var placement_limit: Enum.PlacementLimit = Enum.PlacementLimit.ABOVE_OR_BELOW
 @export var room_desc: String
 @export var room_icon: Texture2D
 @export var room_preview: Texture2D

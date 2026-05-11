@@ -15,8 +15,6 @@ signal dependency_requested(item: ProgressionItem)
 var _current_item: ProgressionItem = null
 var _content_tween: Tween
 var _entry_sections: Array[Control] = []
-const DONE_MARKER_DONE := preload("res://assets/sprites/ui/2x/tree_done_marker_done.png")
-const DONE_MARKER_NOT_DONE := preload("res://assets/sprites/ui/2x/tree_done_marker_not_done.png")
 
 func _ready() -> void:
 	_status_button.pressed.connect(_on_status_pressed)
@@ -88,20 +86,9 @@ func _ensure_entry_count(required_count: int) -> void:
 
 func _apply_data_to_entry(entry: Control, data, is_last: bool) -> void:
 	entry.show()
-	var preview := entry.get_node("Preview") as TextureRect
-	var marker := entry.get_node("Preview/Marker") as TextureRect
-	var name_label := entry.get_node("Header/Name") as Label
-	var price_label := entry.get_node("Header/Price") as Label
-	var desc_label := entry.get_node("Header/Desc") as RichTextLabel
-	var recipe := entry.get_node("Header/Recipe") as RoomRecipeDisplay
-
-	preview.texture = data.get_display_icon()
-	marker.texture = DONE_MARKER_DONE if ProgressionHandler.is_content_built(data) else DONE_MARKER_NOT_DONE
-	marker.show()
-	name_label.text = data.room_name
-	price_label.text = str(data.construction_price, "$")
-	desc_label.text = data.room_desc
-	recipe.show_for_data(data)
+	var info_display := entry.get_node("RoomInfoDisplay") as RoomInfoDisplay
+	info_display.show_for(data, true, ProgressionHandler.is_content_built(data))
+	entry.get_node("Divider").visible = not is_last
 
 func _refresh_status_button() -> void:
 	if _current_item == null:

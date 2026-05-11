@@ -1,0 +1,114 @@
+[gd_scene load_steps=6 format=3 uid="uid://dvvhr8rvm7o6s"]
+
+[ext_resource type="Script" uid="uid://dbn86cnxkq83s" path="res://scripts/ui/room_info_display.gd" id="1_rid"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="3_sdiyn"]
+[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="4_font"]
+[ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="5_buttons"]
+[ext_resource type="Texture2D" uid="uid://dt6r4dinburd3" path="res://assets/sprites/ui/2x/tree_done_marker_done.png" id="7_8uxjk"]
+
+[node name="RoomInfoDisplay" type="VBoxContainer"]
+script = ExtResource("1_rid")
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_constants/line_spacing = 4
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 16
+text = "Room Name"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="DescLabel" type="RichTextLabel" parent="HBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme = ExtResource("3_sdiyn")
+bbcode_enabled = true
+text = "Description"
+fit_content = true
+
+[node name="Recipe" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ConsumedIcon" type="TextureRect" parent="HBoxContainer/VBoxContainer/Recipe"]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="ArrowLabel" type="Label" parent="HBoxContainer/VBoxContainer/Recipe"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_sdiyn")
+text = ">"
+vertical_alignment = 1
+
+[node name="ProducedIcon" type="TextureRect" parent="HBoxContainer/VBoxContainer/Recipe"]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="PriceLabel" type="Label" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_sdiyn")
+theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
+vertical_alignment = 2
+
+[node name="PlacementLimit" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer/VBoxContainer/PlacementLimit"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="LimitLabel" type="Label" parent="HBoxContainer/VBoxContainer/PlacementLimit"]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_sdiyn")
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="NinePatchRect" type="NinePatchRect" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("5_buttons")
+region_rect = Rect2(17, 1, 6, 6)
+patch_margin_left = 3
+patch_margin_top = 3
+patch_margin_right = 3
+patch_margin_bottom = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 1
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 1
+theme_override_constants/margin_bottom = 1
+
+[node name="PreviewTextureRect" type="TextureRect" parent="HBoxContainer/MarginContainer/MarginContainer"]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="Marker" type="TextureRect" parent="HBoxContainer/MarginContainer/MarginContainer/PreviewTextureRect"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -33.0
+offset_bottom = -33.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_8uxjk")
+stretch_mode = 6

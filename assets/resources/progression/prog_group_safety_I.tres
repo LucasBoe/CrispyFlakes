@@ -4,13 +4,11 @@
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_safe.tres" id="2_safe"]
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_bouncer.tres" id="3_bouncer"]
 [ext_resource type="Resource" path="res://assets/resources/rooms/room_prison.tres" id="4_prison"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_broom_storage_outhouse.tres" id="5_dep"]
-[ext_resource type="Texture2D" path="res://assets/sprites/room_safe_preview.png" id="6_sprite"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_II.tres" id="5_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-sprite = ExtResource("6_sprite")
-display_name = "Safe / Bouncer / Prison"
-description = "Security and money handling open up from the same support branch."
-unlocks_rooms = [ExtResource("2_safe"), ExtResource("3_bouncer"), ExtResource("4_prison")]
+display_name = "Safety I."
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_safe"), ExtResource("3_bouncer"), ExtResource("4_prison")])
 depends_on = ExtResource("5_dep")

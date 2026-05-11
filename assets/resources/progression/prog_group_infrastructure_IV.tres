@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_water_tower.tres" id="2_water_tower"]
+[ext_resource type="Resource" path="res://assets/resources/infrastructure/infrastructure_water_pipe.tres" id="3_pipes"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_toilet.tres" id="4_toilet"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_beverages_I.tres" id="5_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="7_infrastructuredata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Infrastructure IV."
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_water_tower"), ExtResource("4_toilet")])
+unlocks_infrastructure_list = Array[ExtResource("7_infrastructuredata")]([ExtResource("3_pipes")])
+depends_on = ExtResource("5_dep")

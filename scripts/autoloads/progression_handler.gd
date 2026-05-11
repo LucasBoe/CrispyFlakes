@@ -6,14 +6,21 @@ signal item_unlocked(item: ProgressionItem)
 signal item_completed(item: ProgressionItem)
 
 const ALL_ITEMS := [
-	preload("res://assets/resources/progression/prog_group_tables_water_bar_stairs.tres"),
-	preload("res://assets/resources/progression/prog_group_broom_storage_outhouse.tres"),
-	preload("res://assets/resources/progression/prog_group_brewery_beer_bar.tres"),
-	preload("res://assets/resources/progression/prog_group_card_hall_piano_bunkhouse_horse_post.tres"),
-	preload("res://assets/resources/progression/prog_group_safe_bouncer_prison.tres"),
-	preload("res://assets/resources/progression/prog_group_stove_trade_office.tres"),
-	preload("res://assets/resources/progression/prog_group_destillery_aging_cellar_whiskey_bar.tres"),
-	preload("res://assets/resources/progression/prog_group_water_tower_pipes_toilet.tres"),
+	preload("res://assets/resources/progression/prog_group_starter.tres"),
+	preload("res://assets/resources/progression/prog_group_infrastructure_I.tres"),
+	preload("res://assets/resources/progression/prog_group_infrastructure_II.tres"),
+	preload("res://assets/resources/progression/prog_group_infrastructure_III.tres"),
+	preload("res://assets/resources/progression/prog_group_infrastructure_IV.tres"),
+	preload("res://assets/resources/progression/prog_group_infrastructure_V.tres"),
+	preload("res://assets/resources/progression/prog_group_beverages_I.tres"),
+	preload("res://assets/resources/progression/prog_group_beverages_II.tres"),
+	preload("res://assets/resources/progression/prog_group_beverages_III.tres"),
+	preload("res://assets/resources/progression/prog_group_beverages_IV.tres"),
+	preload("res://assets/resources/progression/prog_group_entertainment_I.tres"),
+	preload("res://assets/resources/progression/prog_group_entertainment_II.tres"),
+	preload("res://assets/resources/progression/prog_group_safety_I.tres"),
+	preload("res://assets/resources/progression/prog_group_safety_II.tres"),
+	preload("res://assets/resources/progression/prog_group_safety_III.tres"),
 ]
 
 var _all_items: Array[ProgressionItem] = []

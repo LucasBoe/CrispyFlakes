@@ -7,15 +7,7 @@ const LOCK_ICON = preload("res://assets/sprites/ui/icon_locked.png")
 @onready var room_tier_dummy : Control = $MarginContainer/GridContainer/RoomTierDummy
 
 @onready var hover_info_room_box_root = $UIRoomHoverInfo
-@onready var hover_info_room_name_label : Label = %RoomBuildHoverInfoNameLabel
-@onready var hover_info_room_desc_label : RichTextLabel = %RoomBuildHoverInfoDescLabel
-@onready var hover_info_room_price_label : Label = %RoomBuildHoverInfoPriceLabel
-@onready var hover_info_room_preview_texture_rect : TextureRect = %RoomBuildHoverInfoRoomPreviewTextureRect
-@onready var hover_info_room_consumed_texture_rect : TextureRect = %RoomBuildHoverInfoConsumedTextureRect
-@onready var hover_info_room_arrow_label : Label = %RoomBuildHoverInfoArrowLabel
-@onready var hover_info_room_item_texture_rect : TextureRect = %RoomBuildHoverInfoItemTextureRect
-
-const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
+@onready var _hover_info: RoomInfoDisplay = %RoomBuildHoverInfo
 
 var groups = {}
 
@@ -59,12 +51,12 @@ func _ready():
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	hover_info_room_box_root.hide()
-	hover_info_room_desc_label.bbcode_enabled = true
+
 	_refresh_button_availability()
 
-func create_button(groups : Dictionary, data : BuildableData, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
+func create_button(room_groups : Dictionary, data : BuildableData, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
 
-	var group = groups[data.room_type]
+	var group = room_groups[data.room_type]
 	var tier = 0
 	while group.tiers.size() <= tier:
 		group.create_new_tier_dummy(room_tier_dummy)
@@ -82,6 +74,15 @@ func create_button(groups : Dictionary, data : BuildableData, custom_placement_c
 	instance.mouse_exited.connect(_on_hover_exit.bind(instance, data))
 	instance.show()
 	instance.add_child(_create_locked_overlay())
+
+	var placement_icon := instance.get_node_or_null("PlacementLimitIcon") as TextureRect
+	if placement_icon and data is RoomData:
+		var limit: Enum.PlacementLimit = data.placement_limit
+		if limit == Enum.PlacementLimit.ABOVE_OR_BELOW:
+			placement_icon.hide()
+		else:
+			placement_icon.texture = Enum.placement_limit_to_icon(limit)
+			placement_icon.show()
 
 	if not group.button_instances.has(tier):
 		group.button_instances[tier] = []
@@ -106,7 +107,7 @@ func _refresh_desc(data):
 		var unlock_text := _get_unlock_text(data)
 		if unlock_text != "":
 			description += "\n[color=#ff8f5a]%s[/color]" % unlock_text
-	hover_info_room_desc_label.text = description
+	_hover_info.set_desc(description)
 
 func _count_buildable(data) -> int:
 	if data is InfrastructureData:
@@ -114,29 +115,8 @@ func _count_buildable(data) -> int:
 	return Building.count_rooms_by_data(data)
 
 func _on_hover_enter(button : Button, data):
-	hover_info_room_name_label.text = data.room_name
+	_hover_info.show_for(data)
 	_refresh_desc(data)
-	hover_info_room_price_label.text = str(data.construction_price, "$")
-	hover_info_room_preview_texture_rect.texture = data.room_preview
-
-	var recipe_row = hover_info_room_item_texture_rect.get_parent()
-	if data is RoomData:
-		recipe_row.visible = data.produces_item or data.has_consumed_item or data.produces_money
-		hover_info_room_consumed_texture_rect.visible = data.has_consumed_item
-		hover_info_room_arrow_label.visible = data.has_consumed_item and (data.produces_item or data.produces_money)
-		if data.has_consumed_item:
-			hover_info_room_consumed_texture_rect.texture = Item.get_info(data.consumed_item_type).Tex
-		hover_info_room_item_texture_rect.visible = data.produces_item or data.produces_money
-		if data.produces_item:
-			hover_info_room_item_texture_rect.texture = Item.get_info(data.produced_item_type).Tex
-		elif data.produces_money:
-			var coin_tex = AtlasTexture.new()
-			coin_tex.atlas = _COIN_ATLAS
-			coin_tex.region = Rect2(0, 0, 8, 8)
-			hover_info_room_item_texture_rect.texture = coin_tex
-	else:
-		recipe_row.hide()
-
 	last_hover = data
 	hover_info_room_box_root.show()
 	return

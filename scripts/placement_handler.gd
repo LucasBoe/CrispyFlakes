@@ -130,6 +130,7 @@ func _input(event):
 	var mouse = get_global_mouse_position()
 	location = Building.round_room_index_from_global_position(mouse)
 	var validation_location := location
+	var has_wrong_placement_category = false
 
 	if _is_building_room():
 		landed_location = _get_landed_location(location)
@@ -165,6 +166,16 @@ func _input(event):
 				var ground_room = Building.get_room_from_index(Vector2i(validation_location.x + col, 0))
 				if ground_room is RoomOutsideBase:
 					has_valid_target = false
+
+		match building_data.placement_limit:
+			Enum.PlacementLimit.ABOVE_GROUND:
+				if validation_location.y < 0:
+					has_valid_target = false
+					has_wrong_placement_category = true
+			Enum.PlacementLimit.BELOW_GROUND:
+				if validation_location.y >= 0:
+					has_valid_target = false
+					has_wrong_placement_category = true
 	else:
 		landed_location = location
 		has_valid_target = Building.infrastructure.can_place(infrastructure_data, validation_location)
@@ -247,7 +258,8 @@ func _input(event):
 			if not has_valid_target:
 				if previous_notification:
 					UiNotifications.try_kill(previous_notification)
-				previous_notification = UiNotifications.create_notification_static("target invalid", mouse, load("res://assets/sprites/ui/icon_exclaimation.png"),  Color.RED)
+				var icon = Enum.placement_limit_to_icon(building_data.placement_limit) if has_wrong_placement_category else load("res://assets/sprites/ui/icon_exclaimation.png")
+				previous_notification = UiNotifications.create_notification_static("target invalid", mouse, icon, Color.RED)
 				print("target invalid")
 			elif not has_money:
 				if previous_notification:

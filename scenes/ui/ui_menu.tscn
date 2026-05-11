@@ -1,9 +1,11 @@
-[gd_scene load_steps=33 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=35 format=3 uid="uid://848oy1tnfobv"]
 
+[ext_resource type="PackedScene" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
 [ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="16_p76uh"]
+[ext_resource type="Texture2D" uid="uid://cttfscjrt71ue" path="res://assets/sprites/ui/2x/icon_above_and_below.png" id="17_7i02h"]
 [ext_resource type="Texture2D" uid="uid://br2d8r00vl7bg" path="res://assets/sprites/ui/2x/ui_rect_base_open_right.png" id="18_p76uh"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
@@ -276,6 +278,16 @@ icon = ExtResource("16_p76uh")
 icon_alignment = 1
 expand_icon = true
 
+[node name="PlacementLimitIcon" type="TextureRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer/ButtonDummy"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 16.0
+offset_bottom = 16.0
+scale = Vector2(0.5, 0.5)
+mouse_filter = 2
+texture = ExtResource("17_7i02h")
+
 [node name="LockedOverlay" type="Control" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy"]
 layout_mode = 2
 
@@ -340,93 +352,9 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer"]
-layout_mode = 2
-
-[node name="RoomBuildHoverInfoNameLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
+[node name="RoomBuildHoverInfo" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer" instance=ExtResource("room_info_display")]
 unique_name_in_owner = true
 layout_mode = 2
-theme = ExtResource("22_hpv7r")
-theme_override_constants/line_spacing = 4
-theme_override_fonts/font = ExtResource("29_1f2rr")
-theme_override_font_sizes/font_size = 16
-text = "Room Name"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="RoomBuildHoverInfoDescLabel" type="RichTextLabel" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 0)
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "This room is cool! "
-fit_content = true
-
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="RoomBuildHoverInfoConsumedTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-stretch_mode = 5
-
-[node name="RoomBuildHoverInfoArrowLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-size_flags_vertical = 3
-theme = ExtResource("22_hpv7r")
-text = ">"
-vertical_alignment = 2
-
-[node name="RoomBuildHoverInfoItemTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-texture = ExtResource("19_v28my")
-stretch_mode = 5
-
-[node name="RoomBuildHoverInfoPriceLabel" type="Label" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-theme = ExtResource("22_hpv7r")
-theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
-text = "300$"
-vertical_alignment = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_vertical = 4
-
-[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
-layout_mode = 2
-texture = ExtResource("21_6ravm")
-region_rect = Rect2(17, 1, 6, 6)
-patch_margin_left = 3
-patch_margin_top = 3
-patch_margin_right = 3
-patch_margin_bottom = 3
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 1
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_right = 1
-theme_override_constants/margin_bottom = 1
-
-[node name="RoomBuildHoverInfoRoomPreviewTextureRect" type="TextureRect" parent="MarginContainer/UIBuild/UIRoomHoverInfo/MarginContainer/MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/MarginContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 2
-texture = ExtResource("55_nmmsk")
-stretch_mode = 4
 
 [node name="PixelLine" type="Node2D" parent="MarginContainer/UIBuild/UIRoomHoverInfo"]
 visible = false

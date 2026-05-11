@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://5cq8vewjg6nc"]
+[gd_scene load_steps=16 format=3 uid="uid://5cq8vewjg6nc"]
 
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="1_7tuwu"]
 [ext_resource type="Script" uid="uid://c880icutpyv75" path="res://scripts/ui/ui_pan_canvas.gd" id="2_pancv"]
@@ -8,13 +8,11 @@
 [ext_resource type="Script" uid="uid://dcre7i7a7ws1g" path="res://scripts/ui/progression_sidebar.gd" id="5_side"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="6_theme"]
 [ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="8_vbm7x"]
-[ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="9_3w53k"]
 [ext_resource type="FontFile" uid="uid://dxvppgh8cwsj6" path="res://assets/fonts/Dico.ttf" id="9_fwnd1"]
 [ext_resource type="Texture2D" uid="uid://dowrpukem0x38" path="res://assets/sprites/ui/2x/tree_cost_rect_frame.png" id="9_rck2a"]
 [ext_resource type="Script" uid="uid://dxmton66x401y" path="res://scripts/ui/content_sized_button.gd" id="10_size_btn"]
 [ext_resource type="Texture2D" uid="uid://cc25qv8cwb5cw" path="res://assets/sprites/ui/x_8x8.png" id="11_close"]
-[ext_resource type="Texture2D" uid="uid://btwsaje1fecqq" path="res://assets/sprites/ui/2x/tree_done_marker_not_done.png" id="13_not_done"]
-[ext_resource type="Script" uid="uid://8hfkx4li5sky" path="res://scripts/ui/room_recipe_display.gd" id="recipe_display"]
+[ext_resource type="PackedScene" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fwnd1"]
 shader = ExtResource("3_ly0o3")
@@ -175,69 +173,16 @@ theme = ExtResource("6_theme")
 layout_mode = 2
 autowrap_mode = 2
 
-[node name="EntryDummy" type="HBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection"]
+[node name="EntryDummy" type="VBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection"]
 layout_mode = 2
 theme = ExtResource("6_theme")
 
-[node name="Preview" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy"]
-custom_minimum_size = Vector2(72, 72)
-layout_mode = 2
-texture = ExtResource("9_3w53k")
-stretch_mode = 5
-
-[node name="Marker" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Preview"]
-layout_mode = 1
-offset_left = 3.0
-offset_top = 3.0
-offset_right = 18.0
-offset_bottom = 18.0
-texture = ExtResource("13_not_done")
-
-[node name="Header" type="VBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy"]
+[node name="RoomInfoDisplay" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy" instance=ExtResource("room_info_display")]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Name" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header"]
-custom_minimum_size = Vector2(0, 12)
+[node name="Divider" type="HSeparator" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("8_vbm7x")
-theme_override_font_sizes/font_size = 8
-text = "Room"
-vertical_alignment = 2
-
-[node name="Desc" type="RichTextLabel" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header"]
-layout_mode = 2
-size_flags_vertical = 3
-text = "Description"
-fit_content = true
-autowrap_mode = 2
-
-[node name="Price" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.89411765, 0.19607843, 1)
-text = "0$"
-
-[node name="Recipe" type="HBoxContainer" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header"]
-layout_mode = 2
-script = ExtResource("recipe_display")
-
-[node name="ConsumedIcon" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header/Recipe"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-stretch_mode = 5
-
-[node name="ArrowLabel" type="Label" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header/Recipe"]
-layout_mode = 2
-size_flags_vertical = 3
-theme = ExtResource("6_theme")
-text = ">"
-vertical_alignment = 1
-
-[node name="ProducedIcon" type="TextureRect" parent="MarginContainer/SidePanel/Margin/VBox/RoomScroll/RoomSection/EntryDummy/Header/Recipe"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-stretch_mode = 5
 
 [node name="BuyButton" type="Button" parent="MarginContainer/SidePanel/Margin/VBox"]
 layout_mode = 2

@@ -10,6 +10,7 @@ packed_scene = ExtResource("1_roomscene")
 money_capacity = 0
 room_name = "Bouncer Post"
 room_type = 2
+placement_limit = 1
 room_desc = "stations bouncers to stop fights"
 room_preview = ExtResource("3_roompreview")
 construction_price = 150

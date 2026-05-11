@@ -8,18 +8,11 @@ enum ProgressionFlag {
 	STABLES,
 }
 
-@export var sprite: Texture2D
 @export var display_name: String
 @export_multiline var description: String = ""
 
 ## Optional: global flags set to true when this group becomes available
 @export var unlocks_flags: Array[ProgressionFlag] = []
-
-## Legacy single-room field kept for old resources; new group logic uses unlocks_rooms.
-@export var unlocks_room: RoomData
-
-## Legacy single-infrastructure field kept for old resources; new group logic uses unlocks_infrastructure_list.
-@export var unlocks_infrastructure: InfrastructureData
 
 ## Optional: group contents that become buildable when this item is unlocked
 @export var unlocks_rooms: Array[RoomData] = []
@@ -32,22 +25,10 @@ enum ProgressionFlag {
 @export var required_items: Array[ProgressionItem] = []
 
 func get_unlocked_rooms() -> Array[RoomData]:
-	var rooms: Array[RoomData] = []
-	if unlocks_room != null:
-		rooms.append(unlocks_room)
-	for room in unlocks_rooms:
-		if room != null and not rooms.has(room):
-			rooms.append(room)
-	return rooms
+	return unlocks_rooms
 
 func get_unlocked_infrastructure() -> Array[InfrastructureData]:
-	var infrastructure_items: Array[InfrastructureData] = []
-	if unlocks_infrastructure != null:
-		infrastructure_items.append(unlocks_infrastructure)
-	for data in unlocks_infrastructure_list:
-		if data != null and not infrastructure_items.has(data):
-			infrastructure_items.append(data)
-	return infrastructure_items
+	return unlocks_infrastructure_list
 
 func get_required_items() -> Array[ProgressionItem]:
 	var items: Array[ProgressionItem] = []

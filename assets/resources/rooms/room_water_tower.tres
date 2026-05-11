@@ -10,6 +10,7 @@ script = ExtResource("2_roomdata")
 packed_scene = ExtResource("1_scene")
 is_outdoor = true
 room_name = "Water Tower"
+placement_limit = 1
 room_desc = "safely store water for workers and connected rooms"
 room_icon = ExtResource("2_h0jvj")
 room_preview = ExtResource("3_h0jvj")

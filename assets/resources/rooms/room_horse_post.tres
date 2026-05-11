@@ -9,6 +9,7 @@ script = ExtResource("1_hpost")
 packed_scene = ExtResource("2_hpost")
 is_outdoor = true
 room_name = "Horse Post"
+placement_limit = 1
 room_desc = "tie up guest horses"
 room_preview = ExtResource("3_ko88o")
 construction_price = 20

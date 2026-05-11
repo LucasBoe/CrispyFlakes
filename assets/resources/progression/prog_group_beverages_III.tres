@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bdx3rar4y8tkm" path="res://assets/resources/progression/prog_group_infrastructure_III.tres" id="2_dep"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Beverages III."
+depends_on = ExtResource("2_dep")
