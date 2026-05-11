@@ -1,0 +1,44 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="1_cloud"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_smoke"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_smoke"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0.85, 0.85, 0.85, 0.95, 0.65, 0.65, 0.65, 0.65, 0.35, 0.35, 0.35, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_smoke"]
+gradient = SubResource("Gradient_smoke")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_smoke"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(14, 1, 0)
+direction = Vector3(0, -1, 0)
+spread = 65.0
+initial_velocity_min = 4.0
+initial_velocity_max = 14.0
+gravity = Vector3(0, -6, 0)
+angular_velocity_min = -35.0
+angular_velocity_max = 35.0
+scale_min = 0.65
+scale_max = 1.25
+color_initial_ramp = SubResource("GradientTexture1D_smoke")
+anim_speed_min = 1.0
+anim_speed_max = 1.0
+
+[node name="FireExtinguishSmokeParticles" type="GPUParticles2D"]
+texture_filter = 1
+z_index = 720
+material = SubResource("CanvasItemMaterial_smoke")
+amount = 12
+texture = ExtResource("1_cloud")
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.85
+process_material = SubResource("ParticleProcessMaterial_smoke")

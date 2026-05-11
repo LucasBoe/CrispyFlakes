@@ -153,11 +153,54 @@ func create_npc_health_bar(npc: NPC, color: Color) -> instance_info:
 	bar.add_theme_stylebox_override("fill", fill_style)
 	return i
 
+func create_world_progress_bar(target: Node2D, offset: Vector2, color: Color, size := Vector2(28.0, 3.0)) -> instance_info:
+	var bar := Control.new()
+	bar.z_index = 3960
+	bar.custom_minimum_size = Vector2.ZERO
+	bar.size = size
+
+	var background := ColorRect.new()
+	background.name = "Background"
+	background.color = Color(0.0, 0.0, 0.0, 0.75)
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	background.size = size
+	bar.add_child(background)
+
+	var fill := ColorRect.new()
+	fill.name = "Fill"
+	fill.color = color
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fill.size = size
+	bar.add_child(fill)
+
+	_world_layer.add_child(bar)
+
+	var i := instance_info.new()
+	i.instance = bar
+	i.target_object = target
+	i.offset = offset
+	i.is_permanent = true
+	i.lifetime_left = INF
+	instances.append(i)
+	return i
+
 func update_npc_health_bar(i : instance_info, health_value : float):
 	if not i or not i.instance:
 		return
 	var bar := i.instance.get_node("ProgressBar") as ProgressBar
 	bar.value = health_value
+
+func update_progress_bar(i: instance_info, value: float) -> void:
+	if not i or not i.instance:
+		return
+	var bar := i.instance as Control
+	if bar == null:
+		return
+	var fill := bar.get_node_or_null("Fill") as ColorRect
+	if fill == null:
+		return
+	var clamped_value := clampf(value, 0.0, 1.0)
+	fill.size = Vector2(bar.size.x * clamped_value, bar.size.y)
 
 func _process(delta):
 	speechbubbe_dummy.global_position = get_global_mouse_position() - speechbubbe_dummy.pivot_offset

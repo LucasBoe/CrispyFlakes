@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" uid="uid://wwgx7vloef3h" path="res://assets/sprites/fire_glow_overlay.png" id="1_glow"]
+[ext_resource type="Material" uid="uid://dfa4jw2438l1m" path="res://assets/materials/mat_light_overlay.tres" id="2_light_mat"]
+
+[node name="FireLightOverlay" type="Sprite2D"]
+texture_filter = 1
+z_index = 2100
+material = ExtResource("2_light_mat")
+texture = ExtResource("1_glow")
+offset = Vector2(0, -24)
