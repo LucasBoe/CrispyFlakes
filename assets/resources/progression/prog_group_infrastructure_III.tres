@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://bdx3rar4y8tkm"]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3 uid="uid://duhe4p6ck78lx"]
 
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://cstov3rm0s002" path="res://assets/resources/rooms/room_stove.tres" id="2_stove"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_jimiy"]
 [ext_resource type="Resource" uid="uid://bucf8au433od2" path="res://assets/resources/rooms/room_trading_office.tres" id="3_trade_office"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_beverages_I.tres" id="4_dep"]
+[ext_resource type="Resource" uid="uid://dro3dltsw8y5d" path="res://assets/resources/progression/prog_group_beverages_I.tres" id="4_dep"]
 [ext_resource type="Resource" uid="uid://csaloonrtres1" path="res://assets/resources/rooms/room_saloon.tres" id="5_saloon"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 

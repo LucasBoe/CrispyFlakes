@@ -22,6 +22,7 @@ var participants = []
 var target_mapping : Dictionary[NPC, NPC] = {}
 var fight_positions: Dictionary = {}  # Dictionary[NPC, Vector2]
 var last_attack : Dictionary[NPC, float] = {}
+var pending_attacks : Dictionary[NPC, Dictionary] = {}
 var health_bars := {}
 var room : RoomBase
 var highlight
@@ -36,7 +37,8 @@ var is_over: bool = false
 const DRUNK_FIGHT_BOUNTY: int = 2
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
-const MELEE_DAMAGE: float = 0.2
+const MELEE_DAMAGE_DELAY: float = 0.25
+const MELEE_DAMAGE: float = 0.12
 const MELEE_ARRIVE_THRESHOLD: float = 2.0
 
 func get_active_participants() -> Array:
@@ -105,6 +107,10 @@ func start_fight():
 
 func handle_fight():
 	var active_participants := get_active_participants()
+	_cleanup_inactive_participants(active_participants)
+	_apply_pending_attacks(active_participants)
+	_check_for_knockouts()
+	active_participants = get_active_participants()
 	_cleanup_inactive_participants(active_participants)
 
 	if _try_resolve(active_participants):
@@ -183,6 +189,9 @@ func _hold_position_for_attack(participant: NPC) -> void:
 		participant.Navigation.stop_navigation()
 
 func _try_attack(attacker: NPC, target: NPC) -> void:
+	if pending_attacks.has(attacker):
+		return
+
 	var last_attack_time := float(last_attack.get(attacker, -MELEE_ATTACK_SPEED))
 	var time_since_last_attack := Global.time_now - last_attack_time
 	if time_since_last_attack < MELEE_ATTACK_SPEED:
@@ -192,22 +201,49 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 	if target_behaviour == null:
 		return
 
-	var damage := _get_attack_damage(attacker, target)
-	target.energy = maxf(0.0, target.energy - damage)
 	last_attack[attacker] = Global.time_now
-	SoundPlayer.play_punch(attacker.global_position)
-	if target.energy <= 0.0:
-		_debug("hit KO %s -> %s damage=%.2f active_before_cleanup=%s" % [
-			_npc_debug(attacker),
-			_npc_debug(target),
-			damage,
-			_participants_debug(get_active_participants()),
-		])
+	pending_attacks[attacker] = {
+		"target": target,
+		"damage": _get_attack_damage(attacker, target),
+		"apply_time": Global.time_now + MELEE_DAMAGE_DELAY,
+	}
 
-	var target_target := target_mapping.get(target) as NPC
-	if target_target != attacker and _get_fight_behaviour(target) != null:
-		target_mapping[target] = attacker
-		_compute_fight_positions(target, attacker)
+func _apply_pending_attacks(active_participants: Array) -> void:
+	for attacker in pending_attacks.keys():
+		var attack := pending_attacks[attacker]
+		if Global.time_now < float(attack.get("apply_time", 0.0)):
+			continue
+
+		pending_attacks.erase(attacker)
+
+		var target := attack.get("target", null) as NPC
+		if not _can_apply_pending_attack(attacker, target, active_participants):
+			continue
+
+		var damage := float(attack.get("damage", 0.0))
+		target.energy = maxf(0.0, target.energy - damage)
+		SoundPlayer.play_punch(attacker.global_position)
+		if target.energy <= 0.0:
+			_debug("hit KO %s -> %s damage=%.2f active_before_cleanup=%s" % [
+				_npc_debug(attacker),
+				_npc_debug(target),
+				damage,
+				_participants_debug(get_active_participants()),
+			])
+
+		var target_target := target_mapping.get(target) as NPC
+		if target_target != attacker and _get_fight_behaviour(target) != null:
+			target_mapping[target] = attacker
+			_compute_fight_positions(target, attacker)
+
+func _can_apply_pending_attack(attacker: NPC, target: NPC, active_participants: Array) -> bool:
+	if not is_instance_valid(attacker) or not is_instance_valid(target):
+		return false
+	if not active_participants.has(attacker) or not active_participants.has(target):
+		return false
+	if _get_fight_behaviour(attacker) == null or _get_fight_behaviour(target) == null:
+		return false
+	return true
 
 func _get_attack_damage(attacker: NPC, target: NPC) -> float:
 	var outgoing = attacker.Traits.get_melee_damage_multiplier()
@@ -225,9 +261,14 @@ func _knock_out(npc: NPC) -> void:
 	target_mapping.erase(npc)
 	fight_positions.erase(npc)
 	last_attack.erase(npc)
+	pending_attacks.erase(npc)
 	for attacker in target_mapping.keys():
 		if target_mapping[attacker] == npc:
 			target_mapping.erase(attacker)
+	for attacker in pending_attacks.keys():
+		var attack := pending_attacks[attacker]
+		if attack.get("target", null) == npc:
+			pending_attacks.erase(attacker)
 
 	if npc.Navigation != null:
 		npc.Navigation.stop_navigation()
@@ -346,6 +387,14 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 	for participant in last_attack.keys():
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			last_attack.erase(participant)
+
+	for participant in pending_attacks.keys():
+		if not is_instance_valid(participant) or not active_participants.has(participant):
+			pending_attacks.erase(participant)
+			continue
+		var target := pending_attacks[participant].get("target", null) as NPC
+		if not is_instance_valid(target) or not active_participants.has(target):
+			pending_attacks.erase(participant)
 
 	for participant in fight_positions.keys():
 		if not is_instance_valid(participant) or not active_participants.has(participant):

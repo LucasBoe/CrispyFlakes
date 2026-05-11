@@ -16,6 +16,7 @@ const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
 
 # RoomData resources
 const room_data_empty := preload("res://assets/resources/rooms/room_empty.tres")
+const room_data_digging := preload("res://assets/resources/rooms/room_digging.tres")
 const room_data_junk := preload("res://assets/resources/rooms/room_junk.tres")
 const room_data_stairs := preload("res://assets/resources/rooms/room_stairs.tres")
 const room_data_brewery := preload("res://assets/resources/rooms/room_brewery.tres")

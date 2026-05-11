@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3 uid="uid://dro3dltsw8y5d"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://bnkjwrvx7v6ic" path="res://assets/resources/rooms/room_brewery.tres" id="2_brewery"]
 [ext_resource type="Resource" uid="uid://cbeerbartres1" path="res://assets/resources/rooms/room_bar_beer.tres" id="3_beer_bar"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_vm074"]
 [ext_resource type="Resource" uid="uid://6k6avv5y1h0r" path="res://assets/resources/rooms/room_outhouse.tres" id="4_outhouse"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_starter.tres" id="5_dep"]
+[ext_resource type="Resource" uid="uid://fb2s8ocunq3y" path="res://assets/resources/progression/prog_group_starter.tres" id="5_dep"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]

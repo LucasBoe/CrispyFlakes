@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3 uid="uid://fb2s8ocunq3y"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://cq2uf15slgvuo" path="res://assets/resources/rooms/room_table.tres" id="2_tables"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="2_vspnh"]
 [ext_resource type="Resource" uid="uid://ludsn8pgd8c3" path="res://assets/resources/rooms/room_bar.tres" id="3_water_bar"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_roomdata"]
 

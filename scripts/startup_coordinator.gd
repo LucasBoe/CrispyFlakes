@@ -6,6 +6,7 @@ const GOLDEN_GLOW_SHADER := preload("res://assets/shaders/golden_glow_red_replac
 const STARTUP_WAIT_BEHAVIOUR := preload("res://scripts/npc/behaviours/startup_wait_behaviour.gd")
 const TUTORIAL_WORKER_TARGET := Vector2(-128, 0)
 const STARTUP_INITIAL_MONEY := 30
+const STARTUP_SKIP_MONEY := 70  # STARTUP_INITIAL_MONEY(30) + 4 quest rewards(10 each)
 const OUTSIDE_OVERLAY_FADE_DURATION := 1.0
 const MENU_ARROW_OFFSET := Vector2(-2, -52)
 const MENU_ARROW_HOVER_HEIGHT := 3.0
@@ -17,6 +18,7 @@ var _menu_tutorial_arrow_hover_tween: Tween
 var _menu_tutorial_arrow_material: ShaderMaterial
 var _menu_tutorial_arrow_texture: Texture2D
 var _quests
+var _tutorial_worker: NPCWorker
 var _skip_requested := false
 var _startup_content_ready := false
 var _served_startup_guests: Array[NPCGuest] = []
@@ -50,7 +52,8 @@ func _run_startup_sequence() -> void:
 
 	RoomStatusHandler.enabled = false
 	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").hide()
-	var tutorial_worker := await _spawn_tutorial_worker()	
+	_tutorial_worker = await _spawn_tutorial_worker()
+	var tutorial_worker := _tutorial_worker
 	await _fade_outside_overlay()
 	if not _skip_requested and is_instance_valid(tutorial_worker):
 		_reveal_quest_for_target(_quests.cleanup, tutorial_worker)
@@ -136,7 +139,7 @@ func _run_startup_sequence() -> void:
 			return
 		_quests.build_table.set_done()
 
-	_finish_startup(skip_layer)
+	_finish_startup(skip_layer, _skip_requested)
 
 
 func _prepare_startup_content() -> void:
@@ -517,11 +520,20 @@ func _poll_until(condition: Callable) -> bool:
 func _finish_startup_if_aborted(skip_layer: CanvasLayer, aborted: bool) -> bool:
 	if not aborted:
 		return false
-	_finish_startup(skip_layer)
+	_finish_startup(skip_layer, true)
 	return true
 
 
-func _finish_startup(skip_layer: CanvasLayer) -> void:
+func _finish_startup(skip_layer: CanvasLayer, skipped := false) -> void:
+	if skipped:
+		_set_startup_money(STARTUP_SKIP_MONEY)
+		for room in Building.query.all_rooms_of_type(RoomJunk).duplicate():
+			Building.replace_with_empty(room)
+		if is_instance_valid(_tutorial_worker):
+			_tutorial_worker.global_position = TUTORIAL_WORKER_TARGET
+			_tutorial_worker.Navigation.stop_navigation()
+			_tutorial_worker.Behaviour.clear_behaviour()
+	_tutorial_worker = null
 	_destroy_menu_tutorial_arrow()
 	Global.UI.menu.finish_tutorial_menu_gating()
 	Global.UI.selection.set_context_menu_blocked(false)

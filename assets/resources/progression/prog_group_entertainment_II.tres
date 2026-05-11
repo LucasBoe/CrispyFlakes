@@ -1,7 +1,9 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3 uid="uid://qqu1e11sw7dr"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_entertainment_I.tres" id="2_dep"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bjfelw2gycuuv" path="res://assets/resources/progression/prog_group_entertainment_I.tres" id="2_dep"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_et5o8"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_ss0gn"]
 
 [resource]
 script = ExtResource("1_script")

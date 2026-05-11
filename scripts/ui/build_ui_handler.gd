@@ -25,6 +25,7 @@ func _ready():
 		groups[t] = room_group.new(t)
 	
 	create_button(groups, Building.room_data_empty)
+	create_button(groups, Building.room_data_digging, RoomDigging.custom_placement_check)
 	create_button(groups, Building.room_data_table)
 	create_button(groups, Building.room_data_bar)
 	create_button(groups, Building.room_data_stairs)
@@ -35,6 +36,7 @@ func _ready():
 	create_button(groups, Building.room_data_bar_beer)
 	create_button(groups, Building.room_data_gambling)
 	create_button(groups, Building.room_data_entertainment)
+	create_button(groups, Building.room_data_saloon)
 	create_button(groups, Building.room_data_bed)
 	create_button(groups, Building.room_data_horse_post, RoomHorsePost.custom_placement_check)
 	create_button(groups, Building.room_data_safe)

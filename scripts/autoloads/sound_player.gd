@@ -18,6 +18,7 @@ const _CRATE_STREAM : AudioStream = preload("res://assets/sounds/sounds/crate.wa
 const _WATER_STREAM : AudioStream = preload("res://assets/sounds/sounds/water.wav")
 const _USE_WELL_STREAM : AudioStream = preload("res://assets/sounds/sounds/use_well.wav")
 const _BROOM_STREAM : AudioStream = preload("res://assets/sounds/sounds/broom.wav")
+const _DIGGING_SINGLE_STREAM : AudioStream = preload("res://assets/sounds/sounds/digging_single.wav")
 const _OUTHOUSE_DOOR_STREAM : AudioStream = preload("res://assets/sounds/sounds/outhouse_door.wav")
 const _PISS_STREAM : AudioStream = preload("res://assets/sounds/sounds/piss.wav")
 const _PUKE_STREAMS : Array[AudioStream] = [
@@ -77,6 +78,9 @@ func play_use_well(world_position: Vector2) -> void:
 
 func play_broom(world_position: Vector2) -> void:
 	_play_2d(_BROOM_STREAM, world_position, -14.0, 0.9, 1.1)
+
+func play_digging(world_position: Vector2) -> void:
+	_play_2d(_DIGGING_SINGLE_STREAM, world_position, -12.0, 0.9, 1.1)
 
 func play_outhouse_door(world_position: Vector2) -> void:
 	_play_2d(_OUTHOUSE_DOOR_STREAM, world_position, -12.0, 0.9, 1.1)
