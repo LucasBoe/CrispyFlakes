@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
+[ext_resource type="Texture2D" uid="uid://dgusj0wiwgxow" path="res://assets/sprites/ui/icon_safety.png" id="13_got3c"]
+[ext_resource type="Texture2D" uid="uid://dmwafofve5m1y" path="res://assets/sprites/ui/icon_fun.png" id="14_7bf1p"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
 [ext_resource type="Texture2D" uid="uid://b0x2lmvp36xmd" path="res://assets/sprites/ui/room_bar_wiskey_preview.png" id="16_p76uh"]
 [ext_resource type="Texture2D" uid="uid://cttfscjrt71ue" path="res://assets/sprites/ui/2x/icon_above_and_below.png" id="17_7i02h"]
@@ -25,8 +27,6 @@
 [ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
 [ext_resource type="Texture2D" uid="uid://boj3ubhrup0n1" path="res://assets/sprites/ui/icon_structure.png" id="48_mejnj"]
 [ext_resource type="Texture2D" uid="uid://c13whab821fwk" path="res://assets/sprites/ui/icon_drinking.png" id="49_3ukob"]
-[ext_resource type="Texture2D" uid="uid://bar5420knrv4c" path="res://assets/sprites/ui/icon_comfort.png" id="50_em0su"]
-[ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
 [ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="56_prog"]
 [ext_resource type="PackedScene" uid="uid://dvvhr8rvm7o6s" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
@@ -245,9 +245,9 @@ tab_0/icon = ExtResource("48_mejnj")
 tab_1/tooltip = "Drinks"
 tab_1/icon = ExtResource("49_3ukob")
 tab_2/tooltip = "Comfort"
-tab_2/icon = ExtResource("50_em0su")
+tab_2/icon = ExtResource("13_got3c")
 tab_3/tooltip = "Night"
-tab_3/icon = ExtResource("51_kjajm")
+tab_3/icon = ExtResource("14_7bf1p")
 
 [node name="RoomTierDummy" type="MarginContainer" parent="MarginContainer/UIBuild/MarginContainer/GridContainer"]
 layout_mode = 2
