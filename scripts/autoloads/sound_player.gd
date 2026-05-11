@@ -10,6 +10,8 @@ const _DEFAULT_MAX_DISTANCE := 300.0
 @onready var _treasure: CustomAudioStreamPlayer = $Treasure
 
 const _BREWERY_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/brewery_active_loop.wav")
+const _FIRE_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_loop.wav")
+const _FIRE_EXTINGUISH_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_extinguish.wav")
 const _PIANO_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/piano_loop.wav")
 const _PUNCH_STREAM : AudioStream = preload("res://assets/sounds/sounds/punch.wav")
 const _SERVE_DRINK_STREAM : AudioStream = preload("res://assets/sounds/sounds/serve_drink.wav")
@@ -57,6 +59,12 @@ func play_piano_loop(world_position: Vector2) -> AudioStreamPlayer2D:
 
 func play_brewery_loop(world_position: Vector2) -> AudioStreamPlayer2D:
 	return _play_2d(_BREWERY_LOOP_STREAM, world_position, -12.0, 1.0, 1.0, true)
+
+func play_fire_loop(world_position: Vector2) -> AudioStreamPlayer2D:
+	return _play_2d(_FIRE_LOOP_STREAM, world_position, -16.0, 1.0, 1.0, true)
+
+func play_fire_extinguish(world_position: Vector2) -> void:
+	_play_2d(_FIRE_EXTINGUISH_STREAM, world_position, 4.0, 0.95, 1.05)
 
 func play_punch(world_position: Vector2) -> void:
 	_play_2d(_PUNCH_STREAM, world_position, -12.0, 0.7, 1.3)

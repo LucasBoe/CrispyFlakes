@@ -61,6 +61,7 @@ func start_fire(room: RoomBase):
 	fire.highlight = RoomHighlighter.request_rect(room, FIRE_COLOR, 2, RoomHighlighter.Priority.FIRE)
 	_create_fire_bars(fire)
 	_create_flame_particles(fire)
+	_create_fire_sound(fire)
 	active_fires.append(fire)
 	print("[FireHandler] start fire %s" % fire.debug_label())
 	return fire
@@ -95,6 +96,7 @@ func end_fire(fire) -> void:
 	_dispose_light_overlay(fire)
 	_dispose_flame_particles(fire)
 	_dispose_spark_particles(fire)
+	_dispose_fire_sound(fire)
 	RoomHighlighter.dispose(fire.highlight)
 	fire.highlight = null
 	active_fires.erase(fire)
@@ -103,6 +105,7 @@ func apply_liquid(fire, amount: float) -> void:
 	if fire == null or not active_fires.has(fire):
 		return
 	spawn_extinguish_smoke(fire)
+	SoundPlayer.play_fire_extinguish(fire.get_position())
 	fire.apply_liquid(amount)
 	if fire.health <= 0.0:
 		end_fire(fire)
@@ -404,6 +407,18 @@ func _dispose_spark_particles(fire) -> void:
 	if is_instance_valid(fire.spark_particles):
 		fire.spark_particles.queue_free()
 	fire.spark_particles = null
+
+func _create_fire_sound(fire) -> void:
+	if fire == null or not is_instance_valid(fire.room):
+		return
+	fire.loop_sound = SoundPlayer.play_fire_loop(fire.room.get_center_floor_position())
+
+func _dispose_fire_sound(fire) -> void:
+	if fire == null:
+		return
+	if is_instance_valid(fire.loop_sound):
+		fire.loop_sound.queue_free()
+	fire.loop_sound = null
 
 func _on_room_deleted(room: RoomBase) -> void:
 	var fire = get_fire_for_room(room)

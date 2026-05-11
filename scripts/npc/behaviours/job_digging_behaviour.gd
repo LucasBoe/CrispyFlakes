@@ -2,7 +2,7 @@ extends Behaviour
 class_name JobDiggingBehaviour
 
 const DIG_DURATION := 24.0
-const DIG_SOUND_INTERVAL := 2.0
+const DIG_SOUND_INTERVAL := 1.0
 
 var room
 

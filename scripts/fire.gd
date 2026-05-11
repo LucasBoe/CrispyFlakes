@@ -14,6 +14,7 @@ var propagation_bar
 var light_overlay
 var flame_particles
 var spark_particles
+var loop_sound: AudioStreamPlayer2D
 var smoke_elapsed := 0.0
 var next_smoke_time := 0.0
 var debug_id := -1

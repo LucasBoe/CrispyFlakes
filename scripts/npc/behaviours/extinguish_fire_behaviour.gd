@@ -1,7 +1,7 @@
 extends Behaviour
 class_name ExtinguishFireBehaviour
 
-const EXTINGUISH_DURATION := 1.4
+const EXTINGUISH_DURATION := 0.1
 const LIQUID_AMOUNT := 1.0
 const EMERGENCY_MOVE_SPEED := 88.0
 

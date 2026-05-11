@@ -1,6 +1,5 @@
-[gd_scene load_steps=35 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=32 format=3 uid="uid://848oy1tnfobv"]
 
-[ext_resource type="PackedScene" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
@@ -9,7 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://br2d8r00vl7bg" path="res://assets/sprites/ui/2x/ui_rect_base_open_right.png" id="18_p76uh"]
 [ext_resource type="Texture2D" uid="uid://dqv1q736ndc8t" path="res://assets/sprites/ui/icon_trash.png" id="19_3ocru"]
 [ext_resource type="Script" uid="uid://bt4i6exj0mbf1" path="res://scripts/worker_ui_handler.gd" id="19_6ravm"]
-[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="19_v28my"]
 [ext_resource type="Script" uid="uid://pf8ijgtqvoww" path="res://scripts/ui/menu_ui_handler.gd" id="20_wvm38"]
 [ext_resource type="Texture2D" uid="uid://c4ga7js8bx21a" path="res://assets/sprites/ui/button-sheet.png" id="21_6ravm"]
 [ext_resource type="Texture2D" uid="uid://coijr2k5xejvs" path="res://assets/sprites/ui/icon_hammer.png" id="21_hpv7r"]
@@ -22,7 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://cmpryfb8pr8ql" path="res://assets/sprites/ui/notification_dot_default.png" id="26_qkkkl"]
 [ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://dnonetdv2nbtg" path="res://assets/sprites/ui/2x/arrow_up_icon.png" id="28_got3c"]
-[ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Texture2D" uid="uid://couksfqnx40ce" path="res://assets/sprites/ui/2x/progression_button_glow_overlay.png" id="30_7bf1p"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
 [ext_resource type="Script" uid="uid://bm1wp7rxa67jl" path="res://scripts/worker_ui_info.gd" id="41_pyam4"]
@@ -31,8 +28,8 @@
 [ext_resource type="Texture2D" uid="uid://bar5420knrv4c" path="res://assets/sprites/ui/icon_comfort.png" id="50_em0su"]
 [ext_resource type="Texture2D" uid="uid://dtjh7ylhceyj1" path="res://assets/sprites/ui/icon_night.png" id="51_kjajm"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
-[ext_resource type="Texture2D" uid="uid://b2moghnyvvn1k" path="res://assets/sprites/ui/room_table_preview.png" id="55_nmmsk"]
 [ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="56_prog"]
+[ext_resource type="PackedScene" uid="uid://dvvhr8rvm7o6s" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_progression_menu_glow"]
 shader = ExtResource("56_prog")
