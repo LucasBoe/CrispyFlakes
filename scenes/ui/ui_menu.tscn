@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=35 format=3 uid="uid://848oy1tnfobv"]
 
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
@@ -29,7 +29,13 @@
 [ext_resource type="Texture2D" uid="uid://c13whab821fwk" path="res://assets/sprites/ui/icon_drinking.png" id="49_3ukob"]
 [ext_resource type="Texture2D" uid="uid://cwx4mbwoi3gxd" path="res://assets/sprites/ui/icon_locked.png" id="52_3ukob"]
 [ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="56_prog"]
+[ext_resource type="Texture2D" uid="uid://boj5r54nynmtc" path="res://assets/sprites/ui/2x/glow_overlay_button_passive.png" id="57_glow"]
+[ext_resource type="Shader" uid="uid://ckfr2rh63xyc3" path="res://assets/shaders/golden_glow_overlay.gdshader" id="58_glow_shader"]
 [ext_resource type="PackedScene" uid="uid://dvvhr8rvm7o6s" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_build_button_glow"]
+shader = ExtResource("58_glow_shader")
+shader_parameter/glow_alpha = 1.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_progression_menu_glow"]
 shader = ExtResource("56_prog")
@@ -274,6 +280,23 @@ text = "1"
 icon = ExtResource("16_p76uh")
 icon_alignment = 1
 expand_icon = true
+
+[node name="NewUnlockGlowOverlay" type="NinePatchRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer/ButtonDummy"]
+visible = false
+material = SubResource("ShaderMaterial_build_button_glow")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("57_glow")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 8
+patch_margin_bottom = 8
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
 
 [node name="PlacementLimitIcon" type="TextureRect" parent="MarginContainer/UIBuild/MarginContainer/GridContainer/RoomTierDummy/MarginContainer/GridContainer/ButtonDummy"]
 layout_mode = 0

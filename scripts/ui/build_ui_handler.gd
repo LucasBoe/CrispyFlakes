@@ -13,13 +13,14 @@ var groups = {}
 
 var last_hover = null
 var data_to_button : Dictionary = {}
+var _new_unlock_data: Dictionary = {}
 
 func _ready():
 	tab_cointainer.tab_changed.connect(_on_tab_changed)
 	GlobalEventHandler.on_room_created_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
-	ProgressionHandler.item_unlocked.connect(_on_buildables_changed)
+	ProgressionHandler.item_unlocked.connect(_on_progression_item_unlocked)
 
 	for t in Enum.RoomType.values():
 		groups[t] = room_group.new(t)
@@ -102,6 +103,16 @@ func _on_buildables_changed(_changed = null):
 	if last_hover != null:
 		_refresh_desc(last_hover)
 
+func _on_progression_item_unlocked(item: ProgressionItem) -> void:
+	if item == null:
+		return
+
+	if not item.get_required_items().is_empty():
+		for room in item.get_unlocked_rooms():
+			_new_unlock_data[room] = true
+
+	_on_buildables_changed(item)
+
 func _refresh_desc(data):
 	var count: int = _count_buildable(data)
 	var description: String = data.room_desc + "\nhas: " + str(count)
@@ -117,6 +128,9 @@ func _count_buildable(data) -> int:
 	return Building.count_rooms_by_data(data)
 
 func _on_hover_enter(button : Button, data):
+	if _new_unlock_data.has(data):
+		_new_unlock_data.erase(data)
+		_refresh_button_availability()
 	_hover_info.show_for(data)
 	_refresh_desc(data)
 	last_hover = data
@@ -162,6 +176,9 @@ func _refresh_button_availability() -> void:
 		var overlay := button.get_node_or_null("LockedOverlay") as Control
 		if overlay != null:
 			overlay.visible = not unlocked
+		var new_unlock_overlay := button.get_node_or_null("NewUnlockGlowOverlay") as Control
+		if new_unlock_overlay != null:
+			new_unlock_overlay.visible = unlocked and _new_unlock_data.has(data)
 
 func _is_data_unlocked(data) -> bool:
 	if data is InfrastructureData:
