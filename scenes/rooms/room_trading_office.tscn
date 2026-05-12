@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://ia656v632ucc"]
 
-[ext_resource type="Script" path="res://scripts/room_trading_office.gd" id="1_room"]
-[ext_resource type="Texture2D" path="res://assets/sprites/back-wall.png" id="2_back"]
-[ext_resource type="Texture2D" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
-[ext_resource type="Texture2D" path="res://assets/sprites/bar_water.png" id="4_desk"]
-[ext_resource type="PackedScene" path="res://scenes/progress_bar.tscn" id="5_progress"]
+[ext_resource type="Script" uid="uid://cvkuwc6c3tj8o" path="res://scripts/room_trading_office.gd" id="1_room"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_back"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://dd4fvhmwnhva3" path="res://assets/sprites/room_trade_office.png" id="4_x08t8"]
+[ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="5_progress"]
 
 [node name="Room_TradingOffice" type="Node2D"]
 texture_filter = 1
@@ -23,8 +23,8 @@ texture = ExtResource("3_outline")
 
 [node name="Desk" type="Sprite2D" parent="."]
 z_index = -100
-position = Vector2(24, -17.5)
-texture = ExtResource("4_desk")
+position = Vector2(24.5, -15)
+texture = ExtResource("4_x08t8")
 
 [node name="ProgressBar" parent="." instance=ExtResource("5_progress")]
 visible = false
