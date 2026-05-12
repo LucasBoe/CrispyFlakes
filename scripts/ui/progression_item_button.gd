@@ -107,8 +107,10 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mouse_button_event := event as InputEventMouseButton
 		if mouse_button_event.button_index == MOUSE_BUTTON_LEFT and mouse_button_event.pressed:
+			SoundPlayer.play_ui_click_down()
 			_toggle_selected()
 		elif mouse_button_event.button_index == MOUSE_BUTTON_RIGHT and mouse_button_event.pressed:
+			SoundPlayer.play_ui_click_down()
 			secondary_clicked.emit()
 
 func _toggle_selected() -> void:

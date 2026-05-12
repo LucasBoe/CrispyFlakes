@@ -126,6 +126,7 @@ func _on_status_pressed() -> void:
 		return
 	var missing_requirement := ProgressionHandler.get_primary_missing_requirement(_current_item)
 	if missing_requirement != null:
+		SoundPlayer.play_ui_click_down()
 		dependency_requested.emit(missing_requirement)
 
 func _build_group_description(item: ProgressionItem) -> String:

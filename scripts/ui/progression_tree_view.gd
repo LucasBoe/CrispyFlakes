@@ -41,9 +41,9 @@ func _ready() -> void:
 	_spawn_buttons()
 
 	_sidebar.z_index = 2
-	_close_button.pressed.connect(hide)
-	_pan_canvas.blank_left_clicked.connect(_clear_selection)
-	_pan_canvas.blank_right_clicked.connect(_clear_selection)
+	_close_button.pressed.connect(_on_close_pressed)
+	_pan_canvas.blank_left_clicked.connect(_on_blank_left_clicked)
+	_pan_canvas.blank_right_clicked.connect(_on_blank_right_clicked)
 	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("_refresh_summary_pill_pivot")
 
@@ -60,6 +60,18 @@ func _on_item_selected(item: ProgressionItem) -> void:
 	_selected_item = item
 	_sidebar.on_item_selected(item)
 	_apply_focus_for_selection(item)
+
+func _on_blank_left_clicked() -> void:
+	SoundPlayer.play_ui_click_down()
+	_clear_selection()
+
+func _on_blank_right_clicked() -> void:
+	SoundPlayer.play_ui_click_down()
+	_clear_selection()
+
+func _on_close_pressed() -> void:
+	SoundPlayer.play_ui_click_up()
+	hide()
 
 func _clear_selection() -> void:
 	if _selected_item != null and _buttons.has(_selected_item):
