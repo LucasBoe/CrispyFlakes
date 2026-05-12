@@ -57,6 +57,11 @@ func notification_loop():
 						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
 						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomGambling:
+					var gambling := r as RoomGambling
+					if gambling.has_active_round() and not gambling.worker:
+						notify(r, "no watcher", Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomBed:
 					if (r as RoomBed).needs_cleaning and not r.worker:
 						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0

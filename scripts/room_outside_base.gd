@@ -30,7 +30,7 @@ func _register_outlined_sprite(sprite: Sprite2D) -> void:
 	sprite.material = (sprite.material as ShaderMaterial).duplicate(true)
 	_outlined_sprites.append(sprite)
 
-func set_outline(state: bool) -> void:
+func _apply_outline_state(state: bool) -> void:
 	var color: Color = Color.WHITE if state else Color.BLACK
 	for sprite in _outlined_sprites:
 		if is_instance_valid(sprite) and sprite.material is ShaderMaterial:

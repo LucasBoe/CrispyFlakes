@@ -1,0 +1,36 @@
+extends NeedBehaviour
+class_name NeedGamblingBehaviour
+
+var room: RoomGambling
+
+static func get_probability_by_needs(needs: NeedsModule) -> float:
+	return needs.satisfaction.strength * 0.25
+
+func loop():
+	_narrative = ["Looking for a game...", "Feeling lucky...", "Heading to the table..."].pick_random()
+	room = get_least_loaded_room_of_type(
+		RoomGambling,
+		func(candidate: RoomGambling): return candidate.can_join_round(),
+		func(candidate: RoomGambling): return candidate.max_guest_count - candidate.get_free_count(),
+		func(candidate: RoomGambling): return candidate.max_guest_count
+	)
+
+	if room == null:
+		await pause(2)
+		return
+
+	await move(room.get_random_floor_position())
+	var guest := npc as NPCGuest
+	if guest == null or not is_instance_valid(room):
+		return
+
+	await move(room.sit(guest))
+	if not is_instance_valid(room) or not room.is_guest_in_round(guest):
+		return
+
+	_narrative = ["Playing cards...", "Watching the draw...", "At the gambling table..."].pick_random()
+	while is_instance_valid(room) and room.is_guest_in_round(guest):
+		await end_of_frame()
+
+	if is_instance_valid(room) and room.is_guest_seated(guest):
+		room.stand_up(guest)

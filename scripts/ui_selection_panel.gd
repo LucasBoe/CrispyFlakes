@@ -66,6 +66,8 @@ var _is_satisfaction_log_expanded := true
 var _equipment_container: VBoxContainer = null
 var _storage_items_container: VBoxContainer = null
 var _storage_items_signature: Array = []
+var _gambling_container: VBoxContainer = null
+var _gambling_signature: String = ""
 var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
 var _context_menu_blocked := false
@@ -129,6 +131,7 @@ func _on_click_hovered_node_signal(node):
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
 	selected_room_highlight_instance = null
+	_clear_selected_room_outline()
 
 	if is_instance_valid(selected_npc_highlight_instance):
 		selected_npc_highlight_instance.destroy()
@@ -218,6 +221,11 @@ func _clear_instances():
 		_storage_items_container.queue_free()
 	_storage_items_container = null
 	_storage_items_signature = []
+
+	if is_instance_valid(_gambling_container):
+		_gambling_container.queue_free()
+	_gambling_container = null
+	_gambling_signature = ""
 
 	_connection_line.hide()
 
@@ -453,6 +461,11 @@ func _show_for_room(room: RoomBase):
 			)
 	elif room is not RoomJunk and room is not RoomWell:
 		room_delete_button.show()
+		if room.has_method("can_delete") and not room.can_delete():
+			room_delete_button.text = "Round Active"
+			room_delete_button.disabled = true
+		else:
+			room_delete_button.disabled = false
 		Util.disconnect_all_pressed(room_delete_button)
 		room_delete_button.pressed.connect(func():
 			Global.UI.confirm.show_dialogue(
@@ -466,6 +479,7 @@ func _show_for_room(room: RoomBase):
 		room_delete_button.hide()
 
 	selected_room_highlight_instance = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
+	room.set_outline(true, self)
 
 	var description = room.data.room_desc if room.data != null else ""
 	describtion_label.visible = description != ""
@@ -554,6 +568,9 @@ func _show_for_room(room: RoomBase):
 
 	elif room is RoomStove:
 		_update_stove_status(room as RoomStove)
+	elif room is RoomGambling:
+		_update_gambling_status(room as RoomGambling)
+		_rebuild_gambling_ui(room as RoomGambling, true)
 	elif room.associated_job != null:
 		if room.worker:
 			_show_status_row("Worker", Color.TRANSPARENT, room.worker, room.worker.character_name)
@@ -625,6 +642,192 @@ func _set_stove_status_row(text: String, color: Color, link_target = null, link_
 		btn.pressed.connect(func(): manually_select(link_target))
 	else:
 		btn.hide()
+
+func _update_gambling_status(room: RoomGambling) -> void:
+	var status_text := room.get_round_status_text()
+	var status_color := Color.TRANSPARENT
+	var link_target = null
+	var link_text := ""
+
+	if room.has_active_round():
+		if room.worker:
+			link_target = room.worker
+			link_text = room.worker.character_name
+		else:
+			status_text += ", No Watcher"
+			status_color = Color.ORANGE
+	elif room.worker:
+		link_target = room.worker
+		link_text = room.worker.character_name
+
+	_set_stove_status_row(status_text, status_color, link_target, link_text)
+	if room.worker:
+		room.worker.Tint.add_outline(Color.WHITE, 20, self)
+
+func _rebuild_gambling_ui(room: RoomGambling, force: bool = false) -> void:
+	var signature := room.get_ui_state_signature()
+	if not force and signature == _gambling_signature and is_instance_valid(_gambling_container):
+		return
+	_gambling_signature = signature
+
+	if is_instance_valid(_gambling_container):
+		_gambling_container.queue_free()
+
+	var parent := describtion_label.get_parent() as VBoxContainer
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 4)
+	parent.add_child(container)
+	parent.move_child(container, describtion_label.get_index() + 1)
+	_gambling_container = container
+
+	if room.has_active_round():
+		_add_gambling_active_ui(container, room)
+	elif not room.last_summary.is_empty():
+		_add_gambling_summary_ui(container, room)
+	else:
+		_add_gambling_host_ui(container, room)
+
+func _add_gambling_host_ui(container: VBoxContainer, room: RoomGambling) -> void:
+	var title := status_icon_label_dummy.duplicate() as Label
+	title.text = "Select Jackpot"
+	title.show()
+	container.add_child(title)
+
+	var selected_jackpot := room.selected_jackpot if RoomGambling.JACKPOT_OPTIONS.has(room.selected_jackpot) else 50
+
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	container.add_child(grid)
+
+	for jackpot in RoomGambling.JACKPOT_OPTIONS:
+		var btn := Button.new()
+		btn.theme = hire_guest_button.theme
+		btn.text = "%d$%s" % [jackpot, " *" if jackpot == selected_jackpot else ""]
+		btn.disabled = not ResourceHandler.has_money(jackpot)
+		btn.pressed.connect(func():
+			if is_instance_valid(room):
+				room.selected_jackpot = jackpot
+				_rebuild_gambling_ui(room, true)
+		)
+		grid.add_child(btn)
+
+	var estimates := room.get_estimated_revenue(selected_jackpot)
+	var estimate_label := status_icon_label_dummy.duplicate() as Label
+	estimate_label.text = "Estimated Revenue: %d$ - +%d$" % [int(estimates.worst), int(estimates.best)]
+	estimate_label.show()
+	container.add_child(estimate_label)
+
+	var loop_toggle := CheckBox.new()
+	loop_toggle.theme = hire_guest_button.theme
+	loop_toggle.text = "Loop"
+	loop_toggle.button_pressed = room.loop_enabled
+	loop_toggle.toggled.connect(func(pressed: bool):
+		if is_instance_valid(room):
+			room.set_loop_enabled(pressed)
+	)
+	container.add_child(loop_toggle)
+
+	var start_button := Button.new()
+	start_button.theme = hire_guest_button.theme
+	start_button.text = "Start Round (-%d$)" % selected_jackpot
+	start_button.disabled = not ResourceHandler.has_money(selected_jackpot)
+	start_button.pressed.connect(func():
+		if is_instance_valid(room):
+			room.start_round(selected_jackpot)
+			_rebuild_gambling_ui(room, true)
+	)
+	container.add_child(start_button)
+
+func _add_gambling_active_ui(container: VBoxContainer, room: RoomGambling) -> void:
+	var label := status_icon_label_dummy.duplicate() as Label
+	label.text = room.get_round_status_text()
+	label.show()
+	container.add_child(label)
+
+	var bar := ProgressBar.new()
+	bar.min_value = 0
+	bar.max_value = 100
+	bar.value = room.get_round_progress() * 100.0
+	bar.custom_minimum_size = Vector2(140, 10)
+	container.add_child(bar)
+
+	var watcher_label := status_icon_label_dummy.duplicate() as Label
+	watcher_label.text = room.worker.character_name if room.worker != null else "No Watcher Assigned"
+	watcher_label.add_theme_color_override("font_color", Color.WHITE if room.worker != null else Color.ORANGE)
+	watcher_label.show()
+	container.add_child(watcher_label)
+
+	var detail := status_icon_label_dummy.duplicate() as Label
+	detail.text = "Jackpot %d$, Players %d/%d" % [room.selected_jackpot, room.participants.size(), room.max_guest_count]
+	detail.show()
+	container.add_child(detail)
+
+	var loop_toggle := CheckBox.new()
+	loop_toggle.theme = hire_guest_button.theme
+	loop_toggle.text = "Loop"
+	loop_toggle.button_pressed = room.loop_enabled
+	loop_toggle.toggled.connect(func(pressed: bool):
+		if is_instance_valid(room):
+			room.set_loop_enabled(pressed)
+	)
+	container.add_child(loop_toggle)
+
+func _add_gambling_summary_ui(container: VBoxContainer, room: RoomGambling) -> void:
+	var summary := room.last_summary
+	var title := status_icon_label_dummy.duplicate() as Label
+	title.text = "Last Round Summary"
+	title.show()
+	container.add_child(title)
+
+	var gambling_revenue: int = int(summary.get("gambling_revenue", summary.revenue - summary.cheating_fees))
+	var player_count: int = int(summary.get("player_count", 0))
+	if player_count == 0 and int(summary.jackpot) > 0:
+		player_count = roundi(float(summary.player_stakes) / float(summary.jackpot))
+	_add_gambling_summary_amount_row(container, "Jackpot", gambling_revenue)
+	_add_gambling_summary_amount_row(container, "Fees", int(summary.jackpot), " x %d" % player_count)
+	_add_gambling_summary_amount_row(container, "Player Wins", -int(summary.player_payouts), " (%d)" % int(summary.player_wins))
+	_add_gambling_summary_amount_row(container, "Cheating", int(summary.cheating_fees), " (%d)" % int(summary.detected_cheats))
+	_add_gambling_summary_amount_row(container, "Revenue", int(summary.revenue), "", true)
+
+	var host_button := Button.new()
+	host_button.theme = hire_guest_button.theme
+	host_button.text = "Host New Round +"
+	host_button.disabled = not ResourceHandler.has_money(room.selected_jackpot)
+	host_button.pressed.connect(func():
+		if is_instance_valid(room):
+			room.start_round(room.selected_jackpot)
+			_rebuild_gambling_ui(room, true)
+	)
+	container.add_child(host_button)
+
+func _add_gambling_summary_amount_row(container: VBoxContainer, label_text: String, amount: int, suffix: String = "", emphasize: bool = false) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 2)
+	container.add_child(row)
+
+	var name_label := status_icon_label_dummy.duplicate() as Label
+	name_label.text = label_text
+	if emphasize:
+		name_label.add_theme_color_override("font_color", Color.WHITE)
+	name_label.show()
+	row.add_child(name_label)
+
+	var amount_label := status_icon_label_dummy.duplicate() as Label
+	amount_label.text = "%+d$" % amount
+	if amount > 0:
+		amount_label.add_theme_color_override("font_color", Color.LIGHT_GREEN)
+	elif amount < 0:
+		amount_label.add_theme_color_override("font_color", Color.SALMON)
+	amount_label.show()
+	row.add_child(amount_label)
+
+	if suffix != "":
+		var suffix_label := status_icon_label_dummy.duplicate() as Label
+		suffix_label.text = suffix
+		suffix_label.show()
+		row.add_child(suffix_label)
 
 func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true
@@ -769,7 +972,12 @@ func _on_potential_target_deleted(room):
 	if target == room:
 		do_hide()
 
+func _clear_selected_room_outline() -> void:
+	if is_instance_valid(target) and target is RoomBase:
+		target.set_outline(false, self)
+
 func do_hide():
+	_clear_selected_room_outline()
 	target = null
 	_manual_follow_offset = Vector2.ZERO
 	_follow_side = 0
@@ -984,6 +1192,13 @@ func _process(delta):
 
 	if target is RoomStove:
 		_update_stove_status(target)
+
+	if target is RoomGambling:
+		var gambling := target as RoomGambling
+		_update_gambling_status(gambling)
+		_rebuild_gambling_ui(gambling)
+		room_delete_button.text = "Round Active" if not gambling.can_delete() else "Delete Room"
+		room_delete_button.disabled = not gambling.can_delete()
 
 	if target is RoomStorageBase and is_instance_valid(_storage_items_container):
 		_refresh_storage_items(target)

@@ -9,6 +9,7 @@ var associated_job = null
 var is_outside_room = false
 var worker : NPCWorker = null
 var current_module = null
+var _outline_sources: Dictionary = {}
 
 @onready var back_wall_sprite_2d = get_node_or_null("Back-wall")
 
@@ -49,8 +50,15 @@ func _on_module_bought(module) -> void:
 		return
 	current_module = module
 
-func set_outline(state):
-	
+func set_outline(state: bool, source = null) -> void:
+	var key = source if source != null else &"default"
+	if state:
+		_outline_sources[key] = true
+	else:
+		_outline_sources.erase(key)
+	_apply_outline_state(not _outline_sources.is_empty())
+
+func _apply_outline_state(state: bool) -> void:
 	var sprite: CanvasItem = null
 	sprite = get_child(1) as CanvasItem
 	

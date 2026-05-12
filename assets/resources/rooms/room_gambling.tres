@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("2_gambl")
 packed_scene = ExtResource("1_gambl")
-money_capacity = 150
+money_capacity = 3000
 produces_money = true
 room_name = "Gambling Table"
 room_type = 3

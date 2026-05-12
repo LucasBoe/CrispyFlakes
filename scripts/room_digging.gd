@@ -51,6 +51,10 @@ static func _is_existing_basement_room(room: RoomBase) -> bool:
 static func custom_placement_check(location: Vector2i) -> bool:
 	if location.y >= 0:
 		return false
+
+	if Building.get_room_from_index(location) != null:
+		return false
+
 	var left_room := Building.get_room_from_index(location + Vector2i(-1, 0)) as RoomBase
 	var right_room := Building.get_room_from_index(location + Vector2i(1, 0)) as RoomBase
 	return _is_existing_basement_room(left_room) or _is_existing_basement_room(right_room)

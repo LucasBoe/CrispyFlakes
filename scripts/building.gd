@@ -93,6 +93,10 @@ func replace_with_empty(room: RoomBase):
 	room.destroy()
 
 func delete_room(room: RoomBase):
+	if room != null and room.has_method("can_delete") and not room.can_delete():
+		UiNotifications.create_notification_static("round active", room.get_notification_position(), null, Color.ORANGE)
+		return
+
 	if room.data != null and room.data.is_outdoor:
 		for col in room.data.width:
 			for row in room.data.height:

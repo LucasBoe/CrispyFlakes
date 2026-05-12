@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bw0njrpfeokam"
-path="res://.godot/imported/room_toilet.svg-b26994d3dcc2d7c3c86c48cbcfc6851b.ctex"
+uid="uid://bubq3w74l5vcg"
+path="res://.godot/imported/ceiling_lamp.png-8b154b3cd8627b1cc49b10497d8afd8a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/room_toilet.svg"
-dest_files=["res://.godot/imported/room_toilet.svg-b26994d3dcc2d7c3c86c48cbcfc6851b.ctex"]
+source_file="res://assets/sprites/ceiling_lamp.png"
+dest_files=["res://.godot/imported/ceiling_lamp.png-8b154b3cd8627b1cc49b10497d8afd8a.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

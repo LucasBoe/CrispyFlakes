@@ -40,6 +40,13 @@ func create_or_join_drunk_fight(guest: NPCGuest) -> void:
 		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
 	get_or_create_fight(guest)
 
+func has_drunk_fight_opportunity(guest: NPCGuest) -> bool:
+	if Global.NPCSpawner == null or not is_instance_valid(guest) or guest.is_on_horse():
+		return false
+	if _find_joinable_brawl_for_guest(guest) != null:
+		return true
+	return _has_nearby_brawl_responder(guest)
+
 func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
 	var existing := get_fight_for_room(room)
 	if existing != null:
@@ -75,6 +82,7 @@ func _process(_delta: float) -> void:
 			continue
 
 		_try_panic_gutless_near_fight(fight)
+		_try_force_hotheads_near_fight(fight)
 
 		if fight.has_started:
 			fight.handle_fight()
@@ -139,6 +147,97 @@ func _try_attract_brawlers(fight: Fight) -> bool:
 			create_or_join_drunk_fight(guest)
 			attracted = true
 	return attracted
+
+func _try_force_hotheads_near_fight(fight: Fight) -> void:
+	if Global.NPCSpawner == null or not _can_force_hotheads_to_join(fight):
+		return
+
+	var fight_position := get_fight_position(fight)
+	if fight_position == Vector2.INF:
+		return
+
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		if not _can_force_hothead_join_brawl(guest, fight, fight_position):
+			continue
+		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
+		fight.make_join_fight(guest)
+
+func _can_force_hotheads_to_join(fight: Fight) -> bool:
+	if fight == null or not is_instance_valid(fight):
+		return false
+	if fight.is_over or fight.fight_type != Fight.FightType.BRAWL:
+		return false
+	if fight.room == null:
+		return false
+	return true
+
+func _can_force_hothead_join_brawl(guest: NPCGuest, fight: Fight, fight_position: Vector2) -> bool:
+	if not is_instance_valid(guest) or guest.Traits == null:
+		return false
+	if not guest.Traits.forces_fight_response():
+		return false
+	if guest.is_on_horse() or _is_in_active_fight(guest) or fight.has_participant(guest):
+		return false
+	if not is_within_fight_detection_range(fight_position, guest.global_position):
+		return false
+	if guest.Behaviour == null:
+		return false
+
+	var current = guest.Behaviour.behaviour_instance
+	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
+		return false
+	return true
+
+func _find_joinable_brawl_for_guest(guest: NPCGuest) -> Fight:
+	for fight: Fight in active_fights:
+		if not _can_force_hotheads_to_join(fight):
+			continue
+		if fight.has_participant(guest):
+			continue
+		if is_within_fight_detection_range(get_fight_position(fight), guest.global_position):
+			return fight
+	return null
+
+func _has_nearby_brawl_responder(guest: NPCGuest) -> bool:
+	for other_guest: NPCGuest in Global.NPCSpawner.guests:
+		if _can_guest_respond_to_new_brawl(other_guest, guest):
+			return true
+	for worker: NPCWorker in Global.NPCSpawner.workers:
+		if _can_worker_respond_to_new_brawl(worker, guest.global_position):
+			return true
+	return false
+
+func _can_guest_respond_to_new_brawl(candidate: NPCGuest, initiator: NPCGuest) -> bool:
+	if not is_instance_valid(candidate) or candidate == initiator:
+		return false
+	if candidate.is_on_horse() or _is_in_active_fight(candidate):
+		return false
+	if candidate.Traits == null or candidate.Needs == null:
+		return false
+	if candidate.Traits.get_voluntary_fight_chance(candidate.Needs.drunkenness.strength) <= 0.0:
+		return false
+	if not is_within_fight_detection_range(initiator.global_position, candidate.global_position):
+		return false
+	if candidate.Behaviour == null:
+		return false
+
+	var current = candidate.Behaviour.behaviour_instance
+	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
+		return false
+	return true
+
+func _can_worker_respond_to_new_brawl(worker: NPCWorker, position: Vector2) -> bool:
+	if not is_instance_valid(worker):
+		return false
+	if not worker.should_fight_conflicts():
+		return false
+	if NPCWorker.picked_up_npc == worker:
+		return false
+	if worker.Behaviour == null or worker.Behaviour.behaviour_instance is FightBehaviour:
+		return false
+	if worker.Behaviour.behaviour_instance is KnockedOutBehaviour:
+		return false
+	return is_within_fight_detection_range(worker.global_position, position)
 
 func _try_panic_gutless_near_fight(fight: Fight) -> void:
 	if Global.NPCSpawner == null or not is_started_active_fight(fight):

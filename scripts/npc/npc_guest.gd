@@ -116,7 +116,8 @@ func get_next_behaviour():
 	if Needs.drunkenness.strength / 4 > randf():
 		return KnockedOutBehaviour
 
-	if Traits.get_voluntary_fight_chance(Needs.drunkenness.strength) > randf():
+	var voluntary_fight_chance := Traits.get_voluntary_fight_chance(Needs.drunkenness.strength)
+	if voluntary_fight_chance > randf() and (not Traits.forces_fight_response() or FightHandler.has_drunk_fight_opportunity(self)):
 		FightHandler.create_or_join_drunk_fight(self)
 		return null
 

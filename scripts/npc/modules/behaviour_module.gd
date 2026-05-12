@@ -1,6 +1,8 @@
 extends Node
 class_name BehaviourModule
 
+const NEED_GAMBLING_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_gambling_behaviour.gd")
+
 var npc: NPC
 var behaviour_instance : Behaviour = null
 var previous_data : BehaviourSaveData
@@ -45,6 +47,9 @@ func get_behaviour_from_available_rooms(all_rooms):
 
 		if room is RoomBath:
 			all.append(NeedCleaningBehaviour)
+
+		if room is RoomGambling and (room as RoomGambling).can_join_round():
+			all.append(NEED_GAMBLING_BEHAVIOUR)
 
 	if all.size() > 0:
 		return all.pick_random()

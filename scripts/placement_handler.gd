@@ -70,10 +70,16 @@ func _get_active_data():
 func _is_building_room() -> bool:
 	return build_mode == BuildMode.ROOM
 
+func _is_digging_room() -> bool:
+	return building_data == Building.room_data_digging
+
 func _should_use_above_ground_fall(target_location: Vector2i) -> bool:
 	if not _is_building_room():
 		return false
 	return not building_data.is_outdoor and target_location.y >= 0
+
+func _requires_existing_empty_basement_footprint(target_location: Vector2i) -> bool:
+	return _is_building_room() and not _is_digging_room() and target_location.y < 0
 
 func _get_tetris_y(x: int) -> int:
 	var y = 0
@@ -111,6 +117,10 @@ func _is_footprint_empty(target_location: Vector2i) -> bool:
 	for col in building_data.width:
 		for row in building_data.height:
 			var cell = Building.get_room_from_index(target_location + Vector2i(col, row))
+			if _requires_existing_empty_basement_footprint(target_location):
+				if cell is not RoomEmpty:
+					return false
+				continue
 			if cell != null and not cell is RoomEmpty:
 				return false
 	return true
