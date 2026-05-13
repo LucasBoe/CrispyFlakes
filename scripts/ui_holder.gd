@@ -3,13 +3,13 @@ class_name UIHolder
 
 @onready var tutorial: UITutorial = %UITutorial
 #@onready var room: UIRoom = $UIRoom
-@onready var resources: UIRessourceHandler = %UIResources
 @onready var money : UIMoney = %UIMoney
 @onready var dialogue: UIDialogueHandler = %UIDialogue
 #@onready var time: UITime = $UITime
 @onready var menu: MenuUIHandler = %UIMenu
 #@onready var fullscreen: UIFullscreen = $UIFullscreen
 @onready var selection :  = %UISelectionPanel
+@onready var hud: Control = $UIHUD
 @onready var controls: Control = $UIControls
 @onready var hire : UIHire = %UIFullscreen.get_node("UIHire") as UIHire
 @onready var confirm : UIConfirm = %UIFullscreen.get_node("UIConfirm") as UIConfirm

@@ -1,12 +1,10 @@
 extends Control
 class_name MenuUIHandler
 
-@onready var worker_tab = $MarginContainer/UIWorkers
 @onready var build_tab = $MarginContainer/UIBuild
 @onready var settings_tab = $MarginContainer/UISettings
 @onready var progression_tab = $MarginContainer/UIProgressionTree
 
-@onready var worker_button = $HBoxContainer/Button_Workers
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
 @onready var progression_button = $HBoxContainer/Button_Progression
@@ -21,7 +19,6 @@ var _progression_glow_material: ShaderMaterial
 var _progression_glow_tween: Tween
 
 func _ready():
-	bind_slot(worker_button, worker_tab)
 	bind_slot(build_button, build_tab)
 	bind_slot(progression_button, progression_tab)
 	bind_slot(settings_button, settings_tab)
@@ -74,9 +71,6 @@ func unlock_tutorial_progression_menu() -> void:
 
 func unlock_tutorial_build_menu() -> void:
 	_set_tutorial_tab_available(build_tab, true)
-
-func unlock_tutorial_worker_menu() -> void:
-	_set_tutorial_tab_available(worker_tab, true)
 
 func finish_tutorial_menu_gating() -> void:
 	_tutorial_menu_gating_active = false

@@ -51,7 +51,7 @@ func _run_startup_sequence() -> void:
 	var skip_layer := create_skip_tutorial_button()
 
 	RoomStatusHandler.enabled = false
-	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").hide()
+	Global.UI.hud.hide()
 	_tutorial_worker = await _spawn_tutorial_worker()
 	var tutorial_worker := _tutorial_worker
 	await _fade_outside_overlay()
@@ -93,8 +93,7 @@ func _run_startup_sequence() -> void:
 		_quests.serve_guests.start()
 
 		RoomStatusHandler.enabled = true
-		Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
-		Global.UI.resources.show()
+		Global.UI.hud.show()
 		Global.should_auto_spawn_guests = true
 
 		_reset_startup_served_guest_tracking()
@@ -538,8 +537,7 @@ func _finish_startup(skip_layer: CanvasLayer, skipped := false) -> void:
 	Global.UI.menu.finish_tutorial_menu_gating()
 	Global.UI.selection.set_context_menu_blocked(false)
 	RoomStatusHandler.enabled = true
-	Global.UI.resources.get_node("HBoxContainer/UIVisitorInfo").show()
-	Global.UI.resources.show()
+	Global.UI.hud.show()
 	Global.should_auto_spawn_guests = true
 	Global.UI.controls.hide()
 	if is_instance_valid(skip_layer):

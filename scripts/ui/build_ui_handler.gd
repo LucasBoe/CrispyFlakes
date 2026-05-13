@@ -51,6 +51,8 @@ func _ready():
 	create_button(groups, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(groups, Building.room_data_toilet)
 	create_button(groups, Building.room_data_bath)
+	create_button(groups, Building.room_data_infirmary)
+	create_button(groups, Building.room_data_sick_ward)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	hover_info_room_box_root.hide()

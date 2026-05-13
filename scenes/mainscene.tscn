@@ -1,18 +1,17 @@
-[gd_scene load_steps=42 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=40 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
-[ext_resource type="Script" uid="uid://cgyn1oxhvuj2e" path="res://scripts/ui/ui_resource_handler.gd" id="3_l58e3"]
 [ext_resource type="Script" uid="uid://b7bo83wpu73wu" path="res://scripts/time_button.gd" id="6_4amiu"]
 [ext_resource type="Script" uid="uid://drqq0is6by4ae" path="res://scripts/time_ui_handler.gd" id="6_rt53s"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="12_gejso"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
-[ext_resource type="Script" uid="uid://cve27u2oxpjd2" path="res://scripts/ui/ui_visitor_info.gd" id="15_jtb7t"]
 [ext_resource type="Texture2D" uid="uid://bg7qwhqk3njmo" path="res://assets/sprites/ui/2x/panel_background.png" id="16_wvm38"]
 [ext_resource type="Texture2D" uid="uid://1ydjllt1xy3d" path="res://assets/sprites/ui/icon_guests.png" id="17_1jyyk"]
 [ext_resource type="Texture2D" uid="uid://tiff3btksdh6" path="res://assets/sprites/ui/tutorial_todo_unchecked.png" id="19_mwcfc"]
+[ext_resource type="PackedScene" uid="uid://bfgo4p1ebvy10" path="res://scenes/ui/ui_hud.tscn" id="19_q3hll"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/time/time-button_play.png" id="25_3ou18"]
 [ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
@@ -21,7 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://bl2f4bqvktgp1" path="res://assets/sprites/ui/icon_locked_1.png" id="35_em0su"]
 [ext_resource type="Script" uid="uid://bxubwaflp8wkf" path="res://scripts/ui/ui_money_info.gd" id="37_u4j4d"]
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
-[ext_resource type="Script" uid="uid://b0amasqnb3qge" path="res://scripts/ui/button_idles.gd" id="63_ggyeh"]
 [ext_resource type="Texture2D" uid="uid://pstb0wurhta1" path="res://assets/sprites/ui/icon_idle_workers.png" id="63_pd6sg"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
 [ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
@@ -72,132 +70,6 @@ unique_name_in_owner = true
 
 [node name="UISelectionPanel" parent="UI" instance=ExtResource("sel_panel")]
 unique_name_in_owner = true
-
-[node name="UIResources" type="Control" parent="UI"]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("3_l58e3")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = 24.0
-grow_horizontal = 2
-
-[node name="UIVisitorInfo" type="Control" parent="UI/UIResources/HBoxContainer"]
-custom_minimum_size = Vector2(76, 32)
-layout_mode = 2
-script = ExtResource("15_jtb7t")
-
-[node name="Background" type="NinePatchRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-modulate = Color(0, 0, 0, 1)
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("12_gejso")
-patch_margin_left = 16
-patch_margin_right = 16
-
-[node name="ProgressBar" type="ProgressBar" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/background = SubResource("StyleBoxEmpty_v28my")
-theme_override_styles/fill = SubResource("StyleBoxTexture_3ocru")
-max_value = 1.0
-value = 0.53
-show_percentage = false
-
-[node name="TextureRect" type="TextureRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-texture_filter = 1
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 10.0
-offset_top = -15.5
-offset_right = 50.0
-offset_bottom = 24.5
-grow_vertical = 2
-texture = ExtResource("17_1jyyk")
-expand_mode = 2
-stretch_mode = 4
-
-[node name="CountLabel" type="Label" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -5.0
-offset_top = -12.0
-offset_right = 23.0
-offset_bottom = 4.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_fonts/font = ExtResource("14_3ou18")
-text = "123"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ProgressionLabel" type="Label" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -5.0
-offset_top = -19.0
-offset_right = 23.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 0
-theme = ExtResource("22_hpv7r")
-text = "+12/D"
-horizontal_alignment = 1
-vertical_alignment = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIResources/HBoxContainer/UIVisitorInfo"]
-visible = false
-layout_mode = 0
-offset_top = 20.0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-texture = ExtResource("35_em0su")
-
-[node name="Label" type="Label" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Rooms (0 Guests)"
-
-[node name="TextureRect2" type="TextureRect" parent="UI/UIResources/HBoxContainer/UIVisitorInfo/VBoxContainer/HBoxContainer"]
-layout_mode = 2
-texture = ExtResource("19_mwcfc")
 
 [node name="UIMoney" type="Control" parent="UI"]
 unique_name_in_owner = true
@@ -382,6 +254,8 @@ layout_mode = 2
 texture = ExtResource("29_8st1d")
 stretch_mode = 4
 
+[node name="UIHUD" parent="UI" instance=ExtResource("19_q3hll")]
+
 [node name="UITime" type="Control" parent="UI"]
 unique_name_in_owner = true
 texture_filter = 1
@@ -435,32 +309,6 @@ offset_top = -1.0
 offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("25_3ou18")
-
-[node name="Button_Idles" type="Button" parent="UI/UITime"]
-self_modulate = Color(1, 0.7, 0, 1)
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -16.0
-offset_top = 45.0
-offset_right = 16.0
-offset_bottom = 77.0
-grow_horizontal = 2
-theme = ExtResource("22_hpv7r")
-text = "0"
-alignment = 2
-script = ExtResource("63_ggyeh")
-
-[node name="TextureRect" type="TextureRect" parent="UI/UITime/Button_Idles"]
-layout_mode = 1
-offset_left = 3.0
-offset_top = 6.0
-offset_right = 18.0
-offset_bottom = 28.0
-texture = ExtResource("63_pd6sg")
-stretch_mode = 3
 
 [node name="UIMenu" parent="UI" instance=ExtResource("ui_menu")]
 unique_name_in_owner = true
