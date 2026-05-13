@@ -203,6 +203,10 @@ func console_spawn_guest(adj):
 			FightHandler.create_or_join_drunk_fight(guest)
 		elif adj == "robber":
 			guest.is_robber = true
+		elif adj == "injured":
+			if guest.Status != null:
+				guest.Status.set_status(Enum.NpcStatus.INJURED)
+				InjuryHandler.on_guest_injured(guest)
 
 func console_spawn_guests(amount, adj):
 	print("spawn_guests", amount)

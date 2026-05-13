@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://btohebalv0jr3"]
+
+[ext_resource type="Script" uid="uid://brmfcy7jtxhp1" path="res://scripts/room_infirmary.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://bknt38nwpxstc" path="res://assets/sprites/rooms/infirmary.png" id="4_content"]
+
+[node name="Room_Infirmary" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_script")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_backwall")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_outline")
+
+[node name="Content" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -24)
+texture = ExtResource("4_content")

@@ -11,6 +11,7 @@ const PAIR_DURABILITY := "durability"
 const PAIR_FIGHT_TEMPER := "fight_temper"
 const PAIR_SALES := "sales"
 const PAIR_CRIMINAL_DETECTION := "criminal_detection"
+const PAIR_INTELLIGENCE := "intelligence"
 
 static func get_all_traits() -> Array:
 	return [
@@ -22,14 +23,16 @@ static func get_all_traits() -> Array:
 		TraitDataScript.new("turtle", PAIR_MOVEMENT, "Turtle", "Walks slower.", TraitDataScript.Polarity.NEGATIVE),
 		TraitDataScript.new("handy", PAIR_TASK_SPEED, "Handy", "Does tasks faster.", TraitDataScript.Polarity.POSITIVE),
 		TraitDataScript.new("all_thumbs", PAIR_TASK_SPEED, "All-thumbs", "Does tasks slower.", TraitDataScript.Polarity.NEGATIVE),
-		TraitDataScript.new("thick_skinned", PAIR_DURABILITY, "Thick Skinned", "Less likely to die and has more HP.", TraitDataScript.Polarity.POSITIVE),
-		TraitDataScript.new("fragile", PAIR_DURABILITY, "Fragile", "More likely to die and has less HP.", TraitDataScript.Polarity.NEGATIVE),
+		TraitDataScript.new("thick_skinned", PAIR_DURABILITY, "Thick Skinned", "Less likely to die and has more HP. Recovers well even from bad medical treatment (80% chance).", TraitDataScript.Polarity.POSITIVE),
+		TraitDataScript.new("fragile", PAIR_DURABILITY, "Fragile", "More likely to die and has less HP. Poor recovery even after medical treatment (30% chance).", TraitDataScript.Polarity.NEGATIVE),
 		TraitDataScript.new("hothead", PAIR_FIGHT_TEMPER, "Hothead", "Always fights.", TraitDataScript.Polarity.POSITIVE),
 		TraitDataScript.new("gutless", PAIR_FIGHT_TEMPER, "Gutless", "Never fights.", TraitDataScript.Polarity.NEGATIVE),
 		TraitDataScript.new("eye_candy", PAIR_SALES, "Eye Candy", "Makes more money on sales.", TraitDataScript.Polarity.POSITIVE),
 		TraitDataScript.new("potato_face", PAIR_SALES, "Potato Face", "Makes less money from sales.", TraitDataScript.Polarity.NEGATIVE),
 		TraitDataScript.new("sherlock", PAIR_CRIMINAL_DETECTION, "Sherlock", "More likely to discover criminals.", TraitDataScript.Polarity.POSITIVE),
 		TraitDataScript.new("naive", PAIR_CRIMINAL_DETECTION, "Naive", "Less likely to discover criminals.", TraitDataScript.Polarity.NEGATIVE),
+		TraitDataScript.new("sawbones", PAIR_INTELLIGENCE, "Sawbones", "Treats patients more effectively.", TraitDataScript.Polarity.POSITIVE),
+		TraitDataScript.new("dullard", PAIR_INTELLIGENCE, "Dullard", "Treats patients less effectively.", TraitDataScript.Polarity.NEGATIVE),
 	]
 
 static func roll_traits(max_count: int = 3) -> Array:

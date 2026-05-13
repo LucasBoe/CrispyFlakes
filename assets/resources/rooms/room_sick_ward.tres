@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://bwrkhe2oycmu6"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
+[ext_resource type="PackedScene" uid="uid://bupifb0mwaks4" path="res://scenes/rooms/room_sick_ward.tscn" id="2_scene"]
+[ext_resource type="Texture2D" uid="uid://b0qa8wg10me5d" path="res://assets/sprites/rooms/room_sick_ward_preview.png" id="3_preview"]
+
+[resource]
+script = ExtResource("1_roomdata")
+packed_scene = ExtResource("2_scene")
+money_capacity = 0
+room_name = "Sick Ward"
+room_desc = "houses and treats sick guests"
+room_preview = ExtResource("3_preview")
+construction_price = 100
+tier = 3
+width = 2
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

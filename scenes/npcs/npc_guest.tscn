@@ -1,6 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=19 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
+[ext_resource type="Script" uid="uid://c7upi1agstna0" path="res://scripts/npc/modules/status_module.gd" id="19_status"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
 [ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="3_1phmo"]
 [ext_resource type="Script" uid="uid://d1nmgpv0uiia6" path="res://scripts/npc/modules/guest_visual_module.gd" id="4_482k3"]
@@ -95,6 +96,9 @@ script = ExtResource("6_cyq43")
 
 [node name="NeedsModule" type="Node" parent="."]
 script = ExtResource("7_prewa")
+
+[node name="StatusModule" type="Node" parent="."]
+script = ExtResource("19_status")
 
 [node name="PreciseHover" type="Area2D" parent="."]
 monitoring = false

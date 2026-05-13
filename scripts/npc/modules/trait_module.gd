@@ -21,6 +21,8 @@ const TRAIT_EYE_CANDY := "eye_candy"
 const TRAIT_POTATO_FACE := "potato_face"
 const TRAIT_SHERLOCK := "sherlock"
 const TRAIT_NAIVE := "naive"
+const TRAIT_SAWBONES := "sawbones"
+const TRAIT_DULLARD := "dullard"
 
 var npc
 var traits: Array = []
@@ -122,6 +124,20 @@ func forces_fight_response() -> bool:
 
 func refuses_voluntary_fights() -> bool:
 	return has_trait(TRAIT_GUTLESS)
+
+func get_treatment_quality() -> float:
+	if has_trait(TRAIT_SAWBONES):
+		return 0.9
+	if has_trait(TRAIT_DULLARD):
+		return 0.2
+	return 0.5
+
+func get_bad_treatment_recovery_chance() -> float:
+	if has_trait(TRAIT_THICK_SKINNED):
+		return 0.8
+	if has_trait(TRAIT_FRAGILE):
+		return 0.3
+	return 0.6
 
 func get_hire_cost() -> int:
 	const BASE := 25

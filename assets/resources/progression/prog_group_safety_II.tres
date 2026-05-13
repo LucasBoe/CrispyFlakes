@@ -1,9 +1,14 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://4uyxc124moe5"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" path="res://assets/resources/progression/prog_group_safety_I.tres" id="2_dep"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_eidal"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_cu53m"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_infirmary.tres" id="5_63jcr"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_sick_ward.tres" id="6_xj81u"]
 
 [resource]
 script = ExtResource("1_script")
 display_name = "Safety II."
+unlocks_rooms = Array[ExtResource("4_cu53m")]([ExtResource("5_63jcr"), ExtResource("6_xj81u")])
 depends_on = ExtResource("2_dep")

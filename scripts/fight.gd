@@ -274,6 +274,10 @@ func _knock_out(npc: NPC) -> void:
 		npc.Navigation.stop_navigation()
 	_debug("knockout %s participants=%s" % [_npc_debug(npc), _participants_debug()])
 	npc.Behaviour.set_behaviour(KnockedOutBehaviour)
+	var guest: NPCGuest = npc as NPCGuest
+	if guest != null and guest.Status != null:
+		guest.Status.set_status(Enum.NpcStatus.INJURED)
+		InjuryHandler.on_guest_injured(guest)
 
 func clear_health_bars() -> void:
 	for npc in health_bars.keys():

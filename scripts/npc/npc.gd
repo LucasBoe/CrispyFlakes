@@ -13,6 +13,7 @@ var Item : ItemModule
 
 var Equipment: EquipmentModule
 var Traits: TraitModule
+var Status: StatusModule
 
 var look_info : NPCLookInfo
 var energy: float = 1.0
@@ -61,7 +62,10 @@ func get_state_icon_entries() -> Array:
 	if is_in_fight_state():
 		entries.append({icon = UiNotifications.ICON_FIGHT, label = STATE_LABEL_FIGHT})
 
-	_append_state_icon_entries(entries)
+	if Status != null:
+		entries.append_array(Status.get_entries())
+	else:
+		_append_state_icon_entries(entries)
 	return entries
 
 func get_primary_state_icon():

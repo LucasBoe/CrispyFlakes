@@ -1,9 +1,5 @@
 extends Node
 
-const JOB_TRADING_OFFICE_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_trading_office_behaviour.gd")
-const JOB_STOVE_KEEPER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_stove_keeper_behaviour.gd")
-const JOB_DIGGING_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_digging_behaviour.gd")
-const JOB_GAMBLING_WATCHER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_gambling_watcher_behaviour.gd")
 
 @onready var need_icon_drink = preload("res://assets/sprites/ui/icon_drink.png")
 @onready var need_icon_energy = preload("res://assets/sprites/ui/icon_energy.png")
@@ -31,6 +27,19 @@ enum Items {
 enum Resources {
 	MONEY,
 	GUEST
+}
+
+enum NpcStatus {
+	# Health
+	INJURED,
+	WELL_TREATED,
+	BADLY_TREATED,
+	# Criminal / legal
+	MARKED_FOR_ARREST,
+	ARRESTED,
+	KNOWN_FUGITIVE,
+	CARRYING_LOOT,
+	HAS_OUTSTANDING_FINE,
 }
 
 enum RoomType {
@@ -66,6 +75,7 @@ enum Jobs {
 	STOVE_KEEPER,
 	DIGGING,
 	GAMBLING_WATCHER,
+	DOCTOR,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -116,16 +126,19 @@ static func job_to_behaviour(job : Jobs):
 			return JobWaterTowerBehaviour
 
 		Enum.Jobs.TRADING_OFFICE:
-			return JOB_TRADING_OFFICE_BEHAVIOUR
+			return JobTradingOfficeBehaviour
 
 		Enum.Jobs.STOVE_KEEPER:
-			return JOB_STOVE_KEEPER_BEHAVIOUR
+			return JobStoveKeeperBehaviour
 
 		Enum.Jobs.DIGGING:
-			return JOB_DIGGING_BEHAVIOUR
+			return JobDiggingBehaviour
 
 		Enum.Jobs.GAMBLING_WATCHER:
-			return JOB_GAMBLING_WATCHER_BEHAVIOUR
+			return JobGamblingWatcherBehaviour
+
+		Enum.Jobs.DOCTOR:
+			return JobDoctorBehaviour
 
 enum ZLayer {
 	NPC_IN_OUTHOUSE = -620,
@@ -140,6 +153,7 @@ enum ZLayer {
 
 enum RequestStatus {
 	OPEN,
+	IN_PROGRESS,
 	TIMEOUT,
 	FULFILLED
 }

@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://bupifb0mwaks4"]
+
+[ext_resource type="Script" uid="uid://bsngd08kuyiq2" path="res://scripts/room_sick_ward.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://c3igaq668wmq6" path="res://assets/sprites/room_highlight_slim_2x1.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://b61jjjnn2ury2" path="res://assets/sprites/rooms/sick_ward.png" id="4_content"]
+
+[node name="Room_SickWard" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_script")
+
+[node name="Back-wall" type="NinePatchRect" parent="."]
+z_index = -200
+custom_minimum_size = Vector2(96, 48)
+offset_top = -48.0
+offset_right = 96.0
+texture = ExtResource("2_backwall")
+patch_margin_left = 17
+patch_margin_top = 15
+patch_margin_right = 15
+patch_margin_bottom = 16
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(48, -24)
+texture = ExtResource("3_outline")
+
+[node name="Content" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(48, -24)
+texture = ExtResource("4_content")
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(72, -7)

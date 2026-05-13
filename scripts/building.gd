@@ -44,6 +44,8 @@ const room_data_water_tower := preload("res://assets/resources/rooms/room_water_
 const room_data_gambling := preload("res://assets/resources/rooms/room_gambling.tres")
 const room_data_trading_office := preload("res://assets/resources/rooms/room_trading_office.tres")
 const room_data_stove := preload("res://assets/resources/rooms/room_stove.tres")
+const room_data_infirmary := preload("res://assets/resources/rooms/room_infirmary.tres")
+const room_data_sick_ward := preload("res://assets/resources/rooms/room_sick_ward.tres")
 const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure/infrastructure_water_pipe.tres")
 
 func _ready():

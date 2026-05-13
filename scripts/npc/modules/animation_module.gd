@@ -127,6 +127,8 @@ func walk_tween(time_in_seconds):
 
 	if npc and npc is NPCGuest:
 		drunk = npc.Needs.drunkenness.strength
+		if npc.Status != null and npc.Status.has_status(Enum.NpcStatus.INJURED):
+			drunk = 1.0
 
 	var t = time_in_seconds * WALK_ANIMATION_SPEED / (1.0 + drunk)
 	var raw = pow(abs(sin(t)), .2) * sign(sin(t))

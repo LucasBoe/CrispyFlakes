@@ -2,6 +2,7 @@ extends NPC
 class_name NPCGuest
 
 const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
+const NeedTreatmentBehaviourScript = preload("res://scripts/npc/behaviours/need_treatment_behaviour.gd")
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 
 var manual_behaviour = false
@@ -72,26 +73,6 @@ func _process(_delta):
 	if new_behaviour != null:
 		Behaviour.set_behaviour(new_behaviour)
 
-func _append_state_icon_entries(entries: Array) -> void:
-	var b = Behaviour.behaviour_instance
-	var bounty = BountyHandler.get_official_bounty_for(self)
-	var fine = BountyHandler.get_fight_fine_for(self)
-	var is_arrested = b is ArrestedBehaviour
-	var has_visible_bounty = bounty != null and is_known_fugitive
-
-	if ConflictResponseHandler.is_marked_for_arrest(self):
-		entries.append({icon = UiNotifications.ICON_HANDCUFFS, label = "Marked for Arrest (Drop Worker)"})
-	if is_arrested:
-		entries.append({icon = UiNotifications.ICON_HANDCUFFED, label = "Arrested (Call Sherrif)"})
-	if has_visible_bounty:
-		entries.append({icon = UiNotifications.ICON_FUGITIVE, label = str("Known Fugitive (", bounty, "$)")})
-	if stolen_amount > 0:
-		entries.append({icon = UiNotifications.ICON_ROBBER, label = str("Carrying stolen loot ($", stolen_amount, ")")})
-	if fine != null:
-		entries.append({label = str("Outstanding Fine (", fine, "$)")})
-	elif (ConflictResponseHandler.is_marked_for_arrest(self) or is_arrested) and bounty == null:
-		entries.append({label = "Has No Bounty or Fine"})
-
 func counts_towards_guest_total() -> bool:
 	var behaviour = Behaviour.behaviour_instance
 	return not (behaviour is ArrestedBehaviour or behaviour is FollowSheriffBehaviour)
@@ -100,6 +81,12 @@ func is_on_horse() -> bool:
 	return Animator != null and Animator.is_riding
 
 func get_next_behaviour():
+
+	if Status != null:
+		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):
+			return NeedSickWardBehaviour
+		if Status.has_status(Enum.NpcStatus.INJURED):
+			return NeedTreatmentBehaviourScript
 
 	if ConflictResponseHandler.is_marked_for_arrest(self):
 		return IdleBehaviour
