@@ -44,6 +44,21 @@ func change_resource(resource, change):
 func change_money(change):
 	change_resource(Enum.Resources.MONEY, change)
 
+func _change_money_without_storage(change: int) -> void:
+	resources[Enum.Resources.MONEY] += change
+	on_resource_changed.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], change)
+
+	var now : float = Global.time_now
+	var day_duration : float = Global.DAY_DURATION
+
+	money_transaction_history[now] = change
+
+	for t in money_transaction_history.keys():
+		if (now - t) > day_duration:
+			money_transaction_history.erase(t)
+
+	on_money_changed.emit()
+
 func has(resource, amount):
 	if not resources.has(resource):
 		return false
@@ -79,6 +94,18 @@ func notify_stolen(amount: int) -> void:
 
 func spend_animated(amount: int, global_pos: Vector2) -> void:
 	change_money(-amount)
+	SoundPlayer.play_treasure()
+	var animation_duration = .3
+	on_animate_resource_spend.emit(amount, global_pos, animation_duration)
+	await get_tree().create_timer(animation_duration).timeout
+
+func spend_animated_from_room_first(amount: int, global_pos: Vector2, room_location: Vector2i) -> void:
+	var taken_from_room := MoneyHandler.withdraw(room_location, amount)
+	var remaining_shared := float(amount) - taken_from_room
+	if remaining_shared > 0.0:
+		MoneyHandler.spend(remaining_shared)
+
+	_change_money_without_storage(-amount)
 	SoundPlayer.play_treasure()
 	var animation_duration = .3
 	on_animate_resource_spend.emit(amount, global_pos, animation_duration)

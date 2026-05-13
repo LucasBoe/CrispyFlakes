@@ -32,6 +32,21 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
+@onready var gambling_ui: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI
+@onready var gambling_host_state: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/HostState
+@onready var gambling_new_round_button: Button = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/HostState/NewRoundButton
+@onready var gambling_setup_state: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SetupState
+@onready var gambling_selected_jackpot_label: Label = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SetupState/SelectedJackpotLabel
+@onready var gambling_setup_loop_toggle: CheckBox = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SetupState/LoopToggle
+@onready var gambling_start_round_button: Button = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SetupState/StartRoundButton
+@onready var gambling_active_state: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState
+@onready var gambling_round_status_label: Label = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/RoundStatusLabel
+@onready var gambling_round_progress_bar: ProgressBar = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/RoundProgressBar
+@onready var gambling_watcher_label: Label = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/WatcherLabel
+@onready var gambling_round_detail_label: Label = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/RoundDetailLabel
+@onready var gambling_active_loop_toggle: CheckBox = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/LoopToggle
+@onready var gambling_summary_state: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState
+@onready var gambling_summary_host_button: Button = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/HostNewRoundButton
 @onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
 @onready var satisfaction_log_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection
 @onready var satisfaction_log_toggle_button: Button = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection/SatisfactionLogToggleButton
@@ -66,11 +81,12 @@ var _is_satisfaction_log_expanded := true
 var _equipment_container: VBoxContainer = null
 var _storage_items_container: VBoxContainer = null
 var _storage_items_signature: Array = []
-var _gambling_container: VBoxContainer = null
 var _gambling_signature: String = ""
 var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
 var _context_menu_blocked := false
+var _gambling_jackpot_buttons: Array[Button] = []
+var _gambling_summary_rows: Dictionary = {}
 
 func _ready():
 	super._ready()
@@ -82,6 +98,30 @@ func _ready():
 
 	panel_close_button.pressed.connect(do_hide)
 	satisfaction_log_toggle_button.pressed.connect(_on_satisfaction_log_toggle_pressed)
+	gambling_new_round_button.pressed.connect(_on_gambling_new_round_pressed)
+	gambling_start_round_button.pressed.connect(_on_gambling_start_round_pressed)
+	gambling_setup_loop_toggle.toggled.connect(_on_gambling_setup_loop_toggled)
+	gambling_active_loop_toggle.toggled.connect(_on_gambling_active_loop_toggled)
+	gambling_summary_host_button.pressed.connect(_on_gambling_summary_host_pressed)
+	_gambling_jackpot_buttons = [
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot20Button") as Button,
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot50Button") as Button,
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot100Button") as Button,
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot250Button") as Button,
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot500Button") as Button,
+		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot1000Button") as Button,
+	]
+	for i in range(_gambling_jackpot_buttons.size()):
+		var jackpot := RoomGambling.JACKPOT_OPTIONS[i]
+		_gambling_jackpot_buttons[i].pressed.connect(_on_gambling_jackpot_selected.bind(jackpot))
+	_gambling_summary_rows = {
+		jackpot = gambling_ui.get_node("SummaryState/JackpotRow") as HBoxContainer,
+		fees = gambling_ui.get_node("SummaryState/FeesRow") as HBoxContainer,
+		player_wins = gambling_ui.get_node("SummaryState/PlayerWinsRow") as HBoxContainer,
+		cheating = gambling_ui.get_node("SummaryState/CheatingRow") as HBoxContainer,
+		returned = gambling_ui.get_node("SummaryState/ReturnedRow") as HBoxContainer,
+		net_result = gambling_ui.get_node("SummaryState/NetResultRow") as HBoxContainer,
+	}
 
 	_connection_line = PixelLine.new()
 	_connection_line.line_color = Color(1.0, 1.0, 0.5, 0.7)
@@ -108,6 +148,7 @@ func _ready():
 	satisfaction_log_section.hide()
 	satisfaction_log_items.hide()
 	narrative_label.hide()
+	gambling_ui.hide()
 
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
@@ -222,9 +263,11 @@ func _clear_instances():
 	_storage_items_container = null
 	_storage_items_signature = []
 
-	if is_instance_valid(_gambling_container):
-		_gambling_container.queue_free()
-	_gambling_container = null
+	gambling_ui.hide()
+	gambling_host_state.hide()
+	gambling_setup_state.hide()
+	gambling_active_state.hide()
+	gambling_summary_state.hide()
 	_gambling_signature = ""
 
 	_connection_line.hide()
@@ -268,10 +311,17 @@ func _show_status_row(text: String, color: Color, link_target = null, link_text:
 	var instance := status_row_dummy.duplicate() as MarginContainer
 	var parent = status_row_dummy.get_parent()
 	parent.add_child(instance)
-	parent.move_child(instance, status_row_dummy.get_index() + 1)
+	if target is RoomGambling:
+		parent.move_child(instance, describtion_label.get_index() + 1)
+	else:
+		parent.move_child(instance, status_row_dummy.get_index() + 1)
 	instance.get_node("ColorRect").color = color
-	instance.get_node("HBoxContainer/Label").text = str(" ", text)
+	var label := instance.get_node("HBoxContainer/Label") as Label
+	label.text = str(" ", text)
+	var font_color := _get_status_row_font_color(color)
+	label.add_theme_color_override("font_color", font_color)
 	var btn := instance.get_node("HBoxContainer/Button") as Button
+	_set_status_row_button_color(btn, font_color)
 	if link_target != null:
 		btn.text = link_text
 		btn.show()
@@ -633,8 +683,12 @@ func _set_stove_status_row(text: String, color: Color, link_target = null, link_
 		return
 
 	(_status_row_instance.get_node("ColorRect") as ColorRect).color = color
-	(_status_row_instance.get_node("HBoxContainer/Label") as Label).text = str(" ", text)
+	var label := _status_row_instance.get_node("HBoxContainer/Label") as Label
+	label.text = str(" ", text)
+	var font_color := _get_status_row_font_color(color)
+	label.add_theme_color_override("font_color", font_color)
 	var btn := _status_row_instance.get_node("HBoxContainer/Button") as Button
+	_set_status_row_button_color(btn, font_color)
 	Util.disconnect_all_pressed(btn)
 	if link_target != null:
 		btn.text = link_text
@@ -643,20 +697,26 @@ func _set_stove_status_row(text: String, color: Color, link_target = null, link_
 	else:
 		btn.hide()
 
+func _get_status_row_font_color(background: Color) -> Color:
+	return Color.BLACK if background == Color.YELLOW else Color.WHITE
+
+func _set_status_row_button_color(button: Button, color: Color) -> void:
+	button.add_theme_color_override("font_color", color)
+	button.add_theme_color_override("font_hover_color", color)
+	button.add_theme_color_override("font_pressed_color", color)
+	button.add_theme_color_override("font_focus_color", color)
+	button.add_theme_color_override("font_disabled_color", color)
+
 func _update_gambling_status(room: RoomGambling) -> void:
 	var status_text := room.get_round_status_text()
 	var status_color := Color.TRANSPARENT
 	var link_target = null
 	var link_text := ""
 
-	if room.has_active_round():
-		if room.worker:
-			link_target = room.worker
-			link_text = room.worker.character_name
-		else:
-			status_text += ", No Watcher"
-			status_color = Color.ORANGE
-	elif room.worker:
+	if room.should_warn_no_jackpot() or room.should_warn_start_requirements():
+		status_color = Color.YELLOW
+
+	if room.worker:
 		link_target = room.worker
 		link_text = room.worker.character_name
 
@@ -666,168 +726,123 @@ func _update_gambling_status(room: RoomGambling) -> void:
 
 func _rebuild_gambling_ui(room: RoomGambling, force: bool = false) -> void:
 	var signature := room.get_ui_state_signature()
-	if not force and signature == _gambling_signature and is_instance_valid(_gambling_container):
+	if not force and signature == _gambling_signature:
 		return
 	_gambling_signature = signature
-
-	if is_instance_valid(_gambling_container):
-		_gambling_container.queue_free()
-
-	var parent := describtion_label.get_parent() as VBoxContainer
-	var container := VBoxContainer.new()
-	container.add_theme_constant_override("separation", 4)
-	parent.add_child(container)
-	parent.move_child(container, describtion_label.get_index() + 1)
-	_gambling_container = container
+	gambling_ui.show()
+	gambling_host_state.hide()
+	gambling_setup_state.hide()
+	gambling_active_state.hide()
+	gambling_summary_state.hide()
 
 	if room.has_active_round():
-		_add_gambling_active_ui(container, room)
-	elif not room.last_summary.is_empty():
-		_add_gambling_summary_ui(container, room)
+		_add_gambling_active_ui(room)
 	else:
-		_add_gambling_host_ui(container, room)
+		_add_gambling_host_ui(room)
+		if not room.last_summary.is_empty():
+			_add_gambling_summary_ui(room)
 
-func _add_gambling_host_ui(container: VBoxContainer, room: RoomGambling) -> void:
-	var title := status_icon_label_dummy.duplicate() as Label
-	title.text = "Select Jackpot"
-	title.show()
-	container.add_child(title)
-
-	var selected_jackpot := room.selected_jackpot if RoomGambling.JACKPOT_OPTIONS.has(room.selected_jackpot) else 50
-
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 4)
-	grid.add_theme_constant_override("v_separation", 4)
-	container.add_child(grid)
-
-	for jackpot in RoomGambling.JACKPOT_OPTIONS:
-		var btn := Button.new()
-		btn.theme = hire_guest_button.theme
-		btn.text = "%d$%s" % [jackpot, " *" if jackpot == selected_jackpot else ""]
+func _add_gambling_host_ui(room: RoomGambling) -> void:
+	if not room.is_configuring_round():
+		gambling_host_state.show()
+		return
+	gambling_setup_state.show()
+	for i in range(RoomGambling.JACKPOT_OPTIONS.size()):
+		var jackpot := RoomGambling.JACKPOT_OPTIONS[i]
+		var btn := _gambling_jackpot_buttons[i]
+		btn.text = "%d$%s" % [jackpot, " *" if jackpot == room.selected_jackpot else ""]
 		btn.disabled = not ResourceHandler.has_money(jackpot)
-		btn.pressed.connect(func():
-			if is_instance_valid(room):
-				room.selected_jackpot = jackpot
-				_rebuild_gambling_ui(room, true)
-		)
-		grid.add_child(btn)
+	gambling_selected_jackpot_label.text = "SELECT JACKPOT" if not room.has_selected_jackpot() else "Jackpot %d$" % room.selected_jackpot
+	gambling_selected_jackpot_label.add_theme_color_override("font_color", Color.ORANGE if not room.has_selected_jackpot() else Color.WHITE)
+	gambling_setup_loop_toggle.set_pressed_no_signal(room.loop_enabled)
+	gambling_start_round_button.text = "Start Round" if not room.has_selected_jackpot() else "Start Round (-%d$)" % room.selected_jackpot
+	gambling_start_round_button.disabled = not room.has_selected_jackpot() or not ResourceHandler.has_money(room.selected_jackpot)
 
-	var estimates := room.get_estimated_revenue(selected_jackpot)
-	var estimate_label := status_icon_label_dummy.duplicate() as Label
-	estimate_label.text = "Estimated Revenue: %d$ - +%d$" % [int(estimates.worst), int(estimates.best)]
-	estimate_label.show()
-	container.add_child(estimate_label)
+func _add_gambling_active_ui(room: RoomGambling) -> void:
+	gambling_active_state.show()
+	if not room.has_required_round_participants():
+		gambling_round_status_label.text = "Joined Guests %d/%d" % [room.get_seated_guest_count(), room.max_guest_count]
+	else:
+		var current_match := mini(room.matches_played + 1, RoomGambling.MATCH_COUNT)
+		gambling_round_status_label.text = "Current Match %d/%d" % [current_match, RoomGambling.MATCH_COUNT]
+	gambling_round_progress_bar.value = room.get_round_progress() * 100.0
+	gambling_watcher_label.text = room.worker.character_name if room.worker != null else "No Watcher Assigned"
+	gambling_watcher_label.add_theme_color_override("font_color", Color.WHITE if room.worker != null else Color.ORANGE)
+	gambling_round_detail_label.text = "Guests %d/%d, Bank Wins %d" % [room.get_seated_guest_count(), room.max_guest_count, int(room.last_summary.get("bank_wins", 0))]
+	gambling_active_loop_toggle.set_pressed_no_signal(room.loop_enabled)
 
-	var loop_toggle := CheckBox.new()
-	loop_toggle.theme = hire_guest_button.theme
-	loop_toggle.text = "Loop"
-	loop_toggle.button_pressed = room.loop_enabled
-	loop_toggle.toggled.connect(func(pressed: bool):
-		if is_instance_valid(room):
-			room.set_loop_enabled(pressed)
-	)
-	container.add_child(loop_toggle)
-
-	var start_button := Button.new()
-	start_button.theme = hire_guest_button.theme
-	start_button.text = "Start Round (-%d$)" % selected_jackpot
-	start_button.disabled = not ResourceHandler.has_money(selected_jackpot)
-	start_button.pressed.connect(func():
-		if is_instance_valid(room):
-			room.start_round(selected_jackpot)
-			_rebuild_gambling_ui(room, true)
-	)
-	container.add_child(start_button)
-
-func _add_gambling_active_ui(container: VBoxContainer, room: RoomGambling) -> void:
-	var label := status_icon_label_dummy.duplicate() as Label
-	label.text = room.get_round_status_text()
-	label.show()
-	container.add_child(label)
-
-	var bar := ProgressBar.new()
-	bar.min_value = 0
-	bar.max_value = 100
-	bar.value = room.get_round_progress() * 100.0
-	bar.custom_minimum_size = Vector2(140, 10)
-	container.add_child(bar)
-
-	var watcher_label := status_icon_label_dummy.duplicate() as Label
-	watcher_label.text = room.worker.character_name if room.worker != null else "No Watcher Assigned"
-	watcher_label.add_theme_color_override("font_color", Color.WHITE if room.worker != null else Color.ORANGE)
-	watcher_label.show()
-	container.add_child(watcher_label)
-
-	var detail := status_icon_label_dummy.duplicate() as Label
-	detail.text = "Jackpot %d$, Players %d/%d" % [room.selected_jackpot, room.participants.size(), room.max_guest_count]
-	detail.show()
-	container.add_child(detail)
-
-	var loop_toggle := CheckBox.new()
-	loop_toggle.theme = hire_guest_button.theme
-	loop_toggle.text = "Loop"
-	loop_toggle.button_pressed = room.loop_enabled
-	loop_toggle.toggled.connect(func(pressed: bool):
-		if is_instance_valid(room):
-			room.set_loop_enabled(pressed)
-	)
-	container.add_child(loop_toggle)
-
-func _add_gambling_summary_ui(container: VBoxContainer, room: RoomGambling) -> void:
+func _add_gambling_summary_ui(room: RoomGambling) -> void:
+	gambling_summary_state.show()
 	var summary := room.last_summary
-	var title := status_icon_label_dummy.duplicate() as Label
-	title.text = "Last Round Summary"
-	title.show()
-	container.add_child(title)
-
-	var gambling_revenue: int = int(summary.get("gambling_revenue", summary.revenue - summary.cheating_fees))
 	var player_count: int = int(summary.get("player_count", 0))
 	if player_count == 0 and int(summary.jackpot) > 0:
 		player_count = roundi(float(summary.player_stakes) / float(summary.jackpot))
-	_add_gambling_summary_amount_row(container, "Jackpot", gambling_revenue)
-	_add_gambling_summary_amount_row(container, "Fees", int(summary.jackpot), " x %d" % player_count)
-	_add_gambling_summary_amount_row(container, "Player Wins", -int(summary.player_payouts), " (%d)" % int(summary.player_wins))
-	_add_gambling_summary_amount_row(container, "Cheating", int(summary.cheating_fees), " (%d)" % int(summary.detected_cheats))
-	_add_gambling_summary_amount_row(container, "Revenue", int(summary.revenue), "", true)
+	var cheating_losses := -int(summary.get("successful_cheat_payouts", 0.0))
+	var honest_player_wins := -int(float(summary.player_payouts) - float(summary.get("successful_cheat_payouts", 0.0)))
+	_set_gambling_summary_row(_gambling_summary_rows.jackpot, int(summary.jackpot))
+	_set_gambling_summary_row(_gambling_summary_rows.fees, int(summary.jackpot), "x %d" % player_count)
+	_set_gambling_summary_row(_gambling_summary_rows.player_wins, honest_player_wins, "(%d)" % int(summary.player_wins - summary.successful_cheats))
+	_set_gambling_summary_row(_gambling_summary_rows.cheating, cheating_losses, "(%d)" % int(summary.successful_cheats))
+	_set_gambling_summary_row(_gambling_summary_rows.returned, int(summary.get("returned_to_house", 0.0)))
+	_set_gambling_summary_row(_gambling_summary_rows.net_result, int(summary.revenue), "", true)
 
-	var host_button := Button.new()
-	host_button.theme = hire_guest_button.theme
-	host_button.text = "Host New Round +"
-	host_button.disabled = not ResourceHandler.has_money(room.selected_jackpot)
-	host_button.pressed.connect(func():
-		if is_instance_valid(room):
-			room.start_round(room.selected_jackpot)
-			_rebuild_gambling_ui(room, true)
-	)
-	container.add_child(host_button)
-
-func _add_gambling_summary_amount_row(container: VBoxContainer, label_text: String, amount: int, suffix: String = "", emphasize: bool = false) -> void:
-	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 2)
-	container.add_child(row)
-
-	var name_label := status_icon_label_dummy.duplicate() as Label
-	name_label.text = label_text
-	if emphasize:
-		name_label.add_theme_color_override("font_color", Color.WHITE)
-	name_label.show()
-	row.add_child(name_label)
-
-	var amount_label := status_icon_label_dummy.duplicate() as Label
-	amount_label.text = "%+d$" % amount
+func _set_gambling_summary_row(row: HBoxContainer, amount: int, suffix: String = "", emphasize: bool = false) -> void:
+	var amount_label := row.get_node("AmountLabel") as Label
+	var suffix_label := row.get_node("SuffixLabel") as Label
+	amount_label.text = "+%d$" % amount if amount > 0 else "%d$" % amount
 	if amount > 0:
 		amount_label.add_theme_color_override("font_color", Color.LIGHT_GREEN)
 	elif amount < 0:
-		amount_label.add_theme_color_override("font_color", Color.SALMON)
-	amount_label.show()
-	row.add_child(amount_label)
+		amount_label.add_theme_color_override("font_color", Color(0.82, 0.09, 0.09))
+	else:
+		amount_label.add_theme_color_override("font_color", Color.WHITE)
+	suffix_label.text = suffix
+	suffix_label.visible = suffix != ""
 
-	if suffix != "":
-		var suffix_label := status_icon_label_dummy.duplicate() as Label
-		suffix_label.text = suffix
-		suffix_label.show()
-		row.add_child(suffix_label)
+func _get_selected_gambling_room() -> RoomGambling:
+	return target as RoomGambling if target is RoomGambling and is_instance_valid(target) else null
+
+func _on_gambling_new_round_pressed() -> void:
+	var room := _get_selected_gambling_room()
+	if room == null:
+		return
+	room.begin_new_round_setup()
+	_rebuild_gambling_ui(room, true)
+
+func _on_gambling_jackpot_selected(jackpot: int) -> void:
+	var room := _get_selected_gambling_room()
+	if room == null:
+		return
+	room.selected_jackpot = jackpot
+	_rebuild_gambling_ui(room, true)
+
+func _on_gambling_setup_loop_toggled(pressed: bool) -> void:
+	var room := _get_selected_gambling_room()
+	if room == null:
+		return
+	room.set_loop_enabled(pressed)
+	_rebuild_gambling_ui(room, true)
+
+func _on_gambling_active_loop_toggled(pressed: bool) -> void:
+	var room := _get_selected_gambling_room()
+	if room == null:
+		return
+	room.set_loop_enabled(pressed)
+	_rebuild_gambling_ui(room, true)
+
+func _on_gambling_start_round_pressed() -> void:
+	var room := _get_selected_gambling_room()
+	if room == null or not room.has_selected_jackpot():
+		return
+	room.start_round(room.selected_jackpot)
+	_rebuild_gambling_ui(room, true)
+
+func _on_gambling_summary_host_pressed() -> void:
+	var room := _get_selected_gambling_room()
+	if room == null:
+		return
+	room.begin_new_round_setup()
+	_rebuild_gambling_ui(room, true)
 
 func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true

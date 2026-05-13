@@ -12,7 +12,7 @@ const SERVE_GUESTS_TUTORIAL_TITLE := "A new Beginning"
 const BUILD_TABLE_TUTORIAL_TITLE := "I have nowhere to sit"
 
 const CLEANUP_TASK_TEXT := "Clean Up the Mess"
-const BUILD_BAR_TASK_TEXT := "Build a Bar"
+const BUILD_BAR_TASK_TEXT := "Run your first Bar"
 const BUILD_TABLE_TASK_TEXT := "Build a Table"
 const CLEANUP_REWARD := 10
 const BUILD_BAR_REWARD := 10

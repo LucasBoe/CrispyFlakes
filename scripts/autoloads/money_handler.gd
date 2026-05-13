@@ -32,6 +32,17 @@ func deposit(location: Vector2i, amount: float) -> void:
 	location_money[location] = location_money.get(location, 0.0) + to_add
 	changed.emit()
 
+func withdraw(location: Vector2i, amount: float) -> float:
+	if amount <= 0.0:
+		return 0.0
+	var available: float = location_money.get(location, 0.0)
+	if available <= 0.0:
+		return 0.0
+	var taken: float = minf(available, amount)
+	location_money[location] = available - taken
+	changed.emit()
+	return taken
+
 # Deposit unattributed money (bounties, fines, etc.) split evenly across all rooms.
 func deposit_free(amount: float) -> void:
 	var locations: Array[Vector2i] = _room_locations()

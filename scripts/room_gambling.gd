@@ -14,6 +14,7 @@ var guests: Dictionary = {}
 var max_guest_count: int = MAX_GUEST_COUNT
 var active_round: bool = false
 var loop_enabled: bool = false
+var configuring_new_round: bool = false
 var selected_jackpot: int = 0
 var matches_played: int = 0
 var current_match_progress: float = 0.0
@@ -30,7 +31,7 @@ func init_room(_x: int, _y: int):
 		guests[i] = null
 
 func is_free() -> bool:
-	return can_join_round()
+	return can_accept_guest()
 
 func get_free_count() -> int:
 	var c: int = 0
@@ -42,8 +43,41 @@ func get_free_count() -> int:
 func can_join_round() -> bool:
 	return active_round and matches_played < MATCH_COUNT and get_free_count() > 0
 
+func can_accept_guest() -> bool:
+	return get_free_count() > 0
+
 func has_active_round() -> bool:
 	return active_round
+
+func is_configuring_round() -> bool:
+	return configuring_new_round
+
+func begin_new_round_setup() -> void:
+	configuring_new_round = true
+	selected_jackpot = 0
+	last_summary = {}
+
+func has_selected_jackpot() -> bool:
+	return selected_jackpot > 0
+
+func get_seated_guest_count() -> int:
+	var count := 0
+	for guest in guests.values():
+		if is_instance_valid(guest):
+			count += 1
+	return count
+
+func should_warn_no_jackpot() -> bool:
+	return not active_round and get_seated_guest_count() > 0 and not has_selected_jackpot()
+
+func has_required_round_participants() -> bool:
+	return _has_required_round_participants(_get_live_participants().size())
+
+func should_warn_start_requirements() -> bool:
+	return active_round and matches_played < MATCH_COUNT and not has_required_round_participants()
+
+func get_requirement_warning_text() -> String:
+	return "Need 2 Players or 1 Player + Watcher"
 
 func can_delete() -> bool:
 	return not active_round
@@ -64,7 +98,7 @@ func get_assigned_worker_count(job = null) -> int:
 	return 1 if job == associated_job and worker != null else 0
 
 func sit(guest: NPC) -> Vector2:
-	if not can_join_round() or guest is not NPCGuest:
+	if not can_accept_guest() or guest is not NPCGuest:
 		return get_random_floor_position()
 
 	var guest_ref := guest as NPCGuest
@@ -73,9 +107,8 @@ func sit(guest: NPC) -> Vector2:
 			guests[i] = guest_ref
 			break
 
-	if not participants.has(guest_ref):
-		participants.append(guest_ref)
-		_collect_guest_stake(guest_ref)
+	if active_round:
+		_register_participant(guest_ref)
 
 	guest_ref.Animator.set_sitting(true)
 	guest_ref.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
@@ -112,6 +145,7 @@ func start_round(jackpot: int) -> bool:
 		UiNotifications.create_notification_static("not enough money", get_notification_position(), null, Color.ORANGE)
 		return false
 
+	configuring_new_round = false
 	selected_jackpot = jackpot
 	matches_played = 0
 	remaining_money_pool = jackpot
@@ -119,7 +153,11 @@ func start_round(jackpot: int) -> bool:
 	last_summary = _new_summary(jackpot)
 	active_round = true
 	_round_running = true
-	ResourceHandler.spend_animated(jackpot, get_center_position())
+	for guest in guests.values():
+		if is_instance_valid(guest):
+			_register_participant(guest)
+	UiNotifications.create_notification_static("-%d$ table stake" % jackpot, get_notification_position(), null, Color.ORANGE)
+	ResourceHandler.spend_animated_from_room_first(jackpot, get_center_position(), Vector2i(x, y))
 	_run_round()
 	return true
 
@@ -152,9 +190,11 @@ func get_estimated_revenue(jackpot: int) -> Dictionary:
 
 func get_round_status_text() -> String:
 	if active_round:
-		if participants.is_empty():
-			return "Waiting for Players (%d/%d)" % [matches_played, MATCH_COUNT]
+		if not has_required_round_participants():
+			return "Waiting for Players (%d/%d)" % [get_seated_guest_count(), max_guest_count]
 		return "Round in Progress (%d/%d)" % [matches_played, MATCH_COUNT]
+	if should_warn_no_jackpot():
+		return "No Jackpot"
 	if not last_summary.is_empty():
 		return "Last Round Summary"
 	return "No Round"
@@ -163,14 +203,16 @@ func get_round_progress() -> float:
 	return current_match_progress
 
 func get_ui_state_signature() -> String:
-	return "%s|%s|%d|%d|%d|%d|%d|%d|%s|%d" % [
+	return "%s|%s|%s|%d|%d|%d|%d|%d|%d|%d|%s|%d" % [
 		str(active_round),
 		str(loop_enabled),
+		str(configuring_new_round),
 		selected_jackpot,
 		matches_played,
 		roundi(current_match_progress * 100.0),
 		roundi(remaining_money_pool),
 		participants.size(),
+		get_seated_guest_count(),
 		get_assigned_worker_count(),
 		str(last_summary),
 		roundi(MoneyHandler.get_money_at(Vector2i(x, y))),
@@ -178,7 +220,7 @@ func get_ui_state_signature() -> String:
 
 func _run_round() -> void:
 	while active_round and matches_played < MATCH_COUNT:
-		if _get_live_participants().is_empty():
+		if not has_required_round_participants():
 			current_match_progress = 0.0
 			await get_tree().create_timer(0.5).timeout
 			continue
@@ -216,6 +258,7 @@ func _play_match() -> void:
 			UiNotifications.create_notification_static("+%d$ fee" % fee, get_notification_position(), null, Color.GREEN)
 		else:
 			last_summary.successful_cheats += 1
+			last_summary.successful_cheat_payouts += match_pool_amount
 			final_winner = guest
 			break
 
@@ -243,6 +286,7 @@ func _finish_round() -> void:
 	participants.clear()
 
 	if not loop_enabled:
+		selected_jackpot = 0
 		if worker != null:
 			worker.change_job(Enum.Jobs.IDLE)
 		return
@@ -265,7 +309,9 @@ func _apply_round_settlement(summary: Dictionary) -> void:
 		float(summary.bank_stake_returns)
 		+ float(summary.cheating_fees)
 	)
+	summary.returned_to_house = settlement
 	if settlement > 0:
+		UiNotifications.create_notification_static("+%d$ returned" % settlement, get_notification_position(), null, Color.GREEN)
 		ResourceHandler.add_animated(Enum.Resources.MONEY, settlement, get_center_position(), Vector2i(x, y))
 	elif settlement < 0:
 		ResourceHandler.spend_animated(-settlement, get_center_position())
@@ -278,6 +324,12 @@ func _collect_guest_stake(guest: NPCGuest) -> void:
 	last_summary.player_count += 1
 	remaining_money_pool += stake
 	UiNotifications.create_notification_static("+%d$ stake" % stake, get_notification_position(), null, Color.GREEN)
+
+func _register_participant(guest: NPCGuest) -> void:
+	if not is_instance_valid(guest) or participants.has(guest):
+		return
+	participants.append(guest)
+	_collect_guest_stake(guest)
 
 func _take_next_match_pool_amount() -> float:
 	var remaining_matches: int = maxi(1, MATCH_COUNT - matches_played)
@@ -303,6 +355,9 @@ func _get_cheat_chance(guest: NPCGuest) -> float:
 	var drunkenness: float = guest.Needs.drunkenness.strength if guest.Needs != null else 0.0
 	return clampf(BASE_CHEAT_CHANCE + drunkenness * DRUNK_CHEAT_CHANCE, 0.0, 0.18)
 
+func _has_required_round_participants(player_count: int) -> bool:
+	return player_count >= 2 or (player_count >= 1 and worker != null)
+
 func _watcher_detects_cheat() -> bool:
 	if worker == null:
 		return false
@@ -314,8 +369,10 @@ func _new_summary(jackpot: int) -> Dictionary:
 		jackpot = jackpot,
 		player_stakes = 0,
 		player_count = 0,
+		returned_to_house = 0.0,
 		bank_stake_returns = 0.0,
 		player_payouts = 0.0,
+		successful_cheat_payouts = 0.0,
 		gambling_revenue = 0.0,
 		bank_wins = 0,
 		player_wins = 0,

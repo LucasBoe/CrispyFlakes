@@ -59,8 +59,11 @@ func notification_loop():
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomGambling:
 					var gambling := r as RoomGambling
-					if gambling.has_active_round() and not gambling.worker:
-						notify(r, "no watcher", Color.ORANGE)
+					if gambling.should_warn_no_jackpot():
+						notify(r, "no jackpot", Color.YELLOW, null, false)
+						await pause(REFRESH_RATE / rooms.size() - .01)
+					elif gambling.should_warn_start_requirements():
+						notify(r, gambling.get_requirement_warning_text(), Color.YELLOW, null, false)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomBed:
 					if (r as RoomBed).needs_cleaning and not r.worker:
@@ -72,8 +75,9 @@ func notification_loop():
 					await pause(REFRESH_RATE / rooms.size() - .01)
 				await pause(0)
 
-func notify(room : RoomBase, text, color, icon = null):
-	UiNotifications.create_notification_static(text, room.get_notification_position(), icon, color, REFRESH_RATE)
+func notify(room : RoomBase, text, color, icon = null, show_notification: bool = true):
+	if show_notification:
+		UiNotifications.create_notification_static(text, room.get_notification_position(), icon, color, REFRESH_RATE)
 	var rect = RoomHighlighter.request_rect(room, color)
 	await pause(REFRESH_RATE)
 	RoomHighlighter.dispose(rect)

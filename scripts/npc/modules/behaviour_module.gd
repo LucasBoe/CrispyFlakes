@@ -48,7 +48,7 @@ func get_behaviour_from_available_rooms(all_rooms):
 		if room is RoomBath:
 			all.append(NeedCleaningBehaviour)
 
-		if room is RoomGambling and (room as RoomGambling).can_join_round():
+		if room is RoomGambling and (room as RoomGambling).can_accept_guest():
 			all.append(NEED_GAMBLING_BEHAVIOUR)
 
 	if all.size() > 0:

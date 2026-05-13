@@ -28,7 +28,11 @@ func loop():
 	if room == null:
 		return
 
-	if not room.has_active_round():
+	var should_wait_for_round := room.loop_enabled \
+		or room.is_configuring_round() \
+		or room.has_selected_jackpot() \
+		or room.get_seated_guest_count() > 0
+	if not room.has_active_round() and not should_wait_for_round:
 		RoomStatusHandler.notify(room, "no round", Color.ORANGE)
 		await pause(0.5)
 		_change_to_idle()
@@ -38,7 +42,7 @@ func loop():
 	await move(room.get_watcher_position())
 	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 
-	while is_instance_valid(room) and room.worker == npc and (room.has_active_round() or room.loop_enabled):
+	while is_instance_valid(room) and room.worker == npc and (room.has_active_round() or room.loop_enabled or room.is_configuring_round() or room.has_selected_jackpot() or room.get_seated_guest_count() > 0):
 		await pause(0.25)
 
 func stop_loop() -> BehaviourSaveData:
