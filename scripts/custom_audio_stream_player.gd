@@ -7,3 +7,7 @@ class_name CustomAudioStreamPlayer
 func play_random_pitch(min_pitch: float = random_pitch_min, max_pitch: float = random_pitch_max) -> void:
 	pitch_scale = randf_range(min_pitch, max_pitch)
 	play()
+
+func play_pitch(pitch) -> void:
+	pitch_scale = pitch
+	play()

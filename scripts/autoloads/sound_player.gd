@@ -149,8 +149,14 @@ func play_construction_placed() -> void:
 func play_pipe_placed(world_position: Vector2) -> void:
 	_play_2d(_PIPE_STREAMS.pick_random(), world_position, -6.0, 1.0, 1.0)
 
-func play_coin() -> void:
-	_coin.play_random_pitch()
+func play_coin(pitch: float) -> void:
+	var player := CustomAudioStreamPlayer.new()
+	player.stream = _coin.stream
+	player.volume_db = _coin.volume_db
+	player.bus = _DEFAULT_BUS
+	add_child(player)
+	player.finished.connect(player.queue_free)
+	player.play_pitch(pitch)
 
 func play_treasure() -> void:
 	_treasure.play_random_pitch()
