@@ -46,6 +46,10 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var gambling_round_detail_label: Label = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/RoundDetailLabel
 @onready var gambling_active_loop_toggle: CheckBox = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/ActiveState/LoopToggle
 @onready var gambling_summary_state: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState
+@onready var gambling_table_buy_in_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/TableBuyInRow
+@onready var gambling_guest_wins_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/PlayerWinsRow
+@onready var gambling_cheating_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/CheatingRow
+@onready var gambling_revenue_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow
 @onready var gambling_summary_host_button: Button = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/HostNewRoundButton
 @onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
 @onready var satisfaction_log_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection
@@ -86,7 +90,7 @@ var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
 var _context_menu_blocked := false
 var _gambling_jackpot_buttons: Array[Button] = []
-var _gambling_summary_rows: Dictionary = {}
+var _gambling_guest_buy_in_rows: Array[HBoxContainer] = []
 var _bound_hire_guest = null
 var _bound_hire_cost: int = -1
 var _bound_arrest_guest = null
@@ -120,14 +124,11 @@ func _ready():
 	for i in range(_gambling_jackpot_buttons.size()):
 		var jackpot := RoomGambling.JACKPOT_OPTIONS[i]
 		_gambling_jackpot_buttons[i].pressed.connect(_on_gambling_jackpot_selected.bind(jackpot))
-	_gambling_summary_rows = {
-		jackpot = gambling_ui.get_node("SummaryState/JackpotRow") as HBoxContainer,
-		fees = gambling_ui.get_node("SummaryState/FeesRow") as HBoxContainer,
-		player_wins = gambling_ui.get_node("SummaryState/PlayerWinsRow") as HBoxContainer,
-		cheating = gambling_ui.get_node("SummaryState/CheatingRow") as HBoxContainer,
-		returned = gambling_ui.get_node("SummaryState/ReturnedRow") as HBoxContainer,
-		net_result = gambling_ui.get_node("SummaryState/NetResultRow") as HBoxContainer,
-	}
+	_gambling_guest_buy_in_rows = [
+		gambling_ui.get_node("SummaryState/GuestBuyInRow1") as HBoxContainer,
+		gambling_ui.get_node("SummaryState/GuestBuyInRow2") as HBoxContainer,
+		gambling_ui.get_node("SummaryState/GuestBuyInRow3") as HBoxContainer,
+	]
 
 	_connection_line = PixelLine.new()
 	_connection_line.line_color = Color(1.0, 1.0, 0.5, 0.7)
@@ -789,27 +790,74 @@ func _add_gambling_summary_ui(room: RoomGambling) -> void:
 	var player_count: int = int(summary.get("player_count", 0))
 	if player_count == 0 and int(summary.jackpot) > 0:
 		player_count = roundi(float(summary.player_stakes) / float(summary.jackpot))
-	var cheating_losses := -int(summary.get("successful_cheat_payouts", 0.0))
-	var honest_player_wins := -int(float(summary.player_payouts) - float(summary.get("successful_cheat_payouts", 0.0)))
-	_set_gambling_summary_row(_gambling_summary_rows.jackpot, int(summary.jackpot))
-	_set_gambling_summary_row(_gambling_summary_rows.fees, int(summary.jackpot), "x %d" % player_count)
-	_set_gambling_summary_row(_gambling_summary_rows.player_wins, honest_player_wins, "(%d)" % int(summary.player_wins - summary.successful_cheats))
-	_set_gambling_summary_row(_gambling_summary_rows.cheating, cheating_losses, "(%d)" % int(summary.successful_cheats))
-	_set_gambling_summary_row(_gambling_summary_rows.returned, int(summary.get("returned_to_house", 0.0)))
-	_set_gambling_summary_row(_gambling_summary_rows.net_result, int(summary.revenue), "", true)
+	var cheating_losses := -float(summary.get("successful_cheat_payouts", 0.0))
+	var cheating_count := int(summary.get("successful_cheats", 0)) + int(summary.get("detected_cheats", 0))
+	var honest_player_wins := -(float(summary.player_payouts) - float(summary.get("successful_cheat_payouts", 0.0)))
+	_set_gambling_summary_param_row(gambling_table_buy_in_row, int(summary.jackpot))
+	for i in range(_gambling_guest_buy_in_rows.size()):
+		var row := _gambling_guest_buy_in_rows[i]
+		row.visible = i < player_count
+		if row.visible:
+			_set_gambling_summary_amount_name_row(row, int(summary.jackpot))
+	_set_gambling_summary_amount_name_row(gambling_guest_wins_row, honest_player_wins)
+	_set_gambling_summary_amount_name_row(gambling_cheating_row, cheating_losses, "(%d)" % cheating_count)
+	_set_gambling_summary_revenue_row(gambling_revenue_row, int(summary.jackpot), float(summary.revenue), float(summary.get("returned_to_house", 0.0)))
 
-func _set_gambling_summary_row(row: HBoxContainer, amount: int, suffix: String = "", emphasize: bool = false) -> void:
-	var amount_label := row.get_node("AmountLabel") as Label
-	var suffix_label := row.get_node("SuffixLabel") as Label
-	amount_label.text = "+%d$" % amount if amount > 0 else "%d$" % amount
-	if amount > 0:
+func _set_gambling_summary_amount_label(amount_label: Label, amount: float) -> void:
+	amount_label.text = _format_gambling_money(amount)
+	if amount > 0.0:
 		amount_label.add_theme_color_override("font_color", Color.LIGHT_GREEN)
-	elif amount < 0:
+	elif amount < 0.0:
 		amount_label.add_theme_color_override("font_color", Color(0.82, 0.09, 0.09))
 	else:
 		amount_label.add_theme_color_override("font_color", Color.WHITE)
-	suffix_label.text = suffix
-	suffix_label.visible = suffix != ""
+
+func _set_gambling_summary_param_row(row: HBoxContainer, parameter_amount: int) -> void:
+	var param_label := row.get_node("ParamLabel") as Label
+	param_label.text = "(%d$)" % parameter_amount
+
+func _set_gambling_summary_amount_name_row(row: HBoxContainer, amount: float, suffix: String = "") -> void:
+	var amount_label := row.get_node("AmountLabel") as Label
+	_set_gambling_summary_amount_label(amount_label, amount)
+	var suffix_label := row.get_node_or_null("SuffixLabel") as Label
+	if suffix_label != null:
+		suffix_label.text = suffix
+		suffix_label.visible = suffix != ""
+
+func _set_gambling_summary_revenue_row(row: HBoxContainer, stake: int, revenue: float, returned: float) -> void:
+	var returned_label := row.get_node("ReturnedLabel") as Label
+	returned_label.text = _format_gambling_money_rounded(returned, false)
+	var stake_label := row.get_node("StakeLabel") as Label
+	stake_label.text = "%d$" % stake
+	var amount_label := row.get_node("AmountLabel") as Label
+	amount_label.text = _format_gambling_money_rounded(revenue, true)
+	if revenue > 0.0:
+		amount_label.add_theme_color_override("font_color", Color.LIGHT_GREEN)
+	elif revenue < 0.0:
+		amount_label.add_theme_color_override("font_color", Color(0.82, 0.09, 0.09))
+	else:
+		amount_label.add_theme_color_override("font_color", Color.WHITE)
+
+func _format_gambling_money(amount: float) -> String:
+	var rounded := roundf(amount * 100.0) / 100.0
+	if absf(rounded) < 0.005:
+		rounded = 0.0
+
+	var sign := "+" if rounded > 0.0 else "-" if rounded < 0.0 else ""
+	var abs_text := "%.2f" % absf(rounded)
+	if abs_text.ends_with(".00"):
+		abs_text = abs_text.trim_suffix(".00")
+	elif abs_text.ends_with("0"):
+		abs_text = abs_text.trim_suffix("0")
+
+	return "%s%s$" % [sign, abs_text]
+
+func _format_gambling_money_rounded(amount: float, show_plus_for_positive: bool) -> String:
+	var rounded_amount := float(roundi(amount))
+	var was_rounded := absf(amount - rounded_amount) >= 0.005
+	var sign := "+" if rounded_amount > 0.0 and show_plus_for_positive else "-" if rounded_amount < 0.0 else ""
+	var prefix := "~" if was_rounded else ""
+	return "%s%s%d$" % [prefix, sign, absi(int(rounded_amount))]
 
 func _get_selected_gambling_room() -> RoomGambling:
 	return target as RoomGambling if target is RoomGambling and is_instance_valid(target) else null

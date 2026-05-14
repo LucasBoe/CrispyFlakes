@@ -576,54 +576,71 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Last Round Summary"
 
-[node name="JackpotRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
+[node name="TableBuyInRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/JackpotRow"]
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/TableBuyInRow"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "Table Stake"
+text = "Table Buy-In:"
 
-[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/JackpotRow"]
+[node name="ParamLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/TableBuyInRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.84313726, 0.14901961, 1)
+text = "(0$)"
+
+[node name="GuestBuyInRow1" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow1"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
 text = "+0$"
 
-[node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/JackpotRow"]
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow1"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Guest Buy-In"
+
+[node name="GuestBuyInRow2" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 visible = false
 layout_mode = 2
-theme = ExtResource("22_hpv7r")
-
-[node name="FeesRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
-layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/FeesRow"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Guest Buy-ins"
-
-[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/FeesRow"]
+[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow2"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
 text = "+0$"
 
-[node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/FeesRow"]
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow2"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "x 0"
+text = "Guest Buy-In"
+
+[node name="GuestBuyInRow3" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow3"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
+text = "+0$"
+
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/GuestBuyInRow3"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Guest Buy-In"
 
 [node name="PlayerWinsRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 layout_mode = 2
 theme_override_constants/separation = 2
-
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/PlayerWinsRow"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Guest Wins"
 
 [node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/PlayerWinsRow"]
 layout_mode = 2
@@ -631,19 +648,14 @@ theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.82, 0.09, 0.09, 1)
 text = "-0$"
 
-[node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/PlayerWinsRow"]
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/PlayerWinsRow"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "(0)"
+text = "Guest Wins"
 
 [node name="CheatingRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 layout_mode = 2
 theme_override_constants/separation = 2
-
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/CheatingRow"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Cheating"
 
 [node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/CheatingRow"]
 layout_mode = 2
@@ -651,50 +663,60 @@ theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.82, 0.09, 0.09, 1)
 text = "-0$"
 
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/CheatingRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Cheating"
+
 [node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/CheatingRow"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "(0)"
 
-[node name="NetResultRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
+[node name="SummaryDivider" type="HSeparator" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
+layout_mode = 2
+
+[node name="RevenueRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/NetResultRow"]
+[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "Net Result"
+text = "Revenue"
 
-[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/NetResultRow"]
+[node name="OpenLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "("
+
+[node name="ReturnedLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
+text = "0$"
+
+[node name="MinusLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "-"
+
+[node name="StakeLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(1, 0.84313726, 0.14901961, 1)
+text = "0$"
+
+[node name="CloseEqualsLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = ") ="
+
+[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
 text = "+0$"
-
-[node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/NetResultRow"]
-visible = false
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-
-[node name="ReturnedRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="NameLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/ReturnedRow"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Returned"
-
-[node name="AmountLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/ReturnedRow"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-theme_override_colors/font_color = Color(0.5647059, 0.93333334, 0.5647059, 1)
-text = "+0$"
-
-[node name="SuffixLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/ReturnedRow"]
-visible = false
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
 
 [node name="HostNewRoundButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState"]
 custom_minimum_size = Vector2(20, 20)
