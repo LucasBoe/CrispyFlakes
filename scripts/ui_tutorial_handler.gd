@@ -678,20 +678,24 @@ func _play_cursor_hint_animation(section_title: String) -> void:
 	await tween.finished
 
 	if not is_instance_valid(button) or not _revealed_marker_instances.has(section_title):
-		if is_instance_valid(hint):
-			hint.queue_free()
+		hint = _free_cursor_hint(hint)
 		_revealed_marker_hint_animating.erase(section_title)
 		return
 
 	for frame in range(1, CURSOR_HINT_FRAME_COUNT):
+		if not is_instance_valid(hint):
+			_revealed_marker_hint_animating.erase(section_title)
+			return
 		_set_hint_atlas_frame(hint, frame_size, frame)
 		await get_tree().create_timer(CURSOR_HINT_CLICK_FRAME_DURATION, true, false, true).timeout
 		if not is_instance_valid(button) or not _revealed_marker_instances.has(section_title):
-			if is_instance_valid(hint):
-				hint.queue_free()
+			hint = _free_cursor_hint(hint)
 			_revealed_marker_hint_animating.erase(section_title)
 			return
 
+	if not is_instance_valid(hint):
+		_revealed_marker_hint_animating.erase(section_title)
+		return
 	_set_hint_atlas_frame(hint, frame_size, 0)
 	await get_tree().create_timer(CURSOR_HINT_CLICK_FRAME_DURATION * 2.0, true, false, true).timeout
 
@@ -699,12 +703,19 @@ func _play_cursor_hint_animation(section_title: String) -> void:
 		var fade_out := create_tween()
 		fade_out.tween_property(hint, "modulate:a", 0.0, CURSOR_HINT_FADE_DURATION)
 		await fade_out.finished
-		hint.queue_free()
+		if is_instance_valid(hint):
+			hint = _free_cursor_hint(hint)
 
 	await get_tree().create_timer(CURSOR_HINT_REPEAT_DELAY, true, false, true).timeout
 	_revealed_marker_hint_animating.erase(section_title)
 	if _revealed_marker_instances.has(section_title) and not _sections_animating_into_sidebar.has(section_title):
 		_revealed_marker_hint_timers[section_title] = Time.get_ticks_msec()
+
+
+func _free_cursor_hint(hint):
+	if is_instance_valid(hint):
+		hint.queue_free()
+	return null
 
 
 func _set_hint_atlas_frame(hint: TextureRect, frame_size: Vector2, frame: int) -> void:

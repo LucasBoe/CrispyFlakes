@@ -81,7 +81,7 @@ func loop():
 			if target is Item:
 				_clean_target(target)
 			elif target is ColorRect or target is Sprite2D:
-				_clean_floor_mess_in_range(npc.global_position)
+				_clean_floor_mess_target_and_nearby(target)
 			else:
 				_clean_target(target)
 
@@ -206,6 +206,13 @@ func _clean_floor_mess_in_range(center: Vector2) -> void:
 
 	for dirt in DirtHandler.get_all_in_range(center, FLOOR_MESS_CLEAN_RADIUS):
 		DirtHandler.clean_dirt(dirt)
+
+func _clean_floor_mess_target_and_nearby(target) -> void:
+	if not is_instance_valid(target):
+		return
+	var center := _target_position(target)
+	_clean_target(target)
+	_clean_floor_mess_in_range(center)
 
 func _target_clean_duration(target) -> float:
 	if not is_instance_valid(target):
