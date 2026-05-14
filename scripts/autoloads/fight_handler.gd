@@ -214,7 +214,7 @@ func _can_guest_respond_to_new_brawl(candidate: NPCGuest, initiator: NPCGuest) -
 		return false
 	if candidate.Traits == null or candidate.Needs == null:
 		return false
-	if candidate.Traits.get_voluntary_fight_chance(candidate.Needs.drunkenness.strength) <= 0.0:
+	if candidate.Traits.get_voluntary_fight_chance(candidate.Needs.drunkenness.strength, false) <= 0.0:
 		return false
 	if not is_within_fight_detection_range(initiator.global_position, candidate.global_position):
 		return false
