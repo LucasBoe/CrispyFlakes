@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.325"
+config/version="0.0.1-dev.326"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -41,7 +41,6 @@ TierHandler="*res://scripts/autoloads/tier_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
 NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
 FightHandler="*res://scripts/autoloads/fight_handler.gd"
-InjuryHandler="*res://scripts/autoloads/injury_handler.gd"
 FireHandler="*res://scripts/autoloads/fire_handler.gd"
 ConflictResponseHandler="*res://scripts/autoloads/conflict_response_handler.gd"
 Console="*res://addons/console/console.gd"
@@ -60,6 +59,7 @@ TimeHandler="*res://scripts/time_handler.gd"
 LetterUIHandler="*res://scenes/autoloads/letter_ui_handler.tscn"
 ProgressionHandler="*res://scripts/autoloads/progression_handler.gd"
 TemperatureHandler="*res://scripts/autoloads/temperature_handler.gd"
+InjuryHandler="*res://scripts/autoloads/injury_handler.gd"
 
 [display]
 

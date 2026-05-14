@@ -121,6 +121,10 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			tex = load("res://assets/sprites/item_crate.png")
 			display_name = "Crate"
 
+		Enum.Items.PICKAXE:
+			tex = load("res://assets/sprites/item_pickaxe.png")
+			display_name = "Pickaxe"
+
 		Enum.Items.WOOD:
 			tex = load("res://assets/sprites/ui/item_wood.png")
 			display_name = "Wood"

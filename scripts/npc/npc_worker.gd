@@ -312,12 +312,13 @@ func _input(event):
 	if event.is_action_released("click"):
 		_drop_mouse_pos = get_global_mouse_position()
 		_fall_room = room
-		_fall_target = _find_land_position(global_position)
+		_fall_target = _get_drop_target_position(room, global_position)
 		_fall_landed_room = Building.query.room_at_floor_position(_fall_target) as RoomBase
 		_fall_velocity = 0.0
 		_is_falling = true
 		picked_up_npc = null
-		var drop_z: Enum.ZLayer = Enum.ZLayer.NPC_OUTSIDE if (room == null or room.is_outside_room) else Enum.ZLayer.NPC_DEFAULT
+		var drop_visual_room: RoomBase = _fall_landed_room if _fall_landed_room != null else room
+		var drop_z: Enum.ZLayer = Enum.ZLayer.NPC_OUTSIDE if (drop_visual_room == null or drop_visual_room.is_outside_room) else Enum.ZLayer.NPC_DEFAULT
 		Animator.set_z(drop_z)
 
 		RoomHighlighter.dispose(current_job_room_highlight)
@@ -433,17 +434,32 @@ func _find_land_position(drop_pos: Vector2) -> Vector2:
 		return Vector2(drop_pos.x, ground_room.global_position.y)
 	return drop_pos
 
+func _get_drop_target_position(room: RoomBase, drop_pos: Vector2) -> Vector2:
+	if room is RoomDigging:
+		return (room as RoomDigging).get_dig_start_position()
+	return _find_land_position(drop_pos)
+
 func _finish_drop():
 	_is_falling = false
-	global_position.y = _fall_target.y
 	var resolved_drop_room: RoomBase = _fall_landed_room if _fall_landed_room != null else _fall_room
+	var assignment_room: RoomBase = _fall_room if _fall_room is RoomDigging else resolved_drop_room
+	var should_snap_to_drop_target := assignment_room is RoomDigging
+	if should_snap_to_drop_target:
+		global_position = _fall_target
+	else:
+		global_position.y = _fall_target.y
 	Camera.add_shake(clampf(_fall_velocity * 0.005, 1.0, 5.0), 0.05)
 	_fall_velocity = 0.0
-	if resolved_drop_room != null:
+	if assignment_room != null:
 		Navigation.stop_navigation()
-		if not try_stop_fight_in_room(resolved_drop_room):
-			if not try_arrest_in_room(resolved_drop_room):
-				try_change_job_based_on_room(resolved_drop_room)
+		var handled_context_action := false
+		if assignment_room == resolved_drop_room:
+			if try_stop_fight_in_room(resolved_drop_room):
+				handled_context_action = true
+			elif try_arrest_in_room(resolved_drop_room):
+				handled_context_action = true
+		if not handled_context_action:
+			try_change_job_based_on_room(assignment_room)
 		Animator.direction = Vector2.ZERO
 	_fall_room = null
 	_fall_landed_room = null

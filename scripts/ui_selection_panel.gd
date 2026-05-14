@@ -847,7 +847,7 @@ func _on_gambling_summary_host_pressed() -> void:
 func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY and t != Enum.Items.CRATE):
+	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY and t != Enum.Items.CRATE and t != Enum.Items.PICKAXE):
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed

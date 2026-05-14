@@ -40,6 +40,11 @@ func drop_current() -> Item:
 	if not current_item:
 		return null
 
+	if current_item.itemType == Enum.Items.PICKAXE:
+		current_item.destroy()
+		current_item = null
+		return null
+
 	var item = current_item
 	current_item.reparent(Global.ItemSpawner)
 	LooseItemHandler.register_loose_item_instance(item)
