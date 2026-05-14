@@ -186,6 +186,7 @@ func assign_loose_horse_to_post(post: RoomHorsePost) -> HorseNPC:
 	return assigned_horse
 
 func on_guest_destroy(guest):
+	ConflictResponseHandler.unmark_for_arrest(guest)
 	guests.erase(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, -1)
 

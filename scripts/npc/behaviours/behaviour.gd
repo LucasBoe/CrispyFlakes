@@ -293,35 +293,37 @@ func progress(duration, bar: TextureProgressBar = null):
 	if is_instance_valid(bar):
 		bar.visible = false
 
-	if is_instance_valid(owned_bar):
-		owned_bar.queue_free()
-
 	_unregister_progress_bar(bar)
 	_unregister_owned_progress_bar(owned_bar)
+
+	if is_instance_valid(owned_bar):
+		owned_bar.queue_free()
 
 func _register_progress_bar(bar: TextureProgressBar) -> void:
 	if is_instance_valid(bar) and not _active_progress_bars.has(bar):
 		_active_progress_bars.append(bar)
 
-func _unregister_progress_bar(bar: TextureProgressBar) -> void:
+func _unregister_progress_bar(bar) -> void:
 	if bar != null:
 		_active_progress_bars.erase(bar)
 
-func _unregister_owned_progress_bar(bar: TextureProgressBar) -> void:
+func _unregister_owned_progress_bar(bar) -> void:
 	if bar != null:
 		_owned_progress_bars.erase(bar)
 
 func _cleanup_progress_bars() -> void:
-	for bar in _active_progress_bars:
+	var active_bars := _active_progress_bars.duplicate()
+	var owned_bars := _owned_progress_bars.duplicate()
+	_active_progress_bars.clear()
+	_owned_progress_bars.clear()
+
+	for bar in active_bars:
 		if is_instance_valid(bar):
 			bar.visible = false
 
-	for bar in _owned_progress_bars:
+	for bar in owned_bars:
 		if is_instance_valid(bar):
 			bar.queue_free()
-
-	_active_progress_bars.clear()
-	_owned_progress_bars.clear()
 
 func _get_progress_duration(duration: float) -> float:
 	if npc is NPCWorker and npc.Traits != null:

@@ -87,6 +87,12 @@ var _follow_side: int = 0
 var _context_menu_blocked := false
 var _gambling_jackpot_buttons: Array[Button] = []
 var _gambling_summary_rows: Dictionary = {}
+var _bound_hire_guest = null
+var _bound_hire_cost: int = -1
+var _bound_arrest_guest = null
+var _bound_arrest_state: String = ""
+var _bound_worker_conflict = null
+var _bound_worker_conflict_state: String = ""
 
 func _ready():
 	super._ready()
@@ -223,6 +229,12 @@ func _clear_instances():
 	_npc_base_description = ""
 	_npc_narrative_text = ""
 	_is_satisfaction_log_expanded = true
+	_bound_hire_guest = null
+	_bound_hire_cost = -1
+	_bound_arrest_guest = null
+	_bound_arrest_state = ""
+	_bound_worker_conflict = null
+	_bound_worker_conflict_state = ""
 
 	if is_instance_valid(_trait_container):
 		_trait_container.queue_free()
@@ -925,7 +937,7 @@ func _show_prison(room: RoomPrison):
 		if not prisoner is NPCGuest:
 			continue
 		var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
-		var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0) if prisoner.look_info != null else 0
+		var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0)
 		var instance := prisoner_item_dummy.duplicate() as PrisonerItemUI
 		bounty_item_container.add_child(instance)
 		prisoner_item_instances.append(instance)
@@ -996,6 +1008,12 @@ func do_hide():
 	target = null
 	_manual_follow_offset = Vector2.ZERO
 	_follow_side = 0
+	_bound_hire_guest = null
+	_bound_hire_cost = -1
+	_bound_arrest_guest = null
+	_bound_arrest_state = ""
+	_bound_worker_conflict = null
+	_bound_worker_conflict_state = ""
 
 	if is_instance_valid(selected_room_highlight_instance):
 		RoomHighlighter.dispose(selected_room_highlight_instance)
@@ -1019,22 +1037,39 @@ func do_hide():
 func _bind_guest_arrest_button(guest: NPCGuest):
 	if not is_instance_valid(guest):
 		arrest_button.hide()
+		_bound_arrest_guest = null
+		_bound_arrest_state = ""
 		return
 
-	Util.disconnect_all_pressed(arrest_button)
+	var state := ""
 
 	if guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+		state = "arrested"
+	elif not ConflictResponseHandler.can_be_arrested(guest):
+		state = "on_horse"
+	elif ConflictResponseHandler.is_marked_for_arrest(guest):
+		state = "marked"
+	else:
+		state = "unmarked"
+
+	if _bound_arrest_guest == guest and _bound_arrest_state == state:
+		return
+
+	_bound_arrest_guest = guest
+	_bound_arrest_state = state
+	Util.disconnect_all_pressed(arrest_button)
+
+	if state == "arrested":
 		arrest_button.text = "Arrested"
 		arrest_button.disabled = true
 		return
-
-	if not ConflictResponseHandler.can_be_arrested(guest):
+	if state == "on_horse":
 		arrest_button.text = "On Horse"
 		arrest_button.disabled = true
 		return
 
 	arrest_button.disabled = false
-	arrest_button.text = "Unmark Arrest" if ConflictResponseHandler.is_marked_for_arrest(guest) else "Mark for Arrest"
+	arrest_button.text = "Unmark Arrest" if state == "marked" else "Mark for Arrest"
 	arrest_button.pressed.connect(func():
 		if not is_instance_valid(guest):
 			return
@@ -1048,12 +1083,20 @@ func _bind_guest_arrest_button(guest: NPCGuest):
 func _bind_worker_fight_response(worker: NPCWorker) -> void:
 	if not is_instance_valid(worker):
 		worker_fight_response_row.hide()
+		_bound_worker_conflict = null
+		_bound_worker_conflict_state = ""
 		return
-
-	Util.disconnect_all_pressed(worker_conflict_button)
 
 	var locked_by_traits: bool = worker.Traits.forces_fight_response() or worker.Traits.refuses_voluntary_fights()
 	var is_fight: bool = worker.should_fight_conflicts()
+	var state := str(locked_by_traits, ":", is_fight)
+	if _bound_worker_conflict == worker and _bound_worker_conflict_state == state:
+		return
+
+	_bound_worker_conflict = worker
+	_bound_worker_conflict_state = state
+	Util.disconnect_all_pressed(worker_conflict_button)
+
 	worker_conflict_label.text = "in conflict I"
 	worker_conflict_button.text = "fight" if is_fight else "flee"
 	worker_conflict_button.disabled = locked_by_traits
@@ -1135,9 +1178,16 @@ func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> v
 func _bind_guest_hire_button(guest: NPCGuest):
 	if not is_instance_valid(guest):
 		hire_guest_button.hide()
+		_bound_hire_guest = null
+		_bound_hire_cost = -1
 		return
 
 	var cost = guest.Traits.get_hire_cost()
+	if _bound_hire_guest == guest and _bound_hire_cost == cost:
+		return
+
+	_bound_hire_guest = guest
+	_bound_hire_cost = cost
 	Util.disconnect_all_pressed(hire_guest_button)
 	hire_guest_button.disabled = false
 	hire_guest_button.text = "Hire for %d$" % cost
@@ -1263,12 +1313,17 @@ func _update_floating_panel_position() -> void:
 
 	if drag_button.button_pressed:
 		_manual_follow_offset = global_position - default_panel_position
-	else:
+	elif not _should_hold_panel_position():
 		global_position = _clamp_panel_position(default_panel_position + _manual_follow_offset)
 
 	var target_ui_position := target_rect.get_center()
 	line.global_position = _panel_edge_toward(target_ui_position)
 	line.target_position = target_ui_position
+
+func _should_hold_panel_position() -> bool:
+	if not (target is NPC):
+		return false
+	return get_global_rect().has_point(get_viewport().get_mouse_position())
 
 func _get_target_ui_rect() -> Rect2:
 	if target is RoomBase:
