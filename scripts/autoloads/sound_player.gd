@@ -2,6 +2,9 @@ extends Node2D
 
 const _DEFAULT_BUS := &"SFX"
 const _DEFAULT_MAX_DISTANCE := 300.0
+const _NPC_NOTIFICATION_COOLDOWN_MS := 350
+const _NPC_NO_JOB_COOLDOWN_MS := 1500
+const _ALARM_COOLDOWN_MS := 2000
 
 @onready var _mouse_click_down: CustomAudioStreamPlayer = $MouseClickDown
 @onready var _mouse_click_up: CustomAudioStreamPlayer = $MouseClickUp
@@ -9,6 +12,11 @@ const _DEFAULT_MAX_DISTANCE := 300.0
 @onready var _coin: CustomAudioStreamPlayer = $Coin
 @onready var _treasure: CustomAudioStreamPlayer = $Treasure
 
+const _QUEST_COMPLETE_STREAM : AudioStream = preload("res://assets/sounds/sounds/quest_complete.wav")
+const _NPC_NOTIFICATION_ACTIVATED_STREAM : AudioStream = preload("res://assets/sounds/sounds/npc_notification_activated.wav")
+const _NPC_NO_JOB_STREAM : AudioStream = preload("res://assets/sounds/sounds/npc_no-job.wav")
+const _NPC_NOTIFICATION_STREAM : AudioStream = preload("res://assets/sounds/sounds/npc_notification.wav")
+const _ALARM_STREAM : AudioStream = preload("res://assets/sounds/sounds/alarm.wav")
 const _BREWERY_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/brewery_active_loop.wav")
 const _FIRE_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_loop.wav")
 const _FIRE_EXTINGUISH_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_extinguish.wav")
@@ -50,6 +58,33 @@ const _PIPE_STREAMS : Array[AudioStream] = [
 	preload("res://assets/sounds/sounds/pipe6.wav"),
 	preload("res://assets/sounds/sounds/pipe7.wav"),
 ]
+var _last_sound_times_ms := {}
+
+
+func play_quest_complete() -> void:
+	_play_global(_QUEST_COMPLETE_STREAM, -8.0, 0.98, 1.02)
+
+
+func play_npc_notification_activated() -> void:
+	_play_global(_NPC_NOTIFICATION_ACTIVATED_STREAM, -12.0, 0.98, 1.02)
+
+
+func play_npc_no_job(world_position: Vector2) -> void:
+	if not _can_play_cooldown(&"npc_no_job", _NPC_NO_JOB_COOLDOWN_MS):
+		return
+	_play_2d(_NPC_NO_JOB_STREAM, world_position, -12.0, 0.98, 1.02)
+
+
+func play_npc_notification() -> void:
+	if not _can_play_cooldown(&"npc_notification", _NPC_NOTIFICATION_COOLDOWN_MS):
+		return
+	_play_global(_NPC_NOTIFICATION_STREAM, -12.0, 0.98, 1.02)
+
+
+func play_alarm() -> void:
+	if not _can_play_cooldown(&"alarm", _ALARM_COOLDOWN_MS):
+		return
+	_play_global(_ALARM_STREAM, -6.0, 1.0, 1.0)
 
 func play_talk(world_position: Vector2) -> void:
 	_play_2d(_TALK_STREAMS.pick_random(), world_position, -12.0, 0.8, 1.2)
@@ -120,6 +155,24 @@ func play_coin() -> void:
 func play_treasure() -> void:
 	_treasure.play_random_pitch()
 
+func _play_global(
+	stream: AudioStream,
+	volume_db: float,
+	pitch_min: float,
+	pitch_max: float
+) -> AudioStreamPlayer:
+	var player := CustomAudioStreamPlayer.new()
+	player.stream = stream
+	player.volume_db = volume_db
+	player.bus = _DEFAULT_BUS
+	player.random_pitch_min = pitch_min
+	player.random_pitch_max = pitch_max
+	add_child(player)
+	player.finished.connect(player.queue_free)
+	player.play_random_pitch()
+	return player
+
+
 func _play_2d(
 	stream: AudioStream,
 	world_position: Vector2,
@@ -146,3 +199,12 @@ func _play_2d(
 		player.play_random_pitch()
 
 	return player
+
+
+func _can_play_cooldown(key: StringName, cooldown_ms: int) -> bool:
+	var now := Time.get_ticks_msec()
+	var last_time := int(_last_sound_times_ms.get(key, -cooldown_ms))
+	if now - last_time < cooldown_ms:
+		return false
+	_last_sound_times_ms[key] = now
+	return true

@@ -187,6 +187,8 @@ func _on_bubble_pressed(section_title: String) -> void:
 	if quest == null:
 		return
 
+	SoundPlayer.play_ui_click_down()
+
 	var will_reveal_details := _selected_section_title != section_title or not _is_expanded
 	if will_reveal_details:
 		_glowing_active_sections.erase(section_title)
@@ -208,6 +210,8 @@ func _on_revealed_marker_pressed(section_title: String) -> void:
 		return
 	if _sections_animating_into_sidebar.has(section_title):
 		return
+
+	SoundPlayer.play_npc_notification_activated()
 
 	var marker = _revealed_marker_instances.get(section_title)
 	if marker != null:
