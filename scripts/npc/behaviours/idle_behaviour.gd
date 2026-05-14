@@ -9,6 +9,7 @@ static func get_probability_by_needs(needs):
 func start_loop():
 	_narrative = ["Wandering around...", "Killing time...", "Looking around idly...", "Just hanging about..."].pick_random()
 	if npc is NPCWorker:
+		SoundPlayer.play_npc_no_job(npc.global_position)
 		_notification = UiNotifications.create_notification_dynamic("no job", npc, Vector2(0,-32), null, Color.ORANGE, INF)
 	else:
 		_notification = UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32), null, Color.BLACK, INF)

@@ -101,6 +101,7 @@ func make_join_fight(npc: NPC) -> void:
 func start_fight():
 	state = State.ACTIVE
 	has_started = true
+	SoundPlayer.play_alarm()
 	_debug("start active=%s all=%s" % [_participants_debug(get_active_participants()), _participants_debug()])
 	if room != null:
 		highlight = RoomHighlighter.request_rect(room, Color.RED, 2, RoomHighlighter.Priority.FIGHT)

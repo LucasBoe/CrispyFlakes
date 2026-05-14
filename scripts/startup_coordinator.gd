@@ -63,6 +63,8 @@ func _run_startup_sequence() -> void:
 		if _finish_startup_if_aborted(skip_layer, await _wait_for_cleanup_completion(_quests.cleanup)):
 			return
 		_quests.cleanup.set_done()
+		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.cleanup)):
+			return
 		Global.UI.selection.set_context_menu_blocked(false)
 
 		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)

@@ -47,12 +47,15 @@ class TutorialQuest:
 
 	func set_done(done := true) -> void:
 		var changed := not is_started or is_done != done
+		var previous_phase := phase
 		is_started = true
 		is_done = done
 		if done and phase != _handler.TutorialPhase.DONE:
 			phase = _handler.TutorialPhase.COMPLETED
 		elif not done and phase == _handler.TutorialPhase.COMPLETED:
 			phase = _handler.TutorialPhase.ACTIVE
+		if done and phase == _handler.TutorialPhase.COMPLETED and previous_phase != _handler.TutorialPhase.COMPLETED:
+			SoundPlayer.play_quest_complete()
 		if changed:
 			_handler._on_quest_state_changed(self)
 
@@ -189,7 +192,10 @@ func set_quest_reveal_target(quest: TutorialQuest, target: Node2D) -> void:
 func reveal_quest(quest: TutorialQuest) -> void:
 	if not has_quest(quest) or quest.phase == TutorialPhase.DONE:
 		return
+	if quest.phase == TutorialPhase.REVEALED:
+		return
 	quest.phase = TutorialPhase.REVEALED
+	SoundPlayer.play_npc_notification()
 	_notify_quests_changed()
 
 

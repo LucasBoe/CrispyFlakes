@@ -62,6 +62,7 @@ func start_fire(room: RoomBase):
 	_create_fire_bars(fire)
 	_create_flame_particles(fire)
 	_create_fire_sound(fire)
+	SoundPlayer.play_alarm()
 	active_fires.append(fire)
 	print("[FireHandler] start fire %s" % fire.debug_label())
 	return fire
