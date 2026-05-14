@@ -1,21 +1,21 @@
 extends Node
 
-var potential_arrests: Array[NPCGuest] = []
+var potential_arrests: Array = []
 
-func mark_for_arrest(guest: NPCGuest) -> void:
+func mark_for_arrest(guest) -> void:
 	if not can_be_arrested(guest):
 		return
 	if not potential_arrests.has(guest):
 		potential_arrests.append(guest)
 
-func unmark_for_arrest(guest: NPCGuest) -> void:
+func unmark_for_arrest(guest) -> void:
 	potential_arrests.erase(guest)
 
-func is_marked_for_arrest(guest: NPCGuest) -> bool:
+func is_marked_for_arrest(guest) -> bool:
 	return can_be_arrested(guest) and potential_arrests.has(guest)
 
-func can_be_arrested(guest: NPCGuest) -> bool:
-	return is_instance_valid(guest) and not guest.is_on_horse()
+func can_be_arrested(guest) -> bool:
+	return is_instance_valid(guest) and guest is NPCGuest and not guest.is_on_horse()
 
 func _process(_delta: float) -> void:
 	if Global.NPCSpawner == null:
@@ -49,7 +49,7 @@ func try_join_brawl(fight: Fight) -> bool:
 
 func _refresh_potential_arrests() -> void:
 	for i: int in range(potential_arrests.size() - 1, -1, -1):
-		var guest: NPCGuest = potential_arrests[i]
+		var guest = potential_arrests[i]
 		if not can_be_arrested(guest):
 			potential_arrests.remove_at(i)
 
@@ -57,7 +57,11 @@ func _try_pair_arrests() -> void:
 	if potential_arrests.is_empty():
 		return
 
-	for guest: NPCGuest in potential_arrests:
+	for i: int in range(potential_arrests.size() - 1, -1, -1):
+		var guest = potential_arrests[i]
+		if not can_be_arrested(guest):
+			potential_arrests.remove_at(i)
+			continue
 		if _is_in_active_fight(guest):
 			continue
 		var worker := _find_responder_for_position(guest.global_position)
@@ -112,7 +116,9 @@ func _get_fight_response_position(fight: Fight) -> Vector2:
 		return fight.room.get_center_floor_position()
 	return Vector2.INF
 
-func _is_in_active_fight(guest: NPCGuest) -> bool:
+func _is_in_active_fight(guest) -> bool:
+	if not can_be_arrested(guest):
+		return false
 	for fight: Fight in FightHandler.active_fights:
 		if fight.has_participant(guest):
 			return true

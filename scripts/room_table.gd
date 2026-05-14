@@ -44,6 +44,9 @@ func on_seated(guest : NPC):
 	guest.Animator.set_sitting(true)
 	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 
+func is_guest_seated(guest: NPC) -> bool:
+	return guests.values().has(guest)
+
 func stand_up(guest : NPC):
 	guest.Animator.set_sitting(false)
 	guest.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)

@@ -2,7 +2,7 @@ extends Node
 
 # Dict of NPCLookInfo -> int (bounty amount in $) — official sheriff bounties
 var npc_bounties : Dictionary = {}
-# Dict of NPCGuest -> int — fines issued after a drunk fight arrest
+# Dict of NPCGuest -> int — outstanding fines such as fight or robbery fines
 var npc_fight_fines : Dictionary = {}
 var active_looks : Array = []
 
@@ -13,7 +13,12 @@ func create_bounty(look: NPCLookInfo, amount: int):
 	npc_bounties[look] = amount
 
 func create_fight_fine(npc: NPCGuest, amount: int):
-	npc_fight_fines[npc] = amount
+	add_fine(npc, amount)
+
+func add_fine(npc: NPCGuest, amount: int) -> void:
+	if not is_instance_valid(npc) or amount <= 0:
+		return
+	npc_fight_fines[npc] = int(npc_fight_fines.get(npc, 0)) + amount
 
 func activate(look: NPCLookInfo):
 	active_looks.append(look)

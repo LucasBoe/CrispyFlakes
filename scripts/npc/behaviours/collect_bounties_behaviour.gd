@@ -53,11 +53,12 @@ func _has_penalty(guest: NPCGuest) -> bool:
 	return bounty + fine > 0
 
 func _collect_bounty(prisoner: NPCGuest):
-	if prisoner.look_info == null:
-		return
-	var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0)
+	var bounty: int = BountyHandler.npc_bounties.get(prisoner.look_info, 0) if prisoner.look_info != null else 0
 	var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0)
-	ResourceHandler.add_animated(Enum.Resources.MONEY, bounty + fine, npc.global_position + Vector2(0, 12))
-	ResourceHandler.change_money(bounty + fine)
-	BountyHandler.npc_bounties.erase(prisoner.look_info)
+	var payout := bounty + fine
+	if payout > 0:
+		ResourceHandler.add_animated(Enum.Resources.MONEY, payout, npc.global_position + Vector2(0, 12))
+		ResourceHandler.change_money(payout)
+	if prisoner.look_info != null:
+		BountyHandler.npc_bounties.erase(prisoner.look_info)
 	BountyHandler.npc_fight_fines.erase(prisoner)

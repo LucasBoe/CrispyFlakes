@@ -78,11 +78,13 @@ func loop():
 			particles.queue_free()
 
 		if is_instance_valid(target):
-			if target is ColorRect or target is Sprite2D:
+			if target is Item:
+				_clean_target(target)
+			elif target is ColorRect or target is Sprite2D:
 				_clean_floor_mess_in_range(npc.global_position)
 			else:
 				_clean_target(target)
-				
+
 			_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
@@ -151,12 +153,15 @@ func _find_cleanup_target():
 
 	var closest_dirt := DirtHandler.get_closest_to(npc.global_position)
 	var closest_puddle := PuddleHandler.get_closest_to(npc.global_position)
+	var closest_drink: Item = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.DRINK)
 	var candidates = []
 
 	if closest_dirt != null:
 		candidates.append(closest_dirt)
 	if closest_puddle != null:
 		candidates.append(closest_puddle)
+	if closest_drink != null:
+		candidates.append(closest_drink)
 
 	if candidates.is_empty():
 		return null
@@ -184,7 +189,9 @@ func _clean_target(target) -> void:
 	if not is_instance_valid(target):
 		return
 
-	if target is RoomBed:
+	if target is Item:
+		target.destroy()
+	elif target is RoomBed:
 		(target as RoomBed).clean_bed()
 	elif target is RoomOuthouse:
 		(target as RoomOuthouse).uses = 0

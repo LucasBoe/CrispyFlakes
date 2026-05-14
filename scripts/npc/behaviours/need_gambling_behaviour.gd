@@ -25,12 +25,20 @@ func loop():
 		return
 
 	await move(room.sit(guest))
-	if not is_instance_valid(room) or not room.is_guest_seated(guest):
+	if stopped or not is_instance_valid(room) or not room.is_guest_seated(guest):
 		return
 
 	_narrative = ["Playing cards...", "Watching the draw...", "At the gambling table..."].pick_random()
 	while is_instance_valid(room) and room.is_guest_seated(guest):
+		if stopped:
+			return
 		await end_of_frame()
 
 	if is_instance_valid(room) and room.is_guest_seated(guest):
 		room.stand_up(guest)
+
+func stop_loop() -> BehaviourSaveData:
+	var guest := npc as NPCGuest
+	if guest != null and is_instance_valid(room) and room.is_guest_seated(guest):
+		room.stand_up(guest)
+	return super.stop_loop()
