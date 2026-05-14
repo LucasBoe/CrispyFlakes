@@ -27,6 +27,12 @@ var isDragging : bool = false
 var isLMBDragging : bool = false
 var zoomFactor : float = 1
 var zoom_tween: Tween
+var _focus_lock_owner = null
+var _focus_lock_target: Node2D = null
+var _focus_lock_offset := Vector2.ZERO
+var _focus_lock_zoom := 2.0
+var _focus_restore_position := Vector2.ZERO
+var _focus_restore_zoom_target := 2.0
 
 func _ready():
 	_rng.randomize()
@@ -40,6 +46,12 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var unscaled_delta := _get_unscaled_delta()
+	if _focus_lock_owner != null:
+		_update_focus_lock(unscaled_delta)
+		clamp_pan_to_bounds()
+		_update_shake(unscaled_delta)
+		return
+
 	handle_zoom(delta)
 	simple_pan(_get_pan_delta(delta, unscaled_delta))
 	click_and_drag()
@@ -234,3 +246,41 @@ func get_camera_world_rect() -> Rect2:
 
 func tween_offset_to_zero() -> Tweener:
 	return create_tween().tween_property(self, "camera_offset_base", Vector2.ZERO, 0.1)
+
+func push_focus_lock(owner, target: Node2D, target_zoom: float = 4.0, target_offset: Vector2 = Vector2.ZERO) -> void:
+	if owner == null or not is_instance_valid(target):
+		return
+
+	if _focus_lock_owner == null:
+		_focus_restore_position = global_position
+		_focus_restore_zoom_target = zoomTarget
+
+	_focus_lock_owner = owner
+	_focus_lock_target = target
+	_focus_lock_offset = target_offset
+	_focus_lock_zoom = clampf(target_zoom, minZoom, maxZoom)
+	isDragging = false
+	isLMBDragging = false
+
+func pop_focus_lock(owner) -> void:
+	if _focus_lock_owner != owner:
+		return
+
+	_focus_lock_owner = null
+	_focus_lock_target = null
+	zoomTarget = _focus_restore_zoom_target
+	zoom = Vector2(zoomTarget, zoomTarget)
+	global_position = _focus_restore_position
+	camera_offset_base = Vector2.ZERO
+
+func _update_focus_lock(unscaled_delta: float) -> void:
+	if not is_instance_valid(_focus_lock_target):
+		_focus_lock_owner = null
+		_focus_lock_target = null
+		return
+
+	zoomTarget = _focus_lock_zoom
+	var lerp_weight := clampf(unscaled_delta * 12.0, 0.0, 1.0)
+	global_position = global_position.lerp(_focus_lock_target.global_position + _focus_lock_offset, lerp_weight)
+	zoom = zoom.lerp(Vector2(_focus_lock_zoom, _focus_lock_zoom), lerp_weight)
+	camera_offset_base = camera_offset_base.lerp(Vector2.ZERO, lerp_weight)

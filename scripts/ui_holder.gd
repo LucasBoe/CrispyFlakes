@@ -5,6 +5,7 @@ class_name UIHolder
 #@onready var room: UIRoom = $UIRoom
 @onready var money : UIMoney = %UIMoney
 @onready var dialogue: UIDialogueHandler = %UIDialogue
+@onready var encounter: UIEncounter = %UIEncounter
 #@onready var time: UITime = $UITime
 @onready var menu: MenuUIHandler = %UIMenu
 #@onready var fullscreen: UIFullscreen = $UIFullscreen

@@ -1,0 +1,102 @@
+[gd_scene load_steps=5 format=3 uid="uid://b7x6p4y77lcp8"]
+
+[ext_resource type="Script" uid="uid://tojldfyvox18" path="res://scripts/ui/ui_encounter.gd" id="1_0ept2"]
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="2_jk80q"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="4_npild"]
+[ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="5_x6e0o"]
+
+[node name="UIEncounter" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ept2")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.5
+offset_top = 48.0
+offset_right = 190.5
+offset_bottom = 124.0
+grow_horizontal = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
+modulate = Color(0, 0, 0, 0.5019608)
+layout_mode = 2
+texture = ExtResource("2_jk80q")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="Container" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/MarginContainer/Container"]
+custom_minimum_size = Vector2(317, 36)
+layout_mode = 2
+theme = ExtResource("4_npild")
+text = "NPC Dialogue Text goes here. How do you wanna react?"
+scroll_active = false
+
+[node name="Buttons" type="HFlowContainer" parent="MarginContainer/MarginContainer/Container"]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="MarginContainer/MarginContainer/Container/Buttons"]
+layout_mode = 2
+theme = ExtResource("4_npild")
+text = "Player Response Example"
+
+[node name="Control" type="Control" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/Control"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_right = 7
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/Control/MarginContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="LineAnchor" type="Control" parent="MarginContainer/Control"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -0.5
+offset_right = 0.5
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 8
+size_flags_vertical = 4
+
+[node name="Line" type="Node2D" parent="MarginContainer/Control/LineAnchor"]
+script = ExtResource("5_x6e0o")
+line_width = 2

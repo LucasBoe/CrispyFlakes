@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=36 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
 [ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://cxmmoxjdg3rho" path="res://scenes/ui/ui_controls.tscn" id="ui_controls"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
@@ -58,6 +59,9 @@ script = ExtResource("15_3fppy")
 unique_name_in_owner = true
 
 [node name="UISelectionPanel" parent="UI" instance=ExtResource("sel_panel")]
+unique_name_in_owner = true
+
+[node name="UIEncounter" parent="UI" instance=ExtResource("ui_encounter")]
 unique_name_in_owner = true
 
 [node name="UIMoney" type="Control" parent="UI"]

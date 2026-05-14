@@ -5,14 +5,18 @@ class_name NPCSpawner
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn");
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
+const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
 const traderWagonScene : PackedScene = preload("res://scenes/npcs/trader_wagon.tscn")
 
 var guests = []
 var workers = []
+var special_npcs = []
 
 func guests_per_day_rate() -> float:
 	return 3.0 + get_active_guest_count() * 0.1
 var next_guest_progression = 1.0
+const SPECIAL_ENCOUNTER_DAYS := 2.0
+var next_special_encounter_progression := 0.0
 
 signal spawned_guest_signal
 
@@ -27,6 +31,10 @@ func _ready():
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)
 	Console.add_command("worker", console_spawn_worker)
 	Console.add_command("workers", console_spawn_workers, ["amount"])
+	Console.add_command("encounter", console_spawn_special_encounter, ["id"], 0, "Spawns a special NPC encounter.")
+	Console.add_command("special", console_spawn_special_encounter, ["id"], 0, "Spawns a random special NPC encounter, or a specific one by id.")
+	Console.add_command("special_npc", console_spawn_special_encounter, ["id"], 0, "Spawns a special NPC encounter.")
+	Console.add_command("special_npcs", console_spawn_special_encounters, ["amount", "id"], 1, "Spawns multiple special NPC encounters.")
 	Console.add_command("wagon", console_spawn_wagon, ["item", "amount"])
 	Console.add_command("trader_wagon", console_spawn_wagon, ["item", "amount"])
 	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
@@ -41,6 +49,12 @@ func _process(delta):
 	if next_guest_progression > 1.0:
 		spawn_new_guest()
 		next_guest_progression = 0.0
+
+	next_special_encounter_progression += delta / (Global.DAY_DURATION * SPECIAL_ENCOUNTER_DAYS)
+	if next_special_encounter_progression > 1.0:
+		if can_spawn_special_encounter():
+			spawn_special_encounter()
+		next_special_encounter_progression = 0.0
 
 func spawn_new_worker(opt_spawn_position = Vector2(-320,0)):
 	var worker = workerScene.instantiate()
@@ -137,6 +151,29 @@ func spawn_sheriff():
 	add_child(sheriff)
 	return sheriff
 
+func spawn_special_encounter(encounter_id: String = "") -> SpecialNPC:
+	var encounter := EncounterCatalog.get_entry(encounter_id) if encounter_id.strip_edges() != "" else EncounterCatalog.get_random_entry()
+	if encounter.is_empty():
+		Console.print_error("No special NPC encounter data found.")
+		return null
+
+	var npc := specialNPCScene.instantiate() as SpecialNPC
+	npc.global_position = Vector2(-320, 0)
+	add_child(npc)
+	npc.init(encounter)
+	special_npcs.append(npc)
+	npc.tree_exiting.connect(func(): special_npcs.erase(npc))
+	npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+	return npc
+
+func can_spawn_special_encounter() -> bool:
+	if Global.UI != null and Global.UI.encounter != null and Global.UI.encounter.is_active():
+		return false
+	for special in special_npcs:
+		if is_instance_valid(special):
+			return false
+	return _has_special_encounter_target()
+
 func spawn_trader_wagon(target_room = null, order_items: Dictionary = {}, debug_stop_x: float = 96.0, debug_travel_y: float = 0.0) -> TraderWagon:
 	if order_items.is_empty():
 		return null
@@ -222,6 +259,18 @@ func console_spawn_workers(amount):
 	print("spawn_workers ", amount)
 	for i in amount.to_int():
 		console_spawn_worker()
+
+func console_spawn_special_encounter(id = ""):
+	var special := spawn_special_encounter(str(id))
+	if special == null:
+		Console.print_error("Failed to spawn special NPC encounter.")
+		return
+	Console.print_line("Spawned special encounter: %s" % special.get_display_name())
+
+func console_spawn_special_encounters(amount, id = ""):
+	var count := maxi(1, str(amount).to_int())
+	for i in count:
+		console_spawn_special_encounter(id)
 
 func console_spawn_wagon(item_name = "", amount = ""):
 	var order_items := _build_console_wagon_order(str(item_name), str(amount))
@@ -315,3 +364,15 @@ func _get_console_wagon_stop_x() -> float:
 
 func _get_console_wagon_travel_y() -> float:
 	return 0.0
+
+func _has_special_encounter_target() -> bool:
+	if Building == null or Building.query == null:
+		return false
+	if not Building.query.all_rooms_of_type(RoomSaloon).is_empty():
+		return true
+	if not Building.query.all_rooms_of_type(RoomBar).is_empty():
+		return true
+	for room: RoomBase in Building.query.all_rooms_of_type(RoomBase):
+		if room != null and not room.is_outside_room and room.y == 0:
+			return true
+	return false

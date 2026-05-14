@@ -47,6 +47,7 @@ func _process(_delta):
 
 	var best_worker: NPCWorker = null
 	var best_guest: NPCGuest = null
+	var best_special: SpecialNPC = null
 	for npc in candidates:
 		if npc is NPCWorker:
 			if best_worker == null or npc.global_position.distance_squared_to(mouse_pos) < best_worker.global_position.distance_squared_to(mouse_pos):
@@ -54,9 +55,14 @@ func _process(_delta):
 		elif npc is NPCGuest and not worker_ui_active:
 			if best_guest == null or npc.global_position.distance_squared_to(mouse_pos) < best_guest.global_position.distance_squared_to(mouse_pos):
 				best_guest = npc
+		elif npc is SpecialNPC:
+			if best_special == null or npc.global_position.distance_squared_to(mouse_pos) < best_special.global_position.distance_squared_to(mouse_pos):
+				best_special = npc
 
 	if best_guest != null and best_worker == null:
 		change_hover(best_guest)
+	elif best_special != null and best_worker == null:
+		change_hover(best_special)
 	elif best_worker != null:
 		change_hover(best_worker)
 	else:
@@ -96,7 +102,9 @@ func _set_outline(node, state) -> void:
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):
 		if is_instance_valid(currently_hovered) and currently_hovered is NPC:
-			currently_hovered.click_on()
+			var click_result = currently_hovered.click_on()
+			if click_result == true:
+				return
 
 		if _run_interceptors(currently_hovered):
 			return

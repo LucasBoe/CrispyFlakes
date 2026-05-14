@@ -112,8 +112,8 @@ func get_ranged_accuracy_multiplier() -> float:
 		return 0.85
 	return 1.0
 
-func get_voluntary_fight_chance(base_chance: float) -> float:
-	if has_trait(TRAIT_HOTHEAD):
+func get_voluntary_fight_chance(base_chance: float, would_start_fight = true) -> float:
+	if not would_start_fight and has_trait(TRAIT_HOTHEAD):
 		return 1.0
 	if has_trait(TRAIT_GUTLESS):
 		return 0.0

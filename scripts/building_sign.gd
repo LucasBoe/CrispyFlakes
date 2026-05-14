@@ -7,6 +7,7 @@ class_name BuildingSign
 @onready var _collision: CollisionShape2D = $Area2D/CollisionShape2D
 
 var saloon_name: String = "My Saloon"
+var rename_locked := false
 var _tween: Tween
 var _outline_material: ShaderMaterial
 
@@ -36,6 +37,9 @@ func set_saloon_name(new_name: String):
 	_label.text = new_name
 	_update_sign_size()
 
+func set_rename_locked(locked: bool) -> void:
+	rename_locked = locked
+
 func _update_sign_size():
 	var font: Font = _label.get_theme_font("font")
 	if font == null:
@@ -64,4 +68,6 @@ func _on_mouse_exited() -> void:
 
 func _on_area_input(_viewport: Viewport, event: InputEvent, _shape_idx: int):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if rename_locked:
+			return
 		Global.UI.rename.show_rename(saloon_name, func(new_name: String): set_saloon_name(new_name))
