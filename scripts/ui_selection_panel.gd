@@ -202,6 +202,8 @@ func _on_click_hovered_node_signal(node):
 
 	if target is NPCWorker:
 		_show_for_worker(target)
+	elif target is SpecialNPC:
+		_show_for_special_npc(target)
 	elif target is NPCGuest:
 		_show_for_guest(target)
 	elif target is RoomBase:
@@ -392,6 +394,13 @@ func _show_for_guest(guest: NPCGuest):
 		need_ui_instances.append(instance)
 		instance.bind_instance(need)
 		instance.show()
+
+func _show_for_special_npc(special: SpecialNPC):
+	header_label.text = special.get_display_name()
+	room_delete_button.hide()
+	hire_guest_button.hide()
+	arrest_button.hide()
+	worker_fight_response_row.hide()
 
 func _rebuild_traits_ui(npc: NPC) -> void:
 	if is_instance_valid(_trait_container):

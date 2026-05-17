@@ -9,7 +9,7 @@
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Texture2D" uid="uid://bg7qwhqk3njmo" path="res://assets/sprites/ui/2x/panel_background.png" id="16_wvm38"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_hud.tscn" id="19_q3hll"]
+[ext_resource type="PackedScene" uid="uid://bfgo4p1ebvy10" path="res://scenes/ui/ui_hud.tscn" id="19_q3hll"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="AudioStream" uid="uid://b7gbjvrqoyka" path="res://assets/audio/ambient/wind_crickets_ambient.wav" id="23_4o78i"]
 [ext_resource type="Texture2D" uid="uid://x4x3aokh7aes" path="res://assets/sprites/ui/time/time-button_play.png" id="25_3ou18"]
@@ -20,8 +20,8 @@
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
 [ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://cxmmoxjdg3rho" path="res://scenes/ui/ui_controls.tscn" id="ui_controls"]
+[ext_resource type="PackedScene" uid="uid://di4ep33x1fqh3" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
 
@@ -326,5 +326,6 @@ parameters/looping = true
 
 [node name="AmbientWind" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("23_4o78i")
+volume_db = -6.0
 autoplay = true
 bus = &"SFX"

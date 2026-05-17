@@ -19,19 +19,18 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Let him take them away",
-					"+30$",
-					"The sheriff tips his hat and starts looking for anyone who needs hauling off.",
+					30,
+					"Much obliged. I'll start rounding up anyone still wearing irons.",
 					[
-						func(_context: EncounterContext) -> void: MoneyHandler.deposit_free(30),
-						func(context: EncounterContext) -> void: context.npc.Behaviour.force_behaviour(CollectBountiesBehaviour),
+						func(context: EncounterContext) -> void: context.npc.Behaviour.set_behaviour(CollectBountiesBehaviour),
 					]
 				),
 				_choice(
 					"Uncuff them and let them stay",
-					"",
-					"The sheriff shrugs and leaves the matter in your hands.",
+					0,
+					"Your saloon, your rules. I'll leave them in your hands.",
 					[
-						func(_context: EncounterContext) -> void: _free_arrested_guests(),
+						func(context: EncounterContext) -> void: context.npc.Behaviour.set_behaviour(ReleaseArrestedBehaviour),
 					]
 				),
 			]
@@ -42,54 +41,42 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Let him search",
-					"",
-					"The sheriff starts a slow official sweep of the saloon.",
+					0,
+					"Fine by me. I'll make this quick and official.",
 					[
-						func(_context: EncounterContext) -> void: Global.NPCSpawner.spawn_sheriff(),
+						func(context: EncounterContext) -> void: context.npc.Behaviour.force_behaviour(CollectBountiesBehaviour),
 					]
 				),
 				_choice(
 					"Bribe him",
-					"-40$",
-					"He pockets the bribe without a word and forgets why he came.",
-					[
-						func(context: EncounterContext) -> void: _apply_money_delta(context.npc, context.choice),
-					]
+					-40,
+					"Well now, seems I've forgotten what brought me here.",
 				),
-				_choice("Threaten him", "", "He narrows his eyes but decides this can wait."),
+				_choice("Threaten him", 0, "Watch your tone. I'm willing to let that slide this once."),
 			]
 		),
 		_encounter(
 			"Snake Oil Salesman",
 			"Step right up, friend. My tonics put fire in the bones and shine in the eyes. Let me sell a spell, and I'll cut you in on the take.",
 			[
-				_choice("Let him sell to your guests", "", "He sets up with a grin and promises the bottles are mostly harmless."),
-				_choice("Send him away", "", "He packs up his miracle bottles and looks for easier marks."),
+				_choice("Let him sell to your guests", 0, "Now that's business. I'll have these miracle bottles moving by sundown."),
+				_choice("Send him away", 0, "Suit yourself. I'll find a crowd with looser pockets."),
 			]
 		),
 		_encounter(
 			"Scientist",
 			"I stand at the brink of genius. All I require is 50 barrels of beer. Do not ask why. When history applauds, your name shall be on the label.",
 			[
-				_choice("Let him stay and promise delivery", "", "He begins drawing diagrams that are either brilliant or deeply unsafe."),
-				_choice("Send him away", "", "He leaves offended, still muttering about history."),
+				_choice("Let him stay and promise delivery", 0, "Excellent. I'll begin the preliminary equations at once, and perhaps a few harmless detonations."),
+				_choice("Send him away", 0, "Then history shall remember that you stood in genius' path."),
 			]
 		),
 		_encounter(
 			"Scientist",
 			"My experiments demand privacy, walls, and preferably fewer explosions near the beds. Give me a proper room, and wonders may follow.",
 			[
-				_choice("Promise Lab (Unlock Lab Room)", "", "He nods with alarming enthusiasm and starts listing required equipment."),
-				_choice("Refuse", "", "He takes his impossible notes elsewhere."),
-			]
-		),
-		_encounter(
-			"Fortune Teller",
-			"The cards whisper of coin, calamity, and one very thirsty ghost. Cross my palm, and I shall tell you which is coming first.",
-			[
-				_choice("Hear her prophecy", "", "She turns a card and smiles like she saw something useful."),
-				_choice("Send her away", "", "The cards vanish into her sleeve before she leaves."),
-				_choice("Later", "", "She promises the future will still be inconvenient later."),
+				_choice("Promise Lab (Unlock Lab Room)", 0, "Splendid. I'll draft a list of necessities, hazards, and likely breakthroughs."),
+				_choice("Refuse", 0, "A shortsighted decision, but I'll take my brilliance elsewhere."),
 			]
 		),
 		_encounter(
@@ -98,14 +85,11 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Let him help",
-					"-50$",
-					"He opens a little black bag full of tools best not inspected closely.",
-					[
-						func(context: EncounterContext) -> void: _apply_money_delta(context.npc, context.choice),
-					]
+					-50,
+					"Wise choice. Don't stare too hard at the instruments and we'll all feel better.",
 				),
-				_choice("Refuse", "", "He clicks his tongue and leaves you to your infections."),
-				_choice("Later", "", "He says he will be back before the next cough turns purple."),
+				_choice("Refuse", 0, "Then enjoy your fevers and missing teeth."),
+				_choice("Later", 0, "Later, then. I'll be back before the next cough turns purple."),
 			]
 		),
 		_encounter(
@@ -114,14 +98,11 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Hire him",
-					"-30$",
-					"He cracks his knuckles and starts hunting for an instrument.",
-					[
-						func(context: EncounterContext) -> void: _apply_money_delta(context.npc, context.choice),
-					]
+					-70,
+					"Now you're talking. Stand back and let me wake this place up.",
 				),
-				_choice("Refuse", "", "He bows, wounded but theatrical."),
-				_choice("Later", "", "He says applause improves with anticipation."),
+				_choice("Refuse", 0, "A tragedy. This room is begging for applause."),
+				_choice("Later", 0, "Fair enough. Anticipation only sweetens the applause."),
 			]
 		),
 		_encounter(
@@ -130,21 +111,19 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Take deal",
-					"+99$",
-					"He pays up and insists the new sign stay exactly as branded.",
+					99,
+					"Fantastic. Put the name up big, ugly, and unforgettable.",
 					[
-						func(context: EncounterContext) -> void: _apply_money_delta(context.npc, context.choice),
-						func(_context: EncounterContext) -> void: _open_sign_rename(true),
+						func(_context: EncounterContext) -> void: _rename_sign_to_advertisement(true),
 					]
 				),
-				_choice("Refuse", "", "He leaves muttering about untapped brand synergy."),
+				_choice("Refuse", 0, "Your loss. That sign could've been a legend in branding."),
 				_choice(
 					"Ask for 200$",
-					"+200$?",
-					"He sighs, agrees to the bigger price, and demands naming rights in return.",
+					200,
+					"Two hundred it is, but I want full naming rights and no artistic objections.",
 					[
-						func(context: EncounterContext) -> void: _apply_money_delta(context.npc, context.choice),
-						func(_context: EncounterContext) -> void: _open_sign_rename(true),
+						func(_context: EncounterContext) -> void: _rename_sign_to_advertisement(true),
 					]
 				),
 			]
@@ -172,44 +151,28 @@ static func _encounter(name: String, line: String, choices: Array[Dictionary]) -
 		"choices": choices,
 	}
 
-static func _choice(text: String, price_label: String, outcome_text: String, effects: Array[Callable] = []) -> Dictionary:
+static func _choice(text: String, money_delta: int, outcome_text: String, effects: Array[Callable] = []) -> Dictionary:
 	return {
 		"text": text,
-		"price_label": price_label,
+		"money_delta": money_delta,
 		"effects": effects,
 		"outcome_text": outcome_text,
-		"money_delta": _extract_money_delta(price_label),
 	}
 
-static func _extract_money_delta(text: String) -> int:
-	if text == "":
-		return 0
-
-	var regex := RegEx.new()
-	regex.compile("([+-]?\\d+)\\$")
-	var result := regex.search(text)
-	if result == null:
-		return 0
-	return int(result.get_string(1))
-
-static func _apply_money_delta(npc: SpecialNPC, choice: Dictionary) -> void:
-	var money_delta := int(choice.get("money_delta", 0))
-	if money_delta > 0:
-		ResourceHandler.add_animated(Enum.Resources.MONEY, money_delta, npc.global_position + Vector2(0, -20))
-	elif money_delta < 0 and ResourceHandler.has_money(abs(money_delta)):
-		ResourceHandler.spend_animated(abs(money_delta), npc.global_position + Vector2(0, -20))
-
-static func _free_arrested_guests() -> void:
-	for guest: NPCGuest in Global.NPCSpawner.guests:
-		if is_instance_valid(guest) and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
-			guest.force_behaviour(IdleBehaviour)
-
-static func _open_sign_rename(lock_after_rename: bool) -> void:
+static func _rename_sign_to_advertisement(lock_after_rename: bool) -> void:
 	var sign := Building.get_node_or_null("SaloonSign") as BuildingSign
 	if sign == null:
 		return
-	Global.UI.rename.show_rename(sign.saloon_name, func(new_name: String):
-		sign.set_saloon_name(new_name)
-		if lock_after_rename:
-			sign.set_rename_locked(true)
-	)
+	var ad_names := [
+		"Cooper's Cure-All™ Saloon",
+		"Brought To You By Frontier Tobacco®",
+		"The Official Saloon of Prairie Lager™",
+		"Dusty Boot™ — Taste The West!",
+		"Colt's Choice® — Drink Responsibly",
+		"Buffalo Brand™ Beverages & Spirits",
+		"Sponsored By Rusty Spur Tonic Co.®",
+		"A Prairie Wind™ Production",
+	]
+	sign.set_saloon_name(ad_names.pick_random())
+	if lock_after_rename:
+		sign.set_rename_locked(true)

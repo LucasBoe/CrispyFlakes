@@ -15,7 +15,7 @@ var special_npcs = []
 func guests_per_day_rate() -> float:
 	return 3.0 + get_active_guest_count() * 0.1
 var next_guest_progression = 1.0
-const SPECIAL_ENCOUNTER_DAYS := 2.0
+const SPECIAL_ENCOUNTER_DAYS := 4.0
 var next_special_encounter_progression := 0.0
 
 signal spawned_guest_signal
@@ -167,6 +167,8 @@ func spawn_special_encounter(encounter_id: String = "") -> SpecialNPC:
 	return npc
 
 func can_spawn_special_encounter() -> bool:
+	if get_active_guest_count() < 10:
+		return false
 	if Global.UI != null and Global.UI.encounter != null and Global.UI.encounter.is_active():
 		return false
 	for special in special_npcs:

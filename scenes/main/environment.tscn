@@ -285,3 +285,14 @@ position = Vector2(-562, -9)
 material = ExtResource("10_n0wds")
 position = Vector2(-566, -4)
 texture = ExtResource("17_ghof4")
+
+[node name="FulllscreenDarkenRect" type="ColorRect" parent="."]
+visible = false
+z_index = 4080
+z_as_relative = false
+offset_left = -3000.0
+offset_top = -3250.0
+offset_right = 3500.0
+offset_bottom = 3250.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.5019608)

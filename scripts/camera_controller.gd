@@ -4,6 +4,7 @@ const zoomSpeed : float = 10
 const minZoom: float = 0.5
 const maxZoom: float = 6.0
 const panBounds: Rect2 = Rect2(Vector2(-1920,-1080), Vector2(3840,2160))
+const FOCUS_LOCK_LERP_SPEED := 6.0
 
 
 var zoomTarget : float = 1
@@ -280,7 +281,7 @@ func _update_focus_lock(unscaled_delta: float) -> void:
 		return
 
 	zoomTarget = _focus_lock_zoom
-	var lerp_weight := clampf(unscaled_delta * 12.0, 0.0, 1.0)
+	var lerp_weight := clampf(unscaled_delta * FOCUS_LOCK_LERP_SPEED, 0.0, 1.0)
 	global_position = global_position.lerp(_focus_lock_target.global_position + _focus_lock_offset, lerp_weight)
 	zoom = zoom.lerp(Vector2(_focus_lock_zoom, _focus_lock_zoom), lerp_weight)
 	camera_offset_base = camera_offset_base.lerp(Vector2.ZERO, lerp_weight)

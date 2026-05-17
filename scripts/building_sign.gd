@@ -61,6 +61,8 @@ func _update_sign_size():
 	(_collision.shape as RectangleShape2D).size.x = sign_w
 
 func _on_mouse_entered() -> void:
+	if rename_locked:
+		return
 	_outline_material.set_shader_parameter("outline_color", Color.WHITE)
 
 func _on_mouse_exited() -> void:

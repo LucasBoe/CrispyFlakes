@@ -2,8 +2,6 @@ extends NPC
 class_name SpecialNPC
 
 var encounter_data: Dictionary = {}
-var _waiting_for_encounter_click := false
-var _encounter_click_requested := false
 
 func init(data: Dictionary = {}) -> void:
 	encounter_data = data.duplicate(true)
@@ -20,24 +18,7 @@ func _process(delta: float) -> void:
 		Behaviour.set_behaviour(SpecialNPCEncounterBehaviour)
 
 func click_on() -> bool:
-	if not _waiting_for_encounter_click:
-		return false
-	_encounter_click_requested = true
-	return true
-
-func set_waiting_for_encounter_click(waiting: bool) -> void:
-	_waiting_for_encounter_click = waiting
-	if waiting:
-		_encounter_click_requested = false
-
-func is_waiting_for_encounter_click() -> bool:
-	return _waiting_for_encounter_click
-
-func consume_encounter_click_request() -> bool:
-	if not _encounter_click_requested:
-		return false
-	_encounter_click_requested = false
-	return true
+	return false
 
 func _apply_random_look() -> void:
 	if Animator == null:

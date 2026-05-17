@@ -1,5 +1,7 @@
 extends Node2D
 
+const ROOM_PLACE_DUST_SCENE = preload("res://scenes/room_place_dust_particles.tscn")
+
 enum BuildMode {
 	NONE,
 	ROOM,
@@ -125,9 +127,11 @@ func _is_footprint_empty(target_location: Vector2i) -> bool:
 				return false
 	return true
 
-func _refresh_tiles_after_fall(impact_strength: float, impact_duration: float) -> void:
+func _refresh_tiles_after_fall(impact_strength: float, impact_duration: float, room: Node2D) -> void:
 	Building.update_foreground_tiles()
 	Camera.add_shake(impact_strength, impact_duration)
+	if is_instance_valid(room):
+		_spawn_place_dust(room)
 
 func _input(event):
 	if not is_placing:
@@ -236,13 +240,19 @@ func _input(event):
 						var tween = placed_room.create_tween()
 						tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
 							.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-						tween.finished.connect(_refresh_tiles_after_fall.bind(impact_strength, 0.12), CONNECT_ONE_SHOT)
+						tween.finished.connect(_refresh_tiles_after_fall.bind(impact_strength, 0.12, placed_room), CONNECT_ONE_SHOT)
 					else:
 						Building.update_foreground_tiles()
 						Camera.add_shake()
+						var placed_room_a = Building.get_room_from_index(placement_location)
+						if placed_room_a != null:
+							_spawn_place_dust(placed_room_a)
 				else:
 					Building.update_foreground_tiles()
 					Camera.add_shake()
+					var placed_room_b = Building.get_room_from_index(placement_location)
+					if placed_room_b != null:
+						_spawn_place_dust(placed_room_b)
 
 				if building_data == Building.room_data_horse_post and not had_horse_post_before_build:
 					var placed_post := Building.get_room_from_index(placement_location) as RoomHorsePost
@@ -284,3 +294,11 @@ func _input(event):
 			highlights[idx].global_position = Building.global_position_from_room_index(location + Vector2i(col, row)) + Vector2(-24, -48)
 			highlights[idx].modulate = h_color
 			idx += 1
+
+func _spawn_place_dust(room: Node2D) -> void:
+	var dust := ROOM_PLACE_DUST_SCENE.instantiate() as GPUParticles2D
+	room.add_child(dust)
+	dust.global_position = room.get_center_floor_position()
+	dust.finished.connect(dust.queue_free)
+	dust.restart()
+	dust.emitting = true
