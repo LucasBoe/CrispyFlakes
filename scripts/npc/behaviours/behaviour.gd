@@ -167,6 +167,15 @@ func move(target, custom_speed = -1):
 			await end_of_frame()
 
 
+func follow_inside(target: NPC, custom_speed = -1):
+	while is_instance_valid(target) and not target.Navigation.is_heading_outside():
+		npc.Navigation.set_target(target, custom_speed)
+		while is_instance_valid(target) and not target.Navigation.is_heading_outside() and is_instance_valid(npc) and npc.Navigation.is_moving:
+			if not npc.Navigation.is_on_stair_path():
+				npc.Navigation.refresh_target_path()
+			await end_of_frame()
+
+
 func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
 	var closest: RoomBase = null
 	var closest_dist := INF

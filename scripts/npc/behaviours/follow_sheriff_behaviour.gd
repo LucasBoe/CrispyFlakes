@@ -8,8 +8,7 @@ func loop():
 	npc.Animator.handcuffs.show()
 	npc.Animator.set_escort_target(sheriff)
 
-	while is_instance_valid(sheriff):
-		await move(sheriff)
+	await follow_inside(sheriff)
 
 	# Sheriff left — follow out
 	await move(Global.LEAVE_POSITION)

@@ -119,7 +119,6 @@ func _process(_delta):
 		coin_pitch_target = maxf(coin_pitch_target, lerp(PITCH_TARGET_SMALL, PITCH_TARGET_LARGE, t))
 		if coins_played_in_session == 0:
 			coin_pitch = lerp(PITCH_START_SMALL, PITCH_START_LARGE, t)
-		print("coin pitch: ", coin_pitch, " remaining: ", remaining)
 		SoundPlayer.play_coin(coin_pitch)
 		if remaining == 0:
 			coin_pitch = PITCH_START_LARGE

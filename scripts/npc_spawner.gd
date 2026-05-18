@@ -2,7 +2,8 @@ extends Node2D
 
 class_name NPCSpawner
 
-const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn");
+const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn")
+const FollowRandomGuestBehaviourScript = preload("res://scripts/npc/behaviours/follow_random_guest_behaviour.gd")
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
@@ -40,6 +41,8 @@ func _ready():
 	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
 	Console.add_command_autocomplete_list("trader_wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
 	Console.add_command("follow_test", console_follow_test)
+	Console.add_command("follow_guest", console_follow_guest_test)
+	Console.add_command("arrest_all", console_arrest_all, ["fine"], 0, "Marks all guests for arrest and adds a fine.")
 
 func _process(delta):
 	if not Global.should_auto_spawn_guests:
@@ -304,6 +307,14 @@ func console_spawn_wagon(item_name = "", amount = ""):
 	else:
 		Console.print_line("Spawned trader wagon test ride carrying %s." % [", ".join(cargo_parts)])
 
+func console_follow_guest_test():
+	if guests.size() < 2:
+		Console.print_error("Need at least 2 guests to test following.")
+		return
+	var follower: NPCGuest = guests.pick_random()
+	follower.force_behaviour(FollowRandomGuestBehaviourScript)
+	Console.print_line("Guest %s is now following a random other guest." % follower.name)
+
 func console_follow_test():
 	if workers.is_empty():
 		print("follow_test: no workers to follow")
@@ -314,6 +325,20 @@ func console_follow_test():
 		var target_worker: NPCWorker = workers.pick_random()
 		var follow_b := guest.force_behaviour(FollowSheriffBehaviour) as FollowSheriffBehaviour
 		follow_b.sheriff = target_worker
+
+func console_arrest_all(fine = 50) -> void:
+	var fine_amount: int = maxi(0, str(fine).to_int()) if fine != null else 50
+	var count := 0
+	print("[ArrestAll] guests=%d fine=%d" % [guests.size(), fine_amount])
+	for guest: NPCGuest in guests.duplicate():
+		if not is_instance_valid(guest):
+			continue
+		var bname: String = guest.Behaviour.behaviour_instance.get_script().resource_path.get_file() if guest.Behaviour.behaviour_instance != null else "null"
+		print("[ArrestAll] arresting %s (behaviour=%s)" % [guest.name, bname])
+		BountyHandler.add_fine(guest, fine_amount)
+		guest.force_behaviour(ArrestedBehaviour)
+		count += 1
+	Console.print_line("Arrested %d guests with a $%d fine each." % [count, fine_amount])
 
 func _find_console_trading_office() -> RoomTradingOffice:
 	if Building == null or Building.query == null:

@@ -3,7 +3,6 @@ class_name CollectBountiesBehaviour
 
 func loop():
 	_narrative = ["Rounding up the criminals...", "Here for the bounty...", "Looking for the arrested..."].pick_random()
-	# Keep checking for newly arrested guests until none are left.
 	while true:
 		var to_take_away := _get_next_arrested()
 		if not is_instance_valid(to_take_away):
@@ -15,6 +14,10 @@ func loop():
 		if not is_instance_valid(to_take_away):
 			continue
 
+		var current_behaviour := to_take_away.Behaviour.behaviour_instance
+		if not (current_behaviour is ArrestedBehaviour):
+			continue
+
 		if _has_penalty(to_take_away):
 			_collect_bounty(to_take_away)
 			var follow_b := to_take_away.force_behaviour(FollowSheriffBehaviour) as FollowSheriffBehaviour
@@ -22,7 +25,6 @@ func loop():
 		else:
 			to_take_away.Behaviour.set_behaviour(IdleBehaviour)
 
-	# Walk out
 	_narrative = ["Heading out...", "Job done.", "Taking them away..."].pick_random()
 	await move(Global.LEAVE_POSITION)
 
@@ -35,7 +37,10 @@ func _get_next_arrested() -> NPCGuest:
 func _get_all_arrested() -> Array:
 	var result = []
 	for guest : NPCGuest in Global.NPCSpawner.guests:
-		if is_instance_valid(guest) and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+		if not is_instance_valid(guest):
+			continue
+		var b = guest.Behaviour.behaviour_instance
+		if b is ArrestedBehaviour:
 			result.append(guest)
 	return result
 

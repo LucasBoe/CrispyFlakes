@@ -86,6 +86,7 @@ func get_next_behaviour():
 		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):
 			return NeedSickWardBehaviour
 		if Status.has_status(Enum.NpcStatus.INJURED):
+			print("[Guest] INJURED guest picking NeedTreatmentBehaviour — was this supposed to be arrested?")
 			return NeedTreatmentBehaviourScript
 
 	if ConflictResponseHandler.is_marked_for_arrest(self):

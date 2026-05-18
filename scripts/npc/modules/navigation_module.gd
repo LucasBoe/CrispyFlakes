@@ -1,7 +1,8 @@
 extends Node2D
 class_name NavigationModule
 
-var _debug = true
+var _debug = false
+var _debug_inside_notification: UiNotifications.instance_info = null
 
 var npc: NPC
 var current_room_index
@@ -49,6 +50,9 @@ func _process(delta):
 	npc.Animator.direction = target_path[0] - npc.global_position
 	npc.global_position = npc.global_position.move_toward(target_path[0], delta * move_speed)
 	_check_inside_outside_transition()
+
+	if _debug:
+		_draw_debug_path()
 
 
 func stop_navigation():
@@ -149,13 +153,10 @@ func refresh_target_path() -> void:
 	_has_leave_gate = false
 
 	var final_target: Vector2
-	#if target_final is NPC:
-		# Navigate to the room the target NPC is currently in rather than their
-		# exact position — room centers are stable, so path refreshes mid-stair
-		# don't cause oscillation.
-		#var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
-		#final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
-	if target_final is RoomBase:
+	if target_final is NPC:
+		var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
+		final_target = target_room.get_center_floor_position() if target_room != null else (target_final as NPC).global_position
+	elif target_final is RoomBase:
 		var target_room := target_final as RoomBase
 		refresh_room_index()
 		final_target = _get_room_center_floor_position(target_room, target_room.y)
@@ -176,31 +177,15 @@ func refresh_target_path() -> void:
 
 	final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
 
-	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate() and not _is_inside and not _is_outside_target(final_target):
+	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate():
 		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
 		if bouncer_room != null:
-			var path_from_bouncer: Array[RoomBase] = _find_room_path(bouncer_room, goal_room)
-			if not path_from_bouncer.is_empty():
-				target_path.append(bouncer_room.get_center_floor_position())
-				for i in range(path_from_bouncer.size() - 1):
-					_append_transition_to_target_path(path_from_bouncer[i], path_from_bouncer[i + 1], i == path_from_bouncer.size() - 2)
-				target_path.append(final_target)
-				_has_enter_gate = true
-				_enter_gate_position = bouncer_room.get_center_floor_position()
-				return
-
-	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate() and _is_inside and _is_outside_target(final_target):
-		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
-		if bouncer_room != null:
-			var path_to_bouncer: Array[RoomBase] = _find_room_path(start_room, bouncer_room)
-			if not path_to_bouncer.is_empty():
-				for i in range(path_to_bouncer.size() - 1):
-					_append_transition_to_target_path(path_to_bouncer[i], path_to_bouncer[i + 1], i == path_to_bouncer.size() - 2)
-				target_path.append(bouncer_room.get_center_floor_position())
-				target_path.append(final_target)
-				_has_leave_gate = true
-				_leave_gate_position = bouncer_room.get_center_floor_position()
-				return
+			if not _is_inside and not _is_outside_target(final_target):
+				if _apply_enter_gate(bouncer_room, goal_room, final_target):
+					return
+			elif _is_inside and _is_outside_target(final_target):
+				if _apply_leave_gate(bouncer_room, start_room, final_target):
+					return
 
 	var room_path := _find_room_path(start_room, goal_room)
 	if room_path.is_empty():
@@ -395,6 +380,34 @@ func _draw_room_path(path: Array[RoomBase], valid: bool, start_pos: Vector2, goa
 		DebugDraw2D.line(path[i].get_center_position(), path[i + 1].get_center_position(), color)
 
 
+func _apply_enter_gate(bouncer_room: RoomBouncer, goal_room: RoomBase, final_target: Vector2) -> bool:
+	var path: Array[RoomBase] = _find_room_path(bouncer_room, goal_room)
+	if path.is_empty():
+		return false
+	var bouncer_pos: Vector2 = bouncer_room.get_center_floor_position()
+	target_path.append(bouncer_pos)
+	for i in range(path.size() - 1):
+		_append_transition_to_target_path(path[i], path[i + 1], i == path.size() - 2)
+	target_path.append(final_target)
+	_has_enter_gate = true
+	_enter_gate_position = bouncer_pos
+	return true
+
+
+func _apply_leave_gate(bouncer_room: RoomBouncer, start_room: RoomBase, final_target: Vector2) -> bool:
+	var path: Array[RoomBase] = _find_room_path(start_room, bouncer_room)
+	if path.is_empty():
+		return false
+	var bouncer_pos: Vector2 = bouncer_room.get_center_floor_position()
+	for i in range(path.size() - 1):
+		_append_transition_to_target_path(path[i], path[i + 1], i == path.size() - 2)
+	target_path.append(bouncer_pos)
+	target_path.append(final_target)
+	_has_leave_gate = true
+	_leave_gate_position = bouncer_pos
+	return true
+
+
 func _on_waypoint_arrived(pos: Vector2) -> void:
 	if _has_enter_gate and pos.distance_to(_enter_gate_position) < 2.0:
 		_has_enter_gate = false
@@ -402,6 +415,7 @@ func _on_waypoint_arrived(pos: Vector2) -> void:
 		_try_frisk_at_bouncer()
 	if _has_leave_gate and pos.distance_to(_leave_gate_position) < 2.0:
 		_has_leave_gate = false
+		_is_inside = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
 
@@ -426,6 +440,15 @@ func _try_frisk_at_bouncer() -> void:
 
 func _should_ignore_bouncer_gate() -> bool:
 	return target_final is NPC
+
+func is_heading_outside() -> bool:
+	if not _is_inside:
+		return true
+	if target_final is Vector2:
+		return _is_outside_target(target_final)
+	if target_final is Node2D:
+		return _is_outside_target((target_final as Node2D).global_position)
+	return false
 
 func _is_outside_target(pos: Vector2) -> bool:
 	var room := Building.query.room_at_floor_position(pos) as RoomBase
@@ -605,5 +628,28 @@ func _debug_waypoint_label(pos: Vector2) -> String:
 	]
 
 
+func _draw_debug_path() -> void:
+	if target_path.is_empty():
+		return
+	var prev := global_position
+	for point: Vector2 in target_path:
+		var dy: float = abs(point.y - prev.y)
+		var suspicious: bool = dy > 24.0 and _stair_waypoints_remaining == 0
+		DebugDraw2D.line(prev, point, Color.RED if suspicious else Color.CYAN)
+		prev = point
+	DebugDraw2D.circle(target_path.back(), 3.0, 8, Color.YELLOW)
+
+
 func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:
 	DebugDraw2D.line(start_pos, goal_pos, Color.GREEN if valid else Color.RED)
+
+
+func _update_debug_inside_label() -> void:
+	var text: String = "INSIDE" if _is_inside else "OUTSIDE"
+	if _debug_inside_notification == null:
+		_debug_inside_notification = UiNotifications.create_notification_dynamic(text, npc, Vector2(0, -48))
+		_debug_inside_notification.is_permanent = true
+		_debug_inside_notification.lifetime_left = INF
+	else:
+		var label: Label = _debug_inside_notification.instance.get_node("MarginContainer/HBoxContainer/Label")
+		label.text = text

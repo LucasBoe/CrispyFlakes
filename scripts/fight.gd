@@ -279,6 +279,7 @@ func _knock_out(npc: NPC) -> void:
 	if guest != null and guest.Status != null:
 		guest.Status.set_status(Enum.NpcStatus.INJURED)
 		InjuryHandler.on_guest_injured(guest)
+		print("[Fight] Guest knocked out and marked INJURED — fight_type=%s" % FightType.keys()[fight_type])
 
 func clear_health_bars() -> void:
 	for npc in health_bars.keys():
@@ -369,6 +370,12 @@ func _apply_workers_won() -> void:
 		if fight_type == FightType.BRAWL and guest.look_info != null:
 			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY)
 		ConflictResponseHandler.unmark_for_arrest(guest)
+		var is_injured := (guest.Status != null and guest.Status.has_status(Enum.NpcStatus.INJURED))
+		var prev_b := guest.Behaviour.behaviour_instance
+		print("[Fight] Workers won — arresting guest injured=%s prev_behaviour=%s" % [
+			is_injured,
+			prev_b.get_script().resource_path.get_file() if prev_b != null else "null"
+		])
 		guest.force_behaviour(ArrestedBehaviour)
 
 func _should_apply_worker_win_to_guest(guest: NPCGuest) -> bool:

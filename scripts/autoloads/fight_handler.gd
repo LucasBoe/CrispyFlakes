@@ -57,6 +57,9 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
 	fight.make_join_fight(guest)
 
 func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> void:
+	if guest.Traits != null and guest.Traits.refuses_voluntary_fights():
+		guest.force_behaviour(ArrestedBehaviour)
+		return
 	var fight := _create_fight(guest.global_position)
 	fight.fight_type = Fight.FightType.ARREST
 	fight.make_join_fight(guest)
@@ -266,26 +269,20 @@ func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
 	if not npc.Traits.refuses_voluntary_fights():
 		return false
 	if fight.has_participant(npc):
-		_debug_gutless_panic(npc, fight, "skip already in fight")
 		return false
 	var fight_position := get_fight_position(fight)
 	var in_range := is_within_fight_detection_range(fight_position, npc.global_position)
-	_debug_gutless_panic(npc, fight, "range check", fight_position, npc.global_position, in_range)
 	if not in_range:
 		return false
 	if npc is NPCWorker and NPCWorker.picked_up_npc == npc:
-		_debug_gutless_panic(npc, fight, "skip picked up")
 		return false
 	if npc.Behaviour == null:
-		_debug_gutless_panic(npc, fight, "skip no behaviour module")
 		return false
 
 	var current = npc.Behaviour.behaviour_instance
 	if current != null and current.get_script() == PanicBehaviourScript:
-		_debug_gutless_panic(npc, fight, "skip already panicking")
 		return false
 	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
-		_debug_gutless_panic(npc, fight, "skip blocked behaviour %s" % _behaviour_name(current))
 		return false
 	return true
 
