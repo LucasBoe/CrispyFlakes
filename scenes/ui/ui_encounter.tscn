@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://di4ep33x1fqh3"]
+[gd_scene load_steps=5 format=3 uid="uid://b7x6p4y77lcp8"]
 
 [ext_resource type="Script" uid="uid://tojldfyvox18" path="res://scripts/ui/ui_encounter.gd" id="1_0ept2"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="2_jk80q"]
@@ -58,8 +58,8 @@ layout_mode = 2
 
 [node name="Button" type="Button" parent="MarginContainer/MarginContainer/Container/Buttons"]
 layout_mode = 2
-theme = ExtResource("4_npild")
 size_flags_horizontal = 3
+theme = ExtResource("4_npild")
 
 [node name="ContentMargin" type="MarginContainer" parent="MarginContainer/MarginContainer/Container/Buttons/Button"]
 layout_mode = 1

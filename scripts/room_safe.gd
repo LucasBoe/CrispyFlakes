@@ -13,6 +13,9 @@ func init_room(_x: int, _y: int):
 		MoneyHandler.changed.connect(_update_money_visual)
 	_update_money_visual()
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func _update_money_visual() -> void:
 	if data == null:
 		return

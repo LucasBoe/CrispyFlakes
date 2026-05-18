@@ -93,6 +93,7 @@ var _gambling_jackpot_buttons: Array[Button] = []
 var _gambling_guest_buy_in_rows: Array[HBoxContainer] = []
 var _bound_hire_guest = null
 var _bound_hire_cost: int = -1
+var _bound_hire_block_reason: String = ""
 var _bound_arrest_guest = null
 var _bound_arrest_state: String = ""
 var _bound_worker_conflict = null
@@ -234,6 +235,7 @@ func _clear_instances():
 	_is_satisfaction_log_expanded = true
 	_bound_hire_guest = null
 	_bound_hire_cost = -1
+	_bound_hire_block_reason = ""
 	_bound_arrest_guest = null
 	_bound_arrest_state = ""
 	_bound_worker_conflict = null
@@ -735,7 +737,9 @@ func _update_gambling_status(room: RoomGambling) -> void:
 	var link_target = null
 	var link_text := ""
 
-	if room.should_warn_no_jackpot() or room.should_warn_start_requirements():
+	if room.should_warn_waiting_for_round():
+		status_color = Color.ORANGE
+	elif room.should_warn_no_jackpot() or room.should_warn_start_requirements():
 		status_color = Color.YELLOW
 
 	if room.worker:
@@ -1067,6 +1071,7 @@ func do_hide():
 	_follow_side = 0
 	_bound_hire_guest = null
 	_bound_hire_cost = -1
+	_bound_hire_block_reason = ""
 	_bound_arrest_guest = null
 	_bound_arrest_state = ""
 	_bound_worker_conflict = null
@@ -1237,19 +1242,28 @@ func _bind_guest_hire_button(guest: NPCGuest):
 		hire_guest_button.hide()
 		_bound_hire_guest = null
 		_bound_hire_cost = -1
+		_bound_hire_block_reason = ""
 		return
 
 	var cost = guest.Traits.get_hire_cost()
-	if _bound_hire_guest == guest and _bound_hire_cost == cost:
+	var block_reason := Global.NPCSpawner.get_guest_hire_block_reason(guest)
+	if _bound_hire_guest == guest and _bound_hire_cost == cost and _bound_hire_block_reason == block_reason:
 		return
 
 	_bound_hire_guest = guest
 	_bound_hire_cost = cost
+	_bound_hire_block_reason = block_reason
 	Util.disconnect_all_pressed(hire_guest_button)
-	hire_guest_button.disabled = false
-	hire_guest_button.text = "Hire for %d$" % cost
+	hire_guest_button.disabled = block_reason != ""
+	hire_guest_button.text = block_reason if block_reason != "" else "Hire for %d$" % cost
 	hire_guest_button.pressed.connect(func():
 		if not is_instance_valid(guest):
+			return
+		var current_block_reason := Global.NPCSpawner.get_guest_hire_block_reason(guest)
+		if current_block_reason != "":
+			var btn_center = hire_guest_button.global_position + hire_guest_button.size / 2
+			UiNotifications.create_notification_ui(current_block_reason.to_lower(), btn_center, null, Color.ORANGE)
+			_bind_guest_hire_button(guest)
 			return
 		if not ResourceHandler.has_money(cost):
 			var btn_center = hire_guest_button.global_position + hire_guest_button.size / 2
@@ -1257,10 +1271,12 @@ func _bind_guest_hire_button(guest: NPCGuest):
 			return
 
 		hire_guest_button.disabled = true
-		ResourceHandler.change_money(-cost)
 		var worker := Global.NPCSpawner.hire_guest_as_worker(guest)
 		if is_instance_valid(worker):
+			ResourceHandler.change_money(-cost)
 			manually_select(worker)
+		else:
+			_bind_guest_hire_button(guest)
 	)
 
 func _process(delta):

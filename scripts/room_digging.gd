@@ -28,6 +28,9 @@ func init_room(_x: int, _y: int):
 	_refresh_dig_layout()
 	set_dig_progress(0.0)
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func set_dig_progress(progress: float) -> void:
 	var frame_index: int = clampi(floori(progress * float(frame_count - 1)), 0, frame_count - 1)
 	background_sprite.frame = frame_index

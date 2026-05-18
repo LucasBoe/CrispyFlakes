@@ -75,7 +75,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("4_xap66")
-text = "Workers: 3"
+text = "Workers: 0"
 
 [node name="Button" type="Button" parent="MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer"]
 custom_minimum_size = Vector2(23, 23)

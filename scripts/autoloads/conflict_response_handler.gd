@@ -17,6 +17,9 @@ func is_marked_for_arrest(guest) -> bool:
 func can_be_arrested(guest) -> bool:
 	return is_instance_valid(guest) and guest is NPCGuest and not guest.is_on_horse()
 
+func can_worker_respond_to_position(worker: NPCWorker, position: Vector2) -> bool:
+	return _can_worker_respond(worker, position)
+
 func _process(_delta: float) -> void:
 	if Global.NPCSpawner == null:
 		return
@@ -30,16 +33,12 @@ func try_join_brawl(fight: Fight) -> bool:
 	if not _can_join_brawl(fight):
 		return false
 
-	var response_position := _get_fight_response_position(fight)
-	if response_position == Vector2.INF:
-		return false
-
 	var joined := false
 	for worker: NPCWorker in Global.NPCSpawner.workers:
 		if not is_instance_valid(worker):
 			continue
 		
-		if not _can_worker_respond(worker, response_position):
+		if not FightHandler.can_worker_respond_to_fight(worker, fight):
 			continue
 		if fight.has_participant(worker):
 			continue
@@ -106,15 +105,6 @@ func _has_active_guest_participant(fight: Fight) -> bool:
 		if is_instance_valid(guest):
 			return true
 	return false
-
-func _get_fight_response_position(fight: Fight) -> Vector2:
-	for participant in fight.participants:
-		var npc := participant as NPC
-		if is_instance_valid(npc):
-			return npc.global_position
-	if fight.room != null:
-		return fight.room.get_center_floor_position()
-	return Vector2.INF
 
 func _is_in_active_fight(guest) -> bool:
 	if not can_be_arrested(guest):

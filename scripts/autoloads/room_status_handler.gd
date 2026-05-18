@@ -59,7 +59,10 @@ func notification_loop():
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomGambling:
 					var gambling := r as RoomGambling
-					if gambling.should_warn_no_jackpot():
+					if gambling.should_warn_waiting_for_round():
+						notify(r, gambling.get_waiting_round_warning_text(), Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
+					elif gambling.should_warn_no_jackpot():
 						notify(r, "no jackpot", Color.YELLOW, null, false)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 					elif gambling.should_warn_start_requirements():

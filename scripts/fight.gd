@@ -33,6 +33,8 @@ var state: State = State.GATHERING
 var result: Result = Result.NONE
 var has_started: bool = false
 var is_over: bool = false
+var start_not_before_time: float = 0.0
+var keep_alive_until_time: float = 0.0
 
 const DRUNK_FIGHT_BOUNTY: int = 2
 const MELEE_ATTACK_RANGE: float = 16.0
@@ -170,14 +172,19 @@ func _can_target(attacker: NPC, target: NPC) -> bool:
 	return true
 
 func _compute_fight_positions(a: NPC, b: NPC) -> void:
-	var dir := a.global_position - b.global_position
-	if dir.length() < 0.01:
-		dir = Vector2.RIGHT
-	dir = dir.normalized()
+	var dir_x := sign(a.global_position.x - b.global_position.x)
+	if is_zero_approx(dir_x):
+		dir_x = 1.0
 	var mid := (a.global_position + b.global_position) / 2.0
+	if room != null:
+		var room_width := float(room.data.width if room.data != null else 1) * 48.0
+		var side_offset := MELEE_ATTACK_RANGE / 2.0
+		var min_x := room.global_position.x + side_offset + 4.0
+		var max_x := room.global_position.x + room_width - side_offset - 4.0
+		mid = Vector2(clampf(mid.x, min_x, max_x), room.get_center_floor_position().y)
 	# Place each NPC on opposite sides of the midpoint, MELEE_ATTACK_RANGE apart total
-	fight_positions[a] = mid + dir * (MELEE_ATTACK_RANGE / 2.0)
-	fight_positions[b] = mid - dir * (MELEE_ATTACK_RANGE / 2.0)
+	fight_positions[a] = mid + Vector2(dir_x * (MELEE_ATTACK_RANGE / 2.0), 0.0)
+	fight_positions[b] = mid - Vector2(dir_x * (MELEE_ATTACK_RANGE / 2.0), 0.0)
 
 func _move_to_fight_position(participant: NPC, pos: Vector2) -> void:
 	if participant.Navigation == null:
@@ -191,6 +198,9 @@ func _hold_position_for_attack(participant: NPC) -> void:
 
 func _try_attack(attacker: NPC, target: NPC) -> void:
 	if pending_attacks.has(attacker):
+		return
+	if not _is_in_melee_range(attacker, target):
+		_compute_fight_positions(attacker, target)
 		return
 
 	var last_attack_time := float(last_attack.get(attacker, -MELEE_ATTACK_SPEED))
@@ -244,7 +254,15 @@ func _can_apply_pending_attack(attacker: NPC, target: NPC, active_participants: 
 		return false
 	if _get_fight_behaviour(attacker) == null or _get_fight_behaviour(target) == null:
 		return false
+	if not _is_in_melee_range(attacker, target):
+		return false
 	return true
+
+func _is_in_melee_range(attacker: NPC, target: NPC) -> bool:
+	if not is_instance_valid(attacker) or not is_instance_valid(target):
+		return false
+	var diff := target.global_position - attacker.global_position
+	return absf(diff.y) <= MELEE_ARRIVE_THRESHOLD and absf(diff.x) <= MELEE_ATTACK_RANGE + MELEE_ARRIVE_THRESHOLD
 
 func _get_attack_damage(attacker: NPC, target: NPC) -> float:
 	var outgoing = attacker.Traits.get_melee_damage_multiplier()

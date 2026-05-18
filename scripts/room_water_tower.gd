@@ -30,6 +30,9 @@ func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.WATER_TOWER
 	_update_visual()
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func is_full() -> bool:
 	return current_water >= MAX_WATER
 

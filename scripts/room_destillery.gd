@@ -5,6 +5,9 @@ func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.DESTILLERY
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func _on_module_bought(module) -> void:
 	if not module.bought:
 		return

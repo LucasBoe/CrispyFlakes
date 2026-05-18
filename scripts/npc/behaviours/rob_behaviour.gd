@@ -2,6 +2,9 @@ extends FightBehaviour
 class_name RobBehaviour
 
 const ROBBERY_FINE := 5
+const PRE_FIGHT_PAUSE := 1.0
+const POST_FIGHT_PAUSE := 1.0
+const THREAT_TEXT := "gimme $$$"
 
 var _target_location: Vector2i = Vector2i(-9999, -9999)
 
@@ -20,7 +23,13 @@ func loop():
 	_narrative = ["Moving on the safe...", "Going for the loot...", "Heading for the money..."].pick_random()
 	await move(target_room.get_random_floor_position())
 
-	FightHandler.create_rob_fight(npc, target_room)
+	_narrative = ["Demanding the cash...", "Starting a robbery...", "Threatening the staff..."].pick_random()
+	fight = FightHandler.create_rob_fight(npc, target_room, PRE_FIGHT_PAUSE)
+	UiNotifications.create_notification_dynamic(THREAT_TEXT, npc, Vector2(0, -40), null, Color.RED, PRE_FIGHT_PAUSE + 0.75)
+	await pause(PRE_FIGHT_PAUSE)
+	if stopped or not is_instance_valid(target_room) or fight == null:
+		return
+
 	if npc is NPCGuest:
 		BountyHandler.add_fine(npc, ROBBERY_FINE, "Robbery")
 	arrived_at_room = true
@@ -29,6 +38,10 @@ func loop():
 	while not fight.is_over:
 		await end_of_frame()
 
+	if stopped:
+		return
+	_narrative = ["Grabbing the loot...", "Stuffing pockets...", "Making a break for it..."].pick_random()
+	await pause(POST_FIGHT_PAUSE)
 	if stopped:
 		return
 

@@ -20,6 +20,11 @@ var needs_cleaning: bool:
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.BED_CLEANER
 	super.init_room(_x, _y)
+	if current_module == null:
+		_set_active_beds_from_children(self)
+
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
 
 func _on_module_bought(module) -> void:
 	if module.bought:
@@ -27,14 +32,20 @@ func _on_module_bought(module) -> void:
 
 func _set_active_module(module) -> void:
 	current_module = module
+	_set_active_beds_from_children(module)
+
+func _set_active_beds_from_children(parent: Node) -> void:
 	_active_beds.clear()
 	current_guests.clear()
 	_bed_occupants.clear()
 	_dirty_beds.clear()
-	for child in module.get_children():
-		if child is Sprite2D:
-			_active_beds.append(child)
+	for child in parent.get_children():
+		if _is_bed_sprite(child):
+			_active_beds.append(child as Sprite2D)
 	_refresh_visual()
+
+func _is_bed_sprite(node: Node) -> bool:
+	return node is Sprite2D and node.has_node("Bed_Front")
 
 func is_used_by_other_then(npc: NPC) -> bool:
 	if _active_beds.is_empty():

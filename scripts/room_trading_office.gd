@@ -19,6 +19,9 @@ func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.TRADING_OFFICE
 	_refresh_progress_bar()
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func has_assigned_worker() -> bool:
 	return is_instance_valid(worker)
 

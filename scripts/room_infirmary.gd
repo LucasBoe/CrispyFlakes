@@ -17,6 +17,9 @@ func init_room(_x: int, _y: int) -> void:
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.DOCTOR
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func _process(_delta: float) -> void:
 	_timeout_old_requests()
 

@@ -13,6 +13,9 @@ func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.BATH
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func uses_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and Building.infrastructure.room_has_service(self, &"water")
 

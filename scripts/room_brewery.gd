@@ -10,6 +10,9 @@ func init_room(_x : int, _y : int):
 		ProgressionHandler.flag_unlocked.connect(_on_progression_flag_unlocked)
 	_apply_progression_upgrade()
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func _on_module_bought(module) -> void:
 	if not module.bought:
 		return

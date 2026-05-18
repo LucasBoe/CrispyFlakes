@@ -47,14 +47,19 @@ func has_drunk_fight_opportunity(guest: NPCGuest) -> bool:
 		return true
 	return _has_nearby_brawl_responder(guest)
 
-func create_rob_fight(guest: NPCGuest, room: RoomBase) -> void:
+func create_rob_fight(guest: NPCGuest, room: RoomBase, start_delay := 0.0) -> Fight:
 	var existing := get_fight_for_room(room)
 	if existing != null:
 		existing.make_join_fight(guest)
-		return
+		return existing
 	var fight := _create_fight(room.get_center_floor_position())
+	fight.room = room
 	fight.fight_type = Fight.FightType.ROBBERY
+	fight.start_not_before_time = Global.time_now + start_delay
+	fight.keep_alive_until_time = fight.start_not_before_time
 	fight.make_join_fight(guest)
+	SoundPlayer.play_alarm(true)
+	return fight
 
 func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> void:
 	if guest.Traits != null and guest.Traits.refuses_voluntary_fights():
@@ -91,11 +96,13 @@ func _process(_delta: float) -> void:
 			fight.handle_fight()
 			continue
 
-		if fight.get_active_participants().size() >= 2:
+		if fight.get_active_participants().size() >= 2 and Global.time_now >= fight.start_not_before_time:
 			fight.start_fight()
 			continue
 
 		if fight.fight_type != Fight.FightType.ARREST and fight.participants.size() <= 1:
+			if Global.time_now < fight.keep_alive_until_time:
+				continue
 			if not ConflictResponseHandler.try_join_brawl(fight) and not _try_attract_brawlers(fight):
 				end_fight(fight)
 
@@ -290,6 +297,23 @@ func is_within_fight_detection_range(a: Vector2, b: Vector2) -> bool:
 	var diff := b - a
 	return abs(diff.x) < 96.0 and abs(diff.y) < 16.0
 
+func can_worker_respond_to_fight(worker: NPCWorker, fight: Fight) -> bool:
+	if not is_instance_valid(worker) or fight == null or not is_instance_valid(fight):
+		return false
+	if fight.is_over or fight.room == null:
+		return false
+	if not worker.should_fight_conflicts():
+		return false
+	if NPCWorker.picked_up_npc == worker:
+		return false
+	if worker.Behaviour == null or worker.Behaviour.behaviour_instance is FightBehaviour:
+		return false
+	if worker.Behaviour.behaviour_instance is KnockedOutBehaviour:
+		return false
+	if worker.Navigation != null and not worker.Navigation.is_room_reachable(fight.room):
+		return false
+	return is_within_fight_detection_range(get_fight_position(fight), worker.global_position)
+
 func is_fight_near_room(room: RoomBase) -> bool:
 	if not is_instance_valid(room):
 		return false
@@ -368,6 +392,14 @@ func _is_in_active_fight(npc: NPC) -> bool:
 	return false
 
 func _get_closest_indoor_room(position: Vector2) -> RoomBase:
+	var exact := Building.query.room_at_floor_position(position) as RoomBase
+	if exact != null and not exact.is_outside_room:
+		return exact
+
+	var same_floor := Building.query.closest_on_position_floor(RoomBase, position) as RoomBase
+	if same_floor != null and not same_floor.is_outside_room:
+		return same_floor
+
 	var closest: RoomBase = null
 	var closest_dist := INF
 	for floor_rooms: Dictionary in Building.floors.values():

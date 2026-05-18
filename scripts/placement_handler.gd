@@ -1,6 +1,7 @@
 extends Node2D
 
 const ROOM_PLACE_DUST_SCENE = preload("res://scenes/room_place_dust_particles.tscn")
+const INVALID_TARGET_ICON = preload("res://assets/sprites/ui/icon_exclaimation.png")
 
 enum BuildMode {
 	NONE,
@@ -19,6 +20,8 @@ var highlights : Array = []
 var custom_placement_check = null
 
 var previous_notification = null
+var _invalid_target_reason := "target invalid"
+var _invalid_target_icon: Texture = null
 
 func start_building(data : RoomData, check):
 	build_mode = BuildMode.ROOM
@@ -127,6 +130,34 @@ func _is_footprint_empty(target_location: Vector2i) -> bool:
 				return false
 	return true
 
+func _set_invalid_target_reason(reason: String, icon: Texture = null) -> void:
+	_invalid_target_reason = reason
+	_invalid_target_icon = icon
+
+func _reset_invalid_target_reason() -> void:
+	_set_invalid_target_reason("target invalid", INVALID_TARGET_ICON)
+
+func _validate_room_footprint(target_location: Vector2i) -> bool:
+	for col in building_data.width:
+		for row in building_data.height:
+			var cell_location := target_location + Vector2i(col, row)
+			var cell = Building.get_room_from_index(cell_location)
+			if _requires_existing_empty_basement_footprint(target_location):
+				if cell == null:
+					_set_invalid_target_reason("requires digging first", Enum.placement_limit_to_icon(Enum.PlacementLimit.BELOW_GROUND))
+					return false
+				if cell is RoomDigging:
+					_set_invalid_target_reason("digging in progress")
+					return false
+				if cell is not RoomEmpty:
+					_set_invalid_target_reason("space occupied")
+					return false
+				continue
+			if cell != null and not cell is RoomEmpty:
+				_set_invalid_target_reason("space occupied")
+				return false
+	return true
+
 func _refresh_tiles_after_fall(impact_strength: float, impact_duration: float, room: Node2D) -> void:
 	Building.update_foreground_tiles()
 	Camera.add_shake(impact_strength, impact_duration)
@@ -145,14 +176,15 @@ func _input(event):
 	location = Building.round_room_index_from_global_position(mouse)
 	var validation_location := location
 	var has_wrong_placement_category = false
+	_reset_invalid_target_reason()
 
 	if _is_building_room():
 		landed_location = _get_landed_location(location)
 		validation_location = location if _has_direct_empty_override(location) else landed_location
 
-		has_valid_target = _is_footprint_empty(location)
+		has_valid_target = _validate_room_footprint(location)
 		if validation_location != location:
-			has_valid_target = has_valid_target && _is_footprint_empty(validation_location)
+			has_valid_target = has_valid_target && _validate_room_footprint(validation_location)
 
 		var has_adjacent_room_or_is_ground_floor = false
 		if location.y < 0:
@@ -173,29 +205,42 @@ func _input(event):
 				if location.y == 0:
 					has_adjacent_room_or_is_ground_floor = true
 
-		has_valid_target = has_valid_target && has_adjacent_room_or_is_ground_floor
+		if has_valid_target and not has_adjacent_room_or_is_ground_floor:
+			if location.y < 0:
+				_set_invalid_target_reason("connect to existing room")
+			else:
+				_set_invalid_target_reason("needs support below")
+			has_valid_target = false
 
 		if not building_data.is_outdoor and validation_location.y >= 0:
 			for col in building_data.width:
 				var ground_room = Building.get_room_from_index(Vector2i(validation_location.x + col, 0))
 				if ground_room is RoomOutsideBase:
 					has_valid_target = false
+					_set_invalid_target_reason("requires indoor room")
 
 		match building_data.placement_limit:
 			Enum.PlacementLimit.ABOVE_GROUND:
 				if validation_location.y < 0:
 					has_valid_target = false
 					has_wrong_placement_category = true
+					_set_invalid_target_reason("only above ground", Enum.placement_limit_to_icon(building_data.placement_limit))
 			Enum.PlacementLimit.BELOW_GROUND:
 				if validation_location.y >= 0:
 					has_valid_target = false
 					has_wrong_placement_category = true
+					_set_invalid_target_reason("only below ground", Enum.placement_limit_to_icon(building_data.placement_limit))
 	else:
 		landed_location = location
 		has_valid_target = Building.infrastructure.can_place(infrastructure_data, validation_location)
+		if not has_valid_target:
+			_set_invalid_target_reason(_get_infrastructure_invalid_reason(validation_location))
 
 	if custom_placement_check:
-		has_valid_target = has_valid_target && custom_placement_check.call(validation_location)
+		var custom_valid: bool = custom_placement_check.call(validation_location)
+		if not custom_valid:
+			_set_invalid_target_reason(_get_custom_placement_invalid_reason(validation_location))
+		has_valid_target = has_valid_target && custom_valid
 
 	var has_money = ResourceHandler.has_money(active_data.construction_price)
 	var can_place = has_valid_target && has_money
@@ -278,9 +323,13 @@ func _input(event):
 			if not has_valid_target:
 				if previous_notification:
 					UiNotifications.try_kill(previous_notification)
-				var icon = Enum.placement_limit_to_icon(building_data.placement_limit) if has_wrong_placement_category else load("res://assets/sprites/ui/icon_exclaimation.png")
-				previous_notification = UiNotifications.create_notification_static("target invalid", mouse, icon, Color.RED)
-				print("target invalid")
+				var icon = _invalid_target_icon
+				if icon == null and has_wrong_placement_category and building_data != null:
+					icon = Enum.placement_limit_to_icon(building_data.placement_limit)
+				if icon == null:
+					icon = INVALID_TARGET_ICON
+				previous_notification = UiNotifications.create_notification_static(_invalid_target_reason, mouse, icon, Color.RED)
+				print(_invalid_target_reason)
 			elif not has_money:
 				if previous_notification:
 					UiNotifications.try_kill(previous_notification)
@@ -294,6 +343,40 @@ func _input(event):
 			highlights[idx].global_position = Building.global_position_from_room_index(location + Vector2i(col, row)) + Vector2(-24, -48)
 			highlights[idx].modulate = h_color
 			idx += 1
+
+func _get_custom_placement_invalid_reason(target_location: Vector2i) -> String:
+	if building_data == Building.room_data_digging:
+		if target_location.y >= 0:
+			return "only below ground"
+		if Building.get_room_from_index(target_location) != null:
+			return "space occupied"
+		return "dig from existing room"
+	if building_data != null and (building_data.is_outdoor or building_data == Building.room_data_bouncer):
+		return "only ground floor"
+	return "target invalid"
+
+func _get_infrastructure_invalid_reason(target_location: Vector2i) -> String:
+	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.WATER_LAYER:
+		if Building.infrastructure.has_data_at(target_location, BuildingInfrastructure.WATER_LAYER):
+			return "pipe already placed"
+		var room := Building.get_room_from_index(target_location) as RoomBase
+		if Building.infrastructure.room_provides_layer(room, BuildingInfrastructure.WATER_LAYER):
+			return "tower supplies here"
+		if room == null:
+			return "requires a room"
+		if target_location.y > 0 and not _has_room_or_pipe_support_below(target_location):
+			return "needs support below"
+		if Building.infrastructure.get_provider_rooms(BuildingInfrastructure.WATER_LAYER).is_empty():
+			return "needs water tower"
+		return "connect to water line"
+	return "target invalid"
+
+func _has_room_or_pipe_support_below(target_location: Vector2i) -> bool:
+	var below := target_location + Vector2i(0, -1)
+	var room_below := Building.get_room_from_index(below) as RoomBase
+	if room_below != null and room_below is not RoomEmpty:
+		return true
+	return Building.infrastructure.has_data_at(below, BuildingInfrastructure.WATER_LAYER)
 
 func _spawn_place_dust(room: Node2D) -> void:
 	var dust := ROOM_PLACE_DUST_SCENE.instantiate() as GPUParticles2D

@@ -12,6 +12,9 @@ var _highlights_active: bool = false
 
 func _ready() -> void:
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
+	GlobalEventHandler.on_room_created_signal.connect(_on_worker_capacity_changed)
+	GlobalEventHandler.on_room_deleted_signal.connect(_on_worker_capacity_changed)
+	Global.NPCSpawner.worker_count_changed_signal.connect(_on_jobs_changed)
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_destroy_npc)
 	HoverHandler.click_hovered_node_signal.connect(_on_click_hovered_node)
 	visibility_changed.connect(_on_visibility_changed)
@@ -25,7 +28,10 @@ func _on_visibility_changed() -> void:
 
 func _on_jobs_changed() -> void:
 	var idle_count: int = JobHandler.count_workers_in(Enum.Jobs.IDLE)
-	label_workers.text = str("Workers: ", Global.NPCSpawner.workers.size())
+	var worker_count := Global.NPCSpawner.get_worker_count()
+	label_workers.text = "Workers: %d" % worker_count
+	label_workers.remove_theme_color_override("font_color")
+
 	if idle_count > 0:
 		label_idles.text = "Idles"
 		label_idles.add_theme_color_override("font_color", Color(1, 0.65, 0, 1))
@@ -38,6 +44,9 @@ func _on_jobs_changed() -> void:
 
 	if _highlights_active:
 		_apply_highlights()
+
+func _on_worker_capacity_changed(_room: RoomBase) -> void:
+	_on_jobs_changed()
 
 func _on_destroy_npc(npc) -> void:
 	if npc is not NPCWorker:

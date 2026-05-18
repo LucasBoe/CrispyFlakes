@@ -77,7 +77,7 @@ func _run_startup_sequence() -> void:
 			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
 				Global.UI.menu.build_tab.tab_cointainer,
-				1,
+				Building.room_data_bar.room_type,
 				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_bar),
 				func(): return not Building.query.all_rooms_of_type(RoomBar).is_empty()
 			)
@@ -132,7 +132,7 @@ func _run_startup_sequence() -> void:
 			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
 				Global.UI.menu.build_tab.tab_cointainer,
-				0,
+				Building.room_data_table.room_type,
 				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_table),
 				func(): return not Building.query.all_rooms_of_type(RoomTable).is_empty()
 			)
@@ -204,7 +204,7 @@ func create_skip_tutorial_button() -> CanvasLayer:
 	return skip_layer
 
 func _spawn_tutorial_worker() -> NPCWorker:
-	var worker := Global.NPCSpawner.spawn_new_worker(Vector2(-320, 0)) as NPCWorker
+	var worker := Global.NPCSpawner.spawn_new_worker(Vector2(-320, 0), true) as NPCWorker
 	if worker == null:
 		return null
 	

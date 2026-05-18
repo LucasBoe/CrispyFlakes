@@ -107,12 +107,15 @@ func _get_contiguous_queue_span(direction: int) -> int:
 func get_notification_position():
 	return global_position + Vector2(2, -32)
 
-func get_job_capacity(job = null) -> int:
+func get_associated_job_capacity(job = null) -> int:
 	if job == null:
 		job = associated_job
 	if associated_job == null or job != associated_job:
 		return 0
 	return 1
+
+func get_job_capacity(job = null) -> int:
+	return 0
 
 func get_service_price() -> int:
 	return 0

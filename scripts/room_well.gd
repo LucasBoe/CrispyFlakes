@@ -27,6 +27,9 @@ func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.WELL
 	_update_visuals()
 
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func get_draw_duration() -> float:
 	if current_module and current_module.action_duration > 0.0:
 		return current_module.action_duration

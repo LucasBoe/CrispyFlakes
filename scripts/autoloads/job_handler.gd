@@ -59,10 +59,17 @@ func count_workers_in(job):
 	
 func count_rooms_for(job):
 	var count = 0
-	for floor in Building.floors.values():
-		for room : RoomBase in floor.values():
-			count += room.get_job_capacity(job)
+	for room: RoomBase in _get_unique_rooms():
+		count += room.get_job_capacity(job)
 	
+	return count
+
+func get_worker_capacity() -> int:
+	var count := 0
+	for room: RoomBase in _get_unique_rooms():
+		if room.associated_job == null:
+			continue
+		count += room.get_job_capacity(room.associated_job)
 	return count
 
 # find idle person and change their job to new job
@@ -94,3 +101,23 @@ func fire_worker(worker):
 			j.erase(worker)
 			
 	worker.destroy()
+
+func _get_unique_rooms() -> Array[RoomBase]:
+	var rooms: Array[RoomBase] = []
+	var seen := {}
+
+	if not is_instance_valid(Building):
+		return rooms
+
+	for floor in Building.floors.values():
+		for candidate in floor.values():
+			var room := candidate as RoomBase
+			if room == null or not is_instance_valid(room):
+				continue
+			var instance_id := room.get_instance_id()
+			if seen.has(instance_id):
+				continue
+			seen[instance_id] = true
+			rooms.append(room)
+
+	return rooms

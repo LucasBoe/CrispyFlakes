@@ -70,6 +70,12 @@ func get_seated_guest_count() -> int:
 func should_warn_no_jackpot() -> bool:
 	return not active_round and get_seated_guest_count() > 0 and not has_selected_jackpot()
 
+func should_warn_waiting_for_round() -> bool:
+	return not active_round and get_seated_guest_count() > 0
+
+func get_waiting_round_warning_text() -> String:
+	return "No Round Started"
+
 func has_required_round_participants() -> bool:
 	return _has_required_round_participants(_get_live_participants().size())
 
@@ -193,6 +199,8 @@ func get_round_status_text() -> String:
 		if not has_required_round_participants():
 			return "Waiting for Players (%d/%d)" % [get_seated_guest_count(), max_guest_count]
 		return "Round in Progress (%d/%d)" % [matches_played, MATCH_COUNT]
+	if should_warn_waiting_for_round():
+		return "Guests Waiting - No Round"
 	if should_warn_no_jackpot():
 		return "No Jackpot"
 	if not last_summary.is_empty():

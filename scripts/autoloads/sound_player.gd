@@ -81,9 +81,11 @@ func play_npc_notification() -> void:
 	_play_global(_NPC_NOTIFICATION_STREAM, -12.0, 0.98, 1.02)
 
 
-func play_alarm() -> void:
-	if not _can_play_cooldown(&"alarm", _ALARM_COOLDOWN_MS):
+func play_alarm(force := false) -> void:
+	if not force and not _can_play_cooldown(&"alarm", _ALARM_COOLDOWN_MS):
 		return
+	if force:
+		_last_sound_times_ms[&"alarm"] = Time.get_ticks_msec()
 	_play_global(_ALARM_STREAM, -6.0, 1.0, 1.0)
 
 func play_talk(world_position: Vector2) -> void:

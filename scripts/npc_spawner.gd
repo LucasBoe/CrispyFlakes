@@ -21,6 +21,7 @@ const SPECIAL_ENCOUNTER_DAYS := 4.0
 var next_special_encounter_progression := 0.0
 
 signal spawned_guest_signal
+signal worker_count_changed_signal
 
 func _init():
 	Global.NPCSpawner = self
@@ -60,14 +61,36 @@ func _process(delta):
 			spawn_special_encounter()
 		next_special_encounter_progression = 0.0
 
-func spawn_new_worker(opt_spawn_position = Vector2(-320,0)):
+func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false):
+	if not ignore_worker_limit and not can_hire_worker():
+		return null
+
 	var worker = workerScene.instantiate()
 	worker.global_position = opt_spawn_position
 	add_child(worker)
 
 	workers.append(worker)
-	worker.tree_exiting.connect(func(): workers.erase(worker)) # keep list free of freed instances
+	worker_count_changed_signal.emit()
+	worker.tree_exiting.connect(func():
+		workers.erase(worker)
+		worker_count_changed_signal.emit()
+	) # keep list free of freed instances
 	return worker
+
+func get_worker_count() -> int:
+	for i in range(workers.size() - 1, -1, -1):
+		if not is_instance_valid(workers[i]):
+			workers.remove_at(i)
+	return workers.size()
+
+func get_worker_limit() -> int:
+	return JobHandler.get_worker_capacity()
+
+func can_hire_worker() -> bool:
+	return true
+
+func get_worker_hire_block_reason() -> String:
+	return ""
 
 func get_active_guest_count() -> int:
 	var count := 0
@@ -78,8 +101,29 @@ func get_active_guest_count() -> int:
 			count += 1
 	return count
 
+func get_guest_hire_block_reason(guest: NPCGuest) -> String:
+	if not is_instance_valid(guest):
+		return "Unavailable"
+	var gambling_room := get_gambling_room_for_guest(guest)
+	if gambling_room != null and not gambling_room.has_active_round():
+		return "Waiting for Round"
+	return get_worker_hire_block_reason()
+
+func can_hire_guest(guest: NPCGuest) -> bool:
+	return get_guest_hire_block_reason(guest) == ""
+
+func get_gambling_room_for_guest(guest: NPCGuest) -> RoomGambling:
+	if not is_instance_valid(guest):
+		return null
+	for room: RoomGambling in Building.query.all_rooms_of_type(RoomGambling):
+		if is_instance_valid(room) and room.is_guest_seated(guest):
+			return room
+	return null
+
 func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 	if not is_instance_valid(guest):
+		return null
+	if not can_hire_guest(guest):
 		return null
 
 	# Release any active guest behaviour state (toilet queues, occupied stalls, etc.)
@@ -89,6 +133,9 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 		guest.Navigation.stop_navigation()
 
 	var worker := spawn_new_worker(guest.global_position) as NPCWorker
+	if worker == null:
+		return null
+
 	worker.Traits.copy_from(guest.Traits)
 	worker.restore_energy()
 	worker.apply_trait_conflict_preference()
@@ -260,6 +307,8 @@ func console_spawn_guests(amount, adj):
 func console_spawn_worker():
 	print("spawn_worker")
 	var _worker = spawn_new_worker() as NPCWorker
+	if _worker == null:
+		Console.print_error(get_worker_hire_block_reason())
 
 func console_spawn_workers(amount):
 	print("spawn_workers ", amount)
