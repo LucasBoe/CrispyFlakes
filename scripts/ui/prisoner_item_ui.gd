@@ -19,6 +19,8 @@ func init(p: NPCGuest, b: int, f: int = 0) -> void:
 	var total = bounty + fine
 	fill_duration = total / 10.0
 	bounty_label.text = str(bounty + fine, "$")
+	tooltip_text = _get_payout_details()
+	bounty_label.tooltip_text = tooltip_text
 
 	var mat := npc_texture.material as ShaderMaterial
 	if mat != null and prisoner.look_info != null:
@@ -54,7 +56,19 @@ func _on_pressed() -> void:
 	ResourceHandler.change_money(bounty + fine)
 	if prisoner.look_info != null:
 		BountyHandler.npc_bounties.erase(prisoner.look_info)
-	BountyHandler.npc_fight_fines.erase(prisoner)
+	BountyHandler.clear_fine(prisoner)
 
 	prisoner.force_behaviour(NeedLeaveBehaviour)
 	queue_free()
+
+func _get_payout_details() -> String:
+	var parts := PackedStringArray()
+	if bounty > 0:
+		parts.append("Bounty ($%d)" % bounty)
+	if fine > 0:
+		var summary := BountyHandler.get_fine_summary_for(prisoner)
+		if summary != "":
+			parts.append("Fine: %s" % summary)
+		else:
+			parts.append("Fine ($%d)" % fine)
+	return "\n".join(parts)

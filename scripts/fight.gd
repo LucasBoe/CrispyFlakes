@@ -368,7 +368,7 @@ func _apply_workers_won() -> void:
 			continue
 		_debug("worker win apply %s" % _npc_debug(guest))
 		if fight_type == FightType.BRAWL and guest.look_info != null:
-			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY)
+			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY, "Brawling")
 		ConflictResponseHandler.unmark_for_arrest(guest)
 		var is_injured := (guest.Status != null and guest.Status.has_status(Enum.NpcStatus.INJURED))
 		var prev_b := guest.Behaviour.behaviour_instance

@@ -8,6 +8,7 @@ const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
 const traderWagonScene : PackedScene = preload("res://scenes/npcs/trader_wagon.tscn")
+const ROBBER_SPAWN_CHANCE := 0.1
 
 var guests = []
 var workers = []
@@ -121,7 +122,7 @@ func spawn_new_guest():
 
 	#robber stuff
 	if guests.size() > 10 and workers.size() > 2:
-		if randf() < 1.1:
+		if randf() < ROBBER_SPAWN_CHANCE:
 			guest.is_robber = true
 
 	# bounty stuff
@@ -335,7 +336,7 @@ func console_arrest_all(fine = 50) -> void:
 			continue
 		var bname: String = guest.Behaviour.behaviour_instance.get_script().resource_path.get_file() if guest.Behaviour.behaviour_instance != null else "null"
 		print("[ArrestAll] arresting %s (behaviour=%s)" % [guest.name, bname])
-		BountyHandler.add_fine(guest, fine_amount)
+		BountyHandler.add_fine(guest, fine_amount, "Arrest order")
 		guest.force_behaviour(ArrestedBehaviour)
 		count += 1
 	Console.print_line("Arrested %d guests with a $%d fine each." % [count, fine_amount])

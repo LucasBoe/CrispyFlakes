@@ -22,7 +22,7 @@ func loop():
 
 	FightHandler.create_rob_fight(npc, target_room)
 	if npc is NPCGuest:
-		BountyHandler.add_fine(npc, ROBBERY_FINE)
+		BountyHandler.add_fine(npc, ROBBERY_FINE, "Robbery")
 	arrived_at_room = true
 	npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)
 

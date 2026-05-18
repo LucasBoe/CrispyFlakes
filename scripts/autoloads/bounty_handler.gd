@@ -4,7 +4,10 @@ extends Node
 var npc_bounties : Dictionary = {}
 # Dict of NPCGuest -> int — outstanding fines such as fight or robbery fines
 var npc_fight_fines : Dictionary = {}
+var npc_fine_reasons: Dictionary = {}
 var active_looks : Array = []
+
+const DEFAULT_FINE_REASON := "Fine"
 
 func _ready():
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_npc_destroyed)
@@ -12,13 +15,48 @@ func _ready():
 func create_bounty(look: NPCLookInfo, amount: int):
 	npc_bounties[look] = amount
 
-func create_fight_fine(npc: NPCGuest, amount: int):
-	add_fine(npc, amount)
+func create_fight_fine(npc: NPCGuest, amount: int, reason: String = "Brawling"):
+	add_fine(npc, amount, reason)
 
-func add_fine(npc: NPCGuest, amount: int) -> void:
+func add_fine(npc: NPCGuest, amount: int, reason: String = DEFAULT_FINE_REASON) -> void:
 	if not is_instance_valid(npc) or amount <= 0:
 		return
 	npc_fight_fines[npc] = int(npc_fight_fines.get(npc, 0)) + amount
+	_add_fine_reason(npc, amount, reason)
+
+func get_fine_reason_entries_for(npc: NPC) -> Array:
+	if npc_fine_reasons.has(npc):
+		return npc_fine_reasons[npc].duplicate(true)
+	var fine = get_fight_fine_for(npc)
+	if fine != null:
+		return [{amount = int(fine), reason = DEFAULT_FINE_REASON}]
+	return []
+
+func get_fine_summary_for(npc: NPC) -> String:
+	var entries := get_fine_reason_entries_for(npc)
+	if entries.is_empty():
+		return ""
+	var parts := PackedStringArray()
+	for entry: Dictionary in entries:
+		parts.append("%s ($%d)" % [str(entry.get("reason", DEFAULT_FINE_REASON)), int(entry.get("amount", 0))])
+	return ", ".join(parts)
+
+func clear_fine(npc: NPC) -> void:
+	npc_fight_fines.erase(npc)
+	npc_fine_reasons.erase(npc)
+
+func _add_fine_reason(npc: NPCGuest, amount: int, reason: String) -> void:
+	var clean_reason := reason.strip_edges()
+	if clean_reason == "":
+		clean_reason = DEFAULT_FINE_REASON
+	var entries: Array = npc_fine_reasons.get(npc, [])
+	for entry: Dictionary in entries:
+		if str(entry.get("reason", "")) == clean_reason:
+			entry["amount"] = int(entry.get("amount", 0)) + amount
+			npc_fine_reasons[npc] = entries
+			return
+	entries.append({amount = amount, reason = clean_reason})
+	npc_fine_reasons[npc] = entries
 
 func activate(look: NPCLookInfo):
 	active_looks.append(look)
@@ -72,3 +110,4 @@ func _hue_distance(a: float, b: float) -> float:
 func _on_npc_destroyed(npc: NPC):
 	if npc.look_info != null:
 		deactivate(npc.look_info)
+	clear_fine(npc)

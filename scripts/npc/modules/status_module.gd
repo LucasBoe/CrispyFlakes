@@ -51,7 +51,11 @@ func get_entries() -> Array:
 	if has_status(Enum.NpcStatus.HAS_OUTSTANDING_FINE):
 		var guest: NPCGuest = npc as NPCGuest
 		var fine = BountyHandler.get_fight_fine_for(guest)
-		entries.append({label = str("Outstanding Fine (", fine, "$)")})
+		var reason := BountyHandler.get_fine_summary_for(guest)
+		var fine_text := reason
+		if fine_text == "":
+			fine_text = str(fine, "$")
+		entries.append({label = str("Outstanding Fine: ", fine_text)})
 	elif has_status(Enum.NpcStatus.MARKED_FOR_ARREST) or has_status(Enum.NpcStatus.ARRESTED):
 		if not has_status(Enum.NpcStatus.KNOWN_FUGITIVE):
 			entries.append({label = "Has No Bounty or Fine"})
