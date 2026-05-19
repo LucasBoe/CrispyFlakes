@@ -15,6 +15,10 @@ var _outline_sources: Dictionary = {}
 
 const backwallDefault = preload("res://assets/sprites/back-wall.png");
 const backwallBasement = preload("res://assets/sprites/back-wall_basement.png");
+const ROOM_MONEY_SPRITESHEET = preload("res://assets/sprites/room_money_spritesheet.png")
+const ROOM_MONEY_HFRAMES := 16
+const ROOM_MONEY_MAX_VISUAL_AMOUNT := 500.0
+const ROOM_MONEY_Z_INDEX := -5
 const backwallVariants : Array = [
 	preload("res://assets/sprites/back-wall.png"),
 	preload("res://assets/sprites/back-wall_window1.png"),
@@ -23,6 +27,7 @@ const backwallVariants : Array = [
 ]
 
 signal on_destroy_signal
+var _room_money_sprite: Sprite2D = null
 
 func init_room(x : int, y : int):
 	self.x = x
@@ -44,6 +49,8 @@ func init_room(x : int, y : int):
 				module.bought_changed.connect(_on_module_bought)
 				if module.bought:
 					_on_module_bought(module)
+
+	_setup_room_money_visual()
 
 func _on_module_bought(module) -> void:
 	if not module.bought:
@@ -107,15 +114,57 @@ func _get_contiguous_queue_span(direction: int) -> int:
 func get_notification_position():
 	return global_position + Vector2(2, -32)
 
+func _setup_room_money_visual() -> void:
+	if data == null or data.money_capacity <= 0 or data == Building.room_data_safe:
+		return
+	if MoneyHandler.changed.is_connected(_update_room_money_visual):
+		return
+
+	_room_money_sprite = Sprite2D.new()
+	_room_money_sprite.texture = ROOM_MONEY_SPRITESHEET
+	_room_money_sprite.hframes = ROOM_MONEY_HFRAMES
+	_room_money_sprite.centered = true
+	_room_money_sprite.z_index = ROOM_MONEY_Z_INDEX
+	_room_money_sprite.position = _get_room_money_visual_position()
+	_room_money_sprite.visible = false
+	add_child(_room_money_sprite)
+
+	MoneyHandler.changed.connect(_update_room_money_visual)
+	_update_room_money_visual()
+
+func _get_room_money_visual_position() -> Vector2:
+	var anchor := get_node_or_null("MoneySpriteAnchor") as Node2D
+	if anchor != null:
+		return anchor.position
+	return Vector2(float(data.width) * 48.0 - 24.5, -24.0)
+
+func _update_room_money_visual() -> void:
+	if _room_money_sprite == null or data == null:
+		return
+
+	var amount := MoneyHandler.get_money_at(Vector2i(x, y))
+	var frame := _get_room_money_frame(amount)
+	_room_money_sprite.visible = frame >= 0
+	if frame >= 0:
+		_room_money_sprite.frame = frame
+
+func _get_room_money_frame(amount: float) -> int:
+	if amount < 1.0:
+		return -1
+
+	var capped_amount := clampf(amount, 1.0, ROOM_MONEY_MAX_VISUAL_AMOUNT)
+	var normalized := log(capped_amount) / log(ROOM_MONEY_MAX_VISUAL_AMOUNT)
+	return clampi(int(floor(normalized * float(ROOM_MONEY_HFRAMES - 1))), 0, ROOM_MONEY_HFRAMES - 1)
+
+func get_job_capacity(job = null) -> int:
+	return get_associated_job_capacity(job)
+
 func get_associated_job_capacity(job = null) -> int:
 	if job == null:
 		job = associated_job
 	if associated_job == null or job != associated_job:
 		return 0
 	return 1
-
-func get_job_capacity(job = null) -> int:
-	return 0
 
 func get_service_price() -> int:
 	return 0
@@ -156,5 +205,7 @@ func add_infrastructure_output_tile(_layer_name: StringName, _room_index: Vector
 	return
 
 func destroy():
+	if MoneyHandler.changed.is_connected(_update_room_money_visual):
+		MoneyHandler.changed.disconnect(_update_room_money_visual)
 	on_destroy_signal.emit()
 	queue_free()

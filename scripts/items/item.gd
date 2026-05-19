@@ -3,11 +3,15 @@ extends Sprite2D
 class_name Item
 
 var itemType : Enum.Items
+var money_amount: float = 0.0
 var crate_item_type: int = -1
 var crate_item_amount: int = 0
 var trade_office_owner = null
 
 const WISKEY_AGING_DURATION: float = Global.DAY_DURATION
+const MONEY_SPRITESHEET = preload("res://assets/sprites/room_money_spritesheet.png")
+const MONEY_HFRAMES := 16
+const MONEY_MAX_VISUAL_AMOUNT := 500.0
 var age: float = 0.0
 var aging_multiplier: float = 1.0
 
@@ -20,11 +24,18 @@ func _process(delta):
 
 func init(itemType : Enum.Items) -> Item:
 	self.itemType = itemType
+	money_amount = 0.0
 	crate_item_type = -1
 	crate_item_amount = 0
 	trade_office_owner = null
 
 	refresh_texture()
+	return self
+
+func set_money_amount(amount: float) -> Item:
+	money_amount = maxf(0.0, amount)
+	if itemType == Enum.Items.MONEY:
+		refresh_texture()
 	return self
 
 func configure_trade_crate(contained_item_type: Enum.Items, amount: int, office = null) -> Item:
@@ -59,6 +70,9 @@ func spawn_one_from_trade_crate(spawn_pos: Vector2 = global_position) -> Item:
 	return spawned
 
 func refresh_texture():
+	if itemType == Enum.Items.MONEY:
+		apply_texture(get_money_texture(money_amount))
+		return
 	var info = get_info(itemType)
 	apply_texture(info.Tex, info.Offset.x, info.Offset.y)
 
@@ -153,11 +167,19 @@ static func get_trade_orderable_items() -> Array[int]:
 			orderable.append(item_type)
 	return orderable
 
-static func get_money_texture() -> AtlasTexture:
+static func get_money_texture(amount: float = 1.0) -> AtlasTexture:
 	var tex = AtlasTexture.new()
-	tex.atlas = load("res://assets/sprites/coins-sprite-sheet.png")
-	tex.region = Rect2(0, 0, 8, 8)
+	tex.atlas = MONEY_SPRITESHEET
+	tex.region = Rect2(_get_money_frame(amount) * 49, 0, 49, 48)
 	return tex
+
+static func _get_money_frame(amount: float) -> int:
+	if amount < 1.0:
+		return 0
+
+	var capped_amount := clampf(amount, 1.0, MONEY_MAX_VISUAL_AMOUNT)
+	var normalized := log(capped_amount) / log(MONEY_MAX_VISUAL_AMOUNT)
+	return clampi(int(floor(normalized * float(MONEY_HFRAMES - 1))), 0, MONEY_HFRAMES - 1)
 
 func play_spawn_sound() -> void:
 	if itemType == Enum.Items.WATER_BUCKET:

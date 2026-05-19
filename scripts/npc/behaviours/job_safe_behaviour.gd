@@ -37,7 +37,8 @@ func loop():
 
 		# Spawn money item and carry it to the safe
 		var spawn_pos = npc.global_position
-		var money_item = Global.ItemSpawner.create(Enum.Items.MONEY, spawn_pos)
+		var collected_amount := MoneyHandler.get_money_at(target_loc)
+		var money_item = Global.ItemSpawner.create(Enum.Items.MONEY, spawn_pos).set_money_amount(collected_amount)
 		npc.Item.pick_up(money_item)
 
 		MoneyHandler.collect_to(target_loc, safe_loc)

@@ -543,7 +543,7 @@ func _show_for_room(room: RoomBase):
 		Util.disconnect_all_pressed(room_delete_button)
 		room_delete_button.pressed.connect(func():
 			Global.UI.confirm.show_dialogue(
-				"You are about to delete a room and won't get the money back.",
+				"You are about to delete a room and won't get the construction money back. Stored cash will stay behind.",
 				func():
 					if is_instance_valid(room):
 						Building.delete_room(room)

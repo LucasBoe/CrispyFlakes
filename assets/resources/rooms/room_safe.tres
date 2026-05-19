@@ -11,6 +11,7 @@ packed_scene = ExtResource("2_safe")
 money_capacity = 1000
 room_name = "Safe"
 room_type = 2
+placement_limit = 2
 room_desc = "stores money from your rooms"
 room_icon = ExtResource("2_33fqc")
 room_preview = ExtResource("3_lmm1q")

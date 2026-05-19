@@ -44,7 +44,7 @@ static func load_entries() -> Array[Dictionary]:
 					0,
 					"Fine by me. I'll make this quick and official.",
 					[
-						func(context: EncounterContext) -> void: context.npc.Behaviour.force_behaviour(CollectBountiesBehaviour),
+						func(context: EncounterContext) -> void: context.npc.Behaviour.set_behaviour(CollectBountiesBehaviour),
 					]
 				),
 				_choice(

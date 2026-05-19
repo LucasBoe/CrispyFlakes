@@ -83,6 +83,7 @@ func erase_empty(room: RoomBase):
 	_erase_room_cell(room.x, room.y)
 	infrastructure.prune_infrastructure()
 	update_foreground_tiles()
+	_spill_deleted_room_money_without_room(room)
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
 
@@ -116,8 +117,29 @@ func delete_room(room: RoomBase):
 	infrastructure.prune_infrastructure()
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
+	_spill_deleted_room_money_without_room(room)
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
+
+func _spill_deleted_room_money_without_room(room: RoomBase) -> void:
+	if room == null or room.data == null:
+		return
+
+	for col in room.data.width:
+		for row in room.data.height:
+			var location := Vector2i(room.x + col, room.y + row)
+			if get_room_from_index(location) != null:
+				continue
+
+			var amount := MoneyHandler.get_money_at(location)
+			if amount <= 0.0:
+				continue
+
+			var spilled := MoneyHandler.withdraw(location, amount)
+			if spilled <= 0.0:
+				continue
+
+			Global.ItemSpawner.create(Enum.Items.MONEY, global_position_from_room_index(location)).set_money_amount(spilled)
 
 func refresh_adjacent_stair_visuals(x: int, y: int, width: int, height: int) -> void:
 	for col in width:
