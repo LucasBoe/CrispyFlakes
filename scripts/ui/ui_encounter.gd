@@ -268,6 +268,9 @@ func _get_environment_handler() -> Node:
 
 func _get_choice_display_text(choice: Dictionary) -> String:
 	var text := str(choice.get("text", ""))
+	if text.contains("###"):
+		var total := BountyHandler.get_total_arrested_payout()
+		text = text.replace("###", "+%d$" % total)
 	var money_delta := int(choice.get("money_delta", 0))
 	if money_delta == 0:
 		return text

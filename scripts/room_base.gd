@@ -19,6 +19,9 @@ const ROOM_MONEY_SPRITESHEET = preload("res://assets/sprites/room_money_spritesh
 const ROOM_MONEY_HFRAMES := 16
 const ROOM_MONEY_MAX_VISUAL_AMOUNT := 500.0
 const ROOM_MONEY_Z_INDEX := -5
+const ROOM_MONEY_BUMP_SCALE := Vector2(1.12, 1.12)
+const ROOM_MONEY_BUMP_DURATION_UP := 0.07
+const ROOM_MONEY_BUMP_DURATION_DOWN := 0.08
 const backwallVariants : Array = [
 	preload("res://assets/sprites/back-wall.png"),
 	preload("res://assets/sprites/back-wall_window1.png"),
@@ -28,6 +31,8 @@ const backwallVariants : Array = [
 
 signal on_destroy_signal
 var _room_money_sprite: Sprite2D = null
+var _room_money_tween: Tween = null
+var _last_room_money_amount: float = -1.0
 
 func init_room(x : int, y : int):
 	self.x = x
@@ -143,10 +148,27 @@ func _update_room_money_visual() -> void:
 		return
 
 	var amount := MoneyHandler.get_money_at(Vector2i(x, y))
+	var had_previous_amount := _last_room_money_amount >= 0.0
+	var amount_changed := had_previous_amount and not is_equal_approx(amount, _last_room_money_amount)
 	var frame := _get_room_money_frame(amount)
 	_room_money_sprite.visible = frame >= 0
 	if frame >= 0:
 		_room_money_sprite.frame = frame
+	if amount_changed:
+		_bump_room_money_visual()
+	_last_room_money_amount = amount
+
+func _bump_room_money_visual() -> void:
+	if _room_money_sprite == null:
+		return
+
+	if _room_money_tween != null and _room_money_tween.is_valid():
+		_room_money_tween.kill()
+
+	_room_money_sprite.scale = Vector2.ONE
+	_room_money_tween = create_tween()
+	_room_money_tween.tween_property(_room_money_sprite, "scale", ROOM_MONEY_BUMP_SCALE, ROOM_MONEY_BUMP_DURATION_UP).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_room_money_tween.tween_property(_room_money_sprite, "scale", Vector2.ONE, ROOM_MONEY_BUMP_DURATION_DOWN).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 
 func _get_room_money_frame(amount: float) -> int:
 	if amount < 1.0:
@@ -207,5 +229,7 @@ func add_infrastructure_output_tile(_layer_name: StringName, _room_index: Vector
 func destroy():
 	if MoneyHandler.changed.is_connected(_update_room_money_visual):
 		MoneyHandler.changed.disconnect(_update_room_money_visual)
+	if _room_money_tween != null and _room_money_tween.is_valid():
+		_room_money_tween.kill()
 	on_destroy_signal.emit()
 	queue_free()

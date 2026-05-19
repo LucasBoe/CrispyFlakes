@@ -18,8 +18,8 @@ static func load_entries() -> Array[Dictionary]:
 			"Howdy. Heard your place had a scuffle. I can haul the troublemakers off and let a fine teach them manners. Or have they cooled their heels already?",
 			[
 				_choice(
-					"Let him take them away",
-					30,
+					"Let him take them away (###)",
+					0,
 					"Much obliged. I'll start rounding up anyone still wearing irons.",
 					[
 						func(context: EncounterContext) -> void: context.npc.Behaviour.set_behaviour(CollectBountiesBehaviour),
@@ -90,7 +90,8 @@ static func load_entries() -> Array[Dictionary]:
 				),
 				_choice("Refuse", 0, "Then enjoy your fevers and missing teeth."),
 				_choice("Later", 0, "Later, then. I'll be back before the next cough turns purple."),
-			]
+			],
+			func() -> bool: return not InjuryHandler.get_injured_guests().is_empty()
 		),
 		_encounter(
 			"Entertainer",
@@ -131,7 +132,10 @@ static func load_entries() -> Array[Dictionary]:
 	]
 
 static func get_random_entry() -> Dictionary:
-	var entries := load_entries()
+	var entries := load_entries().filter(func(e: Dictionary) -> bool:
+		var cond: Callable = e.get("condition", Callable())
+		return not cond.is_valid() or cond.call()
+	)
 	if entries.is_empty():
 		return {}
 	return entries.pick_random().duplicate(true)
@@ -143,12 +147,13 @@ static func get_entry(id_or_name: String) -> Dictionary:
 			return entry.duplicate(true)
 	return {}
 
-static func _encounter(name: String, line: String, choices: Array[Dictionary]) -> Dictionary:
+static func _encounter(name: String, line: String, choices: Array[Dictionary], condition: Callable = Callable()) -> Dictionary:
 	return {
 		"id": name.to_snake_case(),
 		"name": name,
 		"line": line,
 		"choices": choices,
+		"condition": condition,
 	}
 
 static func _choice(text: String, money_delta: int, outcome_text: String, effects: Array[Callable] = []) -> Dictionary:

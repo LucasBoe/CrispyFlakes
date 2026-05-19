@@ -1,21 +1,188 @@
 extends Node
 
+signal npc_injured(npc: NPC)
+signal npc_recovered(npc: NPC)
 signal guest_injured(guest: NPCGuest)
 signal guest_recovered(guest: NPCGuest)
 
-var _injured: Array[NPCGuest] = []
+const UNTREATED_INJURY_SATISFACTION_LOSS := 0.05
+const UNTREATED_INJURY_TICK_SECONDS := 20.0
+const GOOD_TREATMENT_THRESHOLD := 0.6
+
+var _injured: Array[NPC] = []
+var _next_guest_penalty_time: Dictionary = {}
+var _treatment_requests: Dictionary = {}
+var _recovery_payment_sources: Dictionary = {}
+
+func on_npc_injured(npc: NPC) -> void:
+	if npc == null or not is_instance_valid(npc):
+		return
+	if npc.Status != null:
+		npc.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
+		npc.Status.clear_status(Enum.NpcStatus.BADLY_TREATED)
+	_recovery_payment_sources.erase(npc)
+	if not _injured.has(npc):
+		_injured.append(npc)
+	var guest := npc as NPCGuest
+	if guest != null:
+		_next_guest_penalty_time[guest] = Global.time_now + UNTREATED_INJURY_TICK_SECONDS
+		guest_injured.emit(guest)
+	npc_injured.emit(npc)
 
 func on_guest_injured(guest: NPCGuest) -> void:
-	if not _injured.has(guest):
-		_injured.append(guest)
-	guest_injured.emit(guest)
+	on_npc_injured(guest)
+
+func on_npc_recovered(npc: NPC) -> void:
+	if npc == null:
+		return
+	_injured.erase(npc)
+	_next_guest_penalty_time.erase(npc)
+	_treatment_requests.erase(npc)
+	var guest := npc as NPCGuest
+	if guest != null:
+		guest_recovered.emit(guest)
+	npc_recovered.emit(npc)
 
 func on_guest_recovered(guest: NPCGuest) -> void:
-	_injured.erase(guest)
-	guest_recovered.emit(guest)
+	on_npc_recovered(guest)
 
-func get_injured_guests() -> Array[NPCGuest]:
+func get_injured_npcs() -> Array[NPC]:
 	for i: int in range(_injured.size() - 1, -1, -1):
 		if not is_instance_valid(_injured[i]):
+			_next_guest_penalty_time.erase(_injured[i])
+			_treatment_requests.erase(_injured[i])
 			_injured.remove_at(i)
 	return _injured
+
+func get_injured_guests() -> Array[NPCGuest]:
+	var injured_guests: Array[NPCGuest] = []
+	for injured: NPC in get_injured_npcs():
+		var guest := injured as NPCGuest
+		if guest != null:
+			injured_guests.append(guest)
+	return injured_guests
+
+func can_receive_treatment_now(npc: NPC) -> bool:
+	if npc == null or not is_instance_valid(npc):
+		return false
+	if npc.Status == null or not npc.Status.has_status(Enum.NpcStatus.INJURED):
+		return false
+
+	var behaviour := npc.Behaviour.behaviour_instance if npc.Behaviour != null else null
+	if behaviour is KnockedOutBehaviour or behaviour is ArrestedBehaviour or behaviour is FollowSheriffBehaviour:
+		return false
+
+	var guest := npc as NPCGuest
+	if guest != null and ConflictResponseHandler.is_marked_for_arrest(guest):
+		return false
+
+	return true
+
+func apply_treatment(npc: NPC, quality: float, infirmary: RoomInfirmary = null) -> void:
+	if npc == null or not is_instance_valid(npc) or npc.Status == null:
+		return
+
+	if npc is NPCGuest and infirmary != null and is_instance_valid(infirmary):
+		_recovery_payment_sources[npc] = infirmary
+
+	npc.Status.clear_status(Enum.NpcStatus.INJURED)
+	npc.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
+	npc.Status.clear_status(Enum.NpcStatus.BADLY_TREATED)
+
+	var guest := npc as NPCGuest
+	if guest != null:
+		if quality >= GOOD_TREATMENT_THRESHOLD:
+			npc.Status.set_status(Enum.NpcStatus.WELL_TREATED)
+		else:
+			npc.Status.set_status(Enum.NpcStatus.BADLY_TREATED)
+
+	on_npc_recovered(npc)
+
+func collect_recovery_payment(npc: NPC) -> void:
+	var guest := npc as NPCGuest
+	if guest == null:
+		return
+
+	var infirmary := _recovery_payment_sources.get(guest, null) as RoomInfirmary
+	_recovery_payment_sources.erase(guest)
+
+	if infirmary == null or not is_instance_valid(infirmary):
+		return
+
+	var price := infirmary.get_service_price()
+	if price <= 0:
+		return
+
+	ResourceHandler.add_animated(
+		Enum.Resources.MONEY,
+		price,
+		guest.global_position,
+		Vector2i(infirmary.x, infirmary.y)
+	)
+
+func _process(_delta: float) -> void:
+	_clear_invalid_payment_sources()
+	var injured_npcs := get_injured_npcs()
+	_sync_treatment_requests(injured_npcs.duplicate())
+	_apply_guest_penalties(injured_npcs.duplicate())
+
+func _sync_treatment_requests(injured_npcs: Array[NPC]) -> void:
+	for injured: NPC in injured_npcs:
+		if not _should_keep_npc_injured(injured):
+			on_npc_recovered(injured)
+			continue
+
+		if not can_receive_treatment_now(injured):
+			var blocked_request: RoomInfirmary.TreatmentRequest = _treatment_requests.get(injured, null)
+			if blocked_request != null:
+				blocked_request.status = Enum.RequestStatus.TIMEOUT
+				_treatment_requests.erase(injured)
+			continue
+
+		var existing: RoomInfirmary.TreatmentRequest = _treatment_requests.get(injured, null)
+		if existing != null and _is_request_active(existing):
+			continue
+
+		var infirmary := _find_staffed_infirmary_for(injured)
+		if infirmary == null:
+			continue
+
+		_treatment_requests[injured] = infirmary.request_treatment(injured)
+
+func _apply_guest_penalties(injured_npcs: Array[NPC]) -> void:
+	for injured: NPC in injured_npcs:
+		var guest := injured as NPCGuest
+		if guest == null or not _should_keep_npc_injured(guest):
+			continue
+		if guest.Behaviour != null and guest.Behaviour.behaviour_instance is KnockedOutBehaviour:
+			continue
+
+		var next_tick: float = float(_next_guest_penalty_time.get(guest, Global.time_now + UNTREATED_INJURY_TICK_SECONDS))
+		if Global.time_now < next_tick:
+			continue
+
+		guest.add_satisfaction(-UNTREATED_INJURY_SATISFACTION_LOSS, "Untreated Injury")
+		_next_guest_penalty_time[guest] = Global.time_now + UNTREATED_INJURY_TICK_SECONDS
+
+func _should_keep_npc_injured(npc: NPC) -> bool:
+	return is_instance_valid(npc) and npc.Status != null and npc.Status.has_status(Enum.NpcStatus.INJURED)
+
+func _is_request_active(request: RoomInfirmary.TreatmentRequest) -> bool:
+	if request == null:
+		return false
+	return request.status == Enum.RequestStatus.OPEN or request.status == Enum.RequestStatus.IN_PROGRESS
+
+func _find_staffed_infirmary_for(npc: NPC) -> RoomInfirmary:
+	if npc == null or not is_instance_valid(npc) or npc.Navigation == null:
+		return null
+
+	var reachable := npc.Navigation.get_reachable_rooms()
+	for room: RoomInfirmary in Building.query.rooms_of_type_ordered_by_distance(RoomInfirmary, npc.global_position, null, reachable):
+		if room.worker != null and is_instance_valid(room.worker) and room.accepts_patient(npc):
+			return room
+	return null
+
+func _clear_invalid_payment_sources() -> void:
+	for npc: NPC in _recovery_payment_sources.keys():
+		if not is_instance_valid(npc):
+			_recovery_payment_sources.erase(npc)

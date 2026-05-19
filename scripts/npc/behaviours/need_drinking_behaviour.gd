@@ -65,6 +65,11 @@ func loop():
 			if stopped:
 				return
 
+		CowboyTalk.talk(["I needed that.", "Hits the spot.", "Mighty fine.", "Ahh."].pick_random(), npc)
+
+		if is_instance_valid(table) and table.guests.values().any(func(g): return g != null and g != npc):
+			CowboyTalk.talk("Have you heard about MECH BROTLAUCH? He seems to be the evil guy around here.", npc)
+
 		var drunkenenes_increase = 0.0
 		var satisfaction_increase = 0.2
 
@@ -80,6 +85,7 @@ func loop():
 			satisfaction_increase /= 4
 
 		var drink_duration = 10
+
 
 		for i in drink_duration:
 			if stopped:

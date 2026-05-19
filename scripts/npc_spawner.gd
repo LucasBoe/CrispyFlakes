@@ -3,6 +3,7 @@ extends Node2D
 class_name NPCSpawner
 
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn")
+const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
 const FollowRandomGuestBehaviourScript = preload("res://scripts/npc/behaviours/follow_random_guest_behaviour.gd")
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
@@ -61,11 +62,12 @@ func _process(delta):
 			spawn_special_encounter()
 		next_special_encounter_progression = 0.0
 
-func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false):
+func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false, display_name := ""):
 	if not ignore_worker_limit and not can_hire_worker():
 		return null
 
-	var worker = workerScene.instantiate()
+	var worker = workerScene.instantiate() as NPCWorker
+	worker.character_name = display_name if display_name != "" else NPCNameLibraryScript.get_random_name()
 	worker.global_position = opt_spawn_position
 	add_child(worker)
 
@@ -132,7 +134,7 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 	if guest.Navigation != null:
 		guest.Navigation.stop_navigation()
 
-	var worker := spawn_new_worker(guest.global_position) as NPCWorker
+	var worker := spawn_new_worker(guest.global_position, false, guest.character_name) as NPCWorker
 	if worker == null:
 		return null
 
@@ -164,6 +166,7 @@ func spawn_new_guest():
 	print("spawn_new_guest")
 
 	var guest = guestScene.instantiate() as NPCGuest
+	guest.character_name = NPCNameLibraryScript.get_random_name()
 	guest.global_position = Vector2(-320,0)
 	add_child(guest)
 

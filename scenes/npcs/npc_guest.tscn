@@ -1,7 +1,6 @@
 [gd_scene load_steps=19 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
-[ext_resource type="Script" uid="uid://c7upi1agstna0" path="res://scripts/npc/modules/status_module.gd" id="19_status"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_cyq43"]
 [ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="3_1phmo"]
 [ext_resource type="Script" uid="uid://d1nmgpv0uiia6" path="res://scripts/npc/modules/guest_visual_module.gd" id="4_482k3"]
@@ -14,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dyupopynhn884" path="res://assets/sprites/handcuffs.png" id="7_482k3"]
 [ext_resource type="Script" uid="uid://qx7b2210t8x7" path="res://scripts/npc/modules/needs_module.gd" id="7_prewa"]
 [ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="8_horse"]
+[ext_resource type="Script" uid="uid://c7upi1agstna0" path="res://scripts/npc/modules/status_module.gd" id="19_status"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 height = 28.0
@@ -27,6 +27,7 @@ shader_parameter/sprite_index = Vector2i(0, 0)
 shader_parameter/cell_pixel_size = Vector2(24, 16)
 shader_parameter/base_hue_offset = Vector3(0, 0, 0)
 shader_parameter/use_apron = false
+shader_parameter/use_gun = false
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_p1iho"]
 particle_flag_disable_z = true

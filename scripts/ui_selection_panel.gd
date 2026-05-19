@@ -26,6 +26,9 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var dig_deeper_button: Button = $MarginContainer/MarginContainer/VBoxContainer/DigDeeperButton
 @onready var status_icon_container_dummy: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconContainerDummy
 @onready var status_icon_row_dummy: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy
+@onready var medical_treatment_ui: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI
+@onready var medical_treatment_guest_toggle: CheckBox = $MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI/GuestToggle
+@onready var medical_treatment_worker_toggle: CheckBox = $MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI/WorkerToggle
 @onready var room_money_label: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomMoneyLabel
 @onready var room_module_ui: UISelectionRoomModules = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer
 @onready var room_recipe_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow
@@ -114,6 +117,8 @@ func _ready():
 	gambling_setup_loop_toggle.toggled.connect(_on_gambling_setup_loop_toggled)
 	gambling_active_loop_toggle.toggled.connect(_on_gambling_active_loop_toggled)
 	gambling_summary_host_button.pressed.connect(_on_gambling_summary_host_pressed)
+	medical_treatment_guest_toggle.toggled.connect(_on_medical_treatment_guest_toggled)
+	medical_treatment_worker_toggle.toggled.connect(_on_medical_treatment_worker_toggled)
 	_gambling_jackpot_buttons = [
 		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot20Button") as Button,
 		gambling_ui.get_node("SetupState/JackpotGrid/Jackpot50Button") as Button,
@@ -157,6 +162,7 @@ func _ready():
 	satisfaction_log_items.hide()
 	narrative_label.hide()
 	gambling_ui.hide()
+	medical_treatment_ui.hide()
 
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
@@ -266,6 +272,7 @@ func _clear_instances():
 			p.queue_free()
 	prisoner_item_instances.clear()
 	storage_filter_container.hide()
+	medical_treatment_ui.hide()
 
 	satisfaction_log_section.hide()
 	_clear_satisfaction_log_items()
@@ -369,7 +376,7 @@ func _show_for_worker(worker: NPCWorker):
 	_show_status_row(job_text, job_color, worker.current_job_room if has_job else null, room_name)
 
 func _show_for_guest(guest: NPCGuest):
-	header_label.text = "Guest"
+	header_label.text = guest.get_display_name()
 	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
@@ -652,6 +659,9 @@ func _show_for_room(room: RoomBase):
 		else:
 			_show_status_row("No Worker", Color.ORANGE)
 
+	if room is RoomInfirmary or room is RoomSickWard:
+		_show_medical_treatment_ui(room)
+
 	room_money_label.visible = room.data != null and room.data.money_capacity > 0
 
 	var d = room.data
@@ -672,6 +682,40 @@ func _show_for_room(room: RoomBase):
 		trading_office_ui.bind_room(room)
 
 	room_module_ui.populate(room)
+
+func _show_medical_treatment_ui(room: RoomBase) -> void:
+	medical_treatment_ui.show()
+	if room is RoomInfirmary:
+		var infirmary := room as RoomInfirmary
+		medical_treatment_guest_toggle.set_pressed_no_signal(infirmary.treat_guests)
+		medical_treatment_worker_toggle.set_pressed_no_signal(infirmary.treat_workers)
+	elif room is RoomSickWard:
+		var ward := room as RoomSickWard
+		medical_treatment_guest_toggle.set_pressed_no_signal(ward.treat_guests)
+		medical_treatment_worker_toggle.set_pressed_no_signal(ward.treat_workers)
+
+func _get_selected_medical_room() -> RoomBase:
+	if target is RoomInfirmary or target is RoomSickWard:
+		return target as RoomBase
+	return null
+
+func _on_medical_treatment_guest_toggled(pressed: bool) -> void:
+	var room := _get_selected_medical_room()
+	if room == null:
+		return
+	if room is RoomInfirmary:
+		(room as RoomInfirmary).treat_guests = pressed
+	elif room is RoomSickWard:
+		(room as RoomSickWard).treat_guests = pressed
+
+func _on_medical_treatment_worker_toggled(pressed: bool) -> void:
+	var room := _get_selected_medical_room()
+	if room == null:
+		return
+	if room is RoomInfirmary:
+		(room as RoomInfirmary).treat_workers = pressed
+	elif room is RoomSickWard:
+		(room as RoomSickWard).treat_workers = pressed
 
 func _update_stove_status(stove: RoomStove) -> void:
 	if not is_instance_valid(stove):

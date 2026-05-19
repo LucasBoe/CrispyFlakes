@@ -100,7 +100,7 @@ func _can_join_brawl(fight: Fight) -> bool:
 	return _has_active_guest_participant(fight)
 
 func _has_active_guest_participant(fight: Fight) -> bool:
-	for participant in fight.participants:
+	for participant in fight.get_active_participants():
 		var guest := participant as NPCGuest
 		if is_instance_valid(guest):
 			return true

@@ -1,11 +1,12 @@
 extends NPC
 class_name NPCGuest
 
+const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
 const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
-const NeedTreatmentBehaviourScript = preload("res://scripts/npc/behaviours/need_treatment_behaviour.gd")
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 
 var manual_behaviour = false
+var character_name = ""
 
 var is_known_fugitive: bool = false
 var is_robber: bool = false
@@ -38,6 +39,12 @@ func init(custom_look = null):
 
 func _ready():
 	super._ready()
+	if character_name.is_empty():
+		character_name = NPCNameLibraryScript.get_random_name()
+	_refresh_nametag()
+
+func get_display_name() -> String:
+	return character_name if not character_name.is_empty() else "Guest"
 
 func apply_look(custom_look = null):
 	var mat := Animator.material as ShaderMaterial
@@ -85,9 +92,6 @@ func get_next_behaviour():
 	if Status != null:
 		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):
 			return NeedSickWardBehaviour
-		if Status.has_status(Enum.NpcStatus.INJURED):
-			print("[Guest] INJURED guest picking NeedTreatmentBehaviour — was this supposed to be arrested?")
-			return NeedTreatmentBehaviourScript
 
 	if ConflictResponseHandler.is_marked_for_arrest(self):
 		return IdleBehaviour
@@ -105,7 +109,7 @@ func get_next_behaviour():
 		return KnockedOutBehaviour
 
 	var voluntary_fight_chance := Traits.get_voluntary_fight_chance(Needs.drunkenness.strength)
-	if voluntary_fight_chance > randf() and (not Traits.forces_fight_response() or FightHandler.has_drunk_fight_opportunity(self)):
+	if FightHandler.can_npc_participate_in_fights(self) and voluntary_fight_chance > randf() and (not Traits.forces_fight_response() or FightHandler.has_drunk_fight_opportunity(self)):
 		FightHandler.create_or_join_drunk_fight(self)
 		return null
 

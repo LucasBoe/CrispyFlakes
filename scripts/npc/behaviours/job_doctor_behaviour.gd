@@ -23,9 +23,11 @@ func loop() -> void:
 
 		room.start_next_treatment()
 		_narrative = ["Treating patient...", "Applying treatment...", "Working their magic..."].pick_random()
-		await progress(TREAT_DURATION * npc.Traits.get_work_duration_multiplier())
+		await progress(TREAT_DURATION)
 
-		room.fulfill_next_request(npc.Traits.get_treatment_quality())
+		var request := room.fulfill_next_request(npc.Traits.get_treatment_quality())
+		if request != null and is_instance_valid(request.patient):
+			InjuryHandler.apply_treatment(request.patient, request.treatment_quality, room)
 
 func _do_ward_rounds() -> void:
 	var wards: Array = get_all_rooms_of_type_ordered_by_distance(RoomSickWard)

@@ -31,7 +31,7 @@ func get_entries() -> Array:
 	var entries: Array = []
 
 	if has_status(Enum.NpcStatus.INJURED):
-		entries.append({icon = UiNotifications.ICON_INJURED, label = "Injured"})
+		entries.append({icon = UiNotifications.ICON_INJURED, label = "Untreated Injury"})
 	if has_status(Enum.NpcStatus.WELL_TREATED):
 		entries.append({icon = UiNotifications.ICON_TREATED, label = "Well Treated — Resting"})
 	if has_status(Enum.NpcStatus.BADLY_TREATED):

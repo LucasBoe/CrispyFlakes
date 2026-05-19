@@ -445,6 +445,27 @@ theme_override_constants/separation = 2
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="MedicalTreatmentUI" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Treat In This Room"
+
+[node name="GuestToggle" type="CheckBox" parent="MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Treat Guests"
+button_pressed = true
+
+[node name="WorkerToggle" type="CheckBox" parent="MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Treat Workers"
+button_pressed = true
+
 [node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2

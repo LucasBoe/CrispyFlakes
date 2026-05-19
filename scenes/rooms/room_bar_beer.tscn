@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://cbeerbartscn1"]
+[gd_scene load_steps=6 format=3 uid="uid://cbeerbartscn1"]
 
 [ext_resource type="Script" uid="uid://hwl5ljgmn4uu" path="res://scripts/room_bar.gd" id="1_ig3mw"]
+[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="2_5pmhc"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_gvxdr"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_gvxdr"]
 [ext_resource type="Texture2D" uid="uid://cim07ui8dh1tq" path="res://assets/sprites/bar_beer.png" id="4_beer"]
@@ -10,7 +11,7 @@ texture_filter = 1
 script = ExtResource("1_ig3mw")
 drink_type = 0
 item_cost = 4
-drink_icon = ExtResource("4_beer")
+drink_icon = ExtResource("2_5pmhc")
 
 [node name="Back-wall" type="Sprite2D" parent="."]
 z_index = -200

@@ -335,8 +335,8 @@ func _cleanup_progress_bars() -> void:
 			bar.queue_free()
 
 func _get_progress_duration(duration: float) -> float:
-	if npc is NPCWorker and npc.Traits != null:
-		return maxf(0.05, duration * npc.Traits.get_work_duration_multiplier())
+	if npc is NPCWorker:
+		return maxf(0.05, duration * npc.get_work_duration_multiplier())
 	return duration
 
 func add_satisfaction(amount: float, reason: String = ""):

@@ -4,6 +4,8 @@ class_name RoomSickWard
 const MAX_BEDS := 2
 const BED_POSITIONS: Array[Vector2] = [Vector2(32, -8), Vector2(84, -8)]
 
+var treat_guests := true
+var treat_workers := true
 var current_guests: Array[NPCGuest] = []
 
 func init_room(_x: int, _y: int) -> void:
@@ -30,3 +32,12 @@ func get_random_floor_position() -> Vector2:
 
 func get_center_floor_position() -> Vector2:
 	return global_position + Vector2(48, 0)
+
+func accepts_patient(patient: NPC) -> bool:
+	if patient == null or not is_instance_valid(patient):
+		return false
+	if patient is NPCGuest:
+		return treat_guests
+	if patient is NPCWorker:
+		return treat_workers
+	return false

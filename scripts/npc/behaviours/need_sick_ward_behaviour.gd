@@ -75,23 +75,29 @@ func _apply_recovery(is_well_treated: bool) -> void:
 
 	if is_well_treated:
 		npc.restore_energy()
+		InjuryHandler.collect_recovery_payment(npc)
 		return
 
 	var recovery_chance: float = npc.Traits.get_bad_treatment_recovery_chance()
 	if randf() < recovery_chance:
 		npc.restore_energy()
+		InjuryHandler.collect_recovery_payment(npc)
 	else:
 		npc.Status.set_status(Enum.NpcStatus.INJURED)
 		InjuryHandler.on_guest_injured(npc as NPCGuest)
 
 func _find_any_sick_ward() -> RoomSickWard:
 	var rooms: Array = get_all_rooms_of_type_ordered_by_distance(RoomSickWard)
-	return rooms[0] as RoomSickWard if not rooms.is_empty() else null
+	for room: RoomSickWard in rooms:
+		if room.accepts_patient(npc):
+			return room
+	return null
 
 func _find_available_sick_ward() -> RoomSickWard:
 	for candidate: RoomBase in get_all_rooms_of_type_ordered_by_distance(RoomSickWard):
-		if not (candidate as RoomSickWard).is_full():
-			return candidate as RoomSickWard
+		var ward := candidate as RoomSickWard
+		if ward.accepts_patient(npc) and not ward.is_full():
+			return ward
 	return null
 
 func stop_loop() -> BehaviourSaveData:

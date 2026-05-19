@@ -78,7 +78,7 @@ func set_target(target, custom_speed):
 		is_moving = true
 		has_target = true
 		var base_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
-		move_speed = base_speed * npc.Traits.get_move_speed_multiplier()
+		move_speed = base_speed * npc.get_move_speed_multiplier()
 
 func get_random_target():
 	var rooms: Array = []

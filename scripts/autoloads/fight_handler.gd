@@ -7,6 +7,9 @@ const DEBUG_GUTLESS_PANIC := true
 var active_fights: Array[Fight] = []
 var _next_fight_debug_id := 1
 
+func can_npc_participate_in_fights(npc: NPC) -> bool:
+	return is_instance_valid(npc) and (npc.Status == null or not npc.Status.has_status(Enum.NpcStatus.INJURED))
+
 # FIGHT CREATION
 
 func _create_fight(position: Vector2) -> Fight:
@@ -24,6 +27,8 @@ func _create_fight(position: Vector2) -> Fight:
 	return fight
 
 func get_or_create_fight(npc: NPC) -> Fight:
+	if not can_npc_participate_in_fights(npc):
+		return null
 	var room := _get_closest_indoor_room(npc.global_position)
 	var fight: Fight = null
 	if room != null:
@@ -34,20 +39,22 @@ func get_or_create_fight(npc: NPC) -> Fight:
 	return fight
 
 func create_or_join_drunk_fight(guest: NPCGuest) -> void:
-	if guest.is_on_horse():
+	if guest.is_on_horse() or not can_npc_participate_in_fights(guest):
 		return
 	if not _is_in_active_fight(guest):
 		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
 	get_or_create_fight(guest)
 
 func has_drunk_fight_opportunity(guest: NPCGuest) -> bool:
-	if Global.NPCSpawner == null or not is_instance_valid(guest) or guest.is_on_horse():
+	if Global.NPCSpawner == null or not is_instance_valid(guest) or guest.is_on_horse() or not can_npc_participate_in_fights(guest):
 		return false
 	if _find_joinable_brawl_for_guest(guest) != null:
 		return true
 	return _has_nearby_brawl_responder(guest)
 
 func create_rob_fight(guest: NPCGuest, room: RoomBase, start_delay := 0.0) -> Fight:
+	if not can_npc_participate_in_fights(guest):
+		return null
 	var existing := get_fight_for_room(room)
 	if existing != null:
 		existing.make_join_fight(guest)
@@ -62,7 +69,9 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase, start_delay := 0.0) -> Fi
 	return fight
 
 func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> void:
-	if guest.Traits != null and guest.Traits.refuses_voluntary_fights():
+	if not can_npc_participate_in_fights(worker):
+		return
+	if not can_npc_participate_in_fights(guest) or (guest.Traits != null and guest.Traits.refuses_voluntary_fights()):
 		guest.force_behaviour(ArrestedBehaviour)
 		return
 	var fight := _create_fight(guest.global_position)
@@ -100,7 +109,7 @@ func _process(_delta: float) -> void:
 			fight.start_fight()
 			continue
 
-		if fight.fight_type != Fight.FightType.ARREST and fight.participants.size() <= 1:
+		if fight.fight_type != Fight.FightType.ARREST and fight.get_active_participants().size() <= 1:
 			if Global.time_now < fight.keep_alive_until_time:
 				continue
 			if not ConflictResponseHandler.try_join_brawl(fight) and not _try_attract_brawlers(fight):
@@ -184,6 +193,8 @@ func _can_force_hotheads_to_join(fight: Fight) -> bool:
 func _can_force_hothead_join_brawl(guest: NPCGuest, fight: Fight, fight_position: Vector2) -> bool:
 	if not is_instance_valid(guest) or guest.Traits == null:
 		return false
+	if not can_npc_participate_in_fights(guest):
+		return false
 	if not guest.Traits.forces_fight_response():
 		return false
 	if guest.is_on_horse() or _is_in_active_fight(guest) or fight.has_participant(guest):
@@ -220,6 +231,8 @@ func _has_nearby_brawl_responder(guest: NPCGuest) -> bool:
 func _can_guest_respond_to_new_brawl(candidate: NPCGuest, initiator: NPCGuest) -> bool:
 	if not is_instance_valid(candidate) or candidate == initiator:
 		return false
+	if not can_npc_participate_in_fights(candidate):
+		return false
 	if candidate.is_on_horse() or _is_in_active_fight(candidate):
 		return false
 	if candidate.Traits == null or candidate.Needs == null:
@@ -238,6 +251,8 @@ func _can_guest_respond_to_new_brawl(candidate: NPCGuest, initiator: NPCGuest) -
 
 func _can_worker_respond_to_new_brawl(worker: NPCWorker, position: Vector2) -> bool:
 	if not is_instance_valid(worker):
+		return false
+	if not can_npc_participate_in_fights(worker):
 		return false
 	if not worker.should_fight_conflicts():
 		return false
@@ -299,6 +314,8 @@ func is_within_fight_detection_range(a: Vector2, b: Vector2) -> bool:
 
 func can_worker_respond_to_fight(worker: NPCWorker, fight: Fight) -> bool:
 	if not is_instance_valid(worker) or fight == null or not is_instance_valid(fight):
+		return false
+	if not can_npc_participate_in_fights(worker):
 		return false
 	if fight.is_over or fight.room == null:
 		return false

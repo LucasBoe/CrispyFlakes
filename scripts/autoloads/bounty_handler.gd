@@ -90,6 +90,20 @@ func get_bounty_for(npc : NPC):
 	else:
 		return null
 
+func get_total_arrested_payout() -> int:
+	if Global.NPCSpawner == null:
+		return 0
+	var total := 0
+	for guest: NPCGuest in Global.NPCSpawner.guests:
+		if not is_instance_valid(guest) or guest.Behaviour == null:
+			continue
+		if not (guest.Behaviour.behaviour_instance is ArrestedBehaviour):
+			continue
+		var bounty: int = npc_bounties.get(guest.look_info, 0) if guest.look_info != null else 0
+		var fine: int = npc_fight_fines.get(guest, 0)
+		total += bounty + fine
+	return total
+
 func get_available_bounties() -> Array:
 	var result = []
 	for look in npc_bounties:

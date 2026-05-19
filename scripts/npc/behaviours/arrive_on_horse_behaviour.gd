@@ -34,6 +34,9 @@ func loop():
 	else:
 		horse.drop_at(npc.global_position)
 
+	CowboyTalk.talk(["Good girl.", "Easy now.", "Stay put.", "Atta boy.", "Rest up."].pick_random(), npc)
+	await pause(randf_range(0.8, 1.4))
+
 	var bouncer_room := Building.query.closest_room_of_type(RoomBouncer, npc.global_position) as RoomBouncer
 	if bouncer_room != null:
 		npc.force_behaviour(ArriveThroughBouncerBehaviour)

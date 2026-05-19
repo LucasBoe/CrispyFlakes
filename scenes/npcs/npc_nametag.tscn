@@ -1,0 +1,41 @@
+[gd_scene load_steps=4 format=3 uid="uid://cl1lhuouqgis6"]
+
+[ext_resource type="Texture2D" uid="uid://bavwpnfq3r7vv" path="res://assets/sprites/ui/ui_circle_8.png" id="1_3ae64"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_ns76r"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="3_vu7n7"]
+
+[node name="NpcNametag" type="CenterContainer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -9.0
+offset_top = -25.0
+offset_right = 26.0
+offset_bottom = -16.0
+grow_horizontal = 2
+scale = Vector2(0.5, 0.5)
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
+modulate = Color(0, 0, 0, 0.5019608)
+layout_mode = 2
+texture = ExtResource("1_3ae64")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = -1
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = -2
+
+[node name="LabelName" type="Label" parent="MarginContainer/MarginContainer"]
+layout_mode = 2
+theme = ExtResource("2_ns76r")
+theme_override_fonts/font = ExtResource("3_vu7n7")
+text = "MAX BOI"

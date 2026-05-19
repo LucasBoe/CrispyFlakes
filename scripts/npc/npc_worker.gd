@@ -1,6 +1,10 @@
 extends NPC
 class_name NPCWorker
 
+const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
+const INJURED_MOVE_SPEED_MULTIPLIER := 0.5
+const INJURED_WORK_DURATION_MULTIPLIER := 2.0
+
 enum SaloonFightResponse {
 	FIGHT,
 	FLEE,
@@ -18,149 +22,6 @@ var new_room_highlight = null
 var salary = 6
 var character_name = ""
 var saloon_fight_response: SaloonFightResponse = SaloonFightResponse.FIGHT
-
-const possible_names = [
-"Wyatt McGraw",
-"Jesse Dalton",
-"Silas Crowley",
-"Clint Hargrove",
-"Colt Ransom",
-"Jedediah Boone",
-"Virgil Haines",
-"Doc Hollister",
-"Amos Redford",
-"Rufus Calhoun",
-"Levi Pickett",
-"Zeke Hartwell",
-"Hank Mercer",
-"Clay Thornton",
-"Gus McAllister",
-"Boone Kincaid",
-"Eli Sutter",
-"Seth Callahan",
-"Otis Barrow",
-"Abe Whitlock",
-"Calvin Prescott",
-"Emmett Tolland",
-"Fletcher Grady",
-"Gideon Pruitt",
-"Harvey Bledsoe",
-"Irving Tatum",
-"Jasper Sloane",
-"Kip Hardin",
-"Leland Driscoll",
-"Miles Sorrell",
-"Nolan Breckin",
-"Orville Tanner",
-"Percy Maddox",
-"Quincy Marlow",
-"Roscoe Vance",
-"Sawyer Keene",
-"Thaddeus Wicker",
-"Tucker Hollis",
-"Wade Cavanaugh",
-"Yancy Cole",
-"Brody Lang",
-"Casey Ridley",
-"Dusty Monroe",
-"Earl Dwyer",
-"Franklin Rourke",
-"Graham Pike",
-"Howell Strickland",
-"Ike Malloy",
-"Jonah Merritt",
-"Kendrick Lowry",
-"Lonnie Rusk",
-"Marshall Dempsey",
-"Newton Briggs",
-"Owen Talbot",
-"Porter Galloway",
-"Reed Huxley",
-"Sterling Vaughn",
-"Travis Morrow",
-"Vernon Slade",
-"Walker Brannigan",
-"Rhett Winslow",
-"Beau Whitaker",
-"Jebediah Knox",
-"Ryder Folsom",
-"Darby Hawke",
-"Cyrus Lockwood",
-"Finn O'Riley",
-"Garrett Blackwell",
-"Hayes Donnelly",
-"Judd Kilpatrick",
-"Kellan Ashford",
-"Luther McKenna",
-"Monty Barlow",
-"Nate Buckner",
-"Ransom DeWitt",
-"Shane Everhart",
-"Temple Rawlings",
-"Vince Harland",
-"Wesley Kearns",
-"Zachary Flint",
-"Archie Baines",
-"Benji Carver",
-"Carlisle Quinn",
-"Duncan Mears",
-"Edwin Larkin",
-"Felix Harlan",
-"Griffin Mallory",
-"Hugh Redd",
-"Isaac Dunbar",
-"Jeremiah Holt",
-"Kirkland Shaw",
-"Lyle Montrose",
-"Marty Ketter",
-"Noah Burnett",
-"Oren Wycliff",
-"Perry Stokes",
-"Rowan Bickford",
-"Stuart Blaine",
-"Terrence Cobb",
-"Vaughn Redding",
-"Wilbur Kersey",
-"Zebediah Price",
-"Abigail Hart",
-"Ada Mayfield",
-"Alma Prescott",
-"Annabelle Crowe",
-"Beatrice Hensley",
-"Belle Whitman",
-"Clara McCoy",
-"Daisy Kellan",
-"Delilah Rose",
-"Ellie Sumner",
-"Faye Langley",
-"Georgia Wren",
-"Hattie Sinclair",
-"Ivy Calloway",
-"Josie Caldwell",
-"Kitty Marston",
-"Loretta Sloan",
-"Maeve Holliday",
-"Molly Redfern",
-"Nora Penrose",
-"Opal Greer",
-"Pearl Whitlock",
-"Rosemary Keene",
-"Sadie Barlow",
-"Tessa Hartley",
-"Violet Quinn",
-"Willa Drury",
-"Bonnie Raines",
-"Cora Tolland",
-"Dottie Kincaid",
-"Etta Galloway",
-"Flora Maddox",
-"Greta Winslow",
-"Honor Sutter",
-"June Calhoun",
-"Lillian Vance",
-"Millie Talbot",
-"Nevaeh? nope"
-]
 
 @onready var anim : Sprite2D = $AnimationModule
 
@@ -182,8 +43,13 @@ var _drop_mouse_pos: Vector2 = Vector2.ZERO
 
 func _ready():
 	super._ready()
-	character_name = possible_names.pick_random()
+	if character_name.is_empty():
+		character_name = NPCNameLibraryScript.get_random_name()
 	apply_trait_conflict_preference()
+	_refresh_nametag()
+
+func get_display_name() -> String:
+	return character_name if not character_name.is_empty() else "Worker"
 
 func _process(delta):
 	super._process(delta)
@@ -217,11 +83,25 @@ func apply_trait_conflict_preference() -> void:
 		saloon_fight_response = SaloonFightResponse.FLEE
 
 func should_fight_conflicts() -> bool:
+	if not FightHandler.can_npc_participate_in_fights(self):
+		return false
 	if Traits.refuses_voluntary_fights():
 		return false
 	if Traits.forces_fight_response():
 		return true
 	return saloon_fight_response == SaloonFightResponse.FIGHT
+
+func get_move_speed_multiplier() -> float:
+	var multiplier := super.get_move_speed_multiplier()
+	if Status != null and Status.has_status(Enum.NpcStatus.INJURED):
+		multiplier *= INJURED_MOVE_SPEED_MULTIPLIER
+	return multiplier
+
+func get_work_duration_multiplier() -> float:
+	var multiplier := super.get_work_duration_multiplier()
+	if Status != null and Status.has_status(Enum.NpcStatus.INJURED):
+		multiplier *= INJURED_WORK_DURATION_MULTIPLIER
+	return multiplier
 
 func destroy():
 	for j: Array in JobHandler.workers.values():

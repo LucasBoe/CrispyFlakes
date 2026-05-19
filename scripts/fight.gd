@@ -49,6 +49,8 @@ func get_active_participants() -> Array:
 		var npc := participant as NPC
 		if not is_instance_valid(npc) or npc.Behaviour == null:
 			continue
+		if not FightHandler.can_npc_participate_in_fights(npc):
+			continue
 		var b = npc.Behaviour.behaviour_instance
 		if b is ArrestedBehaviour or b is KnockedOutBehaviour:
 			continue
@@ -91,6 +93,8 @@ func has_participant(npc: NPC) -> bool:
 
 func make_join_fight(npc: NPC) -> void:
 	if npc == null or not is_instance_valid(npc):
+		return
+	if not FightHandler.can_npc_participate_in_fights(npc):
 		return
 	if not has_participant(npc):
 		participants.append(npc)
@@ -277,11 +281,13 @@ func _knock_out(npc: NPC) -> void:
 		npc.Navigation.stop_navigation()
 	_debug("knockout %s participants=%s" % [_npc_debug(npc), _participants_debug()])
 	npc.Behaviour.set_behaviour(KnockedOutBehaviour)
-	var guest: NPCGuest = npc as NPCGuest
-	if guest != null and guest.Status != null:
-		guest.Status.set_status(Enum.NpcStatus.INJURED)
-		InjuryHandler.on_guest_injured(guest)
-		print("[Fight] Guest knocked out and marked INJURED — fight_type=%s" % FightType.keys()[fight_type])
+	if npc.Status != null:
+		npc.Status.set_status(Enum.NpcStatus.INJURED)
+		InjuryHandler.on_npc_injured(npc)
+		print("[Fight] %s knocked out and marked INJURED — fight_type=%s" % [
+			"Guest" if npc is NPCGuest else "Worker",
+			FightType.keys()[fight_type]
+		])
 
 func clear_health_bars() -> void:
 	for npc in health_bars.keys():
