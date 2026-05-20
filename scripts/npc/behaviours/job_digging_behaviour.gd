@@ -12,28 +12,42 @@ func start_loop():
 	room = _claim_room()
 
 func loop():
-	if room == null:
-		return
-	if room.get_assignment_anchor_room() == null:
-		_clear_pickaxe()
+	while not stopped:
+		if room == null:
+			room = _claim_room()
+			if room == null:
+				_clear_pickaxe()
+				return
+
+		if room.get_assignment_anchor_room() == null:
+			_clear_pickaxe()
+			_release_room()
+			room = null
+			continue
+
+		_narrative = ["Digging out the basement...", "Clearing hard-packed dirt...", "Carving out a new room..."].pick_random()
+		_ensure_pickaxe()
+		await move(room.get_dig_start_position())
+		await _dig_room()
+
+		if stopped:
+			_clear_pickaxe()
+			return
+		if not is_instance_valid(room):
+			room = null
+			continue
+
+		var completed_room = room
+		completed_room.set_dig_progress(1.0)
 		_release_room()
-		_change_to_idle()
-		return
+		Building.replace_with_empty(completed_room)
+		_refresh_worker_z_for_current_room()
+		room = null
 
-	_narrative = ["Digging out the basement...", "Clearing hard-packed dirt...", "Carving out a new room..."].pick_random()
-	_ensure_pickaxe()
-	await move(room.get_dig_start_position())
-	await _dig_room()
-
-	if not is_instance_valid(room) or stopped:
-		_clear_pickaxe()
-		return
-
-	room.set_dig_progress(1.0)
-	_clear_pickaxe()
-	occupied_rooms.erase(room)
-	Building.replace_with_empty(room)
-	_refresh_worker_z_for_current_room()
+		if _get_closest_workable_room(npc.Navigation.get_reachable_rooms()) == null:
+			_clear_pickaxe()
+			_change_to_idle()
+			return
 
 func _dig_room() -> void:
 	var duration := _get_progress_duration(DIG_DURATION)
@@ -142,6 +156,8 @@ func _can_work_room(candidate: RoomDigging, reachable_rooms: Array) -> bool:
 func _release_room() -> void:
 	if is_instance_valid(room):
 		room.worker = null
+		if room.on_destroy_signal.is_connected(_change_to_idle):
+			room.on_destroy_signal.disconnect(_change_to_idle)
 	occupied_rooms.erase(room)
 
 func _ensure_pickaxe() -> void:

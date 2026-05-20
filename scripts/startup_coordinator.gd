@@ -160,7 +160,7 @@ func _set_startup_money(amount: int) -> void:
 
 	MoneyHandler.free_pool = amount
 	MoneyHandler.location_money.clear()
-	MoneyHandler.changed.emit()
+	MoneyHandler.on_money_changed_signal.emit()
 
 func spawn_bounties(count: int) -> void:
 	for i in count:

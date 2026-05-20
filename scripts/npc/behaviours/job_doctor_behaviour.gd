@@ -39,15 +39,15 @@ func _do_ward_rounds() -> void:
 
 	for ward_base in wards:
 		var ward: RoomSickWard = ward_base as RoomSickWard
-		for guest: NPCGuest in ward.current_guests.duplicate():
+		for patient: NPC in ward.current_guests.duplicate():
 			if not room.treatment_requests.is_empty():
 				return
-			if not is_instance_valid(guest):
+			if not is_instance_valid(patient):
 				continue
 			_narrative = ["Doing rounds...", "Checking on patients...", "Making their rounds..."].pick_random()
-			await move(ward.get_bed_position_for(guest))
-			if is_instance_valid(guest):
-				guest.energy = minf(guest.energy + WARD_HEAL_AMOUNT, guest.get_max_energy())
+			await move(ward.get_bed_position_for(patient))
+			if is_instance_valid(patient):
+				patient.energy = minf(patient.energy + WARD_HEAL_AMOUNT, patient.get_max_energy())
 			await pause(WARD_VISIT_PAUSE)
 
 func stop_loop() -> BehaviourSaveData:

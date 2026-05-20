@@ -32,7 +32,8 @@ func _ready():
 	coin_anim_routine()
 
 func animate_resource_add(resource, amount, global_pos, duration):
-	for i in amount:
+	var max = min(amount, 1000)
+	for i in max:
 		var anim = ActiveAnimation.new()
 		anim.Origin = global_pos
 		anim.Duration = duration * PHASE_2_DURATION

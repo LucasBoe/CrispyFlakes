@@ -80,6 +80,22 @@ func add_animated(resource, amount, global_pos, room_location: Vector2i = Vector
 			MoneyHandler.deposit(room_location, amount)
 		else:
 			MoneyHandler.deposit_free(amount)
+
+func add_animated_money_to_room_or_floor(amount: int, global_pos: Vector2, room: RoomBase = null) -> void:
+	if amount <= 0:
+		return
+
+	var room_location := Vector2i(-9999, -9999)
+	var room_can_store_money := room != null and room.data != null and room.data.money_capacity > 0
+	if room_can_store_money:
+		room_location = Vector2i(room.x, room.y)
+
+	await add_animated(Enum.Resources.MONEY, amount, global_pos, room_location)
+
+	if room_can_store_money:
+		return
+
+	Global.ItemSpawner.create(Enum.Items.MONEY, global_pos).set_money_amount(float(amount))
 	
 
 func notify_stolen(amount: int) -> void:

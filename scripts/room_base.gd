@@ -122,7 +122,7 @@ func get_notification_position():
 func _setup_room_money_visual() -> void:
 	if data == null or data.money_capacity <= 0 or data == Building.room_data_safe:
 		return
-	if MoneyHandler.changed.is_connected(_update_room_money_visual):
+	if MoneyHandler.on_money_changed_signal.is_connected(_update_room_money_visual):
 		return
 
 	_room_money_sprite = Sprite2D.new()
@@ -134,7 +134,7 @@ func _setup_room_money_visual() -> void:
 	_room_money_sprite.visible = false
 	add_child(_room_money_sprite)
 
-	MoneyHandler.changed.connect(_update_room_money_visual)
+	MoneyHandler.on_money_changed_signal.connect(_update_room_money_visual)
 	_update_room_money_visual()
 
 func _get_room_money_visual_position() -> Vector2:
@@ -227,8 +227,8 @@ func add_infrastructure_output_tile(_layer_name: StringName, _room_index: Vector
 	return
 
 func destroy():
-	if MoneyHandler.changed.is_connected(_update_room_money_visual):
-		MoneyHandler.changed.disconnect(_update_room_money_visual)
+	if MoneyHandler.on_money_changed_signal.is_connected(_update_room_money_visual):
+		MoneyHandler.on_money_changed_signal.disconnect(_update_room_money_visual)
 	if _room_money_tween != null and _room_money_tween.is_valid():
 		_room_money_tween.kill()
 	on_destroy_signal.emit()

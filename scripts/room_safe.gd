@@ -9,8 +9,8 @@ const MAX_MONEY_FRAME := 9
 func init_room(_x: int, _y: int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.SAFE
-	if not MoneyHandler.changed.is_connected(_update_money_visual):
-		MoneyHandler.changed.connect(_update_money_visual)
+	if not MoneyHandler.on_money_changed_signal.is_connected(_update_money_visual):
+		MoneyHandler.on_money_changed_signal.connect(_update_money_visual)
 	_update_money_visual()
 
 func get_job_capacity(job = null) -> int:
@@ -34,6 +34,6 @@ func _update_money_visual() -> void:
 	safe_money_front.frame = frame
 
 func destroy():
-	if MoneyHandler.changed.is_connected(_update_money_visual):
-		MoneyHandler.changed.disconnect(_update_money_visual)
+	if MoneyHandler.on_money_changed_signal.is_connected(_update_money_visual):
+		MoneyHandler.on_money_changed_signal.disconnect(_update_money_visual)
 	super.destroy()

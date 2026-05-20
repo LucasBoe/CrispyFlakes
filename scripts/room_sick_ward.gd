@@ -6,7 +6,7 @@ const BED_POSITIONS: Array[Vector2] = [Vector2(32, -8), Vector2(84, -8)]
 
 var treat_guests := true
 var treat_workers := true
-var current_guests: Array[NPCGuest] = []
+var current_guests: Array[NPC] = []
 
 func init_room(_x: int, _y: int) -> void:
 	super.init_room(_x, _y)
@@ -14,15 +14,15 @@ func init_room(_x: int, _y: int) -> void:
 func is_full() -> bool:
 	return current_guests.size() >= MAX_BEDS
 
-func occupy(guest: NPCGuest) -> void:
-	if not current_guests.has(guest):
-		current_guests.append(guest)
+func occupy(patient: NPC) -> void:
+	if not current_guests.has(patient):
+		current_guests.append(patient)
 
-func release(guest: NPCGuest) -> void:
-	current_guests.erase(guest)
+func release(patient: NPC) -> void:
+	current_guests.erase(patient)
 
-func get_bed_position_for(guest: NPCGuest) -> Vector2:
-	var idx: int = current_guests.find(guest)
+func get_bed_position_for(patient: NPC) -> Vector2:
+	var idx: int = current_guests.find(patient)
 	if idx < 0 or idx >= BED_POSITIONS.size():
 		return get_center_floor_position()
 	return global_position + BED_POSITIONS[idx]

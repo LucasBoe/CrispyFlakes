@@ -140,7 +140,18 @@ func get_all_rooms_of_type_ordered_by_distance(type):
 	return Building.query.rooms_of_type_ordered_by_distance(type, npc.global_position, null, reachable)
 
 func move(target, custom_speed = -1):
-	var goal_pos: Vector2 = (target as Node2D).global_position if target is Node2D else target
+	var target_type := typeof(target)
+	var target_is_live_node := is_instance_valid(target) and target is Node2D
+	var target_is_live_npc := is_instance_valid(target) and target is NPC
+	var goal_pos: Vector2
+	if target_is_live_node:
+		goal_pos = (target as Node2D).global_position
+	elif target_type == TYPE_VECTOR2:
+		goal_pos = target
+	elif target_type == TYPE_VECTOR2I:
+		goal_pos = Vector2(target)
+	else:
+		return
 	var goal_room := Building.query.closest_on_position_floor(RoomBase, goal_pos) as RoomBase
 
 	if goal_room != null and not npc.Navigation.is_room_reachable(goal_room):
@@ -156,8 +167,8 @@ func move(target, custom_speed = -1):
 
 	if not is_instance_valid(npc):
 		return
-	npc.Navigation.set_target(target, custom_speed)
-	if target is NPC:
+	npc.Navigation.set_target(target if target_is_live_node else goal_pos, custom_speed)
+	if target_is_live_npc:
 		while is_instance_valid(target) and is_instance_valid(npc) and npc.Navigation.is_moving:
 			if not npc.Navigation.is_on_stair_path():
 				npc.Navigation.refresh_target_path()

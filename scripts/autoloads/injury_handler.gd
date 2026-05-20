@@ -102,12 +102,10 @@ func apply_treatment(npc: NPC, quality: float, infirmary: RoomInfirmary = null) 
 	npc.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
 	npc.Status.clear_status(Enum.NpcStatus.BADLY_TREATED)
 
-	var guest := npc as NPCGuest
-	if guest != null:
-		if quality >= GOOD_TREATMENT_THRESHOLD:
-			npc.Status.set_status(Enum.NpcStatus.WELL_TREATED)
-		else:
-			npc.Status.set_status(Enum.NpcStatus.BADLY_TREATED)
+	if quality >= GOOD_TREATMENT_THRESHOLD:
+		npc.Status.set_status(Enum.NpcStatus.WELL_TREATED)
+	else:
+		npc.Status.set_status(Enum.NpcStatus.BADLY_TREATED)
 
 	on_npc_recovered(npc)
 

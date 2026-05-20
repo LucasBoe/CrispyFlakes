@@ -13,6 +13,21 @@ func loop():
 
 	while true:
 		var safe_loc = Vector2i(safe.x, safe.y)
+
+		var loose_money: Item = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.MONEY)
+		if is_instance_valid(loose_money):
+			_narrative = ["Picking up loose change...", "Grabbing that cash...", "Securing loose funds..."].pick_random()
+			await move(loose_money.global_position)
+			if is_instance_valid(loose_money):
+				var amount := loose_money.money_amount
+				npc.Item.pick_up(loose_money)
+				MoneyHandler.deposit(safe_loc, amount)
+				_narrative = ["Returning to the safe...", "Securing the funds...", "Depositing the earnings..."].pick_random()
+				await move(safe.get_random_floor_position())
+				var loose_carried = npc.Item.drop_current()
+				if is_instance_valid(loose_carried):
+					loose_carried.destroy()
+			continue
 		var target_loc = MoneyHandler.richest_location(safe_loc)
 
 		if target_loc == Vector2i(-9999, -9999) or MoneyHandler.get_money_at(target_loc) < 1.0:

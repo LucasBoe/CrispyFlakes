@@ -176,13 +176,15 @@ func _serialize_workers() -> Array[Dictionary]:
 		if not is_instance_valid(worker):
 			continue
 
+		var job := _sanitize_job(int(worker.current_job))
+		var job_room := _sanitize_job_room_for_job(worker.current_job_room as RoomBase, job)
 		var entry := {
 			"name": worker.character_name,
 			"position": _serialize_vector2(worker.global_position),
-			"job": int(worker.current_job),
+			"job": job,
 		}
-		if is_instance_valid(worker.current_job_room):
-			entry["job_room"] = _serialize_room_index(Vector2i(worker.current_job_room.x, worker.current_job_room.y))
+		if is_instance_valid(job_room):
+			entry["job_room"] = _serialize_room_index(Vector2i(job_room.x, job_room.y))
 		workers.append(entry)
 
 	return workers
@@ -304,7 +306,7 @@ func _restore_workers(entries: Array) -> void:
 			continue
 
 		var job := _sanitize_job(int(entry.get("job", Enum.Jobs.IDLE)))
-		var job_room := _room_from_variant(entry.get("job_room", {}))
+		var job_room := _sanitize_job_room_for_job(_room_from_variant(entry.get("job_room", {})), job)
 		_restore_worker_assignment(worker, job, job_room)
 
 func _restore_guests(entries: Array) -> void:
@@ -404,7 +406,7 @@ func _clear_building() -> void:
 		room.destroy()
 
 	MoneyHandler.location_money.clear()
-	MoneyHandler.changed.emit()
+	MoneyHandler.on_money_changed_signal.emit()
 	Building.update_foreground_tiles()
 
 func _get_unique_rooms() -> Array[RoomBase]:
@@ -560,6 +562,15 @@ func _room_from_variant(value) -> RoomBase:
 
 func _sanitize_job(job: int) -> int:
 	return job if job >= 0 and job < Enum.Jobs.keys().size() else Enum.Jobs.IDLE
+
+func _sanitize_job_room_for_job(job_room: RoomBase, job: int) -> RoomBase:
+	if job == Enum.Jobs.IDLE:
+		return null
+	if job_room == null or not is_instance_valid(job_room):
+		return null
+	if job_room.associated_job != job:
+		return null
+	return job_room
 
 func _sanitize_item_type(item_type: int) -> int:
 	return item_type if item_type >= 0 and item_type < Enum.Items.keys().size() else Enum.Items.MONEY

@@ -5,7 +5,6 @@ const MATCH_COUNT := 10
 const MAX_GUEST_COUNT := 3
 const MATCH_DURATION := 8.0
 const JACKPOT_OPTIONS: Array[int] = [20, 50, 100, 250, 500, 1000]
-const CHEAT_FEE_MULTIPLIER := 3.0
 const BASE_CHEAT_CHANCE := 0.04
 const DRUNK_CHEAT_CHANCE := 0.08
 const BASE_WATCHER_DETECTION_CHANCE := 0.65
@@ -260,7 +259,7 @@ func _play_match() -> void:
 		if randf() > _get_cheat_chance(guest):
 			continue
 		if _watcher_detects_cheat():
-			var fee := roundi(match_pool_amount * CHEAT_FEE_MULTIPLIER)
+			var fee := roundi(match_pool_amount * Pricing.GAMBLING_CHEAT_FEE_MULTIPLIER)
 			last_summary.detected_cheats += 1
 			last_summary.cheating_fees += fee
 			UiNotifications.create_notification_static("+%d$ fee" % fee, get_notification_position(), null, Color.GREEN)

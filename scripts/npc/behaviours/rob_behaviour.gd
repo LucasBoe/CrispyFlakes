@@ -2,7 +2,9 @@ extends FightBehaviour
 class_name RobBehaviour
 
 const ROBBERY_FINE := 5
-const PRE_FIGHT_PAUSE := 1.0
+const PRE_FIGHT_PAUSE_MIN := 1.0
+const PRE_FIGHT_PAUSE_MAX := 30.0
+const PRE_FIGHT_PAUSE_MAX_MONEY := 500.0
 const POST_FIGHT_PAUSE := 1.0
 const THREAT_TEXT := "gimme $$$"
 
@@ -15,19 +17,21 @@ func start_loop():
 func loop():
 	_narrative = ["Casing the joint...", "Eyeing the valuables..."].pick_random()
 
-	_target_location = MoneyHandler.richest_location()
+	_target_location = _richest_non_safe_location()
 	var target_room: RoomBase = Building.get_room_from_index(_target_location) as RoomBase
 	if not is_instance_valid(target_room):
 		return
 
-	_narrative = ["Moving on the safe...", "Going for the loot...", "Heading for the money..."].pick_random()
+	_narrative = ["Moving on the cash...", "Going for the loot...", "Heading for the money..."].pick_random()
 	await move(target_room.get_random_floor_position())
 
 	_narrative = ["Demanding the cash...", "Starting a robbery...", "Threatening the staff..."].pick_random()
-	fight = FightHandler.create_rob_fight(npc, target_room, PRE_FIGHT_PAUSE)
+	var money_amount: float = MoneyHandler.get_money_at(_target_location)
+	var pre_fight_pause: float = clampf(lerpf(PRE_FIGHT_PAUSE_MIN, PRE_FIGHT_PAUSE_MAX, money_amount / PRE_FIGHT_PAUSE_MAX_MONEY), PRE_FIGHT_PAUSE_MIN, PRE_FIGHT_PAUSE_MAX)
+	fight = FightHandler.create_rob_fight(npc, target_room, pre_fight_pause)
 	arrived_at_room = true
-	UiNotifications.create_notification_dynamic(THREAT_TEXT, npc, Vector2(0, -40), null, Color.RED, PRE_FIGHT_PAUSE + 0.75)
-	await pause(PRE_FIGHT_PAUSE)
+	UiNotifications.create_notification_dynamic(THREAT_TEXT, npc, Vector2(0, -40), null, Color.RED, pre_fight_pause + 0.75)
+	await pause(pre_fight_pause)
 	if stopped or not is_instance_valid(target_room) or fight == null:
 		return
 
@@ -54,6 +58,8 @@ func loop():
 
 	var stolen: int = MoneyHandler.steal(_target_location)
 	if stolen > 0:
+		var money_item := Global.ItemSpawner.create(Enum.Items.MONEY, npc.global_position).set_money_amount(stolen)
+		npc.Item.pick_up(money_item)
 		ResourceHandler.notify_stolen(stolen)
 		(npc as NPCGuest).stolen_amount = stolen
 		UiNotifications.create_notification_dynamic("$%d stolen!" % stolen, npc, Vector2(0, -40), UiNotifications.ICON_MINUS_3)
@@ -61,6 +67,18 @@ func loop():
 		npc.force_behaviour(LeaveOnHorseBehaviour)
 	else:
 		npc.force_behaviour(NeedLeaveBehaviour)
+
+func _richest_non_safe_location() -> Vector2i:
+	var best_loc := Vector2i(-9999, -9999)
+	var best_amount := 0.0
+	for loc: Vector2i in MoneyHandler.location_money.keys():
+		if Building.get_room_from_index(loc) is RoomSafe:
+			continue
+		var amt: float = MoneyHandler.location_money[loc]
+		if amt > best_amount:
+			best_amount = amt
+			best_loc = loc
+	return best_loc
 
 func stop_loop():
 	(npc as NPCGuest).is_robber = false

@@ -1,7 +1,6 @@
 extends RoomBase
 class_name RoomBath
 
-const SERVICE_PRICE := 6
 
 var customers = []
 var has_customer
@@ -42,4 +41,4 @@ func unregister_as_customer(customer):
 	has_customer = customers.size() > 0
 
 func get_service_price() -> int:
-	return SERVICE_PRICE
+	return Pricing.BATH_SERVICE_PRICE

@@ -14,10 +14,6 @@ const BUILD_TABLE_TUTORIAL_TITLE := "I have nowhere to sit"
 const CLEANUP_TASK_TEXT := "Clean Up the Mess"
 const BUILD_BAR_TASK_TEXT := "Run your first Bar"
 const BUILD_TABLE_TASK_TEXT := "Build a Table"
-const CLEANUP_REWARD := 10
-const BUILD_BAR_REWARD := 10
-const SERVE_GUESTS_REWARD := 10
-const BUILD_TABLE_REWARD := 10
 const SERVE_GUESTS_TARGET := 3
 const BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT := 4
 
@@ -77,7 +73,7 @@ func _build_definitions(cleanup_room_count: int) -> Array[QuestDefinition]:
 			CLEANUP_TUTORIAL_TITLE,
 			cleanup_text(0, cleanup_room_count),
 			_cleanup_hints(),
-			CLEANUP_REWARD,
+			Pricing.QUEST_REWARD_CLEANUP,
 			CLEANUP_REWARD_TEXT
 		),
 		QuestDefinition.new(
@@ -85,7 +81,7 @@ func _build_definitions(cleanup_room_count: int) -> Array[QuestDefinition]:
 			BUILD_BAR_TUTORIAL_TITLE,
 			BUILD_BAR_TASK_TEXT,
 			_build_bar_hints(),
-			BUILD_BAR_REWARD,
+			Pricing.QUEST_REWARD_BUILD_BAR,
 			BUILD_BAR_REWARD_TEXT
 		),
 		QuestDefinition.new(
@@ -93,7 +89,7 @@ func _build_definitions(cleanup_room_count: int) -> Array[QuestDefinition]:
 			SERVE_GUESTS_TUTORIAL_TITLE,
 			serve_guests_text(0, SERVE_GUESTS_TARGET),
 			_serve_guests_hints(),
-			SERVE_GUESTS_REWARD,
+			Pricing.QUEST_REWARD_SERVE_GUESTS,
 			SERVE_GUESTS_REWARD_TEXT
 		),
 		QuestDefinition.new(
@@ -101,7 +97,7 @@ func _build_definitions(cleanup_room_count: int) -> Array[QuestDefinition]:
 			BUILD_TABLE_TUTORIAL_TITLE,
 			BUILD_TABLE_TASK_TEXT,
 			_build_table_hints(),
-			BUILD_TABLE_REWARD,
+			Pricing.QUEST_REWARD_BUILD_TABLE,
 			BUILD_TABLE_REWARD_TEXT
 		),
 	]

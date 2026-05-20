@@ -140,10 +140,7 @@ func get_bad_treatment_recovery_chance() -> float:
 	return 0.6
 
 func get_hire_cost() -> int:
-	const BASE := 25
-	const PER_POSITIVE := 15
-	const PER_NEGATIVE := -5
-	var cost := BASE
+	var cost: int = Pricing.WORKER_HIRE_BASE
 	for t in traits:
-		cost += PER_POSITIVE if t.is_positive() else PER_NEGATIVE
+		cost += Pricing.WORKER_HIRE_PER_POSITIVE_TRAIT if t.is_positive() else Pricing.WORKER_HIRE_PER_NEGATIVE_TRAIT
 	return cost

@@ -5,7 +5,6 @@ var owner_guest: NPCGuest = null
 var tied_post: RoomHorsePost = null
 
 const TEX_HORSE = preload("res://assets/sprites/horse.png")
-const TIE_FEE = 8
 const WANDER_SPEED = 12.0
 const FREE_DIRT_INTERVAL_MIN = 10.0
 const FREE_DIRT_INTERVAL_MAX = 22.0
@@ -145,7 +144,7 @@ func on_post_destroyed() -> void:
 func collect(_guest: NPCGuest) -> int:
 	var fee = 0
 	if is_instance_valid(tied_post):
-		fee = TIE_FEE
+		fee = Pricing.HORSE_POST_TIE_FEE
 		SoundPlayer.play_horse(global_position)
 		tied_post.untie_horse(self)
 		tied_post = null

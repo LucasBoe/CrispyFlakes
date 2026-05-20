@@ -84,7 +84,7 @@ func _apply_recovery(is_well_treated: bool) -> void:
 		InjuryHandler.collect_recovery_payment(npc)
 	else:
 		npc.Status.set_status(Enum.NpcStatus.INJURED)
-		InjuryHandler.on_guest_injured(npc as NPCGuest)
+		InjuryHandler.on_npc_injured(npc)
 
 func _find_any_sick_ward() -> RoomSickWard:
 	var rooms: Array = get_all_rooms_of_type_ordered_by_distance(RoomSickWard)

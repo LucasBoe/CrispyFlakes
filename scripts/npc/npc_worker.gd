@@ -19,7 +19,7 @@ var current_job_room_highlight = null
 var new_job_room_highlight = null
 var new_room_highlight = null
 
-var salary = 6
+var salary: int = Pricing.WORKER_BASE_SALARY
 var character_name = ""
 var saloon_fight_response: SaloonFightResponse = SaloonFightResponse.FIGHT
 
@@ -68,6 +68,11 @@ func _process(delta):
 
 	if Behaviour.has_behaviour:
 		return
+
+	if Status != null:
+		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):
+			Behaviour.set_behaviour(NeedSickWardBehaviour)
+			return
 
 	if InjuryHandler.should_seek_treatment_behaviour(self):
 		Behaviour.set_behaviour(NeedTreatmentBehaviour)

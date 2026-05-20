@@ -30,10 +30,10 @@ enum JoinReason {
 }
 
 var participants = []
-var target_mapping : Dictionary[NPC, NPC] = {}
-var fight_positions: Dictionary = {}  # Dictionary[NPC, Vector2]
-var last_attack : Dictionary[NPC, float] = {}
-var pending_attacks : Dictionary[NPC, Dictionary] = {}
+var target_mapping: Dictionary[NPC, NPC] = {}
+var fight_positions: Dictionary = {}
+var last_attack: Dictionary[NPC, float] = {}
+var pending_attacks: Dictionary[NPC, Dictionary] = {}
 var participant_join_reasons: Dictionary = {}
 var health_bars := {}
 var room : RoomBase
@@ -48,13 +48,14 @@ var is_over: bool = false
 var start_not_before_time: float = 0.0
 var keep_alive_until_time: float = 0.0
 
-const DRUNK_FIGHT_BOUNTY: int = 2
 const GUTLESS_ROBBER_ESCAPE_CHANCE: float = 0.5
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
 const MELEE_DAMAGE_DELAY: float = 0.25
 const MELEE_DAMAGE: float = 0.12
 const MELEE_ARRIVE_THRESHOLD: float = 2.0
+const INJURY_INSTEAD_OF_KO_CHANCE: float = 0.8
+const INJURY_MIN_SURVIVE_ENERGY: float = 0.08
 
 func get_active_participants() -> Array:
 	var active := []
@@ -218,7 +219,12 @@ func _force_guest_to_flee(guest: NPCGuest) -> void:
 func _return_guest_stolen_money(guest: NPCGuest, log_prefix: String = "[Fight] Returning stolen money") -> void:
 	if guest.stolen_amount <= 0:
 		return
-	ResourceHandler.add_animated(Enum.Resources.MONEY, guest.stolen_amount, guest.global_position)
+	if guest.Item != null and guest.Item.is_item(Enum.Items.MONEY):
+		var carried := guest.Item.drop_current()
+		if is_instance_valid(carried):
+			carried.destroy()
+	var room := Building.query.room_at_floor_position(guest.global_position) as RoomBase
+	ResourceHandler.add_animated_money_to_room_or_floor(guest.stolen_amount, guest.global_position, room)
 	print("%s guest=%s amount=%d" % [log_prefix, guest.name, guest.stolen_amount])
 	guest.stolen_amount = 0
 
@@ -326,8 +332,13 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 	}
 
 func _apply_pending_attacks(active_participants: Array) -> void:
-	for attacker in pending_attacks.keys():
-		var attack := pending_attacks[attacker]
+	for attacker in pending_attacks.keys().duplicate():
+		if not is_instance_valid(attacker):
+			pending_attacks.erase(attacker)
+			continue
+		if not pending_attacks.has(attacker):
+			continue
+		var attack: Dictionary = pending_attacks[attacker]
 		if Global.time_now < float(attack.get("apply_time", 0.0)):
 			continue
 
@@ -338,7 +349,19 @@ func _apply_pending_attacks(active_participants: Array) -> void:
 			continue
 
 		var damage := float(attack.get("damage", 0.0))
-		target.energy = maxf(0.0, target.energy - damage)
+		var target_energy_after_hit := maxf(0.0, target.energy - damage)
+		if _should_convert_knockout_to_injury(target, target_energy_after_hit):
+			target.energy = maxf(target_energy_after_hit, INJURY_MIN_SURVIVE_ENERGY)
+			_injure_participant(target)
+			_debug("hit injury %s -> %s damage=%.2f active_before_cleanup=%s" % [
+				_npc_debug(attacker),
+				_npc_debug(target),
+				damage,
+				_participants_debug(get_active_participants()),
+			])
+			continue
+
+		target.energy = target_energy_after_hit
 		SoundPlayer.play_punch(attacker.global_position)
 		if target.energy <= 0.0:
 			_debug("hit KO %s -> %s damage=%.2f active_before_cleanup=%s" % [
@@ -375,20 +398,7 @@ func _check_for_knockouts() -> void:
 		_knock_out(participant)
 
 func _knock_out(npc: NPC) -> void:
-	target_mapping.erase(npc)
-	fight_positions.erase(npc)
-	last_attack.erase(npc)
-	pending_attacks.erase(npc)
-	for attacker in target_mapping.keys():
-		if target_mapping[attacker] == npc:
-			target_mapping.erase(attacker)
-	for attacker in pending_attacks.keys():
-		var attack := pending_attacks[attacker]
-		if attack.get("target", null) == npc:
-			pending_attacks.erase(attacker)
-
-	if npc.Navigation != null:
-		npc.Navigation.stop_navigation()
+	_remove_participant_from_fight(npc)
 	_debug("knockout %s participants=%s" % [_npc_debug(npc), _participants_debug()])
 	npc.Behaviour.set_behaviour(KnockedOutBehaviour)
 	if npc.Status != null:
@@ -398,6 +408,41 @@ func _knock_out(npc: NPC) -> void:
 			"Guest" if npc is NPCGuest else "Worker",
 			FightType.keys()[fight_type]
 		])
+
+func _injure_participant(npc: NPC) -> void:
+	_remove_participant_from_fight(npc)
+	if npc.Status != null and not npc.Status.has_status(Enum.NpcStatus.INJURED):
+		npc.Status.set_status(Enum.NpcStatus.INJURED)
+		InjuryHandler.on_npc_injured(npc)
+		print("[Fight] %s injured and removed from fight — fight_type=%s" % [
+			"Guest" if npc is NPCGuest else "Worker",
+			FightType.keys()[fight_type]
+		])
+
+func _remove_participant_from_fight(npc: NPC) -> void:
+	target_mapping.erase(npc)
+	fight_positions.erase(npc)
+	last_attack.erase(npc)
+	pending_attacks.erase(npc)
+	for attacker in target_mapping.keys().duplicate():
+		if target_mapping[attacker] == npc:
+			target_mapping.erase(attacker)
+	for attacker in pending_attacks.keys().duplicate():
+		var attack: Dictionary = pending_attacks[attacker]
+		if attack.get("target", null) == npc:
+			pending_attacks.erase(attacker)
+
+	if npc.Navigation != null:
+		npc.Navigation.stop_navigation()
+
+func _should_convert_knockout_to_injury(target: NPC, target_energy_after_hit: float) -> bool:
+	if target == null or not is_instance_valid(target):
+		return false
+	if target_energy_after_hit > 0.0:
+		return false
+	if target.Status == null or target.Status.has_status(Enum.NpcStatus.INJURED):
+		return false
+	return randf() < INJURY_INSTEAD_OF_KO_CHANCE
 
 func clear_health_bars() -> void:
 	for npc in health_bars.keys():
@@ -488,7 +533,7 @@ func _apply_workers_won() -> void:
 			continue
 		_debug("worker win apply %s reason=%s" % [_npc_debug(guest), _join_reason_name(guest)])
 		if fight_type == FightType.BRAWL and guest.look_info != null:
-			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY)
+			BountyHandler.create_fight_fine(guest, Pricing.DRUNK_FIGHT_FINE)
 		ConflictResponseHandler.unmark_for_arrest(guest)
 		var is_injured := (guest.Status != null and guest.Status.has_status(Enum.NpcStatus.INJURED))
 		var prev_b := guest.Behaviour.behaviour_instance
@@ -548,11 +593,12 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			last_attack.erase(participant)
 
-	for participant in pending_attacks.keys():
+	for participant in pending_attacks.keys().duplicate():
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			pending_attacks.erase(participant)
 			continue
-		var target = pending_attacks[participant].get("target", null)
+		var attack: Dictionary = pending_attacks[participant]
+		var target = attack.get("target", null)
 		if not is_instance_valid(target) or not active_participants.has(target):
 			pending_attacks.erase(participant)
 

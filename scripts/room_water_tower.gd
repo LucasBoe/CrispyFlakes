@@ -4,7 +4,6 @@ class_name RoomWaterTower
 const MAX_WATER := 96.0
 const PUMP_AMOUNT := 8.0
 const PUMP_DURATION := 3.0
-const RAISE_COST := 25
 const _WATER_LAYER := &"water"
 const _PIPE_TILE_TEXTURE_PATH := "res://assets/sprites/water_pipe_tiles.png"
 const _PIPE_TILE_SIZE := 48.0
@@ -59,9 +58,9 @@ func can_raise() -> bool:
 	return not (Building.floors.has(new_y_idx) and Building.floors[new_y_idx].has(x))
 
 func raise_tower() -> bool:
-	if not ResourceHandler.has_money(RAISE_COST):
+	if not ResourceHandler.has_money(Pricing.WATER_TOWER_RAISE_COST):
 		return false
-	await ResourceHandler.spend_animated(RAISE_COST, global_position)
+	await ResourceHandler.spend_animated(Pricing.WATER_TOWER_RAISE_COST, global_position)
 	SoundPlayer.play_construction_placed()
 	if extra_height == 0:
 		data = data.duplicate()

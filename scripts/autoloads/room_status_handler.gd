@@ -4,6 +4,7 @@ var rooms = []
 var enabled: bool = true
 
 const REFRESH_RATE = 1.0
+const _NO_WATER_ICON := preload("res://assets/sprites/ui/icon_no_water.png")
 
 func _init():
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
@@ -43,7 +44,12 @@ func notification_loop():
 			await pause(1)
 		else:
 			for r : RoomBase in rooms:
-				if r is RoomWaterTower:
+				var water_alert := _get_water_shortage_color(r)
+				if water_alert != Color.TRANSPARENT:
+					var is_critical := r.requires_infrastructure_layer(&"water")
+					notify(r, "no water" if is_critical else "", water_alert, _NO_WATER_ICON if is_critical else null, is_critical)
+					await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomWaterTower:
 					if not (r as RoomWaterTower).has_water() and not r.worker:
 						notify(r, "needs pumping", Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
@@ -73,10 +79,22 @@ func notification_loop():
 						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
 						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomStove:
+					if not (r as RoomStove).is_heating() and not r.worker:
+						notify(r, "no worker", Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif not r.worker:
 					notify(r, "no worker", Color.ORANGE)
 					await pause(REFRESH_RATE / rooms.size() - .01)
 				await pause(0)
+
+func _get_water_shortage_color(room: RoomBase) -> Color:
+	if not room.wants_infrastructure_layer(&"water"):
+		return Color.TRANSPARENT
+	var tower := Building.infrastructure.get_connected_provider(room, &"water") as RoomWaterTower
+	if tower == null or tower.has_water():
+		return Color.TRANSPARENT
+	return Color.ORANGE if room.requires_infrastructure_layer(&"water") else Color.YELLOW
 
 func notify(room : RoomBase, text, color, icon = null, show_notification: bool = true):
 	if show_notification:

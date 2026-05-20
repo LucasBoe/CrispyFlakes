@@ -6,7 +6,7 @@ var location_money: Dictionary = {}  # Vector2i -> float
 # Unattributed funds (starting money, bounties, fines, etc.)
 var free_pool: float = 100.0
 
-signal changed
+signal on_money_changed_signal
 
 # Returns total money capacity from all currently live rooms.
 func total_capacity() -> float:
@@ -30,7 +30,7 @@ func deposit(location: Vector2i, amount: float) -> void:
 	if to_add <= 0.0:
 		return
 	location_money[location] = location_money.get(location, 0.0) + to_add
-	changed.emit()
+	on_money_changed_signal.emit()
 
 func withdraw(location: Vector2i, amount: float) -> float:
 	if amount <= 0.0:
@@ -40,7 +40,7 @@ func withdraw(location: Vector2i, amount: float) -> float:
 		return 0.0
 	var taken: float = minf(available, amount)
 	location_money[location] = available - taken
-	changed.emit()
+	on_money_changed_signal.emit()
 	return taken
 
 # Deposit unattributed money (bounties, fines, etc.) split evenly across all rooms.
@@ -49,7 +49,7 @@ func deposit_free(amount: float) -> void:
 	if locations.is_empty():
 		var space = maxf(0.0, total_capacity() - _total())
 		free_pool += minf(amount, space)
-		changed.emit()
+		on_money_changed_signal.emit()
 		return
 	var per_room: float = amount / locations.size()
 	for loc in locations:
@@ -73,7 +73,7 @@ func collect_to(source: Vector2i, target: Vector2i) -> float:
 		return 0.0
 	location_money[source] = 0.0
 	location_money[target] = location_money.get(target, 0.0) + amount
-	changed.emit()
+	on_money_changed_signal.emit()
 	return amount
 
 # Drain `amount` proportionally from all buckets when purchasing.
@@ -85,7 +85,7 @@ func spend(amount: float) -> void:
 	free_pool *= keep_ratio
 	for loc in location_money.keys():
 		location_money[loc] *= keep_ratio
-	changed.emit()
+	on_money_changed_signal.emit()
 
 func get_money_at(location: Vector2i) -> float:
 	return location_money.get(location, 0.0)
@@ -95,7 +95,7 @@ func steal(location: Vector2i) -> int:
 	if amount <= 0:
 		return 0
 	location_money[location] = 0.0
-	changed.emit()
+	on_money_changed_signal.emit()
 	return amount
 
 # Returns the location with the most stored money, optionally excluding one location.

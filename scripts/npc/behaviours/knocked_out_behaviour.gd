@@ -20,7 +20,12 @@ func _return_stolen_money() -> void:
 	var guest := npc as NPCGuest
 	if guest.stolen_amount <= 0:
 		return
-	ResourceHandler.add_animated(Enum.Resources.MONEY, guest.stolen_amount, npc.global_position)
+	if npc.Item != null and npc.Item.is_item(Enum.Items.MONEY):
+		var carried := npc.Item.drop_current()
+		if is_instance_valid(carried):
+			carried.destroy()
+	var room := Building.query.room_at_floor_position(npc.global_position) as RoomBase
+	ResourceHandler.add_animated_money_to_room_or_floor(guest.stolen_amount, npc.global_position, room)
 	guest.stolen_amount = 0
 
 func loop():

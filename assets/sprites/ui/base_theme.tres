@@ -1,7 +1,8 @@
-[gd_resource type="Theme" load_steps=19 format=3 uid="uid://cqa0uge758fkj"]
+[gd_resource type="Theme" load_steps=20 format=3 uid="uid://cqa0uge758fkj"]
 
 [ext_resource type="Texture2D" uid="uid://ti7l0mjtd7hl" path="res://assets/sprites/ui/2x/button-sheet.png" id="2_trfhs"]
 [ext_resource type="FontFile" uid="uid://bl72taieefbw1" path="res://assets/fonts/Cubix.ttf" id="3_trfhs"]
+[ext_resource type="Texture2D" uid="uid://cca1fpjpbgwwv" path="res://assets/sprites/ui/2x/Tutorial_nav_big_checkmark.png" id="3_ytpqb"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1wyd7"]
 content_margin_left = 5.0
@@ -19,12 +20,15 @@ region_rect = Rect2(48, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_28jni"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ytpqb"]
+load_path = "res://.godot/imported/button-sheet.png-331ce212a71662505d2cfdbdfec6e475.ctex"
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_trfhs"]
 content_margin_left = 5.0
 content_margin_top = 3.0
 content_margin_right = 9.0
 content_margin_bottom = 7.0
-texture = ExtResource("2_trfhs")
+texture = SubResource("CompressedTexture2D_ytpqb")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
@@ -32,8 +36,6 @@ texture_margin_bottom = 8.0
 region_rect = Rect2(16, 0, 16, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ytpqb"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_trfhs"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7qa4f"]
 
@@ -108,12 +110,13 @@ Button/styles/disabled_mirrored = SubResource("StyleBoxEmpty_5wple")
 Button/styles/focus = SubResource("StyleBoxEmpty_28jni")
 Button/styles/hover = SubResource("StyleBoxTexture_trfhs")
 Button/styles/hover_mirrored = SubResource("StyleBoxEmpty_ytpqb")
-Button/styles/hover_pressed = SubResource("StyleBoxEmpty_trfhs")
+Button/styles/hover_pressed = SubResource("StyleBoxTexture_trfhs")
 Button/styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_7qa4f")
 Button/styles/normal = SubResource("StyleBoxTexture_5wple")
 Button/styles/normal_mirrored = SubResource("StyleBoxEmpty_c80o7")
 Button/styles/pressed = SubResource("StyleBoxTexture_7qa4f")
 Button/styles/pressed_mirrored = SubResource("StyleBoxEmpty_vly6k")
+CheckBox/icons/checked = ExtResource("3_ytpqb")
 HSlider/icons/grabber = null
 HSlider/icons/grabber_highlight = null
 HSlider/styles/grabber_area = SubResource("StyleBoxLine_7qa4f")

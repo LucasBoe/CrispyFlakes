@@ -635,7 +635,7 @@ func _show_for_room(room: RoomBase):
 		if tower.worker:
 			tower.worker.Tint.add_outline(Color.WHITE, 20, self)
 
-		dig_deeper_button.text = "Raise Tower  (%d$)" % tower.RAISE_COST
+		dig_deeper_button.text = "Raise Tower  (%d$)" % Pricing.WATER_TOWER_RAISE_COST
 		dig_deeper_button.disabled = not tower.can_raise()
 		dig_deeper_button.show()
 		Util.disconnect_all_pressed(dig_deeper_button)

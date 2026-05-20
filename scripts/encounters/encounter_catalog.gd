@@ -49,7 +49,7 @@ static func load_entries() -> Array[Dictionary]:
 				),
 				_choice(
 					"Bribe him",
-					-40,
+					Pricing.ENCOUNTER_SHERIFF_BRIBE,
 					"Well now, seems I've forgotten what brought me here.",
 				),
 				_choice("Threaten him", 0, "Watch your tone. I'm willing to let that slide this once."),
@@ -85,7 +85,7 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Let him help",
-					-50,
+					Pricing.ENCOUNTER_BARBER_SURGEON_HIRE,
 					"Wise choice. Don't stare too hard at the instruments and we'll all feel better.",
 				),
 				_choice("Refuse", 0, "Then enjoy your fevers and missing teeth."),
@@ -99,7 +99,7 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Hire him",
-					-70,
+					Pricing.ENCOUNTER_ENTERTAINER_HIRE,
 					"Now you're talking. Stand back and let me wake this place up.",
 				),
 				_choice("Refuse", 0, "A tragedy. This room is begging for applause."),
@@ -112,7 +112,7 @@ static func load_entries() -> Array[Dictionary]:
 			[
 				_choice(
 					"Take deal",
-					99,
+					Pricing.ENCOUNTER_PRODUCT_PLACEMENT_BASIC,
 					"Fantastic. Put the name up big, ugly, and unforgettable.",
 					[
 						func(_context: EncounterContext) -> void: _rename_sign_to_advertisement(true),
@@ -121,7 +121,7 @@ static func load_entries() -> Array[Dictionary]:
 				_choice("Refuse", 0, "Your loss. That sign could've been a legend in branding."),
 				_choice(
 					"Ask for 200$",
-					200,
+					Pricing.ENCOUNTER_PRODUCT_PLACEMENT_NEGOTIATED,
 					"Two hundred it is, but I want full naming rights and no artistic objections.",
 					[
 						func(_context: EncounterContext) -> void: _rename_sign_to_advertisement(true),
