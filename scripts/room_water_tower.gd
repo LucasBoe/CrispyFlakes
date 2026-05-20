@@ -47,6 +47,13 @@ func consume_water():
 	current_water = maxf(0.0, current_water - 1.0)
 	_update_visual()
 
+func restore_saved_state(saved_height: int, saved_water: float) -> void:
+	var base_height: int = Building.room_data_water_tower.height if is_instance_valid(Building) and Building.room_data_water_tower != null else 2
+	extra_height = maxi(0, saved_height - base_height)
+	current_water = clampf(saved_water, 0.0, MAX_WATER)
+	_rebuild_tower_visual()
+	_update_visual()
+
 func can_raise() -> bool:
 	var new_y_idx: int = y + data.height
 	return not (Building.floors.has(new_y_idx) and Building.floors[new_y_idx].has(x))

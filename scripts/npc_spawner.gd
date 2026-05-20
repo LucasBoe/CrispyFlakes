@@ -79,6 +79,22 @@ func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit 
 	) # keep list free of freed instances
 	return worker
 
+func spawn_restored_guest(spawn_position: Vector2, display_name := "") -> NPCGuest:
+	var guest := guestScene.instantiate() as NPCGuest
+	guest.character_name = display_name if display_name != "" else NPCNameLibraryScript.get_random_name()
+	guest.global_position = spawn_position
+	add_child(guest)
+	guest.init()
+
+	guests.append(guest)
+	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
+	spawned_guest_signal.emit(get_active_guest_count())
+
+	var room := Building.query.room_at_floor_position(spawn_position) as RoomBase
+	var z_layer := Enum.ZLayer.NPC_OUTSIDE if room == null or room.is_outside_room else Enum.ZLayer.NPC_DEFAULT
+	guest.Animator.set_z(z_layer)
+	return guest
+
 func get_worker_count() -> int:
 	for i in range(workers.size() - 1, -1, -1):
 		if not is_instance_valid(workers[i]):
@@ -96,12 +112,46 @@ func get_worker_hire_block_reason() -> String:
 
 func get_active_guest_count() -> int:
 	var count := 0
-	for guest: NPCGuest in guests:
+	for guest: NPCGuest in get_live_guests():
 		if not is_instance_valid(guest):
 			continue
 		if guest.counts_towards_guest_total():
 			count += 1
 	return count
+
+func get_live_guests() -> Array[NPCGuest]:
+	var live: Array[NPCGuest] = []
+	for child in get_children():
+		var guest := child as NPCGuest
+		if not is_instance_valid(guest):
+			continue
+		live.append(guest)
+		if not guests.has(guest):
+			guests.append(guest)
+
+	for i: int in range(guests.size() - 1, -1, -1):
+		var guest = guests[i]
+		if not is_instance_valid(guest) or not live.has(guest):
+			guests.remove_at(i)
+
+	return live
+
+func get_live_workers() -> Array[NPCWorker]:
+	var live: Array[NPCWorker] = []
+	for child in get_children():
+		var worker := child as NPCWorker
+		if not is_instance_valid(worker):
+			continue
+		live.append(worker)
+		if not workers.has(worker):
+			workers.append(worker)
+
+	for i: int in range(workers.size() - 1, -1, -1):
+		var worker = workers[i]
+		if not is_instance_valid(worker) or not live.has(worker):
+			workers.remove_at(i)
+
+	return live
 
 func get_guest_hire_block_reason(guest: NPCGuest) -> String:
 	if not is_instance_valid(guest):

@@ -68,16 +68,34 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase, start_delay := 0.0) -> Fi
 	SoundPlayer.play_alarm(true)
 	return fight
 
-func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> void:
+func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> Fight:
 	if not can_npc_participate_in_fights(worker):
-		return
-	if not can_npc_participate_in_fights(guest) or (guest.Traits != null and guest.Traits.refuses_voluntary_fights()):
+		DebugLog.warn("[FightHandler]", "skip arrest fight: worker unavailable", worker, "guest", guest)
+		return null
+	var current_behaviour = null
+	if guest != null and guest.Behaviour != null:
+		current_behaviour = guest.Behaviour.behaviour_instance
+	if current_behaviour is ArrestedBehaviour or current_behaviour is FollowSheriffBehaviour:
+		ConflictResponseHandler.unmark_for_arrest(guest)
+		DebugLog.info("[FightHandler]", "skip arrest fight: guest already secured", "guest", guest, "worker", worker, "behaviour", current_behaviour)
+		return null
+	if not can_npc_participate_in_fights(guest):
+		DebugLog.info("[FightHandler]", "direct arrest without fight", "guest", guest, "worker", worker)
+		ConflictResponseHandler.unmark_for_arrest(guest)
 		guest.force_behaviour(ArrestedBehaviour)
-		return
+		return null
+	var existing := ConflictResponseHandler._find_active_arrest_fight_for_guest(guest)
+	if existing != null:
+		DebugLog.info("[FightHandler]", "join existing arrest fight", "guest", guest, "worker", worker, existing.debug_label())
+		if not existing.has_participant(worker):
+			existing.make_join_fight(worker)
+		return existing
+	DebugLog.info("[FightHandler]", "create arrest fight", "guest", guest, "worker", worker)
 	var fight := _create_fight(guest.global_position)
 	fight.fight_type = Fight.FightType.ARREST
 	fight.make_join_fight(guest)
 	fight.make_join_fight(worker)
+	return fight
 
 func get_fight_for_room(room: RoomBase) -> Fight:
 	for fight: Fight in active_fights:
@@ -140,11 +158,11 @@ func _release_panicking_guests(fight: Fight) -> void:
 	if Global.NPCSpawner == null:
 		return
 
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if not is_instance_valid(guest) or guest.Behaviour == null:
 			continue
 
-		var current := guest.Behaviour.behaviour_instance
+		var current = guest.Behaviour.behaviour_instance
 		if current == null or current.get_script() != PanicBehaviourScript:
 			continue
 
@@ -157,7 +175,7 @@ func _try_attract_brawlers(fight: Fight) -> bool:
 	if Global.NPCSpawner == null or fight.room == null:
 		return false
 	var attracted := false
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if not is_instance_valid(guest) or fight.has_participant(guest):
 			continue
 		if not is_within_fight_detection_range(get_fight_position(fight), guest.global_position):
@@ -175,7 +193,7 @@ func _try_force_hotheads_near_fight(fight: Fight) -> void:
 	if fight_position == Vector2.INF:
 		return
 
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if not _can_force_hothead_join_brawl(guest, fight, fight_position):
 			continue
 		guest.energy = maxf(guest.energy, GUEST_DRUNK_FIGHT_MIN_START_ENERGY)
@@ -254,6 +272,8 @@ func _can_worker_respond_to_new_brawl(worker: NPCWorker, position: Vector2) -> b
 		return false
 	if not can_npc_participate_in_fights(worker):
 		return false
+	if _has_urgent_prison_duties(worker):
+		return false
 	if not worker.should_fight_conflicts():
 		return false
 	if NPCWorker.picked_up_npc == worker:
@@ -268,9 +288,9 @@ func _try_panic_gutless_near_fight(fight: Fight) -> void:
 	if Global.NPCSpawner == null or not is_started_active_fight(fight):
 		return
 
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		_try_panic_gutless_npc(guest, fight)
-	for worker: NPCWorker in Global.NPCSpawner.workers:
+	for worker: NPCWorker in Global.NPCSpawner.get_live_workers():
 		_try_panic_gutless_npc(worker, fight)
 
 func _try_panic_gutless_npc(npc: NPC, fight: Fight) -> bool:
@@ -298,6 +318,10 @@ func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
 		return false
 	if npc is NPCWorker and NPCWorker.picked_up_npc == npc:
 		return false
+	if npc is NPCWorker:
+		var worker := npc as NPCWorker
+		if worker.current_job == Enum.Jobs.PRISON and JobPrisonBehaviour.has_pending_prison_transfer(worker.current_job_room as RoomPrison):
+			return false
 	if npc.Behaviour == null:
 		return false
 
@@ -319,6 +343,8 @@ func can_worker_respond_to_fight(worker: NPCWorker, fight: Fight) -> bool:
 		return false
 	if fight.is_over or fight.room == null:
 		return false
+	if fight.fight_type != Fight.FightType.ARREST and _has_urgent_prison_duties(worker):
+		return false
 	if not worker.should_fight_conflicts():
 		return false
 	if NPCWorker.picked_up_npc == worker:
@@ -330,6 +356,16 @@ func can_worker_respond_to_fight(worker: NPCWorker, fight: Fight) -> bool:
 	if worker.Navigation != null and not worker.Navigation.is_room_reachable(fight.room):
 		return false
 	return is_within_fight_detection_range(get_fight_position(fight), worker.global_position)
+
+func _has_urgent_prison_duties(worker: NPCWorker) -> bool:
+	if worker == null or not is_instance_valid(worker):
+		return false
+	if worker.current_job != Enum.Jobs.PRISON:
+		return false
+	if JobPrisonBehaviour.count_people_that_need_arrestment() > 0:
+		return true
+	var prison_room := worker.current_job_room as RoomPrison
+	return prison_room != null and prison_room.prisoners.size() > 0
 
 func is_fight_near_room(room: RoomBase) -> bool:
 	if not is_instance_valid(room):

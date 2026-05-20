@@ -25,6 +25,7 @@ func loop():
 
 	_narrative = ["Demanding the cash...", "Starting a robbery...", "Threatening the staff..."].pick_random()
 	fight = FightHandler.create_rob_fight(npc, target_room, PRE_FIGHT_PAUSE)
+	arrived_at_room = true
 	UiNotifications.create_notification_dynamic(THREAT_TEXT, npc, Vector2(0, -40), null, Color.RED, PRE_FIGHT_PAUSE + 0.75)
 	await pause(PRE_FIGHT_PAUSE)
 	if stopped or not is_instance_valid(target_room) or fight == null:
@@ -32,13 +33,19 @@ func loop():
 
 	if npc is NPCGuest:
 		BountyHandler.add_fine(npc, ROBBERY_FINE, "Robbery")
-	arrived_at_room = true
 	npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)
 
 	while not fight.is_over:
 		await end_of_frame()
 
 	if stopped:
+		return
+	if fight.result != Fight.Result.NO_CONTEST:
+		_narrative = ["Foiled!", "Empty-handed...", "Time to run..."].pick_random()
+		if npc.has_meta("horse"):
+			npc.force_behaviour(LeaveOnHorseBehaviour)
+		else:
+			npc.force_behaviour(NeedLeaveBehaviour)
 		return
 	_narrative = ["Grabbing the loot...", "Stuffing pockets...", "Making a break for it..."].pick_random()
 	await pause(POST_FIGHT_PAUSE)

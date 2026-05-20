@@ -10,8 +10,7 @@ func loop():
 		npc.force_behaviour(LeaveOnHorseBehaviour)
 		return
 
+	await move(Global.LEAVE_POSITION)
 	if npc is NPCGuest:
 		Global.NPCSpawner.on_guest_destroy(npc)
-
-	await move(Global.LEAVE_POSITION)
 	npc.destroy()

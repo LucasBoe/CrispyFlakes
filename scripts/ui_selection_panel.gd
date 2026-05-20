@@ -356,7 +356,7 @@ func _show_status_row(text: String, color: Color, link_target = null, link_text:
 	_status_row_instance = instance
 
 func _show_for_worker(worker: NPCWorker):
-	header_label.text = worker.character_name
+	header_label.text = worker.get_debug_display_name()
 	_npc_base_description = "This worker can be dragged onto rooms in order to work there."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
@@ -376,7 +376,7 @@ func _show_for_worker(worker: NPCWorker):
 	_show_status_row(job_text, job_color, worker.current_job_room if has_job else null, room_name)
 
 func _show_for_guest(guest: NPCGuest):
-	header_label.text = guest.get_display_name()
+	header_label.text = guest.get_debug_display_name()
 	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
@@ -405,7 +405,7 @@ func _show_for_guest(guest: NPCGuest):
 		instance.show()
 
 func _show_for_special_npc(special: SpecialNPC):
-	header_label.text = special.get_display_name()
+	header_label.text = special.get_debug_display_name()
 	room_delete_button.hide()
 	hire_guest_button.hide()
 	arrest_button.hide()

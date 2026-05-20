@@ -33,8 +33,17 @@ func loop():
 	while not fight.is_over:
 		await end_of_frame()
 
+	if stopped:
+		return
+
 	if npc is NPCWorker:
 		(npc as NPCWorker).resume_job_behaviour()
+		return
+
+	var previous_data := npc.Behaviour.previous_data
+	if previous_data != null and previous_data.type != null and previous_data.type != get_script():
+		DebugLog.info("[FightBehaviour]", npc, "restoring previous behaviour after fight", previous_data.type.resource_path.get_file())
+		npc.Behaviour.restore_previous_behaviour()
 
 func stop_loop():
 	npc.Tint.remove_tint_for(self)

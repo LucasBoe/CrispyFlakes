@@ -3,9 +3,6 @@ class_name LeaveOnHorseBehaviour
 
 func loop():
 	_narrative = ["Riding off...", "Galloping away...", "Heading back to the range..."].pick_random()
-	if npc is NPCGuest:
-		Global.NPCSpawner.on_guest_destroy(npc)
-
 	var horse = npc.get_meta("horse", null)
 
 	if is_instance_valid(horse):
@@ -35,4 +32,6 @@ func loop():
 	if is_instance_valid(horse):
 		horse.queue_free()
 
+	if npc is NPCGuest:
+		Global.NPCSpawner.on_guest_destroy(npc)
 	npc.destroy()

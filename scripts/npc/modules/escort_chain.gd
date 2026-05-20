@@ -60,9 +60,11 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 func _can_draw_chain() -> bool:
+	var arrested_behaviour := subject.Behaviour.behaviour_instance as ArrestedBehaviour if is_instance_valid(subject) and subject.Behaviour != null else null
 	return (
 		is_instance_valid(subject)
 		and is_instance_valid(handcuffs)
 		and is_instance_valid(target)
 		and handcuffs.visible
+		and (arrested_behaviour == null or not arrested_behaviour.is_in_cell)
 	)

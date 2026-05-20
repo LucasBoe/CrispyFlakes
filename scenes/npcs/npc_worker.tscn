@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dexn3jgkl81oo"]
+[gd_scene load_steps=15 format=3 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
 [ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_dc1yn"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
 [ext_resource type="Texture2D" uid="uid://cvan8o50kj0dl" path="res://assets/sprites/cowboy_raw_double_gun.png" id="6_rmca1"]
+[ext_resource type="Script" uid="uid://c7upi1agstna0" path="res://scripts/npc/modules/status_module.gd" id="7_status"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_hvbcb"]
 height = 28.0
@@ -76,6 +77,9 @@ script = ExtResource("5_aq4br")
 script = ExtResource("6_lmhvm")
 
 [node name="Host" type="Node" parent="BehaviourModule"]
+
+[node name="StatusModule" type="Node" parent="."]
+script = ExtResource("7_status")
 
 [node name="PreciseHover" type="Area2D" parent="."]
 monitoring = false

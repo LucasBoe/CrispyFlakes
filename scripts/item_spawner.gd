@@ -4,7 +4,7 @@ class_name ItemSpawner
 
 @onready var itemScene : PackedScene = preload("res://scenes/item.tscn")
 
-var items : Array
+var items : Array = []
 
 func _init():
 	Global.ItemSpawner = self
@@ -20,3 +20,6 @@ func create(itemIndentifier : Enum.Items, pos : Vector2) -> Item:
 	instance.play_spawn_sound()
 	LooseItemHandler.register_loose_item_instance(instance)
 	return instance
+
+func instantiate_item(item_identifier: Enum.Items) -> Item:
+	return itemScene.instantiate().init(item_identifier)

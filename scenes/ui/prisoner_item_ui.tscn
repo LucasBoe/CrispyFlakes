@@ -59,6 +59,15 @@ theme_override_font_sizes/font_size = 16
 text = "100$"
 horizontal_alignment = 1
 
+[node name="DebugLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("2_prisui")
+theme_override_colors/font_color = Color(0.7372549, 0.7372549, 0.7372549, 1)
+theme_override_fonts/font = ExtResource("6_prisui")
+theme_override_font_sizes/font_size = 8
+text = "Guest #000000"
+horizontal_alignment = 1
+
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2

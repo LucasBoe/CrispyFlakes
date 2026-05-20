@@ -21,16 +21,21 @@ func try_receive(item : Item) -> bool:
 	var free_slot_index = get_next_free_slot()
 
 	if free_slot_index >= 0:
-		item.reparent(self, false)
-		item.position = index_to_xy(free_slot_index)
-		item.global_rotation = 0
-		item.scale = Vector2.ONE
-		item.z_index = -(max_x * max_y) + free_slot_index
-		items[free_slot_index] = item
-		item.play_spawn_sound()
-		return true
+		return _place_item_in_slot(item, free_slot_index, true)
 	else:
 		return false
+
+func restore_item_to_slot(item: Item, slot_index: int = -1) -> bool:
+	if item == null:
+		return false
+
+	if slot_index < 0 or slot_index >= get_slot_capacity() or _get_item_at_index(slot_index) != null:
+		slot_index = get_next_free_slot()
+
+	if slot_index < 0:
+		return false
+
+	return _place_item_in_slot(item, slot_index, false)
 
 func take(itemType : Enum.Items) -> Item:
 	for i in (max_x * max_y):
@@ -81,6 +86,11 @@ func get_stored_items() -> Array[Item]:
 			stored.append(item)
 	return stored
 
+func get_item_at_slot(index: int) -> Item:
+	if index < 0 or index >= get_slot_capacity():
+		return null
+	return _get_item_at_index(index)
+
 func get_stored_item_amounts() -> Dictionary:
 	var stored_amounts := {}
 	for item in get_stored_items():
@@ -124,3 +134,23 @@ func _get_item_at_index(index: int) -> Item:
 		items[index] = null
 		return null
 	return item
+
+func _place_item_in_slot(item: Item, slot_index: int, play_sound: bool) -> bool:
+	if item == null or slot_index < 0 or slot_index >= get_slot_capacity():
+		return false
+
+	LooseItemHandler.unregister_loose_item_instance(item)
+	if item.get_parent() != null:
+		item.reparent(self, false)
+	else:
+		add_child(item)
+
+	item.position = index_to_xy(slot_index)
+	item.global_rotation = 0
+	item.scale = Vector2.ONE
+	item.z_index = -(max_x * max_y) + slot_index
+	items[slot_index] = item
+
+	if play_sound:
+		item.play_spawn_sound()
+	return true

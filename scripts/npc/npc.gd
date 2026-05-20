@@ -118,6 +118,9 @@ func get_display_name() -> String:
 			return global_name
 	return name
 
+func get_debug_display_name() -> String:
+	return "%s #%d" % [get_display_name(), abs(get_instance_id()) % 1000000]
+
 func get_max_energy() -> float:
 	if Traits == null:
 		return 1.0

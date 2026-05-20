@@ -114,7 +114,12 @@ func _is_request_valid(req: TreatmentRequest) -> bool:
 		return false
 	if not InjuryHandler.can_receive_treatment_now(req.patient):
 		return false
-	return req.status == Enum.RequestStatus.IN_PROGRESS or accepts_patient(req.patient)
+	var behaviour := req.patient.Behaviour.behaviour_instance if req.patient.Behaviour != null else null
+	if behaviour is not NeedTreatmentBehaviour:
+		return false
+	if req.status == Enum.RequestStatus.IN_PROGRESS:
+		return true
+	return accepts_patient(req.patient) and waiting_queue.has(req.patient)
 
 func _get_valid_queue_position(queue_target: Vector2) -> Vector2:
 	var center: Vector2 = get_center_floor_position()

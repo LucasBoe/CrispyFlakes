@@ -69,6 +69,10 @@ func _process(delta):
 	if Behaviour.has_behaviour:
 		return
 
+	if InjuryHandler.should_seek_treatment_behaviour(self):
+		Behaviour.set_behaviour(NeedTreatmentBehaviour)
+		return
+
 	change_job(current_job)
 
 func _regenerate_fight_energy(delta: float) -> void:

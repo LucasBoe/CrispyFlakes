@@ -29,6 +29,7 @@ signal target_reached_signal
 func _ready():
 	npc = get_parent() as NPC
 	npc.Navigation = self
+	call_deferred("sync_inside_outside_state")
 
 func _process(delta):
 	if not has_target:
@@ -440,6 +441,10 @@ func _try_frisk_at_bouncer() -> void:
 
 func _should_ignore_bouncer_gate() -> bool:
 	return target_final is NPC
+
+func sync_inside_outside_state() -> void:
+	_last_known_room = null
+	_check_inside_outside_transition()
 
 func is_heading_outside() -> bool:
 	if not _is_inside:

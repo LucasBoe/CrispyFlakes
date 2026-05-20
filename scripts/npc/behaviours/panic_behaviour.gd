@@ -121,7 +121,9 @@ func _restore_worker_job() -> void:
 		npc.name,
 		previous_data.type.resource_path.get_file() if previous_data != null and previous_data.type != null else "<none>",
 	])
-	if previous_data != null and previous_data.type != get_script():
+	if previous_data != null and previous_data.type == FightBehaviour:
+		(npc as NPCWorker).resume_job_behaviour()
+	elif previous_data != null and previous_data.type != get_script():
 		npc.Behaviour.restore_previous_behaviour()
 	else:
 		(npc as NPCWorker).resume_job_behaviour()

@@ -82,12 +82,19 @@ func _process(_delta):
 
 func counts_towards_guest_total() -> bool:
 	var behaviour = Behaviour.behaviour_instance
-	return not (behaviour is ArrestedBehaviour or behaviour is FollowSheriffBehaviour)
+	return not (
+		behaviour is ArrestedBehaviour
+		or behaviour is FollowSheriffBehaviour
+		or behaviour is NeedLeaveBehaviour
+		or behaviour is LeaveOnHorseBehaviour
+	)
 
 func is_on_horse() -> bool:
 	return Animator != null and Animator.is_riding
 
 func get_next_behaviour():
+	if InjuryHandler.should_seek_treatment_behaviour(self):
+		return NeedTreatmentBehaviour
 
 	if Status != null:
 		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):

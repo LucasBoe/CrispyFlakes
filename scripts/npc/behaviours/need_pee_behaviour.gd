@@ -44,7 +44,7 @@ func stop_loop() -> BehaviourSaveData:
 func _get_usable_toilet() -> RoomToilet:
 	return get_least_loaded_room_of_type(
 		RoomToilet,
-		func(candidate: RoomToilet): return candidate.has_working_water_supply(),
+		func(candidate: RoomToilet): return candidate.has_available_water_supply(),
 		func(candidate: RoomToilet): return candidate.queue.size() + candidate.users.size(),
 		func(_candidate: RoomToilet): return RoomToilet.STALL_COUNT
 	) as RoomToilet
@@ -136,6 +136,8 @@ func _use_toilet() -> bool:
 	await toilet.play_close_animation(stall_index)
 
 	await progress(RoomToilet.USE_DURATION)
+	if stopped:
+		return false
 
 	if is_instance_valid(toilet):
 		SoundPlayer.play_outhouse_door(toilet.global_position)
@@ -145,7 +147,7 @@ func _use_toilet() -> bool:
 		_hidden_in_toilet = false
 	if is_instance_valid(toilet):
 		await toilet.play_close_animation(stall_index)
-		toilet.release_stall(npc)
+		toilet.release_stall(npc, true)
 		return _finish_relief(toilet, "Used Bathroom", ROOM_RELIEF_SATISFACTION)
 
 	return false
@@ -187,7 +189,7 @@ func _wait_for_queue_turn(room: Node, waiting_narrative: String, get_queue_posit
 	return not stopped and is_instance_valid(room)
 
 func _ensure_toilet_water_supply() -> bool:
-	if toilet.has_working_water_supply():
+	if toilet.has_available_water_supply():
 		return true
 	toilet.leave_queue(npc)
 	return false

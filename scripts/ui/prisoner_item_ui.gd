@@ -3,6 +3,7 @@ class_name PrisonerItemUI
 
 @onready var progress_bar: ProgressBar = $MarginContainer/VBoxContainer/ProgressBar
 @onready var bounty_label: Label = $MarginContainer/VBoxContainer/BountyLabel
+@onready var debug_label: Label = $MarginContainer/VBoxContainer/DebugLabel
 @onready var npc_texture: TextureRect = $MarginContainer/VBoxContainer/MarginContainer/TextureRect
 
 var prisoner: NPCGuest = null
@@ -19,8 +20,10 @@ func init(p: NPCGuest, b: int, f: int = 0) -> void:
 	var total = bounty + fine
 	fill_duration = total / 10.0
 	bounty_label.text = str(bounty + fine, "$")
+	debug_label.text = prisoner.get_debug_display_name()
 	tooltip_text = _get_payout_details()
 	bounty_label.tooltip_text = tooltip_text
+	debug_label.tooltip_text = tooltip_text
 
 	var mat := npc_texture.material as ShaderMaterial
 	if mat != null and prisoner.look_info != null:

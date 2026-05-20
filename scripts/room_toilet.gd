@@ -14,6 +14,7 @@ const SERVICE_PRICE := 3
 var users: Array[NPC] = []
 var queue: Array[NPC] = []
 var _stall_users: Dictionary = {}
+var _reserved_towers: Dictionary = {}
 
 func join_queue(waiting_npc: NPC) -> void:
 	if not queue.has(waiting_npc):
@@ -29,7 +30,7 @@ func can_enter(waiting_npc: NPC) -> bool:
 	var queue_index := queue.find(waiting_npc)
 	if queue_index < 0:
 		return false
-	return queue_index < get_open_stall_count() and has_working_water_supply()
+	return queue_index < get_open_stall_count() and has_available_water_supply()
 
 func reserve_stall(waiting_npc: NPC) -> bool:
 	if users.has(waiting_npc):
@@ -41,15 +42,20 @@ func reserve_stall(waiting_npc: NPC) -> bool:
 	if tower == null:
 		return false
 
-	tower.consume_water()
 	leave_queue(waiting_npc)
 	users.append(waiting_npc)
 	_stall_users[waiting_npc] = _get_next_open_stall_index()
+	_reserved_towers[waiting_npc] = tower
 	return true
 
-func release_stall(leaving_npc: NPC) -> void:
+func release_stall(leaving_npc: NPC, consume_reserved_water: bool = false) -> void:
+	if consume_reserved_water:
+		var tower := _reserved_towers.get(leaving_npc) as RoomWaterTower
+		if is_instance_valid(tower):
+			tower.consume_water()
 	users.erase(leaving_npc)
 	_stall_users.erase(leaving_npc)
+	_reserved_towers.erase(leaving_npc)
 
 func get_queue_position(waiting_npc: NPC) -> Vector2:
 	var index := queue.find(waiting_npc)
@@ -73,11 +79,15 @@ func has_water_tower() -> bool:
 	return get_connected_water_tower() != null
 
 func has_working_water_supply() -> bool:
+	var tower := get_connected_water_tower()
+	return tower != null and tower.current_water >= _get_reserved_water_count(tower)
+
+func has_available_water_supply() -> bool:
 	return get_available_water_tower() != null
 
 func get_available_water_tower() -> RoomWaterTower:
 	var tower := get_connected_water_tower()
-	return tower if tower != null and tower.has_water() else null
+	return tower if tower != null and tower.current_water >= _get_reserved_water_count(tower) + 1 else null
 
 func get_connected_water_tower() -> RoomWaterTower:
 	return Building.infrastructure.get_connected_provider(self, &"water") as RoomWaterTower
@@ -102,6 +112,16 @@ func get_unusable_status_icon() -> Texture2D:
 	if not has_water_pipe():
 		return load("res://assets/sprites/ui/icon_no_water.png")
 	return load("res://assets/sprites/ui/icon_no_water.png")
+
+func _get_reserved_water_count(tower: RoomWaterTower) -> int:
+	if tower == null:
+		return 0
+
+	var count := 0
+	for reserved_tower in _reserved_towers.values():
+		if reserved_tower == tower:
+			count += 1
+	return count
 
 func _get_next_open_stall_index() -> int:
 	for i in STALL_COUNT:

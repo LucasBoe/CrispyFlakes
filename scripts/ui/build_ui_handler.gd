@@ -47,6 +47,7 @@ func _ready():
 	create_button(groups, Building.room_data_destillery)
 	create_button(groups, Building.room_data_aging_cellar)
 	create_button(groups, Building.room_data_bar_whiskey)
+	create_button(groups, Building.room_data_stove)
 	create_button(groups, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
 	create_button(groups, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(groups, Building.room_data_toilet)

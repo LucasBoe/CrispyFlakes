@@ -393,6 +393,15 @@ theme_override_font_sizes/font_size = 16
 text = "100$"
 horizontal_alignment = 1
 
+[node name="DebugLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/BountyContainer/PrisonerItemDummy/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_colors/font_color = Color(0.7372549, 0.7372549, 0.7372549, 1)
+theme_override_fonts/font = ExtResource("29_1f2rr")
+theme_override_font_sizes/font_size = 8
+text = "Guest #000000"
+horizontal_alignment = 1
+
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/MarginContainer/VBoxContainer/BountyContainer/PrisonerItemDummy/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -445,6 +454,16 @@ theme_override_constants/separation = 2
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+stretch_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Status"
+
 [node name="MedicalTreatmentUI" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 2
@@ -457,24 +476,14 @@ text = "Treat In This Room"
 [node name="GuestToggle" type="CheckBox" parent="MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "Treat Guests"
 button_pressed = true
+text = "Treat Guests"
 
 [node name="WorkerToggle" type="CheckBox" parent="MarginContainer/MarginContainer/VBoxContainer/MedicalTreatmentUI"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "Treat Workers"
 button_pressed = true
-
-[node name="TextureRect" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
-custom_minimum_size = Vector2(16, 16)
-layout_mode = 2
-stretch_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/StatusIconRowDummy"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Status"
+text = "Treat Workers"
 
 [node name="GamblingUI" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2

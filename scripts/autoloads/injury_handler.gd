@@ -11,7 +11,6 @@ const GOOD_TREATMENT_THRESHOLD := 0.6
 
 var _injured: Array[NPC] = []
 var _next_guest_penalty_time: Dictionary = {}
-var _treatment_requests: Dictionary = {}
 var _recovery_payment_sources: Dictionary = {}
 
 func on_npc_injured(npc: NPC) -> void:
@@ -37,7 +36,6 @@ func on_npc_recovered(npc: NPC) -> void:
 		return
 	_injured.erase(npc)
 	_next_guest_penalty_time.erase(npc)
-	_treatment_requests.erase(npc)
 	var guest := npc as NPCGuest
 	if guest != null:
 		guest_recovered.emit(guest)
@@ -50,7 +48,6 @@ func get_injured_npcs() -> Array[NPC]:
 	for i: int in range(_injured.size() - 1, -1, -1):
 		if not is_instance_valid(_injured[i]):
 			_next_guest_penalty_time.erase(_injured[i])
-			_treatment_requests.erase(_injured[i])
 			_injured.remove_at(i)
 	return _injured
 
@@ -77,6 +74,22 @@ func can_receive_treatment_now(npc: NPC) -> bool:
 		return false
 
 	return true
+
+func should_seek_treatment_behaviour(npc: NPC) -> bool:
+	return can_receive_treatment_now(npc) and find_treatment_infirmary(npc) != null
+
+func find_treatment_infirmary(npc: NPC, require_staffed := false) -> RoomInfirmary:
+	if npc == null or not is_instance_valid(npc) or npc.Navigation == null:
+		return null
+
+	var reachable := npc.Navigation.get_reachable_rooms()
+	for room: RoomInfirmary in Building.query.rooms_of_type_ordered_by_distance(RoomInfirmary, npc.global_position, null, reachable):
+		if not room.accepts_patient(npc):
+			continue
+		if require_staffed and (room.worker == null or not is_instance_valid(room.worker)):
+			continue
+		return room
+	return null
 
 func apply_treatment(npc: NPC, quality: float, infirmary: RoomInfirmary = null) -> void:
 	if npc == null or not is_instance_valid(npc) or npc.Status == null:
@@ -123,31 +136,21 @@ func collect_recovery_payment(npc: NPC) -> void:
 func _process(_delta: float) -> void:
 	_clear_invalid_payment_sources()
 	var injured_npcs := get_injured_npcs()
-	_sync_treatment_requests(injured_npcs.duplicate())
+	_sync_treatment_behaviours(injured_npcs.duplicate())
 	_apply_guest_penalties(injured_npcs.duplicate())
 
-func _sync_treatment_requests(injured_npcs: Array[NPC]) -> void:
+func _sync_treatment_behaviours(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:
-		if not _should_keep_npc_injured(injured):
-			on_npc_recovered(injured)
+		if not should_seek_treatment_behaviour(injured):
+			continue
+		if injured.Behaviour == null:
 			continue
 
-		if not can_receive_treatment_now(injured):
-			var blocked_request: RoomInfirmary.TreatmentRequest = _treatment_requests.get(injured, null)
-			if blocked_request != null:
-				blocked_request.status = Enum.RequestStatus.TIMEOUT
-				_treatment_requests.erase(injured)
+		var behaviour := injured.Behaviour.behaviour_instance
+		if behaviour is NeedTreatmentBehaviour:
 			continue
 
-		var existing: RoomInfirmary.TreatmentRequest = _treatment_requests.get(injured, null)
-		if existing != null and _is_request_active(existing):
-			continue
-
-		var infirmary := _find_staffed_infirmary_for(injured)
-		if infirmary == null:
-			continue
-
-		_treatment_requests[injured] = infirmary.request_treatment(injured)
+		injured.force_behaviour(NeedTreatmentBehaviour)
 
 func _apply_guest_penalties(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:
@@ -166,21 +169,6 @@ func _apply_guest_penalties(injured_npcs: Array[NPC]) -> void:
 
 func _should_keep_npc_injured(npc: NPC) -> bool:
 	return is_instance_valid(npc) and npc.Status != null and npc.Status.has_status(Enum.NpcStatus.INJURED)
-
-func _is_request_active(request: RoomInfirmary.TreatmentRequest) -> bool:
-	if request == null:
-		return false
-	return request.status == Enum.RequestStatus.OPEN or request.status == Enum.RequestStatus.IN_PROGRESS
-
-func _find_staffed_infirmary_for(npc: NPC) -> RoomInfirmary:
-	if npc == null or not is_instance_valid(npc) or npc.Navigation == null:
-		return null
-
-	var reachable := npc.Navigation.get_reachable_rooms()
-	for room: RoomInfirmary in Building.query.rooms_of_type_ordered_by_distance(RoomInfirmary, npc.global_position, null, reachable):
-		if room.worker != null and is_instance_valid(room.worker) and room.accepts_patient(npc):
-			return room
-	return null
 
 func _clear_invalid_payment_sources() -> void:
 	for npc: NPC in _recovery_payment_sources.keys():

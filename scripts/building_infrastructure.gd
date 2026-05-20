@@ -153,6 +153,21 @@ func refresh_visuals() -> void:
 	_water.configure_tileset()
 	_water.refresh_visuals()
 
+func clear_all() -> void:
+	var changed_layers: Array = _layers.keys().duplicate()
+	_layers.clear()
+	refresh_visuals()
+	for layer_name in changed_layers:
+		_emit_changed(layer_name)
+
+func restore_layer_cells(data, cells: Array[Vector2i]) -> void:
+	var layer: Dictionary = _layers.get(data.layer_name, {})
+	for index in cells:
+		layer[index] = data
+	_layers[data.layer_name] = layer
+	_refresh_layer_visuals(data.layer_name)
+	_emit_changed(data.layer_name)
+
 # --- Layer helpers used by handlers ---
 
 func get_layer(layer_name: StringName) -> Dictionary:

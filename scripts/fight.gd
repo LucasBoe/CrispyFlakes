@@ -18,11 +18,23 @@ enum Result {
 	NO_CONTEST,
 }
 
+enum JoinReason {
+	UNKNOWN,
+	BRAWL_INITIATOR,
+	BRAWL_DRAWN_IN,
+	WORKER_RESPONSE,
+	ARREST_TARGET,
+	ARREST_RESPONSE,
+	ROBBERY_PERPETRATOR,
+	ROBBERY_RESPONSE,
+}
+
 var participants = []
 var target_mapping : Dictionary[NPC, NPC] = {}
 var fight_positions: Dictionary = {}  # Dictionary[NPC, Vector2]
 var last_attack : Dictionary[NPC, float] = {}
 var pending_attacks : Dictionary[NPC, Dictionary] = {}
+var participant_join_reasons: Dictionary = {}
 var health_bars := {}
 var room : RoomBase
 var highlight
@@ -37,6 +49,7 @@ var start_not_before_time: float = 0.0
 var keep_alive_until_time: float = 0.0
 
 const DRUNK_FIGHT_BOUNTY: int = 2
+const GUTLESS_ROBBER_ESCAPE_CHANCE: float = 0.5
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
 const MELEE_DAMAGE_DELAY: float = 0.25
@@ -46,6 +59,8 @@ const MELEE_ARRIVE_THRESHOLD: float = 2.0
 func get_active_participants() -> Array:
 	var active := []
 	for participant in participants:
+		if not is_instance_valid(participant):
+			continue
 		var npc := participant as NPC
 		if not is_instance_valid(npc) or npc.Behaviour == null:
 			continue
@@ -85,24 +100,68 @@ func _participants_debug(list = null) -> String:
 		list = participants
 	var entries := PackedStringArray()
 	for participant in list:
+		if not is_instance_valid(participant):
+			entries.append("<freed>")
+			continue
 		entries.append(_npc_debug(participant as NPC))
 	return "; ".join(entries)
 
 func has_participant(npc: NPC) -> bool:
 	return participants.has(npc)
 
-func make_join_fight(npc: NPC) -> void:
+func make_join_fight(npc: NPC, join_reason: int = JoinReason.UNKNOWN) -> void:
 	if npc == null or not is_instance_valid(npc):
 		return
 	if not FightHandler.can_npc_participate_in_fights(npc):
 		return
-	if not has_participant(npc):
+	var was_participant := has_participant(npc)
+	var resolved_join_reason := _resolve_join_reason(npc, join_reason, was_participant)
+	if not was_participant:
 		participants.append(npc)
-		_debug("join %s" % _npc_debug(npc))
+		_debug("join %s reason=%s" % [_npc_debug(npc), JoinReason.keys()[resolved_join_reason]])
+	_register_join_reason(npc, resolved_join_reason)
 	if not (npc.Behaviour.behaviour_instance is FightBehaviour):
 		npc.Behaviour.set_behaviour(FightBehaviour)
 	var behaviour := npc.Behaviour.behaviour_instance as FightBehaviour
 	behaviour.fight = self
+
+func did_participant_start_brawl(npc: NPC) -> bool:
+	return int(participant_join_reasons.get(npc, JoinReason.UNKNOWN)) == JoinReason.BRAWL_INITIATOR
+
+func _has_brawl_initiator() -> bool:
+	for reason in participant_join_reasons.values():
+		if int(reason) == JoinReason.BRAWL_INITIATOR:
+			return true
+	return false
+
+func _resolve_join_reason(npc: NPC, join_reason: int, was_participant: bool) -> int:
+	if join_reason != JoinReason.UNKNOWN:
+		return join_reason
+	if was_participant:
+		return int(participant_join_reasons.get(npc, JoinReason.UNKNOWN))
+
+	match fight_type:
+		FightType.BRAWL:
+			if npc is NPCWorker:
+				return JoinReason.WORKER_RESPONSE
+			if npc is NPCGuest:
+				return JoinReason.BRAWL_DRAWN_IN if _has_brawl_initiator() else JoinReason.BRAWL_INITIATOR
+		FightType.ARREST:
+			if npc is NPCWorker:
+				return JoinReason.ARREST_RESPONSE
+			if npc is NPCGuest:
+				return JoinReason.ARREST_TARGET
+		FightType.ROBBERY:
+			if npc is NPCWorker:
+				return JoinReason.ROBBERY_RESPONSE
+			if npc is NPCGuest:
+				return JoinReason.ROBBERY_PERPETRATOR
+	return JoinReason.UNKNOWN
+
+func _register_join_reason(npc: NPC, join_reason: int) -> void:
+	if join_reason == JoinReason.UNKNOWN and participant_join_reasons.has(npc):
+		return
+	participant_join_reasons[npc] = join_reason
 
 func start_fight():
 	state = State.ACTIVE
@@ -111,6 +170,57 @@ func start_fight():
 	_debug("start active=%s all=%s" % [_participants_debug(get_active_participants()), _participants_debug()])
 	if room != null:
 		highlight = RoomHighlighter.request_rect(room, Color.RED, 2, RoomHighlighter.Priority.FIGHT)
+	if _try_resolve_gutless_arrest_target():
+		return
+
+func _try_resolve_gutless_arrest_target() -> bool:
+	if fight_type != FightType.ARREST:
+		return false
+
+	var guest := _get_gutless_arrest_target()
+	if guest == null:
+		return false
+
+		_return_guest_stolen_money(guest, "[Fight] Gutless robber surrender")
+		if _should_gutless_robber_flee(guest) and randf() < GUTLESS_ROBBER_ESCAPE_CHANCE:
+			_debug("gutless arrest target fled %s" % _npc_debug(guest))
+			_force_guest_to_flee(guest)
+			resolve(Result.NO_CONTEST)
+			return true
+
+	_debug("gutless arrest target surrendered %s" % _npc_debug(guest))
+	resolve(Result.WORKERS_WON)
+	return true
+
+func _get_gutless_arrest_target() -> NPCGuest:
+	for participant in participants:
+		if not is_instance_valid(participant):
+			continue
+		var guest := participant as NPCGuest
+		if not is_instance_valid(guest):
+			continue
+		if int(participant_join_reasons.get(guest, JoinReason.UNKNOWN)) != JoinReason.ARREST_TARGET:
+			continue
+		if guest.Traits != null and guest.Traits.refuses_voluntary_fights():
+			return guest
+	return null
+
+func _should_gutless_robber_flee(guest: NPCGuest) -> bool:
+	return guest.is_robber or guest.stolen_amount > 0
+
+func _force_guest_to_flee(guest: NPCGuest) -> void:
+	guest.is_robber = false
+	if guest.has_meta("horse"):
+		guest.force_behaviour(LeaveOnHorseBehaviour)
+	else:
+		guest.force_behaviour(NeedLeaveBehaviour)
+
+func _return_guest_stolen_money(guest: NPCGuest, log_prefix: String = "[Fight] Returning stolen money") -> void:
+	if guest.stolen_amount <= 0:
+		return
+	ResourceHandler.add_animated(Enum.Resources.MONEY, guest.stolen_amount, guest.global_position)
+	print("%s guest=%s amount=%d" % [log_prefix, guest.name, guest.stolen_amount])
+	guest.stolen_amount = 0
 
 func handle_fight():
 	var active_participants := get_active_participants()
@@ -368,13 +478,15 @@ func _apply_result() -> void:
 
 func _apply_workers_won() -> void:
 	for participant in participants:
+		if not is_instance_valid(participant):
+			continue
 		var guest := participant as NPCGuest
 		if not is_instance_valid(guest):
 			continue
 		if not _should_apply_worker_win_to_guest(guest):
-			_debug("worker win skip %s" % _npc_debug(guest))
+			_debug("worker win skip %s reason=%s" % [_npc_debug(guest), _join_reason_name(guest)])
 			continue
-		_debug("worker win apply %s" % _npc_debug(guest))
+		_debug("worker win apply %s reason=%s" % [_npc_debug(guest), _join_reason_name(guest)])
 		if fight_type == FightType.BRAWL and guest.look_info != null:
 			BountyHandler.create_fight_fine(guest, DRUNK_FIGHT_BOUNTY)
 		ConflictResponseHandler.unmark_for_arrest(guest)
@@ -388,17 +500,45 @@ func _apply_workers_won() -> void:
 
 func _should_apply_worker_win_to_guest(guest: NPCGuest) -> bool:
 	var behaviour = guest.Behaviour.behaviour_instance
-	return behaviour is FightBehaviour or behaviour is KnockedOutBehaviour
+	if not (behaviour is FightBehaviour or behaviour is KnockedOutBehaviour):
+		return false
+	if fight_type == FightType.BRAWL:
+		return did_participant_start_brawl(guest)
+	return true
+
+func _join_reason_name(npc: NPC) -> String:
+	return JoinReason.keys()[int(participant_join_reasons.get(npc, JoinReason.UNKNOWN))]
 
 func _cleanup_inactive_participants(active_participants: Array) -> void:
 	for i: int in range(participants.size() - 1, -1, -1):
-		var participant := participants[i] as NPC
+		var participant = participants[i]
 		if not is_instance_valid(participant):
 			participants.remove_at(i)
+			participant_join_reasons.erase(participant)
+			target_mapping.erase(participant)
+			last_attack.erase(participant)
+			pending_attacks.erase(participant)
+			fight_positions.erase(participant)
+			continue
+		var participant_npc := participant as NPC
+		if participant_npc == null:
+			participants.remove_at(i)
+			participant_join_reasons.erase(participant)
+			target_mapping.erase(participant)
+			last_attack.erase(participant)
+			pending_attacks.erase(participant)
+			fight_positions.erase(participant)
 
 	for participant in target_mapping.keys():
-		var target := target_mapping[participant] as NPC
-		if not is_instance_valid(participant) or not is_instance_valid(target):
+		if not is_instance_valid(participant):
+			target_mapping.erase(participant)
+			continue
+		var target = target_mapping[participant]
+		if not is_instance_valid(target):
+			target_mapping.erase(participant)
+			continue
+		var target_npc := target as NPC
+		if target_npc == null:
 			target_mapping.erase(participant)
 			continue
 		if not active_participants.has(participant) or not active_participants.has(target):
@@ -412,13 +552,17 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			pending_attacks.erase(participant)
 			continue
-		var target := pending_attacks[participant].get("target", null) as NPC
+		var target = pending_attacks[participant].get("target", null)
 		if not is_instance_valid(target) or not active_participants.has(target):
 			pending_attacks.erase(participant)
 
 	for participant in fight_positions.keys():
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			fight_positions.erase(participant)
+
+	for participant in participant_join_reasons.keys():
+		if not is_instance_valid(participant):
+			participant_join_reasons.erase(participant)
 
 func _get_fight_behaviour(npc: NPC) -> FightBehaviour:
 	if npc == null or not is_instance_valid(npc) or npc.Behaviour == null:

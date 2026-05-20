@@ -11,6 +11,7 @@ const FLOOR_MESS_CLEAN_RADIUS := 16.0
 
 var closet: RoomBroomCloset
 var active_room_target: RoomBase
+var active_broom_particles: GPUParticles2D
 
 static var occupied_beds = []
 static var occupied_outhouses = []
@@ -65,17 +66,11 @@ func loop():
 			_release_room_target(target)
 			continue
 
-		var particles = BROOM_PARTICLES_SCENE.instantiate() as GPUParticles2D
-		npc.add_child(particles)
-		npc.Animator.is_brooming = true
+		_start_broom_effect()
 		SoundPlayer.play_broom(npc.global_position)
 		await progress(_target_clean_duration(target))
 
-		npc.Animator.is_brooming = false
-		if is_instance_valid(particles):
-			particles.emitting = false
-			await npc.get_tree().create_timer(1.0).timeout
-			particles.queue_free()
+		await _stop_broom_effect()
 
 		if is_instance_valid(target):
 			if target is Item:
@@ -88,7 +83,7 @@ func loop():
 			_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
-	npc.Animator.is_brooming = false
+	_stop_broom_effect_immediately()
 	if is_instance_valid(closet):
 		if closet.on_destroy_signal.is_connected(_change_to_idle):
 			closet.on_destroy_signal.disconnect(_change_to_idle)
@@ -103,6 +98,29 @@ func stop_loop() -> BehaviourSaveData:
 	var save = super.stop_loop()
 	save.room = closet
 	return save
+
+func _start_broom_effect() -> void:
+	_stop_broom_effect_immediately()
+	active_broom_particles = BROOM_PARTICLES_SCENE.instantiate() as GPUParticles2D
+	npc.add_child(active_broom_particles)
+	npc.Animator.is_brooming = true
+
+func _stop_broom_effect() -> void:
+	npc.Animator.is_brooming = false
+	var particles := active_broom_particles
+	active_broom_particles = null
+	if not is_instance_valid(particles):
+		return
+	particles.emitting = false
+	await npc.get_tree().create_timer(1.0).timeout
+	if is_instance_valid(particles):
+		particles.queue_free()
+
+func _stop_broom_effect_immediately() -> void:
+	npc.Animator.is_brooming = false
+	if is_instance_valid(active_broom_particles):
+		active_broom_particles.queue_free()
+	active_broom_particles = null
 
 func _find_closet() -> RoomBroomCloset:
 	if data != null and is_instance_valid(data.room):
