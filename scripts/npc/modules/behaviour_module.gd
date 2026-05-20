@@ -2,6 +2,7 @@ extends Node
 class_name BehaviourModule
 
 const NEED_GAMBLING_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_gambling_behaviour.gd")
+const NEED_SNAKE_OIL_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_snake_oil_behaviour.gd")
 
 var npc: NPC
 var behaviour_instance : Behaviour = null
@@ -50,6 +51,9 @@ func get_behaviour_from_available_rooms(all_rooms):
 
 		if room is RoomGambling and (room as RoomGambling).can_accept_guest():
 			all.append(NEED_GAMBLING_BEHAVIOUR)
+
+	if npc is NPCGuest and Global.NPCSpawner != null and Global.NPCSpawner.find_snake_oil_salesman_provider(npc) != null:
+		all.append(NEED_SNAKE_OIL_BEHAVIOUR)
 
 	if all.size() > 0:
 		return all.pick_random()

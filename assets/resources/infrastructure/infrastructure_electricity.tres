@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="InfrastructureData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://assets/sprites/electricity_overlay_sheet.png" id="2_overlay"]
+
+[resource]
+script = ExtResource("1_data")
+layer_name = &"electricity"
+room_name = "Electricity"
+room_desc = "Lay electrical service inside built rooms."
+room_icon = ExtResource("2_overlay")
+room_preview = ExtResource("2_overlay")
+construction_price = 5
+tier = 9

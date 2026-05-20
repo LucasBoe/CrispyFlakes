@@ -369,6 +369,15 @@ func _get_infrastructure_invalid_reason(target_location: Vector2i) -> String:
 		if Building.infrastructure.get_provider_rooms(BuildingInfrastructure.WATER_LAYER).is_empty():
 			return "needs water tower"
 		return "connect to water line"
+	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.ELECTRICITY_LAYER:
+		if Building.infrastructure.has_data_at(target_location, BuildingInfrastructure.ELECTRICITY_LAYER):
+			return "electricity already placed"
+		var room := Building.get_room_from_index(target_location) as RoomBase
+		if room == null or room is RoomEmpty:
+			return "requires a room"
+		if room.is_outside_room:
+			return "indoor rooms only"
+		return "target invalid"
 	return "target invalid"
 
 func _has_room_or_pipe_support_below(target_location: Vector2i) -> bool:

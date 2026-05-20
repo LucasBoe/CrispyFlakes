@@ -5,6 +5,7 @@ class_name NPCSpawner
 const workerScene : PackedScene = preload("res://scenes/npcs/npc_worker.tscn")
 const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
 const FollowRandomGuestBehaviourScript = preload("res://scripts/npc/behaviours/follow_random_guest_behaviour.gd")
+const SnakeOilSalesmanBehaviourScript = preload("res://scripts/npc/behaviours/snake_oil_salesman_behaviour.gd")
 const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
@@ -279,6 +280,35 @@ func can_spawn_special_encounter() -> bool:
 		if is_instance_valid(special):
 			return false
 	return _has_special_encounter_target()
+
+func find_snake_oil_salesman_provider(customer: NPCGuest = null):
+	var best_provider = null
+	var best_distance := INF
+
+	for special: SpecialNPC in special_npcs:
+		if not is_instance_valid(special) or special.Behaviour == null:
+			continue
+
+		var behaviour := special.Behaviour.behaviour_instance
+		if behaviour == null or behaviour.get_script() != SnakeOilSalesmanBehaviourScript:
+			continue
+
+		var provider = behaviour
+		var assigned_table = provider.get_assigned_table()
+		if assigned_table == null:
+			continue
+		if customer != null:
+			if customer.Navigation == null or not customer.Navigation.is_room_reachable(assigned_table):
+				continue
+			if not provider.accepts_customer(customer):
+				continue
+
+		var distance := special.global_position.distance_squared_to(customer.global_position if customer != null else special.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			best_provider = provider
+
+	return best_provider
 
 func spawn_trader_wagon(target_room = null, order_items: Dictionary = {}, debug_stop_x: float = 96.0, debug_travel_y: float = 0.0) -> TraderWagon:
 	if order_items.is_empty():

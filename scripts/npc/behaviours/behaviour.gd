@@ -363,5 +363,8 @@ func add_satisfaction(amount: float, reason: String = ""):
 	else:
 		npc.notify(UiNotifications.ICON_PLUS_1)
 
+func say(text: String, duration: float = 3.5) -> void:
+	UiNotifications.create_notification_dynamic(text, npc, Vector2(0, -40), null, Color.BLACK, duration)
+
 func end_of_frame():
 	return Global.get_tree().process_frame

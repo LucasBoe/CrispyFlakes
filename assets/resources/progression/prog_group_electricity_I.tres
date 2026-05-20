@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3 uid="uid://b53dqrb3jphnc"]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_generator_wheel.tres" id="3_generator_room"]
+[ext_resource type="Resource" path="res://assets/resources/infrastructure/infrastructure_electricity.tres" id="4_electricity_infra"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="5_roomdata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="6_infrastructuredata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Electricity I."
+description = "Experimental electrical systems unlocked through the scientist's beer-powered research."
+unlock_by_default_if_root = false
+unlocks_rooms = Array[ExtResource("5_roomdata")]([ExtResource("3_generator_room")])
+unlocks_infrastructure_list = Array[ExtResource("6_infrastructuredata")]([ExtResource("4_electricity_infra")])

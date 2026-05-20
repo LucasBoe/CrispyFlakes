@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://simple_save.json"
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 
 func _ready() -> void:
 	Console.add_command("save", console_save, 0, 0, "Saves placed rooms plus worker and guest positions.")
@@ -10,6 +10,7 @@ func _ready() -> void:
 func console_save() -> void:
 	var rooms := _serialize_rooms()
 	var water_pipes := _serialize_water_pipes()
+	var electricity_tiles := _serialize_electricity_tiles()
 	var stored_items := _serialize_stored_items()
 	var loose_items := _serialize_loose_items()
 	var workers := _serialize_workers()
@@ -18,6 +19,7 @@ func console_save() -> void:
 		"version": SAVE_VERSION,
 		"rooms": rooms,
 		"water_pipes": water_pipes,
+		"electricity_tiles": electricity_tiles,
 		"stored_items": stored_items,
 		"loose_items": loose_items,
 		"workers": workers,
@@ -30,9 +32,10 @@ func console_save() -> void:
 		return
 
 	file.store_string(JSON.stringify(payload, "\t"))
-	Console.print_line("Saved %d rooms, %d pipes, %d stored items, %d loose items, %d workers, %d guests to %s." % [
+	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests to %s." % [
 		rooms.size(),
 		water_pipes.size(),
+		electricity_tiles.size(),
 		stored_items.size(),
 		loose_items.size(),
 		workers.size(),
@@ -60,13 +63,15 @@ func console_load() -> void:
 
 	var room_count := _get_array(save_data, "rooms").size()
 	var pipe_count := _get_array(save_data, "water_pipes").size()
+	var electricity_count := _get_array(save_data, "electricity_tiles").size()
 	var stored_item_count := _get_array(save_data, "stored_items").size()
 	var loose_item_count := _get_array(save_data, "loose_items").size()
 	var worker_count := _get_array(save_data, "workers").size()
 	var guest_count := _get_array(save_data, "guests").size()
-	Console.print_line("Loaded %d rooms, %d pipes, %d stored items, %d loose items, %d workers, %d guests from %s." % [
+	Console.print_line("Loaded %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests from %s." % [
 		room_count,
 		pipe_count,
+		electricity_count,
 		stored_item_count,
 		loose_item_count,
 		worker_count,
@@ -89,6 +94,7 @@ func _apply_save(save_data: Dictionary) -> void:
 
 	_restore_rooms(_get_array(save_data, "rooms"))
 	_restore_water_pipes(_get_array(save_data, "water_pipes"))
+	_restore_electricity_tiles(_get_array(save_data, "electricity_tiles"))
 	_restore_stored_items(_get_array(save_data, "stored_items"))
 	_restore_loose_items(_get_array(save_data, "loose_items"))
 	_restore_workers(_get_array(save_data, "workers"))
@@ -126,6 +132,17 @@ func _serialize_water_pipes() -> Array[Dictionary]:
 		return cells
 
 	for cell: Vector2i in Building.infrastructure.get_layer_cells(BuildingInfrastructure.WATER_LAYER):
+		cells.append(_serialize_room_index(cell))
+
+	cells.sort_custom(func(a: Dictionary, b: Dictionary): return _sort_grid_entries(a, b))
+	return cells
+
+func _serialize_electricity_tiles() -> Array[Dictionary]:
+	var cells: Array[Dictionary] = []
+	if not is_instance_valid(Building.infrastructure):
+		return cells
+
+	for cell: Vector2i in Building.infrastructure.get_layer_cells(BuildingInfrastructure.ELECTRICITY_LAYER):
 		cells.append(_serialize_room_index(cell))
 
 	cells.sort_custom(func(a: Dictionary, b: Dictionary): return _sort_grid_entries(a, b))
@@ -254,6 +271,22 @@ func _restore_water_pipes(entries: Array) -> void:
 		return
 
 	Building.infrastructure.restore_layer_cells(Building.infrastructure_data_water_pipe, cells)
+
+func _restore_electricity_tiles(entries: Array) -> void:
+	if not is_instance_valid(Building.infrastructure):
+		return
+
+	var cells: Array[Vector2i] = []
+	for entry_variant in entries:
+		if entry_variant is not Dictionary:
+			continue
+		var entry := entry_variant as Dictionary
+		cells.append(Vector2i(int(entry.get("x", 0)), int(entry.get("y", 0))))
+
+	if cells.is_empty():
+		return
+
+	Building.infrastructure.restore_layer_cells(Building.infrastructure_data_electricity, cells)
 
 func _restore_stored_items(entries: Array) -> void:
 	for entry_variant in entries:

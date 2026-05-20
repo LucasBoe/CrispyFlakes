@@ -11,6 +11,7 @@ var children_map: Dictionary = {}
 var positions: Dictionary = {}
 var connectors: Dictionary = {}
 var root: ProgressionItem = null
+var roots: Array[ProgressionItem] = []
 
 func _init(items: Array, node_w: float, node_h: float, h_gap: float, v_gap: float) -> void:
 	_items = items
@@ -24,21 +25,24 @@ func build() -> void:
 	positions.clear()
 	connectors.clear()
 	root = null
+	roots.clear()
 
 	_build_children_map()
-	root = _find_root()
+	roots = _find_roots()
+	root = roots[0] if not roots.is_empty() else null
 	if root == null:
 		return
 
-	_compute_layout(root, 0.0, 0)
+	_compute_forest_layout()
 	_normalize_positions()
 
 func spawn_connectors(content: Control, connector_down: Texture2D, connector_left: Texture2D, connector_right: Texture2D) -> void:
 	connectors.clear()
-	if root == null:
+	if roots.is_empty():
 		return
 
-	_spawn_connectors(root, content, connector_down, connector_left, connector_right)
+	for tree_root in roots:
+		_spawn_connectors(tree_root, content, connector_down, connector_left, connector_right)
 
 func _build_children_map() -> void:
 	for item: ProgressionItem in _items:
@@ -49,12 +53,27 @@ func _build_children_map() -> void:
 		if dependency != null and dependency in children_map:
 			children_map[dependency].append(item)
 
-func _find_root() -> ProgressionItem:
+func _find_roots() -> Array[ProgressionItem]:
+	var found_roots: Array[ProgressionItem] = []
 	for item: ProgressionItem in _items:
 		if item.depends_on == null:
-			return item
+			found_roots.append(item)
 
-	return _items[0] if not _items.is_empty() else null
+	if found_roots.is_empty() and not _items.is_empty():
+		found_roots.append(_items[0])
+	return found_roots
+
+func _compute_forest_layout() -> void:
+	var total_width := 0.0
+	for tree_root in roots:
+		total_width += _subtree_width(tree_root)
+	total_width += _h_gap * max(0, roots.size() - 1)
+
+	var current_x := total_width * -0.5
+	for tree_root in roots:
+		var tree_width := _subtree_width(tree_root)
+		_compute_layout(tree_root, current_x + tree_width * 0.5, 0)
+		current_x += tree_width + _h_gap
 
 func _subtree_width(item: ProgressionItem) -> float:
 	var children: Array = children_map[item]

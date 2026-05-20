@@ -74,8 +74,9 @@ func _process(delta):
 			Behaviour.set_behaviour(NeedSickWardBehaviour)
 			return
 
-	if InjuryHandler.should_seek_treatment_behaviour(self):
-		Behaviour.set_behaviour(NeedTreatmentBehaviour)
+	var treatment_behaviour = InjuryHandler.get_treatment_behaviour(self)
+	if treatment_behaviour != null:
+		Behaviour.set_behaviour(treatment_behaviour)
 		return
 
 	change_job(current_job)

@@ -38,6 +38,11 @@ var is_puking : bool = false
 var is_sleeping : bool = false
 var is_brooming : bool = false
 var is_playing_piano : bool = false
+var is_running_in_place : bool = false
+var _event_position_offset := Vector2.ZERO
+var _event_rotation_offset := 0.0
+var _event_tween: Tween = null
+var _is_in_punch = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 static var _music_sway_sources := 0
@@ -62,6 +67,9 @@ func set_riding(value : bool):
 func set_sleeping(value : bool):
 	is_sleeping = value
 
+func set_running_in_place(value: bool) -> void:
+	is_running_in_place = value
+
 func _update_texture():
 	if is_riding:
 		texture = TEX_RIDE
@@ -71,12 +79,12 @@ func _update_texture():
 		texture = TEX_FIGHT
 	elif is_sleeping:
 		texture = TEX_STAND
+	elif npc.Behaviour.behaviour_instance is PanicBehaviour or _is_in_punch:
+		texture = TEX_PANIC
 	elif is_sitting:
 		texture = TEX_SIT
 	elif npc.Item.current_item != null:
 		texture = TEX_CARRY
-	elif npc.Behaviour.behaviour_instance is PanicBehaviour:
-		texture = TEX_PANIC
 	else:
 		texture = TEX_STAND
 
@@ -102,6 +110,8 @@ func _process(_delta):
 		target = knocked_out_tween()
 	elif is_playing_piano:
 		target = piano_tween(time_in_seconds)
+	elif is_running_in_place:
+		target = run_in_place_tween(time_in_seconds)
 	elif is_peeing:
 		target = pee_tween(time_in_seconds)
 	elif is_puking:
@@ -117,8 +127,8 @@ func _process(_delta):
 	var lerp_speed = .2
 
 	var base_pos = RIDE_BODY_OFFSET if is_riding else Vector2.ZERO
-	position = lerp(position, base_pos + target.position, lerp_speed)
-	rotation = lerp(rotation, target.rotation, lerp_speed)
+	position = lerp(position, base_pos + target.position + _event_position_offset, lerp_speed)
+	rotation = lerp(rotation, target.rotation + _event_rotation_offset, lerp_speed)
 	scale = lerp(scale, target.scale, lerp_speed)
 
 
@@ -176,6 +186,14 @@ func piano_tween(time_in_seconds):
 	var squash = key_press * SQUASH_STRENGTH
 	return TweenTargetData.new(Vector2(side_to_side, bob), rot, Vector2(x_orientation * (1.0 + squash), 1.0 - squash * 0.5))
 
+func run_in_place_tween(time_in_seconds):
+	var beat: float = time_in_seconds * WALK_ANIMATION_SPEED
+	var stride: float = pow(abs(sin(beat)), 0.4) * sign(sin(beat))
+	var squash: float = abs(stride) * SQUASH_STRENGTH
+	var bob: float = 2.0 - abs(stride) * 4.0
+	var rot: float = sin(beat) * WALK_ROTATION_STRENGTH * 0.35
+	return TweenTargetData.new(Vector2(0, bob), rot, Vector2(x_orientation * (1.0 + squash), 1.0 + abs(squash - SQUASH_STRENGTH)))
+
 func pee_tween(time_in_seconds):
 	# Lean sideways like a dog, with a small bob
 	var bob = sin(time_in_seconds * 4.0) * 0.5
@@ -201,6 +219,21 @@ func set_z(z: Enum.ZLayer) -> void:
 		_exit_drag_canvas()
 	z_index = z
 
+func play_gambling_card_punch() -> void:
+	if _event_tween != null and _event_tween.is_valid():
+		_event_tween.kill()
+
+	_is_in_punch = true
+	var push_direction := -1.0 if randf() < 0.5 else 1.0
+	var lift := randf_range(-1.5, -0.5)
+	_event_position_offset = Vector2(push_direction * randf_range(1.5, 3.0), lift)
+	_event_rotation_offset = push_direction * randf_range(0.08, 0.16)
+
+	_event_tween = create_tween()
+	_event_tween.tween_interval(randf_range(0.08, 0.14))
+	_event_tween.tween_property(self, "_event_position_offset", Vector2.ZERO, randf_range(0.34, 0.46)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_event_tween.parallel().tween_property(self, "_event_rotation_offset", 0.0, randf_range(0.32, 0.44)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_event_tween.tween_callback(func(): _is_in_punch = false)
 func _enter_drag_canvas() -> void:
 	if _drag_canvas_wrapper != null:
 		return

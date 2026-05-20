@@ -74,6 +74,7 @@ enum Jobs {
 	WATER_TOWER,
 	TRADING_OFFICE,
 	STOVE_KEEPER,
+	GENERATOR_WHEEL,
 	DIGGING,
 	GAMBLING_WATCHER,
 	DOCTOR,
@@ -131,6 +132,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.STOVE_KEEPER:
 			return JobStoveKeeperBehaviour
+
+		Enum.Jobs.GENERATOR_WHEEL:
+			return JobGeneratorWheelBehaviour
 
 		Enum.Jobs.DIGGING:
 			return JobDiggingBehaviour

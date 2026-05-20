@@ -28,7 +28,7 @@ func loop():
 				if is_instance_valid(loose_carried):
 					loose_carried.destroy()
 			continue
-		var target_loc = MoneyHandler.richest_location(safe_loc)
+		var target_loc = _richest_non_safe_location(safe_loc)
 
 		if target_loc == Vector2i(-9999, -9999) or MoneyHandler.get_money_at(target_loc) < 1.0:
 			# Nothing to collect — idle at safe
@@ -65,6 +65,20 @@ func loop():
 		var carried = npc.Item.drop_current()
 		if is_instance_valid(carried):
 			carried.destroy()
+
+func _richest_non_safe_location(exclude: Vector2i = Vector2i(-9999, -9999)) -> Vector2i:
+	var best_loc := Vector2i(-9999, -9999)
+	var best_amount := 0.0
+	for loc: Vector2i in MoneyHandler.location_money.keys():
+		if loc == exclude:
+			continue
+		if Building.get_room_from_index(loc) is RoomSafe:
+			continue
+		var amount: float = MoneyHandler.location_money[loc]
+		if amount > best_amount:
+			best_amount = amount
+			best_loc = loc
+	return best_loc
 
 func stop_loop() -> BehaviourSaveData:
 	occupied_safes.erase(safe)

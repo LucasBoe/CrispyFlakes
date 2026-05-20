@@ -10,6 +10,7 @@ enum ProgressionFlag {
 
 @export var display_name: String
 @export_multiline var description: String = ""
+@export var unlock_by_default_if_root: bool = true
 
 ## Optional: global flags set to true when this group becomes available
 @export var unlocks_flags: Array[ProgressionFlag] = []

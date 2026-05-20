@@ -19,10 +19,12 @@ class TutorialQuest:
 	var section_title: String
 	var reward_money: int
 	var reward_text: String
+	var reward_effects: Array[Callable] = []
 	var phase: int
 	var reveal_target: Node2D
 	var text: String
 	var hints: Array[String] = []
+	var metadata: Dictionary = {}
 	var is_started: bool = false
 	var is_done: bool = false
 
@@ -214,6 +216,9 @@ func claim_quest_reward(quest: TutorialQuest, reward_source_position = null) -> 
 			ResourceHandler.add_animated(Enum.Resources.MONEY, quest.reward_money, reward_source_position)
 		else:
 			ResourceHandler.change_money(quest.reward_money)
+	for effect: Callable in quest.reward_effects:
+		if effect.is_valid():
+			effect.call()
 
 	mark_quest_done(quest)
 	quest_claimed.emit(quest.section_title)
@@ -226,6 +231,12 @@ func set_quest_reward(quest: TutorialQuest, reward_money: int, reward_override_t
 	if not reward_override_text.is_empty():
 		quest.reward_text = reward_override_text
 	_notify_quests_changed()
+
+
+func set_quest_reward_effects(quest: TutorialQuest, effects: Array[Callable]) -> void:
+	if not has_quest(quest):
+		return
+	quest.reward_effects = effects.duplicate()
 
 
 func mark_quest_done(quest: TutorialQuest) -> void:

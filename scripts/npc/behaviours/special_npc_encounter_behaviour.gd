@@ -57,10 +57,16 @@ func loop() -> void:
 	var choice: Dictionary = await Global.UI.encounter.start_encounter(npc, encounter)
 	_apply_choice(encounter, choice)
 	var outcome_text := str(choice.get("outcome_text", ""))
+	var followup_behaviour = choice.get("followup_behaviour", null)
 	if outcome_text != "":
 		await Global.UI.encounter.show_outcome(npc, outcome_text)
 	else:
 		Global.UI.encounter.close_encounter()
+	if stopped or not is_instance_valid(npc):
+		return
+	if followup_behaviour != null and npc.Behaviour != null:
+		npc.Behaviour.set_behaviour(followup_behaviour)
+		return
 	await _leave()
 
 func _create_marker() -> void:

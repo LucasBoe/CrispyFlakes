@@ -4,6 +4,9 @@ class_name BuildingInfrastructure
 signal on_infrastructure_changed_signal(layer_name: StringName)
 
 const WATER_LAYER := &"water"
+const ELECTRICITY_LAYER := &"electricity"
+const _ELECTRICITY_SOURCE_ID := 0
+const _ELECTRICITY_TILE_ATLAS := Vector2i.ZERO
 
 const _CARDINAL_DIRECTIONS := [
 	Vector2i.LEFT,
@@ -15,10 +18,12 @@ const _CARDINAL_DIRECTIONS := [
 var _layers: Dictionary = {}
 var _water: RefCounted
 var _water_info_requests: int = 0
+var _electricity_tilemap: TileMapLayer = null
 
 func _ready() -> void:
 	_water = BuildingInfrastructureWater.new()
 	_water.setup(self, $WaterPipeTiles)
+	_electricity_tilemap = $ElectricityTiles
 
 # --- Placement ---
 
@@ -26,6 +31,8 @@ func can_place(data, origin: Vector2i) -> bool:
 	match data.layer_name:
 		WATER_LAYER:
 			return _water.can_place(data, origin)
+		ELECTRICITY_LAYER:
+			return _can_place_electricity(data, origin)
 	return false
 
 func place(data, origin: Vector2i) -> bool:
@@ -152,6 +159,7 @@ func hide_water_info() -> void:
 func refresh_visuals() -> void:
 	_water.configure_tileset()
 	_water.refresh_visuals()
+	_refresh_electricity_visuals()
 
 func clear_all() -> void:
 	var changed_layers: Array = _layers.keys().duplicate()
@@ -204,6 +212,10 @@ func get_provider_rooms(layer_name: StringName) -> Array[RoomBase]:
 			providers.append(provider)
 	return providers
 
+func notify_layer_state_changed(layer_name: StringName) -> void:
+	_refresh_layer_visuals(layer_name)
+	_emit_changed(layer_name)
+
 # --- Private ---
 
 func _emit_changed(layer_name: StringName) -> void:
@@ -214,6 +226,8 @@ func _refresh_layer_visuals(layer_name: StringName) -> void:
 	match layer_name:
 		WATER_LAYER:
 			_water.refresh_visuals()
+		ELECTRICITY_LAYER:
+			_refresh_electricity_visuals()
 
 func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
 	var layer: Dictionary = _layers.get(layer_name, {})
@@ -236,7 +250,7 @@ func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
 	return true
 
 func _get_adjacent_provider(index: Vector2i, layer_name: StringName) -> RoomBase:
-	for direction in [Vector2i.LEFT, Vector2i.RIGHT]:
+	for direction in _CARDINAL_DIRECTIONS:
 		var room := Building.get_room_from_index(index + direction) as RoomBase
 		if room_provides_layer(room, layer_name):
 			return room
@@ -251,3 +265,22 @@ func _get_provider_for_index(index: Vector2i, layer_name: StringName) -> RoomBas
 		return current_room
 
 	return _get_adjacent_provider(index, layer_name)
+
+func _can_place_electricity(data: InfrastructureData, origin: Vector2i) -> bool:
+	for col in data.width:
+		for row in data.height:
+			var index := origin + Vector2i(col, row)
+			if has_data_at(index, ELECTRICITY_LAYER):
+				return false
+			var room := Building.get_room_from_index(index) as RoomBase
+			if room == null or room.is_outside_room:
+				return false
+	return true
+
+func _refresh_electricity_visuals() -> void:
+	if _electricity_tilemap == null:
+		return
+
+	_electricity_tilemap.clear()
+	for index in get_layer_cells(ELECTRICITY_LAYER):
+		_electricity_tilemap.set_cell(Vector2i(index.x, index.y * -1 - 1), _ELECTRICITY_SOURCE_ID, _ELECTRICITY_TILE_ATLAS)

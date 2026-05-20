@@ -16,7 +16,7 @@ const SPRITE_OFFSET := Vector2(8, -22)
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _progress_bar: TextureProgressBar = $ProgressBar
 @onready var _warmth_light: PointLight2D = $WarmthLight
-@onready var _smoke_particles: CPUParticles2D = $SmokeParticles
+@onready var _smoke_particles: GPUParticles2D = $SmokeParticles
 @onready var _aura_sprite: Sprite2D = $AuraSprite
 
 const _STOVE_ON_TEXTURE = preload("res://assets/sprites/stove.png")
@@ -47,10 +47,6 @@ func _process(delta: float) -> void:
 			_ember_remaining = EMBER_DURATION
 	elif _ember_remaining > 0.0:
 		_ember_remaining = maxf(0.0, _ember_remaining - delta)
-
-	if _aura_sprite != null and _aura_sprite.visible:
-		_aura_time += delta * 2.0
-		_aura_sprite.scale = Vector2.ONE * (1.5 + 0.15 * sin(_aura_time))
 
 	_refresh_visual_state()
 	_refresh_progress_bar()

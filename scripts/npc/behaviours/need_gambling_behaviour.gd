@@ -27,6 +27,7 @@ func loop():
 	await move(room.sit(guest))
 	if stopped or not is_instance_valid(room) or not room.is_guest_seated(guest):
 		return
+	room.on_seated(guest)
 
 	_narrative = ["Playing cards...", "Watching the draw...", "At the gambling table..."].pick_random()
 	while is_instance_valid(room) and room.is_guest_seated(guest):

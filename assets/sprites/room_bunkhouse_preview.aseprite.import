@@ -3,11 +3,12 @@
 importer="aseprite_wizard.plugin.static-texture"
 type="PortableCompressedTexture2D"
 uid="uid://yuajdfototok"
-valid=false
+path="res://.godot/imported/room_bunkhouse_preview.aseprite-132ac547f10eefd97b6a0b66a40af235.res"
 
 [deps]
 
 source_file="res://assets/sprites/room_bunkhouse_preview.aseprite"
+dest_files=["res://.godot/imported/room_bunkhouse_preview.aseprite-132ac547f10eefd97b6a0b66a40af235.res"]
 
 [params]
 

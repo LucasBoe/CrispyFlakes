@@ -93,8 +93,9 @@ func is_on_horse() -> bool:
 	return Animator != null and Animator.is_riding
 
 func get_next_behaviour():
-	if InjuryHandler.should_seek_treatment_behaviour(self):
-		return NeedTreatmentBehaviour
+	var treatment_behaviour = InjuryHandler.get_treatment_behaviour(self)
+	if treatment_behaviour != null:
+		return treatment_behaviour
 
 	if Status != null:
 		if Status.has_status(Enum.NpcStatus.WELL_TREATED) or Status.has_status(Enum.NpcStatus.BADLY_TREATED):

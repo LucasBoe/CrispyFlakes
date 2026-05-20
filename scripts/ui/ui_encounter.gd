@@ -28,6 +28,8 @@ var _active := false
 var _selected_choice: Dictionary = {}
 var _front_npc: NPC = null
 var _front_npc_previous_z_layer: int = Enum.ZLayer.NPC_DEFAULT
+var _typewriter_playing := false
+var _typewriter_skip_requested := false
 
 func _ready() -> void:
 	hide()
@@ -182,15 +184,30 @@ func _reveal_buttons() -> void:
 				button.disabled = not affordable
 
 
+func _input(event: InputEvent) -> void:
+	if not _typewriter_playing:
+		return
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:
+			_typewriter_skip_requested = true
+			get_viewport().set_input_as_handled()
+
 func _play_typewriter_animation() -> void:
+	_typewriter_skip_requested = false
+	_typewriter_playing = true
 	var total_characters := dialogue_label.get_total_character_count()
 	if total_characters <= 0:
 		dialogue_label.visible_characters = -1
+		_typewriter_playing = false
 		return
 
 	for char_index in range(1, total_characters + 1):
 		if not _active:
+			_typewriter_playing = false
 			return
+		if _typewriter_skip_requested:
+			break
 		dialogue_label.visible_characters = char_index
 		var char_delay := _TYPE_CHARACTER_DELAY
 		var revealed_text := dialogue_label.text
@@ -200,6 +217,7 @@ func _play_typewriter_animation() -> void:
 				char_delay += _TYPE_PUNCTUATION_DELAY
 		await get_tree().create_timer(char_delay, true, false, true).timeout
 
+	_typewriter_playing = false
 	dialogue_label.visible_characters = -1
 
 func _close() -> void:

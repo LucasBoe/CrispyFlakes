@@ -148,6 +148,16 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 
 
 func refresh_target_path() -> void:
+	# Save remaining stair waypoints before clearing — a mid-stair NPC must finish
+	# the current stair segment before following any newly computed path, otherwise
+	# the wrong floor is detected for start_room (floor() snaps y=-24 to floor 0
+	# even when the NPC is ascending toward floor 1) and the NPC flies diagonally.
+	var saved_stair_count := _stair_waypoints_remaining
+	var saved_stair_waypoints: Array[Vector2] = []
+	if saved_stair_count > 0 and target_path.size() >= saved_stair_count:
+		for i in range(saved_stair_count):
+			saved_stair_waypoints.append(target_path[i])
+
 	target_path.clear()
 	_stair_waypoints_remaining = 0
 	_has_enter_gate = false
@@ -168,12 +178,20 @@ func refresh_target_path() -> void:
 
 	refresh_room_index()
 
-	var start_room := _get_current_floor_room(global_position)
+	# When mid-stair, use the stair exit position (last saved waypoint) as the
+	# effective start so BFS begins from the correct floor instead of the
+	# between-floor y the NPC currently occupies.
+	var effective_pos := global_position
+	if not saved_stair_waypoints.is_empty():
+		effective_pos = saved_stair_waypoints.back()
+
+	var start_room := _get_current_floor_room(effective_pos)
 	final_target.y = snappedf(final_target.y, 48.0)
 	var goal_room := _get_goal_floor_room(final_target)
 
 	if start_room == null or goal_room == null:
 		_fail_target_path()
+		_prepend_saved_stair_waypoints(saved_stair_waypoints)
 		return
 
 	final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
@@ -183,15 +201,18 @@ func refresh_target_path() -> void:
 		if bouncer_room != null:
 			if not _is_inside and not _is_outside_target(final_target):
 				if _apply_enter_gate(bouncer_room, goal_room, final_target):
+					_prepend_saved_stair_waypoints(saved_stair_waypoints)
 					return
 			elif _is_inside and _is_outside_target(final_target):
 				if _apply_leave_gate(bouncer_room, start_room, final_target):
+					_prepend_saved_stair_waypoints(saved_stair_waypoints)
 					return
 
 	var room_path := _find_room_path(start_room, goal_room)
 	if room_path.is_empty():
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), no_path_icon)
 		_fail_target_path()
+		_prepend_saved_stair_waypoints(saved_stair_waypoints)
 		return
 
 	for i in range(room_path.size() - 1):
@@ -200,6 +221,7 @@ func refresh_target_path() -> void:
 		_append_transition_to_target_path(from_room, to_room, i == room_path.size() - 2)
 
 	target_path.append(final_target)
+	_prepend_saved_stair_waypoints(saved_stair_waypoints)
 
 
 func _find_room_path(start_room: RoomBase, goal_room: RoomBase) -> Array[RoomBase]:
@@ -361,6 +383,14 @@ func _fail_target_path() -> void:
 	if current_room != null:
 		var floor_y: int = Building.round_floor_index_from_global_position(global_position).y
 		target_path.append(_get_room_random_floor_position(current_room, floor_y))
+
+
+func _prepend_saved_stair_waypoints(waypoints: Array[Vector2]) -> void:
+	if waypoints.is_empty():
+		return
+	for i in range(waypoints.size() - 1, -1, -1):
+		target_path.push_front(waypoints[i])
+	_stair_waypoints_remaining += waypoints.size()
 
 
 func _reconstruct_path(came_from: Dictionary, goal_room: RoomBase) -> Array[RoomBase]:

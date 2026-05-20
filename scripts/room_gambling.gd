@@ -8,6 +8,11 @@ const JACKPOT_OPTIONS: Array[int] = [20, 50, 100, 250, 500, 1000]
 const BASE_CHEAT_CHANCE := 0.04
 const DRUNK_CHEAT_CHANCE := 0.08
 const BASE_WATCHER_DETECTION_CHANCE := 0.65
+const DEFAULT_SEAT_POSITIONS: Array[Vector2] = [
+	Vector2(21, 0),
+	Vector2(10, 0),
+	Vector2(38, 0),
+]
 
 var guests: Dictionary = {}
 var max_guest_count: int = MAX_GUEST_COUNT
@@ -21,6 +26,7 @@ var remaining_money_pool: float = 0.0
 var participants: Array[NPCGuest] = []
 var last_summary: Dictionary = {}
 var _round_running: bool = false
+var _next_card_pulse_index := 0
 
 func init_room(_x: int, _y: int):
 	associated_job = Enum.Jobs.GAMBLING_WATCHER
@@ -107,20 +113,30 @@ func sit(guest: NPC) -> Vector2:
 		return get_random_floor_position()
 
 	var guest_ref := guest as NPCGuest
+	var seat_index := -1
 	for i in max_guest_count:
 		if guests[i] == null:
 			guests[i] = guest_ref
+			seat_index = i
 			break
 
 	if active_round:
 		_register_participant(guest_ref)
 
-	guest_ref.Animator.set_sitting(true)
-	guest_ref.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
-
 	show_guest_count_notification()
 
-	return get_random_floor_position()
+	return _get_seat_global_position(seat_index)
+
+func on_seated(guest: NPC) -> void:
+	if guest == null or guest.Animator == null:
+		return
+	guest.Animator.set_sitting(true)
+	guest.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
+
+	var facing_direction: float = sign(get_center_position().x - guest.global_position.x)
+	if facing_direction == 0:
+		facing_direction = -1
+	guest.Animator.x_orientation = facing_direction
 
 func is_guest_in_round(guest: NPCGuest) -> bool:
 	return participants.has(guest)
@@ -305,11 +321,47 @@ func _finish_round() -> void:
 func _progress_match_timer() -> void:
 	current_match_progress = 0.0
 	var elapsed: float = 0.0
+	var next_card_pulse_at := randf_range(1.2, 2.6)
 	while elapsed < MATCH_DURATION and active_round:
 		await get_tree().process_frame
 		elapsed += get_process_delta_time()
 		current_match_progress = clampf(elapsed / MATCH_DURATION, 0.0, 1.0)
+		if elapsed >= next_card_pulse_at:
+			_play_card_pulse()
+			next_card_pulse_at += randf_range(1.2, 2.6)
 	current_match_progress = 1.0
+
+func _play_card_pulse() -> void:
+	var live_participants := _get_live_participants()
+	if live_participants.is_empty():
+		return
+
+	var pulse_index := posmod(_next_card_pulse_index, live_participants.size())
+	_next_card_pulse_index = pulse_index + 1
+	var guest := live_participants[pulse_index]
+	if guest != null and guest.Animator != null:
+		guest.Animator.play_gambling_card_punch()
+
+func _get_seat_global_position(seat_index: int) -> Vector2:
+	var seat_positions := _get_seat_positions()
+	if seat_index < 0 or seat_index >= seat_positions.size():
+		return get_random_floor_position()
+	return to_global(seat_positions[seat_index])
+
+func _get_seat_positions() -> Array[Vector2]:
+	var seat_positions: Array[Vector2] = []
+	var stool_paths: Array[NodePath] = [
+		NodePath("TableStool3"),
+		NodePath("TableStool"),
+		NodePath("TableStool2"),
+	]
+	for stool_path in stool_paths:
+		var stool := get_node_or_null(stool_path) as Node2D
+		if stool != null:
+			seat_positions.append(Vector2(stool.position.x, 0))
+	if seat_positions.size() == max_guest_count:
+		return seat_positions
+	return DEFAULT_SEAT_POSITIONS
 
 func _apply_round_settlement(summary: Dictionary) -> void:
 	var settlement: int = roundi(

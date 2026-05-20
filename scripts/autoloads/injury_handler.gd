@@ -1,5 +1,9 @@
 extends Node
 
+const NEED_TREATMENT_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_treatment_behaviour.gd")
+const NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_barber_surgeon_treatment_behaviour.gd")
+const BARBER_SURGEON_BEHAVIOUR := preload("res://scripts/npc/behaviours/barber_surgeon_behaviour.gd")
+
 signal npc_injured(npc: NPC)
 signal npc_recovered(npc: NPC)
 signal guest_injured(guest: NPCGuest)
@@ -76,7 +80,45 @@ func can_receive_treatment_now(npc: NPC) -> bool:
 	return true
 
 func should_seek_treatment_behaviour(npc: NPC) -> bool:
-	return can_receive_treatment_now(npc) and find_treatment_infirmary(npc) != null
+	return get_treatment_behaviour(npc) != null
+
+func get_treatment_behaviour(npc: NPC):
+	if not can_receive_treatment_now(npc):
+		return null
+	if find_barber_surgeon_provider(npc) != null:
+		return NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR
+	if find_treatment_infirmary(npc) != null:
+		return NEED_TREATMENT_BEHAVIOUR
+	return null
+
+func find_barber_surgeon_provider(npc: NPC):
+	if npc == null or not is_instance_valid(npc) or npc.Navigation == null or Global.NPCSpawner == null:
+		return null
+
+	var best_provider = null
+	var best_distance := INF
+
+	for special: SpecialNPC in Global.NPCSpawner.special_npcs:
+		if not is_instance_valid(special) or special.Behaviour == null:
+			continue
+
+		var behaviour := special.Behaviour.behaviour_instance
+		if behaviour == null or behaviour.get_script() != BARBER_SURGEON_BEHAVIOUR:
+			continue
+
+		var provider = behaviour
+		var assigned_table = provider.get_assigned_table()
+		if assigned_table == null or not provider.accepts_patient(npc):
+			continue
+		if not npc.Navigation.is_room_reachable(assigned_table):
+			continue
+
+		var distance := npc.global_position.distance_squared_to(provider.get_waiting_room_position())
+		if distance < best_distance:
+			best_distance = distance
+			best_provider = provider
+
+	return best_provider
 
 func find_treatment_infirmary(npc: NPC, require_staffed := false) -> RoomInfirmary:
 	if npc == null or not is_instance_valid(npc) or npc.Navigation == null:
@@ -139,16 +181,17 @@ func _process(_delta: float) -> void:
 
 func _sync_treatment_behaviours(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:
-		if not should_seek_treatment_behaviour(injured):
+		var treatment_behaviour = get_treatment_behaviour(injured)
+		if treatment_behaviour == null:
 			continue
 		if injured.Behaviour == null:
 			continue
 
 		var behaviour := injured.Behaviour.behaviour_instance
-		if behaviour is NeedTreatmentBehaviour:
+		if behaviour != null and behaviour.get_script() == treatment_behaviour:
 			continue
 
-		injured.force_behaviour(NeedTreatmentBehaviour)
+		injured.force_behaviour(treatment_behaviour)
 
 func _apply_guest_penalties(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:

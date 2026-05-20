@@ -14,6 +14,7 @@ const MONEY_HFRAMES := 16
 const MONEY_MAX_VISUAL_AMOUNT := 500.0
 var age: float = 0.0
 var aging_multiplier: float = 1.0
+var drink_source_type: int = Enum.Items.WATER_BUCKET
 
 func _process(delta):
 	if itemType == Enum.Items.WISKEY_BOX_RAW:
@@ -70,11 +71,13 @@ func spawn_one_from_trade_crate(spawn_pos: Vector2 = global_position) -> Item:
 	return spawned
 
 func refresh_texture():
-	if itemType == Enum.Items.MONEY:
-		apply_texture(get_money_texture(money_amount))
-		return
 	var info = get_info(itemType)
-	apply_texture(info.Tex, info.Offset.x, info.Offset.y)
+	var tex = info.Tex
+	if itemType == Enum.Items.MONEY:
+		tex = get_money_texture(money_amount)
+	elif itemType == Enum.Items.DRINK:
+		tex = _get_drink_texture(drink_source_type)
+	apply_texture(tex, info.Offset.x, info.Offset.y)
 
 func apply_texture(tex, offset_x = 0, offset_y = 0):
 	texture = tex
@@ -105,8 +108,7 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			display_name = "Fresh Whiskey"
 
 		Enum.Items.DRINK:
-			tex = load("res://assets/sprites/item_drink.png")
-			offset = Vector2i(3 ,-2)
+			offset = Vector2i(3, -2)
 			display_name = "Drink"
 
 		Enum.Items.WATER_BUCKET:
@@ -130,6 +132,7 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 		Enum.Items.MONEY:
 			tex = get_money_texture()
 			display_name = "Money"
+			offset = Vector2i(16, -2)
 
 		Enum.Items.CRATE:
 			tex = load("res://assets/sprites/item_crate.png")
@@ -152,6 +155,15 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 	info.TradePrice = trade_price
 	info.TradeOrderable = trade_orderable
 	return info
+
+static func _get_drink_texture(source_type: int) -> Texture2D:
+	match source_type:
+		Enum.Items.BEER_BARREL:
+			return load("res://assets/sprites/item_drink_beer.png")
+		Enum.Items.WISKEY_BOX, Enum.Items.WISKEY_BOX_RAW:
+			return load("res://assets/sprites/item_drink_wiskey.png")
+		_:
+			return load("res://assets/sprites/item_drink_water.png")
 
 static func get_trade_price(itemType: Enum.Items) -> int:
 	return get_info(itemType).TradePrice

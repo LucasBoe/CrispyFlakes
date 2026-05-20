@@ -1,10 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://cstov3rm0s001"]
+[gd_scene load_steps=16 format=3 uid="uid://cstov3rm0s001"]
 
 [ext_resource type="Script" uid="uid://hjwpk84nyagd" path="res://scripts/room_stove.gd" id="1_roomscript"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
 [ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="4_stovetex"]
 [ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="5_progress"]
+[ext_resource type="Material" uid="uid://dfa4jw2438l1m" path="res://assets/materials/mat_light_overlay.tres" id="6_h36c0"]
+[ext_resource type="Texture2D" uid="uid://dyx8y7ygsjayi" path="res://assets/sprites/ui/ui_rect_8x8.png" id="6_xk8a6"]
+[ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="7_xk8a6"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_heat"]
 blend_mode = 1
@@ -19,19 +22,30 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_aura"]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_442e5"]
 blend_mode = 1
 
-[sub_resource type="Gradient" id="Gradient_aura"]
-colors = PackedColorArray(1, 0.45, 0.1, 0.5, 1, 0.45, 0.1, 0)
+[sub_resource type="Curve" id="Curve_85lvm"]
+_data = [Vector2(0, 0.3199144), 0.0, 15.432118, 0, 0, Vector2(0.24311927, 0.987359), 0.76110876, 0.76110876, 0, 0, Vector2(0.7201835, 0.987359), -0.72150195, -0.72150195, 0, 0, Vector2(1, 0.0038894415), -5.341893, 0.0, 0, 0]
+point_count = 4
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_aura"]
-gradient = SubResource("Gradient_aura")
-width = 32
-height = 32
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 0.5)
+[sub_resource type="CurveTexture" id="CurveTexture_76xl1"]
+curve = SubResource("Curve_85lvm")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ilyxp"]
+lifetime_randomness = 0.5
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(-0.5, -0.5, 0)
+emission_shape = 3
+emission_box_extents = Vector3(4, 0, 0)
+gravity = Vector3(0, -10, 0)
+scale_min = 0.25
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_76xl1")
+color = Color(1, 0.56, 0.120000005, 0.2784314)
+anim_speed_min = -1.25
+anim_speed_max = -0.79999995
+anim_offset_max = 1.0
 
 [node name="Room_Stove" type="Node2D"]
 texture_filter = 1
@@ -61,29 +75,22 @@ offset_right = 22.0
 offset_bottom = -41.0
 
 [node name="WarmthLight" type="PointLight2D" parent="."]
-position = Vector2(8, -22)
+position = Vector2(24, -22)
 enabled = false
 color = Color(1, 0.66, 0.32, 1)
 energy = 0.0
 texture = SubResource("GradientTexture2D_warmth")
 texture_scale = 3.0
 
-[node name="SmokeParticles" type="CPUParticles2D" parent="."]
-position = Vector2(8, -30)
-emitting = false
-lifetime = 1.2
-direction = Vector2(0, -1)
-spread = 15.0
-gravity = Vector2(0, -10)
-initial_velocity_min = 8.0
-initial_velocity_max = 16.0
-scale_amount_min = 0.8
-scale_amount_max = 1.8
-color = Color(0.7, 0.7, 0.7, 0.5)
+[node name="SmokeParticles" type="GPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_442e5")
+position = Vector2(25, -11)
+amount = 12
+texture = ExtResource("6_xk8a6")
+lifetime = 2.0
+process_material = SubResource("ParticleProcessMaterial_ilyxp")
 
 [node name="AuraSprite" type="Sprite2D" parent="."]
-visible = false
-material = SubResource("CanvasItemMaterial_aura")
-position = Vector2(8, -22)
-scale = Vector2(1.5, 1.5)
-texture = SubResource("GradientTexture2D_aura")
+material = ExtResource("6_h36c0")
+position = Vector2(24, -14)
+texture = ExtResource("7_xk8a6")

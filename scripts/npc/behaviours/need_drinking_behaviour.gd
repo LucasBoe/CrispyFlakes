@@ -46,6 +46,7 @@ func loop():
 		var drink_type = bar.drink_type
 
 		var item = Global.ItemSpawner.create(Enum.Items.DRINK, bar.get_random_floor_position())
+		item.drink_source_type = drink_type
 		npc.Item.pick_up(item)
 
 		table = get_least_loaded_room_of_type(

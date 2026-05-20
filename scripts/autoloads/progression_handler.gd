@@ -16,6 +16,7 @@ const ALL_ITEMS := [
 	preload("res://assets/resources/progression/prog_group_beverages_II.tres"),
 	preload("res://assets/resources/progression/prog_group_beverages_III.tres"),
 	preload("res://assets/resources/progression/prog_group_beverages_IV.tres"),
+	preload("res://assets/resources/progression/prog_group_electricity_I.tres"),
 	preload("res://assets/resources/progression/prog_group_entertainment_I.tres"),
 	preload("res://assets/resources/progression/prog_group_entertainment_II.tres"),
 	preload("res://assets/resources/progression/prog_group_safety_I.tres"),
@@ -54,7 +55,7 @@ func unlock_default_rooms() -> void:
 	_default_groups_unlocked = true
 	_record_existing_buildables()
 	for item in _all_items:
-		if item.get_required_items().is_empty():
+		if item.get_required_items().is_empty() and item.unlock_by_default_if_root:
 			_unlock_item(item)
 	_refresh_progression_states()
 
@@ -76,7 +77,7 @@ func is_item_revealed(item: ProgressionItem) -> bool:
 		return false
 	var requirements := item.get_required_items()
 	if requirements.is_empty():
-		return true
+		return item.unlock_by_default_if_root or is_item_unlocked(item)
 	for requirement in requirements:
 		if requirement == null or not is_item_unlocked(requirement):
 			return false

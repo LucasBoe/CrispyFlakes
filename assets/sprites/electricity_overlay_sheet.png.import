@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj40xc8kxw8hc"
-path="res://.godot/imported/item_drink.png-4b004bfca55f672e8bc2b467413e01b2.ctex"
+uid="uid://mnstaeaidwpa"
+path="res://.godot/imported/electricity_overlay_sheet.png-9822cf8b2f76eb76b0c9d09a94403fca.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/item_drink.png"
-dest_files=["res://.godot/imported/item_drink.png-4b004bfca55f672e8bc2b467413e01b2.ctex"]
+source_file="res://assets/sprites/electricity_overlay_sheet.png"
+dest_files=["res://.godot/imported/electricity_overlay_sheet.png-9822cf8b2f76eb76b0c9d09a94403fca.ctex"]
 
 [params]
 

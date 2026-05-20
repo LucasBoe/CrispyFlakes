@@ -69,8 +69,11 @@ const WATER_TOWER_RAISE_COST := 25
 const ENCOUNTER_SHERIFF_BRIBE := -40
 # Cost to bribe the sheriff into dropping his search.
 
-const ENCOUNTER_BARBER_SURGEON_HIRE := -50
-# Upfront payment to bring the barber surgeon into the saloon.
+const ENCOUNTER_BARBER_SURGEON_HIRE_PER_PATIENT := -50
+# Upfront payment per injured patient to bring the barber surgeon into the saloon.
+
+const ENCOUNTER_SNAKE_OIL_CUSTOMER_PAYOUT := 4
+# Revenue earned for each guest who buys from the snake oil salesman.
 
 const ENCOUNTER_ENTERTAINER_HIRE := -70
 # Upfront payment to bring the entertainer into the saloon.
