@@ -51,7 +51,7 @@ func init_room(x : int, y : int):
 			for module in group.get_children():
 				if not module.has_method("set_bought"):
 					continue
-				module.bought_changed.connect(_on_module_bought)
+				module.bought_changed_signal.connect(_on_module_bought)
 				if module.bought:
 					_on_module_bought(module)
 

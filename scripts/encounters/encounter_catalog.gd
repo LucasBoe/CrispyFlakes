@@ -1,10 +1,6 @@
 extends RefCounted
 class_name EncounterCatalog
 
-const BARBER_SURGEON_BEHAVIOUR := preload("res://scripts/npc/behaviours/barber_surgeon_behaviour.gd")
-const SCIENTIST_BEER_QUEST_BEHAVIOUR := preload("res://scripts/npc/behaviours/scientist_beer_quest_behaviour.gd")
-const SNAKE_OIL_SALESMAN_BEHAVIOUR := preload("res://scripts/npc/behaviours/snake_oil_salesman_behaviour.gd")
-
 class EncounterContext:
 	var npc: SpecialNPC
 	var encounter: Dictionary
@@ -75,7 +71,7 @@ static func load_entries() -> Array[Dictionary]:
 					0,
 					"Now that's business. I'll have these miracle bottles moving by sundown.",
 					[],
-					SNAKE_OIL_SALESMAN_BEHAVIOUR
+					SnakeOilSalesmanBehaviour
 				),
 				_choice("Send him away", 0, "Suit yourself. I'll find a crowd with looser pockets."),
 			],
@@ -91,11 +87,11 @@ static func load_entries() -> Array[Dictionary]:
 					0,
 					"Excellent. I'll begin at once. Keep the beer coming and try not to stand too near anything that crackles.",
 					[],
-					SCIENTIST_BEER_QUEST_BEHAVIOUR
+					ScientistBeerQuestBehaviour
 				),
 				_choice("Send him away", 0, "Then history shall remember that you stood in genius' path."),
 			],
-			func() -> bool: return SCIENTIST_BEER_QUEST_BEHAVIOUR.can_offer_encounter(),
+			func() -> bool: return ScientistBeerQuestBehaviour.can_offer_encounter(),
 			"scientist"
 		),
 		# Re-enable a second scientist variant once the lab path has real gameplay attached to it.
@@ -116,7 +112,7 @@ static func load_entries() -> Array[Dictionary]:
 					barber_surgeon_price,
 					"Wise choice. Don't stare too hard at the instruments and we'll all feel better.",
 					[],
-					BARBER_SURGEON_BEHAVIOUR
+					BarberSurgeonBehaviour
 				),
 				_choice("Refuse", 0, "Then enjoy your fevers and missing teeth."),
 				_choice("Later", 0, "Later, then. I'll be back before the next cough turns purple."),

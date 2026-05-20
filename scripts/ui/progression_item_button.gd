@@ -3,8 +3,8 @@ extends Control
 
 static var _selected: ProgressionItemButton = null
 
-signal item_selected(item: ProgressionItem)
-signal secondary_clicked
+signal item_selected_signal(item: ProgressionItem)
+signal secondary_clicked_signal
 
 @onready var _name_label: Label = $NameLabel
 @onready var _preview_row: HBoxContainer = $PreviewRow
@@ -70,8 +70,8 @@ func _ready() -> void:
 	_refresh_shader_time()
 	mouse_entered.connect(func(): _hovered = true;  _apply_state())
 	mouse_exited.connect( func(): _hovered = false; _apply_state())
-	ProgressionHandler.item_unlocked.connect(_on_item_unlocked)
-	ProgressionHandler.item_completed.connect(_on_item_completed)
+	ProgressionHandler.item_unlocked_signal.connect(_on_item_unlocked)
+	ProgressionHandler.item_completed_signal.connect(_on_item_completed)
 	call_deferred("_refresh_visual_pivots")
 
 func _process(_delta: float) -> void:
@@ -111,7 +111,7 @@ func _gui_input(event: InputEvent) -> void:
 			_toggle_selected()
 		elif mouse_button_event.button_index == MOUSE_BUTTON_RIGHT and mouse_button_event.pressed:
 			SoundPlayer.play_ui_click_down()
-			secondary_clicked.emit()
+			secondary_clicked_signal.emit()
 
 func _toggle_selected() -> void:
 	if is_instance_valid(_selected) and _selected != self:
@@ -120,7 +120,7 @@ func _toggle_selected() -> void:
 	_is_selected = not _is_selected if _selected == self else true
 	ProgressionItemButton._selected = self if _is_selected else null
 	_apply_state()
-	item_selected.emit(_item if _is_selected else null)
+	item_selected_signal.emit(_item if _is_selected else null)
 
 func force_select() -> void:
 	if is_instance_valid(_selected) and _selected != self:

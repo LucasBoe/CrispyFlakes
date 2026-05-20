@@ -6,8 +6,8 @@ const BIG_BREWER_FLAG := ProgressionItem.ProgressionFlag.BIG_BREWER
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.BREWERY
-	if not ProgressionHandler.flag_unlocked.is_connected(_on_progression_flag_unlocked):
-		ProgressionHandler.flag_unlocked.connect(_on_progression_flag_unlocked)
+	if not ProgressionHandler.flag_unlocked_signal.is_connected(_on_progression_flag_unlocked):
+		ProgressionHandler.flag_unlocked_signal.connect(_on_progression_flag_unlocked)
 	_apply_progression_upgrade()
 
 func get_job_capacity(job = null) -> int:

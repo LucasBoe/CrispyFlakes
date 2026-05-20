@@ -20,7 +20,7 @@ func _ready():
 	GlobalEventHandler.on_room_created_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_buildables_changed)
 	GlobalEventHandler.on_infrastructure_changed_signal.connect(_on_buildables_changed)
-	ProgressionHandler.item_unlocked.connect(_on_progression_item_unlocked)
+	ProgressionHandler.item_unlocked_signal.connect(_on_progression_item_unlocked)
 
 	for t in Enum.RoomType.values():
 		groups[t] = room_group.new(t)

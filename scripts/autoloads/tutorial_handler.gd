@@ -1,7 +1,7 @@
 extends Node
 
-signal quests_changed
-signal quest_claimed(section_title: String)
+signal quests_changed_signal
+signal quest_claimed_signal(section_title: String)
 
 enum TutorialPhase {
 	HIDDEN,
@@ -221,7 +221,7 @@ func claim_quest_reward(quest: TutorialQuest, reward_source_position = null) -> 
 			effect.call()
 
 	mark_quest_done(quest)
-	quest_claimed.emit(quest.section_title)
+	quest_claimed_signal.emit(quest.section_title)
 
 
 func set_quest_reward(quest: TutorialQuest, reward_money: int, reward_override_text: String = "") -> void:
@@ -258,4 +258,4 @@ func _on_quest_state_changed(quest: TutorialQuest) -> void:
 
 
 func _notify_quests_changed() -> void:
-	quests_changed.emit()
+	quests_changed_signal.emit()

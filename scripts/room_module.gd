@@ -17,7 +17,7 @@ extends Node2D
 
 @export var bought: bool = false
 
-signal bought_changed(module)
+signal bought_changed_signal(module)
 
 func _ready() -> void:
 	visible = bought
@@ -25,7 +25,7 @@ func _ready() -> void:
 func set_bought(value: bool) -> void:
 	bought = value
 	visible = value
-	bought_changed.emit(self)
+	bought_changed_signal.emit(self)
 
 func is_dependency_met(room: RoomBase = null) -> bool:
 	var required_layer := _get_required_infrastructure_layer()

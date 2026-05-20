@@ -1,8 +1,6 @@
 extends Behaviour
 class_name SnakeOilSalesmanBehaviour
 
-const NEED_SNAKE_OIL_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_snake_oil_behaviour.gd")
-
 const ACTIVE_DURATION := 60.0
 const SALE_DURATION := 2.0
 const TIMEOUT_MSEC := 15000
@@ -181,7 +179,7 @@ func _is_request_valid(req: SaleRequest) -> bool:
 		return false
 
 	var behaviour := req.customer.Behaviour.behaviour_instance if req.customer.Behaviour != null else null
-	if behaviour == null or behaviour.get_script() != NEED_SNAKE_OIL_BEHAVIOUR:
+	if behaviour == null or behaviour.get_script() != NeedSnakeOilBehaviour:
 		return false
 
 	if req.status == Enum.RequestStatus.IN_PROGRESS:

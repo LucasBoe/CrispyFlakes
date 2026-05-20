@@ -1,13 +1,9 @@
 extends Node
 
-const NEED_TREATMENT_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_treatment_behaviour.gd")
-const NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_barber_surgeon_treatment_behaviour.gd")
-const BARBER_SURGEON_BEHAVIOUR := preload("res://scripts/npc/behaviours/barber_surgeon_behaviour.gd")
-
-signal npc_injured(npc: NPC)
-signal npc_recovered(npc: NPC)
-signal guest_injured(guest: NPCGuest)
-signal guest_recovered(guest: NPCGuest)
+signal npc_injured_signal(npc: NPC)
+signal npc_recovered_signal(npc: NPC)
+signal guest_injured_signal(guest: NPCGuest)
+signal guest_recovered_signal(guest: NPCGuest)
 
 const UNTREATED_INJURY_SATISFACTION_LOSS := 0.05
 const UNTREATED_INJURY_TICK_SECONDS := 20.0
@@ -29,8 +25,8 @@ func on_npc_injured(npc: NPC) -> void:
 	var guest := npc as NPCGuest
 	if guest != null:
 		_next_guest_penalty_time[guest] = Global.time_now + UNTREATED_INJURY_TICK_SECONDS
-		guest_injured.emit(guest)
-	npc_injured.emit(npc)
+		guest_injured_signal.emit(guest)
+	npc_injured_signal.emit(npc)
 
 func on_guest_injured(guest: NPCGuest) -> void:
 	on_npc_injured(guest)
@@ -42,8 +38,8 @@ func on_npc_recovered(npc: NPC) -> void:
 	_next_guest_penalty_time.erase(npc)
 	var guest := npc as NPCGuest
 	if guest != null:
-		guest_recovered.emit(guest)
-	npc_recovered.emit(npc)
+		guest_recovered_signal.emit(guest)
+	npc_recovered_signal.emit(npc)
 
 func on_guest_recovered(guest: NPCGuest) -> void:
 	on_npc_recovered(guest)
@@ -86,9 +82,9 @@ func get_treatment_behaviour(npc: NPC):
 	if not can_receive_treatment_now(npc):
 		return null
 	if find_barber_surgeon_provider(npc) != null:
-		return NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR
+		return NeedBarberSurgeonTreatmentBehaviour
 	if find_treatment_infirmary(npc) != null:
-		return NEED_TREATMENT_BEHAVIOUR
+		return NeedTreatmentBehaviour
 	return null
 
 func find_barber_surgeon_provider(npc: NPC):
@@ -103,7 +99,7 @@ func find_barber_surgeon_provider(npc: NPC):
 			continue
 
 		var behaviour := special.Behaviour.behaviour_instance
-		if behaviour == null or behaviour.get_script() != BARBER_SURGEON_BEHAVIOUR:
+		if behaviour == null or behaviour.get_script() != BarberSurgeonBehaviour:
 			continue
 
 		var provider = behaviour

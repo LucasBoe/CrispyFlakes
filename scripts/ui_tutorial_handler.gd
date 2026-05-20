@@ -65,8 +65,8 @@ func _ready() -> void:
 	resized.connect(_update_layout)
 
 	var refresh_callable := Callable(self, "refresh_ui")
-	if not TutorialHandler.quests_changed.is_connected(refresh_callable):
-		TutorialHandler.quests_changed.connect(refresh_callable)
+	if not TutorialHandler.quests_changed_signal.is_connected(refresh_callable):
+		TutorialHandler.quests_changed_signal.connect(refresh_callable)
 
 	HoverHandler.add_click_interceptor(_try_intercept_world_click)
 

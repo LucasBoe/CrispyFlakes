@@ -1,7 +1,7 @@
 extends Control
 class_name UIEncounter
 
-signal choice_selected(choice: Dictionary)
+signal choice_selected_signal(choice: Dictionary)
 
 const _PANEL_SCREEN_MARGIN := 8.0
 const _NPC_LINE_OFFSET := Vector2(0, -24)
@@ -55,7 +55,7 @@ func start_encounter(target: Node2D, encounter: Dictionary) -> Dictionary:
 	show()
 	await _display_text_and_choices(str(encounter.get("line", "")), encounter.get("choices", []))
 
-	await choice_selected
+	await choice_selected_signal
 	return _selected_choice
 
 func show_outcome(target: Node2D, text: String) -> void:
@@ -86,7 +86,7 @@ func show_outcome(target: Node2D, text: String) -> void:
 		"money_delta": 0,
 	}])
 
-	await choice_selected
+	await choice_selected_signal
 	_close()
 
 
@@ -148,7 +148,7 @@ func _on_choice_pressed(choice: Dictionary) -> void:
 		return
 	_apply_choice_money_delta(choice)
 	_selected_choice = choice
-	choice_selected.emit(choice)
+	choice_selected_signal.emit(choice)
 
 
 func _set_buttons_revealed(revealed: bool) -> void:

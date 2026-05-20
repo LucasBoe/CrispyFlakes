@@ -1,10 +1,10 @@
 extends Node2D
 
 var resources : Dictionary = {}
-signal on_resource_changed
-signal on_animate_resource_add
-signal on_animate_resource_spend
-signal on_money_changed
+signal on_resource_changed_signal
+signal on_animate_resource_add_signal
+signal on_animate_resource_spend_signal
+signal on_money_changed_signal
 
 var money_transaction_history = {}
 
@@ -17,7 +17,7 @@ func change_resource(resource, change):
 	var r = resource as Enum.Resources
 	#print("on change resource ", Enum.Resources.keys()[r], " (", change, ")")
 	resources[r] += change
-	on_resource_changed.emit(r, resources[r], change)
+	on_resource_changed_signal.emit(r, resources[r], change)
 	if r == Enum.Resources.MONEY and change < 0:
 		MoneyHandler.spend(-change)
 			
@@ -34,14 +34,14 @@ func change_resource(resource, change):
 		if (now - t) > day_duration:
 			money_transaction_history.erase(t)
 	
-	on_money_changed.emit()
+	on_money_changed_signal.emit()
 
 func change_money(change):
 	change_resource(Enum.Resources.MONEY, change)
 
 func _change_money_without_storage(change: int) -> void:
 	resources[Enum.Resources.MONEY] += change
-	on_resource_changed.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], change)
+	on_resource_changed_signal.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], change)
 
 	var now : float = Global.time_now
 	var day_duration : float = Global.DAY_DURATION
@@ -52,7 +52,7 @@ func _change_money_without_storage(change: int) -> void:
 		if (now - t) > day_duration:
 			money_transaction_history.erase(t)
 
-	on_money_changed.emit()
+	on_money_changed_signal.emit()
 
 func has(resource, amount):
 	if not resources.has(resource):
@@ -72,7 +72,7 @@ func add_animated(resource, amount, global_pos, room_location: Vector2i = Vector
 		#SoundPlayer.play_treasure()
 
 	var animation_duration = 1.0
-	on_animate_resource_add.emit(resource, amount, global_pos, animation_duration)
+	on_animate_resource_add_signal.emit(resource, amount, global_pos, animation_duration)
 	await get_tree().create_timer(animation_duration).timeout
 	change_resource(resource, amount)
 	if resource == Enum.Resources.MONEY and amount > 0:
@@ -100,14 +100,14 @@ func add_animated_money_to_room_or_floor(amount: int, global_pos: Vector2, room:
 
 func notify_stolen(amount: int) -> void:
 	resources[Enum.Resources.MONEY] -= amount
-	on_resource_changed.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], -amount)
-	on_money_changed.emit()
+	on_resource_changed_signal.emit(Enum.Resources.MONEY, resources[Enum.Resources.MONEY], -amount)
+	on_money_changed_signal.emit()
 
 func spend_animated(amount: int, global_pos: Vector2) -> void:
 	change_money(-amount)
 	SoundPlayer.play_treasure()
 	var animation_duration = .3
-	on_animate_resource_spend.emit(amount, global_pos, animation_duration)
+	on_animate_resource_spend_signal.emit(amount, global_pos, animation_duration)
 	await get_tree().create_timer(animation_duration).timeout
 
 func spend_animated_from_room_first(amount: int, global_pos: Vector2, room_location: Vector2i) -> void:
@@ -119,7 +119,7 @@ func spend_animated_from_room_first(amount: int, global_pos: Vector2, room_locat
 	_change_money_without_storage(-amount)
 	SoundPlayer.play_treasure()
 	var animation_duration = .3
-	on_animate_resource_spend.emit(amount, global_pos, animation_duration)
+	on_animate_resource_spend_signal.emit(amount, global_pos, animation_duration)
 	await get_tree().create_timer(animation_duration).timeout
 
 func _process(delta):

@@ -7,8 +7,8 @@ var tied_horses := {}
 
 func init_room(_x: int, _y: int):
 	super.init_room(_x, _y)
-	if not ProgressionHandler.flag_unlocked.is_connected(_on_progression_flag_unlocked):
-		ProgressionHandler.flag_unlocked.connect(_on_progression_flag_unlocked)
+	if not ProgressionHandler.flag_unlocked_signal.is_connected(_on_progression_flag_unlocked):
+		ProgressionHandler.flag_unlocked_signal.connect(_on_progression_flag_unlocked)
 	_apply_progression_upgrade()
 	_refresh_visuals()
 

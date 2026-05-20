@@ -8,7 +8,7 @@ class_name UIMoney
 
 func _ready():
 	#JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
-	ResourceHandler.on_money_changed.connect(_on_money_changed)
+	ResourceHandler.on_money_changed_signal.connect(_on_money_changed)
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_changed)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_changed)
 

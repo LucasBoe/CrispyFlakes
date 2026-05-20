@@ -42,14 +42,14 @@ func _ready() -> void:
 
 	_sidebar.z_index = 2
 	_close_button.pressed.connect(_on_close_pressed)
-	_pan_canvas.blank_left_clicked.connect(_on_blank_left_clicked)
-	_pan_canvas.blank_right_clicked.connect(_on_blank_right_clicked)
+	_pan_canvas.blank_left_clicked_signal.connect(_on_blank_left_clicked)
+	_pan_canvas.blank_right_clicked_signal.connect(_on_blank_right_clicked)
 	visibility_changed.connect(_on_visibility_changed)
 	call_deferred("_refresh_summary_pill_pivot")
 
-	_sidebar.dependency_requested.connect(_focus_dependency_item)
-	ProgressionHandler.item_unlocked.connect(_on_item_unlocked)
-	ProgressionHandler.item_completed.connect(_on_item_completed)
+	_sidebar.dependency_requested_signal.connect(_focus_dependency_item)
+	ProgressionHandler.item_unlocked_signal.connect(_on_item_unlocked)
+	ProgressionHandler.item_completed_signal.connect(_on_item_completed)
 	_refresh_summary_pill()
 	_refresh_shader_time()
 
@@ -261,8 +261,8 @@ func _spawn_buttons() -> void:
 		btn.position = _positions[item]
 		_content.add_child(btn)
 		btn.setup(item, _connectors.get(item))
-		btn.item_selected.connect(_on_item_selected)
-		btn.secondary_clicked.connect(_clear_selection)
+		btn.item_selected_signal.connect(_on_item_selected)
+		btn.secondary_clicked_signal.connect(_clear_selection)
 		_buttons[item] = btn
 
 func _refresh_item_buttons() -> void:

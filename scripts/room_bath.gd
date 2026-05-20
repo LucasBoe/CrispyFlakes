@@ -4,7 +4,7 @@ class_name RoomBath
 
 var customers = []
 var has_customer
-signal customer_arrive
+signal customer_arrive_signal
 
 var wash_requests = []
 
@@ -34,7 +34,7 @@ func clean_customer():
 func register_as_customer(customer):
 	customers.append(customer)
 	has_customer = true
-	customer_arrive.emit()
+	customer_arrive_signal.emit()
 
 func unregister_as_customer(customer):
 	customers.erase(customer)

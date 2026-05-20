@@ -27,8 +27,8 @@ var coins_played_in_session: int = 0
 
 func _ready():
 	coin_dummy.visible = false
-	ResourceHandler.on_animate_resource_add.connect(animate_resource_add)
-	ResourceHandler.on_animate_resource_spend.connect(animate_resource_spend)
+	ResourceHandler.on_animate_resource_add_signal.connect(animate_resource_add)
+	ResourceHandler.on_animate_resource_spend_signal.connect(animate_resource_spend)
 	coin_anim_routine()
 
 func animate_resource_add(resource, amount, global_pos, duration):

@@ -30,7 +30,7 @@ func loop():
 
 			if not bath.has_customer:
 				_narrative = ["Waiting for a customer...", "Ready for the next guest...", "Standing by..."].pick_random()
-				await bath.customer_arrive
+				await bath.customer_arrive_signal
 
 			if npc.Item.is_item(Enum.Items.WATER_BUCKET):
 				var i = npc.Item.drop_current()

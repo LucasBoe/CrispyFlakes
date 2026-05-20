@@ -1,6 +1,6 @@
 extends Control
 
-signal dependency_requested(item: ProgressionItem)
+signal dependency_requested_signal(item: ProgressionItem)
 
 @onready var _item_name: Label = $Margin/VBox/ItemName
 @onready var _item_cost: Label = $Margin/VBox/ItemCost
@@ -18,8 +18,8 @@ var _entry_sections: Array[Control] = []
 
 func _ready() -> void:
 	_status_button.pressed.connect(_on_status_pressed)
-	ProgressionHandler.item_unlocked.connect(func(_item): _refresh_status_button())
-	ProgressionHandler.item_completed.connect(func(_item): _refresh_status_button())
+	ProgressionHandler.item_unlocked_signal.connect(func(_item): _refresh_status_button())
+	ProgressionHandler.item_completed_signal.connect(func(_item): _refresh_status_button())
 	_group_description.hide()
 	_entry_dummy.hide()
 	hide()
@@ -127,7 +127,7 @@ func _on_status_pressed() -> void:
 	var missing_requirement := ProgressionHandler.get_primary_missing_requirement(_current_item)
 	if missing_requirement != null:
 		SoundPlayer.play_ui_click_down()
-		dependency_requested.emit(missing_requirement)
+		dependency_requested_signal.emit(missing_requirement)
 
 func _build_group_description(item: ProgressionItem) -> String:
 	var lines: Array[String] = []

@@ -155,8 +155,8 @@ func _set_startup_money(amount: int) -> void:
 	var delta := amount - current_money
 	ResourceHandler.resources[Enum.Resources.MONEY] = amount
 	ResourceHandler.money_transaction_history.clear()
-	ResourceHandler.on_resource_changed.emit(Enum.Resources.MONEY, amount, delta)
-	ResourceHandler.on_money_changed.emit()
+	ResourceHandler.on_resource_changed_signal.emit(Enum.Resources.MONEY, amount, delta)
+	ResourceHandler.on_money_changed_signal.emit()
 
 	MoneyHandler.free_pool = amount
 	MoneyHandler.location_money.clear()

@@ -4,7 +4,7 @@ class_name StatusModule
 var npc: NPC
 var _statuses: Array[Enum.NpcStatus] = []
 
-signal status_changed
+signal status_changed_signal
 
 func _ready() -> void:
 	npc = get_parent() as NPC
@@ -18,13 +18,13 @@ func set_status(status: Enum.NpcStatus) -> void:
 	if _statuses.has(status):
 		return
 	_statuses.append(status)
-	status_changed.emit()
+	status_changed_signal.emit()
 
 func clear_status(status: Enum.NpcStatus) -> void:
 	if not _statuses.has(status):
 		return
 	_statuses.erase(status)
-	status_changed.emit()
+	status_changed_signal.emit()
 
 func get_entries() -> Array:
 	_refresh_dynamic_guest_statuses()

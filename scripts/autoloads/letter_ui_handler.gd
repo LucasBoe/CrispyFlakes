@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-signal presentation_finished
+signal presentation_finished_signal
 
 enum State { IDLE, ENTERING, CLOSED, OPENING, OPENED, SHEET_RISING, SHEET_FULL, DISMISSING }
 
@@ -48,7 +48,7 @@ func present() -> void:
 	_reset_nodes()
 	_state = State.ENTERING
 	_animate_in()
-	await presentation_finished
+	await presentation_finished_signal
 
 
 func skip() -> void:
@@ -57,7 +57,7 @@ func skip() -> void:
 	visible = false
 	get_tree().paused = false
 	_state = State.IDLE
-	presentation_finished.emit()
+	presentation_finished_signal.emit()
 
 
 func _reset_nodes() -> void:
@@ -259,4 +259,4 @@ func _on_dismiss_clicked() -> void:
 
 	visible = false
 	get_tree().paused = false
-	presentation_finished.emit()
+	presentation_finished_signal.emit()

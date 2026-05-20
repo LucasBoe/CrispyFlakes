@@ -1,8 +1,6 @@
 extends Behaviour
 class_name BarberSurgeonBehaviour
 
-const NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR := preload("res://scripts/npc/behaviours/need_barber_surgeon_treatment_behaviour.gd")
-
 const TREAT_DURATION := 8.0
 const TREATMENT_QUALITY := 0.75
 const TIMEOUT_MSEC := 30000
@@ -188,7 +186,7 @@ func _is_request_valid(req: TreatmentRequest) -> bool:
 		return false
 
 	var behaviour := req.patient.Behaviour.behaviour_instance if req.patient.Behaviour != null else null
-	if behaviour == null or behaviour.get_script() != NEED_BARBER_SURGEON_TREATMENT_BEHAVIOUR:
+	if behaviour == null or behaviour.get_script() != NeedBarberSurgeonTreatmentBehaviour:
 		return false
 
 	if req.status == Enum.RequestStatus.IN_PROGRESS:

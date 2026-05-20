@@ -1,8 +1,8 @@
 extends Control
 class_name PanCanvas
 
-signal blank_left_clicked
-signal blank_right_clicked
+signal blank_left_clicked_signal
+signal blank_right_clicked_signal
 
 const DRAG_THRESHOLD := 6.0
 
@@ -28,11 +28,11 @@ func _gui_input(event: InputEvent) -> void:
 				_drag_start_pos = content.position
 			else:
 				if _dragging and not _drag_moved:
-					blank_left_clicked.emit()
+					blank_left_clicked_signal.emit()
 				_dragging = false
 				_drag_moved = false
 		elif mouse_button_event.button_index == MOUSE_BUTTON_RIGHT and mouse_button_event.pressed:
-			blank_right_clicked.emit()
+			blank_right_clicked_signal.emit()
 	elif event is InputEventMouseMotion and _dragging:
 		var mouse_motion_event := event as InputEventMouseMotion
 		var delta: Vector2 = mouse_motion_event.position - _drag_start_mouse

@@ -1,9 +1,9 @@
 extends Node
 
-signal flag_unlocked(flag: ProgressionItem.ProgressionFlag)
-signal room_unlocked(room: RoomData)
-signal item_unlocked(item: ProgressionItem)
-signal item_completed(item: ProgressionItem)
+signal flag_unlocked_signal(flag: ProgressionItem.ProgressionFlag)
+signal room_unlocked_signal(room: RoomData)
+signal item_unlocked_signal(item: ProgressionItem)
+signal item_completed_signal(item: ProgressionItem)
 
 const ALL_ITEMS := [
 	preload("res://assets/resources/progression/prog_group_starter.tres"),
@@ -211,15 +211,15 @@ func _unlock_item(item: ProgressionItem) -> void:
 	for room in item.get_unlocked_rooms():
 		if not _unlocked_rooms.has(room):
 			_unlocked_rooms.append(room)
-			room_unlocked.emit(room)
+			room_unlocked_signal.emit(room)
 	for data in item.get_unlocked_infrastructure():
 		if not _unlocked_infrastructure.has(data):
 			_unlocked_infrastructure.append(data)
 	for flag in item.unlocks_flags:
 		if flag != ProgressionItem.ProgressionFlag.NONE and not _unlocked_flags.get(flag, false):
 			_unlocked_flags[flag] = true
-			flag_unlocked.emit(flag)
-	item_unlocked.emit(item)
+			flag_unlocked_signal.emit(flag)
+	item_unlocked_signal.emit(item)
 
 func _is_item_complete(item: ProgressionItem) -> bool:
 	var total := get_item_total_content_count(item)
@@ -231,4 +231,4 @@ func _complete_item(item: ProgressionItem) -> void:
 	if item == null or is_item_completed(item):
 		return
 	_completed_items.append(item)
-	item_completed.emit(item)
+	item_completed_signal.emit(item)
