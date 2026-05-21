@@ -1,7 +1,7 @@
 extends RoomBase
 class_name RoomBed
 
-const SLEEP_DURATION := 60.0
+const SLEEP_DURATION := 45.0
 
 const BED_EMPTY := preload("res://assets/sprites/bed_empty_back.png")
 const BED_EMPTY_DIRTY := preload("res://assets/sprites/bed_empty_back_dirty.png")
@@ -70,6 +70,18 @@ func get_total_bed_count() -> int:
 func get_occupied_bed_count() -> int:
 	return current_guests.size()
 
+func get_available_bed_count() -> int:
+	var available := 0
+	for i in _active_beds.size():
+		var occupied := false
+		for g in _bed_occupants:
+			if _bed_occupants[g] == i:
+				occupied = true
+				break
+		if not occupied and not _dirty_beds.has(i):
+			available += 1
+	return available
+
 func occupy(guest: NPCGuest):
 	for i in _active_beds.size():
 		var occupied := false
@@ -81,6 +93,7 @@ func occupy(guest: NPCGuest):
 			_bed_occupants[guest] = i
 			current_guests.append(guest)
 			_refresh_visual()
+			show_guest_count_notification()
 			return
 
 func get_random_floor_position():
@@ -114,6 +127,7 @@ func release(guest: NPCGuest):
 	current_guests.erase(guest)
 	_dirty_beds.append(idx)
 	_refresh_visual()
+	show_guest_count_notification()
 
 func clean_bed():
 	if _dirty_beds.is_empty():
@@ -122,7 +136,13 @@ func clean_bed():
 	_refresh_visual()
 
 func get_sleep_price() -> int:
-	return Pricing.BED_SLEEP_PRICE
+	return roundi(float(Pricing.BED_SLEEP_PRICE) / 3.0)
+
+func show_guest_count_notification() -> void:
+	var available := get_available_bed_count()
+	var txt := str(get_occupied_bed_count(), "/", get_total_bed_count())
+	var warn_color := Color.DARK_GOLDENROD if JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0 else Color.ORANGE
+	UiNotifications.create_notification_static(txt, get_center_position(), null, Color.BLACK if available > 0 else warn_color)
 
 func _refresh_visual():
 	for i in _active_beds.size():

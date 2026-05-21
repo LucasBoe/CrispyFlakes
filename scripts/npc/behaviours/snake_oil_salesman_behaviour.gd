@@ -8,6 +8,7 @@ const QUEUE_SPACING := 10.0
 const QUEUE_CLAMP_STEP := 4.0
 const NO_SEAT_RETRY_SECONDS := 1.5
 const NO_SEAT_NOTIFICATION_DURATION := 1.5
+const SERVICE_POSITION_DISTANCE_SQUARED := 16.0
 
 class SaleRequest:
 	var status: Enum.RequestStatus = Enum.RequestStatus.OPEN
@@ -36,6 +37,10 @@ func loop() -> void:
 			continue
 
 		request.status = Enum.RequestStatus.IN_PROGRESS
+		request.time = Time.get_ticks_msec()
+		if not await _wait_for_customer_at_service_position(request):
+			continue
+
 		_narrative = ["Making the pitch...", "Selling a miracle tonic...", "Talking up the cure-all..."].pick_random()
 		var sale_duration := minf(SALE_DURATION, remaining_duration)
 		await progress(sale_duration)
@@ -186,6 +191,24 @@ func _is_request_valid(req: SaleRequest) -> bool:
 		return _is_ready_for_customers()
 
 	return accepts_customer(req.customer) and waiting_queue.has(req.customer)
+
+func _wait_for_customer_at_service_position(req: SaleRequest) -> bool:
+	while not stopped and req != null and req.status == Enum.RequestStatus.IN_PROGRESS:
+		if not _is_ready_for_customers() or not is_instance_valid(req.customer):
+			break
+		if _is_customer_at_service_position(req.customer):
+			return true
+		if Time.get_ticks_msec() - req.time > TIMEOUT_MSEC:
+			break
+		await end_of_frame()
+
+	if req != null and sale_requests.has(req):
+		req.status = Enum.RequestStatus.TIMEOUT
+		sale_requests.erase(req)
+	return false
+
+func _is_customer_at_service_position(customer: NPCGuest) -> bool:
+	return customer.global_position.distance_squared_to(get_service_position()) <= SERVICE_POSITION_DISTANCE_SQUARED
 
 func _get_valid_queue_position(queue_target: Vector2) -> Vector2:
 	var center: Vector2 = table.get_center_floor_position()

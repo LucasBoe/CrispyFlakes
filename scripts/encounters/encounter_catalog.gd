@@ -17,7 +17,7 @@ static func load_entries() -> Array[Dictionary]:
 	return [
 		_encounter(
 			"Sheriff",
-			"Howdy. Heard your place had a scuffle. I can haul the troublemakers off and let a fine teach them manners. Or have they cooled their heels already?",
+			"Howdy. Heard your place had a scuffle, or maybe you've got folks with warrants still milling about. I can haul them off and let the law sort the rest.",
 			[
 				_choice(
 					"Let him take them away (###)",
@@ -36,7 +36,7 @@ static func load_entries() -> Array[Dictionary]:
 					]
 				),
 			],
-			Callable(),
+			func() -> bool: return _has_sheriff_targets(),
 			"sheriff"
 		),
 		# Re-enable once we have a real illegal-activity trigger for contraband searches.
@@ -91,7 +91,7 @@ static func load_entries() -> Array[Dictionary]:
 				),
 				_choice("Send him away", 0, "Then history shall remember that you stood in genius' path."),
 			],
-			func() -> bool: return ScientistBeerQuestBehaviour.can_offer_encounter(),
+			func() -> bool: return ScientistBeerQuestBehaviour.can_offer_encounter() and _has_whiskey_stock(),
 			"scientist"
 		),
 		# Re-enable a second scientist variant once the lab path has real gameplay attached to it.
@@ -207,6 +207,32 @@ static func _choice(
 		"outcome_text": outcome_text,
 		"followup_behaviour": followup_behaviour,
 	}
+
+static func _has_whiskey_stock() -> bool:
+	if LooseItemHandler.get_closest_to(Vector2.ZERO, Enum.Items.WISKEY_BOX) != null:
+		return true
+
+	for storage: RoomStorageBase in Building.query.all_rooms_of_type(RoomStorageBase):
+		if is_instance_valid(storage) and storage.has(Enum.Items.WISKEY_BOX):
+			return true
+
+	return false
+
+static func _has_sheriff_targets() -> bool:
+	if Global.NPCSpawner == null:
+		return false
+
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+		if not is_instance_valid(guest):
+			continue
+		if guest.Behaviour != null and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+			return true
+		if BountyHandler.get_official_bounty_for(guest) != null:
+			return true
+		if BountyHandler.get_fight_fine_for(guest) != null:
+			return true
+
+	return false
 
 static func _rename_sign_to_advertisement(lock_after_rename: bool) -> void:
 	var sign := Building.get_node_or_null("SaloonSign") as BuildingSign

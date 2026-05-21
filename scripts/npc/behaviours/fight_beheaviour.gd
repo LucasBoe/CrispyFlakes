@@ -5,7 +5,7 @@ var fight: Fight = null
 var arrived_at_room: bool = false
 
 func loop():
-	if npc is NPCWorker:
+	if npc is NPCWorker or npc is NPCSheriff:
 		_narrative = ["Responding to a fight!", "There's trouble!", "On my way!"].pick_random()
 	else:
 		_narrative = ["Starting a brawl!", "Looking for trouble!", "Feeling feisty!", "Someone's gonna get it!", "Time to scrap!"].pick_random()
@@ -25,7 +25,7 @@ func loop():
 
 	npc.Tint.add_tint(Color(1, .5, .5, 1), 10, self)
 
-	if npc is NPCWorker:
+	if npc is NPCWorker or npc is NPCSheriff:
 		_narrative = ["In the fight!", "Restoring order!", "Breaking it up!", "Nobody gets hurt on my watch!", "Settle down!"].pick_random()
 	else:
 		_narrative = ["Throwing punches!", "Eat knuckles!", "Come on then!", "Y'all asked for this!", "Yeehaw!"].pick_random()

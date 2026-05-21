@@ -65,36 +65,36 @@ func create_rob_fight(guest: NPCGuest, room: RoomBase, start_delay := 0.0) -> Fi
 	fight.start_not_before_time = Global.time_now + start_delay
 	fight.keep_alive_until_time = fight.start_not_before_time
 	fight.make_join_fight(guest)
-	SoundPlayer.play_alarm(true)
+	AlarmHandler.start_alarm(fight, AlarmHandler.TYPE_ROBBERY)
 	return fight
 
-func create_defense_fight(guest: NPCGuest, worker: NPCWorker) -> Fight:
-	if not can_npc_participate_in_fights(worker):
-		DebugLog.warn("[FightHandler]", "skip arrest fight: worker unavailable", worker, "guest", guest)
+func create_defense_fight(guest: NPCGuest, responder: NPC) -> Fight:
+	if not can_npc_participate_in_fights(responder):
+		DebugLog.warn("[FightHandler]", "skip arrest fight: responder unavailable", responder, "guest", guest)
 		return null
 	var current_behaviour = null
 	if guest != null and guest.Behaviour != null:
 		current_behaviour = guest.Behaviour.behaviour_instance
 	if current_behaviour is ArrestedBehaviour or current_behaviour is FollowSheriffBehaviour:
 		ConflictResponseHandler.unmark_for_arrest(guest)
-		DebugLog.info("[FightHandler]", "skip arrest fight: guest already secured", "guest", guest, "worker", worker, "behaviour", current_behaviour)
+		DebugLog.info("[FightHandler]", "skip arrest fight: guest already secured", "guest", guest, "responder", responder, "behaviour", current_behaviour)
 		return null
 	if not can_npc_participate_in_fights(guest):
-		DebugLog.info("[FightHandler]", "direct arrest without fight", "guest", guest, "worker", worker)
+		DebugLog.info("[FightHandler]", "direct arrest without fight", "guest", guest, "responder", responder)
 		ConflictResponseHandler.unmark_for_arrest(guest)
 		guest.force_behaviour(ArrestedBehaviour)
 		return null
 	var existing := ConflictResponseHandler._find_active_arrest_fight_for_guest(guest)
 	if existing != null:
-		DebugLog.info("[FightHandler]", "join existing arrest fight", "guest", guest, "worker", worker, existing.debug_label())
-		if not existing.has_participant(worker):
-			existing.make_join_fight(worker)
+		DebugLog.info("[FightHandler]", "join existing arrest fight", "guest", guest, "responder", responder, existing.debug_label())
+		if not existing.has_participant(responder):
+			existing.make_join_fight(responder, Fight.JoinReason.ARREST_RESPONSE)
 		return existing
-	DebugLog.info("[FightHandler]", "create arrest fight", "guest", guest, "worker", worker)
+	DebugLog.info("[FightHandler]", "create arrest fight", "guest", guest, "responder", responder)
 	var fight := _create_fight(guest.global_position)
 	fight.fight_type = Fight.FightType.ARREST
-	fight.make_join_fight(guest)
-	fight.make_join_fight(worker)
+	fight.make_join_fight(guest, Fight.JoinReason.ARREST_TARGET)
+	fight.make_join_fight(responder, Fight.JoinReason.ARREST_RESPONSE)
 	return fight
 
 func get_fight_for_room(room: RoomBase) -> Fight:
@@ -150,8 +150,7 @@ func end_fight(fight: Fight) -> void:
 	fight.is_over = true
 	_release_panicking_guests(fight)
 	fight.clear_health_bars()
-	RoomHighlighter.dispose(fight.highlight)
-	fight.highlight = null
+	AlarmHandler.end_alarm(fight)
 	active_fights.erase(fight)
 
 func _release_panicking_guests(fight: Fight) -> void:

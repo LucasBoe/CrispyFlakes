@@ -237,8 +237,17 @@ func try_arrest_in_room(room: RoomBase) -> bool:
 	if target == null:
 		return false
 
-	FightHandler.create_defense_fight(target, self)
-	return true
+	var arrest_fight := FightHandler.create_defense_fight(target, self)
+	if arrest_fight != null:
+		return true
+	if not is_instance_valid(target):
+		return true
+	var current_behaviour = target.Behaviour.behaviour_instance if target.Behaviour != null else null
+	return (
+		not ConflictResponseHandler.is_marked_for_arrest(target)
+		or current_behaviour is ArrestedBehaviour
+		or current_behaviour is FollowSheriffBehaviour
+	)
 
 func get_current_room() -> RoomBase:
 	var exact := Building.query.room_at_floor_position(global_position) as RoomBase

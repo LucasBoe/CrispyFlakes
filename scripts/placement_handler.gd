@@ -264,7 +264,6 @@ func _input(event):
 			var shift_held = Input.is_key_pressed(KEY_SHIFT)
 
 			if _is_building_room():
-				var had_horse_post_before_build = Building.count_rooms_by_data(Building.room_data_horse_post) > 0
 				SoundPlayer.play_construction_placed()
 				for col in building_data.width:
 					for row in building_data.height:
@@ -299,7 +298,7 @@ func _input(event):
 					if placed_room_b != null:
 						_spawn_place_dust(placed_room_b)
 
-				if building_data == Building.room_data_horse_post and not had_horse_post_before_build:
+				if building_data == Building.room_data_horse_post:
 					var placed_post := Building.get_room_from_index(placement_location) as RoomHorsePost
 					if placed_post != null:
 						Global.NPCSpawner.assign_loose_horse_to_post(placed_post)

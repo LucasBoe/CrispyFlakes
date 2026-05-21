@@ -28,7 +28,12 @@ func loop():
 
 		if got_water:
 			_narrative = ["Working the still...", "Distilling the whiskey...", "Checking the proof..."].pick_random()
-			await progress(5)
+			var duration: float = destillery.current_module.brew_duration if destillery.current_module else 20.0
+			await progress(duration)
+			if destillery.should_explode():
+				_narrative = ["The still blew!", "The boiler burst into flames!", "The distillery caught fire!"].pick_random()
+				FireHandler.start_fire(destillery)
+				continue
 			var item_spawn_pos = destillery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.WISKEY_BOX_RAW, item_spawn_pos)
 			npc.Item.pick_up(item)

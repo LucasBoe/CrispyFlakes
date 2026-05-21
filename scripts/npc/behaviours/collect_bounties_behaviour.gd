@@ -28,11 +28,11 @@ func loop():
 				to_take_away.Behaviour.set_behaviour(IdleBehaviour)
 			continue
 
-		if _can_collect_known_fugitive(to_take_away):
-			DebugLog.info("[Sheriff]", npc, "collect known fugitive", to_take_away, "bounty", BountyHandler.get_official_bounty_for(to_take_away))
-			_collect_bounty(to_take_away)
-			var follow_b := to_take_away.force_behaviour(FollowSheriffBehaviour) as FollowSheriffBehaviour
-			follow_b.sheriff = npc
+		if _can_collect_free_guest(to_take_away):
+			DebugLog.info("[Sheriff]", npc, "start arrest fight for free target", to_take_away, "payout", _get_total_penalty(to_take_away))
+			var arrest_fight := FightHandler.create_defense_fight(to_take_away, npc)
+			if arrest_fight != null:
+				return
 
 	_narrative = ["Heading out...", "Job done.", "Taking them away..."].pick_random()
 	DebugLog.info("[Sheriff]", npc, "leaving town")
@@ -81,10 +81,10 @@ func _is_collectible_guest(guest: NPCGuest) -> bool:
 	var current_behaviour := guest.Behaviour.behaviour_instance
 	if current_behaviour is ArrestedBehaviour:
 		return true
-	return _can_collect_known_fugitive(guest)
+	return _can_collect_free_guest(guest)
 
-func _can_collect_known_fugitive(guest: NPCGuest) -> bool:
-	return guest.is_known_fugitive and BountyHandler.get_official_bounty_for(guest) != null
+func _can_collect_free_guest(guest: NPCGuest) -> bool:
+	return ConflictResponseHandler.can_be_arrested(guest) and _has_penalty(guest)
 
 func _get_collectible_debug_snapshot() -> String:
 	if Global.NPCSpawner == null:
@@ -99,8 +99,8 @@ func _get_collectible_debug_snapshot() -> String:
 		var state := "ignored"
 		if guest.Behaviour != null and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
 			state = "arrested"
-		elif _can_collect_known_fugitive(guest):
-			state = "fugitive"
+		elif _can_collect_free_guest(guest):
+			state = "wanted"
 		var bounty = BountyHandler.get_official_bounty_for(guest)
 		var fine = BountyHandler.get_fight_fine_for(guest)
 		parts.append("%s(%s,b=%s,f=%s,%s)" % [guest.get_debug_display_name(), behaviour_name, str(bounty), str(fine), state])

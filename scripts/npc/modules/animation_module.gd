@@ -12,9 +12,15 @@ const IDLE_ANIMATION_SPEED = 3
 const IDLE_PEAK_SHARPNESS = 4
 const WALK_ANIMATION_SPEED = 15.0
 const WALK_ROTATION_STRENGTH = .15
-const FIGHT_ANIMATION_SPEED = 7.0
-const FIGHT_MOVE_DISTANCE = 8.0
-const FIGHT_ROTATION = 1.0
+const FIGHT_STANCE_ANIMATION_SPEED = 4.0
+const FIGHT_STANCE_BOB_DISTANCE = 1.0
+const FIGHT_STANCE_ROTATION = 0.05
+const FIGHT_PUNCH_WINDUP_DISTANCE = 1.5
+const FIGHT_PUNCH_PUSH_DISTANCE = 4.5
+const FIGHT_PUNCH_WINDUP_ROTATION = 0.08
+const FIGHT_PUNCH_ROTATION = 0.18
+const FIGHT_HIT_REACTION_DISTANCE = 2.5
+const FIGHT_HIT_REACTION_ROTATION = 0.12
 const BROOM_ANIMATION_SPEED = 12.0
 const BROOM_ROTATION_STRENGTH = 0.7
 const PIANO_ANIMATION_SPEED = 11.0
@@ -42,6 +48,9 @@ var is_running_in_place : bool = false
 var _event_position_offset := Vector2.ZERO
 var _event_rotation_offset := 0.0
 var _event_tween: Tween = null
+var _impact_position_offset := Vector2.ZERO
+var _impact_rotation_offset := 0.0
+var _impact_tween: Tween = null
 var _is_in_punch = false
 
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
@@ -103,7 +112,7 @@ func _process(_delta):
 	var is_walking = direction.length() > 0
 
 	if npc.is_in_fight_state():
-		target = fight_tween(time_in_seconds)
+		target = fight_stance_tween(time_in_seconds)
 	elif is_brooming:
 		target = broom_tween(time_in_seconds)
 	elif npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript or is_sleeping:
@@ -127,8 +136,8 @@ func _process(_delta):
 	var lerp_speed = .2
 
 	var base_pos = RIDE_BODY_OFFSET if is_riding else Vector2.ZERO
-	position = lerp(position, base_pos + target.position + _event_position_offset, lerp_speed)
-	rotation = lerp(rotation, target.rotation + _event_rotation_offset, lerp_speed)
+	position = lerp(position, base_pos + target.position + _event_position_offset + _impact_position_offset, lerp_speed)
+	rotation = lerp(rotation, target.rotation + _event_rotation_offset + _impact_rotation_offset, lerp_speed)
 	scale = lerp(scale, target.scale, lerp_speed)
 
 
@@ -168,10 +177,10 @@ func idle_tween(time_in_seconds):
 	var y = 1 + scale_base
 	return TweenTargetData.new(Vector2.ZERO, 0, Vector2(x, y))
 	
-func fight_tween(time_in_seconds):
-	var s = time_in_seconds * FIGHT_ANIMATION_SPEED + random_instance_offset
-	var x = clamp( sin(s) * sin(s + 1), 0, 1)
-	return TweenTargetData.new(Vector2(x * FIGHT_MOVE_DISTANCE, 0), pow(x, 2) * FIGHT_ROTATION, Vector2(x_orientation, 1))
+func fight_stance_tween(time_in_seconds):
+	var bob = sin(time_in_seconds * FIGHT_STANCE_ANIMATION_SPEED) * FIGHT_STANCE_BOB_DISTANCE
+	var rot = sin(time_in_seconds * (FIGHT_STANCE_ANIMATION_SPEED * 0.6)) * FIGHT_STANCE_ROTATION
+	return TweenTargetData.new(Vector2(0, bob), rot, Vector2(x_orientation, 1.0))
 
 func broom_tween(time_in_seconds):
 	var rot = sin(time_in_seconds * BROOM_ANIMATION_SPEED) * BROOM_ROTATION_STRENGTH
@@ -234,6 +243,47 @@ func play_gambling_card_punch() -> void:
 	_event_tween.tween_property(self, "_event_position_offset", Vector2.ZERO, randf_range(0.34, 0.46)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_event_tween.parallel().tween_property(self, "_event_rotation_offset", 0.0, randf_range(0.32, 0.44)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	_event_tween.tween_callback(func(): _is_in_punch = false)
+
+func play_fight_punch(facing_direction: float) -> void:
+	if _event_tween != null and _event_tween.is_valid():
+		_event_tween.kill()
+
+	var push_direction: float = sign(facing_direction)
+	if is_zero_approx(push_direction):
+		push_direction = x_orientation if x_orientation != 0 else 1.0
+
+	_is_in_punch = true
+	_event_position_offset = Vector2(-push_direction * FIGHT_PUNCH_WINDUP_DISTANCE, 0.5)
+	_event_rotation_offset = -push_direction * FIGHT_PUNCH_WINDUP_ROTATION
+
+	var strike_position: Vector2 = Vector2(push_direction * randf_range(FIGHT_PUNCH_PUSH_DISTANCE - 0.75, FIGHT_PUNCH_PUSH_DISTANCE + 0.75), randf_range(-1.25, -0.25))
+	var strike_rotation: float = push_direction * randf_range(FIGHT_PUNCH_ROTATION - 0.04, FIGHT_PUNCH_ROTATION + 0.04)
+
+	_event_tween = create_tween()
+	_event_tween.tween_property(self, "_event_position_offset", strike_position, randf_range(0.045, 0.07)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_event_tween.parallel().tween_property(self, "_event_rotation_offset", strike_rotation, randf_range(0.045, 0.07)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_event_tween.tween_property(self, "_event_position_offset", Vector2.ZERO, randf_range(0.18, 0.26)).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_event_tween.parallel().tween_property(self, "_event_rotation_offset", 0.0, randf_range(0.16, 0.24)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_event_tween.tween_callback(func(): _is_in_punch = false)
+
+func play_fight_hit_reaction(attacker_direction: float) -> void:
+	if _impact_tween != null and _impact_tween.is_valid():
+		_impact_tween.kill()
+
+	var push_direction: float = sign(attacker_direction)
+	if is_zero_approx(push_direction):
+		push_direction = x_orientation if x_orientation != 0 else 1.0
+
+	_impact_position_offset = Vector2(push_direction * randf_range(FIGHT_HIT_REACTION_DISTANCE - 0.4, FIGHT_HIT_REACTION_DISTANCE + 0.4), randf_range(-0.8, -0.2))
+	_impact_rotation_offset = push_direction * randf_range(FIGHT_HIT_REACTION_ROTATION - 0.03, FIGHT_HIT_REACTION_ROTATION + 0.03)
+
+	_impact_tween = create_tween()
+	_impact_tween.tween_property(self, "_impact_position_offset", Vector2.ZERO, randf_range(0.12, 0.18)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_impact_tween.parallel().tween_property(self, "_impact_rotation_offset", 0.0, randf_range(0.14, 0.2)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_impact_tween.tween_callback(func():
+		_impact_position_offset = Vector2.ZERO
+		_impact_rotation_offset = 0.0
+	)
 func _enter_drag_canvas() -> void:
 	if _drag_canvas_wrapper != null:
 		return

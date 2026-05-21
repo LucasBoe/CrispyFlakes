@@ -1,7 +1,7 @@
 extends Behaviour
 class_name KnockedOutBehaviour
 
-const DURATION = 60.0
+const DURATION = 12.0
 const ENERGY_RECOVERY_PER_SECOND := 1.0 / DURATION
 const DRUNKENNESS_RECOVERY_PER_SECOND := 0.75 / DURATION
 

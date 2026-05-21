@@ -29,7 +29,7 @@ enum PipeTile {
 const _HORIZONTAL_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT]
 const _GRID_ABOVE_OFFSET := Vector2i(0, 1)
 const _GRID_BELOW_OFFSET := Vector2i(0, -1)
-const _NETWORK_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT, _GRID_ABOVE_OFFSET, _GRID_BELOW_OFFSET]
+const _NETWORK_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT, _GRID_BELOW_OFFSET]
 const _SUPPORT_BELOW_OFFSET := _GRID_BELOW_OFFSET
 
 var _infra
@@ -201,22 +201,10 @@ func _collect_supported_cells(pending: Dictionary = {}) -> Dictionary:
 	for index in pending.keys():
 		all_cells[index] = true
 
-	var open: Array[Vector2i] = []
 	var visited := {}
-
 	for index in all_cells.keys():
 		if _is_locally_supported(index):
-			open.append(index)
-
-	while not open.is_empty():
-		var index: Vector2i = open.pop_back()
-		if visited.has(index):
-			continue
-		visited[index] = true
-		for direction in _HORIZONTAL_DIRECTIONS:
-			var next: Vector2i = index + direction
-			if all_cells.has(next) and not visited.has(next):
-				open.append(next)
+			visited[index] = true
 
 	return visited
 

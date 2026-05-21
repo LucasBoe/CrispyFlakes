@@ -34,4 +34,5 @@ script = ExtResource("5_axy2o")
 icon = ExtResource("4_41dyw")
 module_name = "Destiller"
 describtion = "Used to make Wiskey"
+brew_duration = 20.0
 bought = true

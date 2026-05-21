@@ -33,11 +33,13 @@ var participants = []
 var target_mapping: Dictionary[NPC, NPC] = {}
 var fight_positions: Dictionary = {}
 var last_attack: Dictionary[NPC, float] = {}
+var attack_intervals: Dictionary[NPC, float] = {}
 var pending_attacks: Dictionary[NPC, Dictionary] = {}
 var participant_join_reasons: Dictionary = {}
 var health_bars := {}
 var room : RoomBase
-var highlight
+var opening_attacker: NPC = null
+var opening_strike_resolved: bool = false
 
 var debug_id: int = -1
 var fight_type: FightType = FightType.BRAWL
@@ -51,6 +53,7 @@ var keep_alive_until_time: float = 0.0
 const GUTLESS_ROBBER_ESCAPE_CHANCE: float = 0.5
 const MELEE_ATTACK_RANGE: float = 16.0
 const MELEE_ATTACK_SPEED: float = 0.8
+const MELEE_ATTACK_SPEED_VARIATION: float = 0.12
 const MELEE_DAMAGE_DELAY: float = 0.25
 const MELEE_DAMAGE: float = 0.12
 const MELEE_ARRIVE_THRESHOLD: float = 2.0
@@ -121,10 +124,18 @@ func make_join_fight(npc: NPC, join_reason: int = JoinReason.UNKNOWN) -> void:
 		participants.append(npc)
 		_debug("join %s reason=%s" % [_npc_debug(npc), JoinReason.keys()[resolved_join_reason]])
 	_register_join_reason(npc, resolved_join_reason)
+	_register_opening_attacker(npc, resolved_join_reason)
 	if not (npc.Behaviour.behaviour_instance is FightBehaviour):
 		npc.Behaviour.set_behaviour(FightBehaviour)
 	var behaviour := npc.Behaviour.behaviour_instance as FightBehaviour
 	behaviour.fight = self
+
+func _register_opening_attacker(npc: NPC, join_reason: int) -> void:
+	if opening_attacker != null and is_instance_valid(opening_attacker):
+		return
+	match join_reason:
+		JoinReason.BRAWL_INITIATOR, JoinReason.ROBBERY_PERPETRATOR, JoinReason.ARREST_RESPONSE:
+			opening_attacker = npc
 
 func did_participant_start_brawl(npc: NPC) -> bool:
 	return int(participant_join_reasons.get(npc, JoinReason.UNKNOWN)) == JoinReason.BRAWL_INITIATOR
@@ -167,10 +178,9 @@ func _register_join_reason(npc: NPC, join_reason: int) -> void:
 func start_fight():
 	state = State.ACTIVE
 	has_started = true
-	SoundPlayer.play_alarm()
+	if fight_type != FightType.ROBBERY:
+		AlarmHandler.start_alarm(self, AlarmHandler.TYPE_FIGHT)
 	_debug("start active=%s all=%s" % [_participants_debug(get_active_participants()), _participants_debug()])
-	if room != null:
-		highlight = RoomHighlighter.request_rect(room, Color.RED, 2, RoomHighlighter.Priority.FIGHT)
 	if _try_resolve_gutless_arrest_target():
 		return
 
@@ -287,7 +297,7 @@ func _pick_target_for(participant: NPC, active_participants: Array) -> NPC:
 	return candidates.pick_random()
 
 func _can_target(attacker: NPC, target: NPC) -> bool:
-	if attacker is NPCWorker and target is NPCWorker:
+	if _is_law_side_participant(attacker) and _is_law_side_participant(target):
 		return false
 	return true
 
@@ -315,9 +325,17 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 	if pending_attacks.has(attacker):
 		return
 
-	var last_attack_time := float(last_attack.get(attacker, -MELEE_ATTACK_SPEED))
+	var attack_interval := _get_attack_interval(attacker)
+	if not last_attack.has(attacker):
+		if _has_opening_attacker() and _is_opening_attacker(attacker) and not opening_strike_resolved:
+			last_attack[attacker] = Global.time_now - attack_interval
+		else:
+			last_attack[attacker] = Global.time_now - randf_range(0.0, attack_interval)
+		return
+
+	var last_attack_time := float(last_attack.get(attacker, -attack_interval))
 	var time_since_last_attack := Global.time_now - last_attack_time
-	if time_since_last_attack < MELEE_ATTACK_SPEED:
+	if time_since_last_attack < attack_interval:
 		return
 
 	var target_behaviour := _get_fight_behaviour(target)
@@ -325,11 +343,21 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 		return
 
 	last_attack[attacker] = Global.time_now
+	if attacker.Animator != null:
+		var attack_direction: float = sign(target.global_position.x - attacker.global_position.x)
+		if is_zero_approx(attack_direction):
+			attack_direction = float(attacker.Animator.x_orientation)
+		attacker.Animator.play_fight_punch(attack_direction)
 	pending_attacks[attacker] = {
 		"target": target,
 		"damage": _get_attack_damage(attacker, target),
 		"apply_time": Global.time_now + MELEE_DAMAGE_DELAY,
 	}
+
+func _get_attack_interval(attacker: NPC) -> float:
+	if not attack_intervals.has(attacker):
+		attack_intervals[attacker] = maxf(0.35, MELEE_ATTACK_SPEED + randf_range(-MELEE_ATTACK_SPEED_VARIATION, MELEE_ATTACK_SPEED_VARIATION))
+	return float(attack_intervals[attacker])
 
 func _apply_pending_attacks(active_participants: Array) -> void:
 	for attacker in pending_attacks.keys().duplicate():
@@ -347,8 +375,13 @@ func _apply_pending_attacks(active_participants: Array) -> void:
 		var target := attack.get("target", null) as NPC
 		if not _can_apply_pending_attack(attacker, target, active_participants):
 			continue
+		if _has_opening_attacker() and not opening_strike_resolved and not _is_opening_attacker(attacker):
+			continue
 
 		var damage := float(attack.get("damage", 0.0))
+		if _has_opening_attacker() and not opening_strike_resolved and _is_opening_attacker(attacker):
+			opening_strike_resolved = true
+		_play_hit_impact(attacker, target)
 		var target_energy_after_hit := maxf(0.0, target.energy - damage)
 		if _should_convert_knockout_to_injury(target, target_energy_after_hit):
 			target.energy = maxf(target_energy_after_hit, INJURY_MIN_SURVIVE_ENERGY)
@@ -362,7 +395,6 @@ func _apply_pending_attacks(active_participants: Array) -> void:
 			continue
 
 		target.energy = target_energy_after_hit
-		SoundPlayer.play_punch(attacker.global_position)
 		if target.energy <= 0.0:
 			_debug("hit KO %s -> %s damage=%.2f active_before_cleanup=%s" % [
 				_npc_debug(attacker),
@@ -389,6 +421,38 @@ func _get_attack_damage(attacker: NPC, target: NPC) -> float:
 	var outgoing = attacker.Traits.get_melee_damage_multiplier()
 	var incoming = target.Traits.get_incoming_damage_multiplier()
 	return MELEE_DAMAGE * outgoing * incoming
+
+func _play_hit_impact(attacker: NPC, target: NPC) -> void:
+	SoundPlayer.play_punch(attacker.global_position)
+	if target.Animator == null:
+		return
+	var impact_direction: float = sign(target.global_position.x - attacker.global_position.x)
+	if is_zero_approx(impact_direction):
+		if attacker.Animator != null and attacker.Animator.x_orientation != 0:
+			impact_direction = float(attacker.Animator.x_orientation)
+		else:
+			impact_direction = 1.0
+	target.Animator.play_fight_hit_reaction(impact_direction)
+
+func _mark_robber_for_arrest_if_worker_injury_resolves_fight(injured_npc: NPC) -> void:
+	if fight_type != FightType.ROBBERY or not (injured_npc is NPCWorker):
+		return
+	if _get_result(get_active_participants()) != Result.NO_CONTEST:
+		return
+	for participant in participants:
+		var guest := participant as NPCGuest
+		if not is_instance_valid(guest):
+			continue
+		if int(participant_join_reasons.get(guest, JoinReason.UNKNOWN)) != JoinReason.ROBBERY_PERPETRATOR:
+			continue
+		ConflictResponseHandler.mark_for_arrest(guest)
+		_debug("worker injury auto-marked robber for arrest %s" % _npc_debug(guest))
+
+func _is_opening_attacker(npc: NPC) -> bool:
+	return npc != null and opening_attacker == npc and is_instance_valid(opening_attacker)
+
+func _has_opening_attacker() -> bool:
+	return opening_attacker != null and is_instance_valid(opening_attacker)
 
 func _check_for_knockouts() -> void:
 	for participant: NPC in participants:
@@ -418,12 +482,17 @@ func _injure_participant(npc: NPC) -> void:
 			"Guest" if npc is NPCGuest else "Worker",
 			FightType.keys()[fight_type]
 		])
+		_mark_robber_for_arrest_if_worker_injury_resolves_fight(npc)
 
 func _remove_participant_from_fight(npc: NPC) -> void:
 	target_mapping.erase(npc)
 	fight_positions.erase(npc)
 	last_attack.erase(npc)
+	attack_intervals.erase(npc)
 	pending_attacks.erase(npc)
+	if opening_attacker == npc:
+		opening_attacker = null
+		opening_strike_resolved = true
 	for attacker in target_mapping.keys().duplicate():
 		if target_mapping[attacker] == npc:
 			target_mapping.erase(attacker)
@@ -464,7 +533,7 @@ func _sync_health_bars(active_participants: Array) -> void:
 		UiNotifications.update_npc_health_bar(health_bars[participant], participant.energy / participant.get_max_energy())
 
 func _health_bar_color(npc: NPC) -> Color:
-	if npc is NPCWorker:
+	if _is_law_side_participant(npc):
 		return Color.GREEN
 	return Color.RED
 
@@ -495,7 +564,7 @@ func _get_result(active_participants: Array) -> Result:
 	if active_participants.size() <= 1:
 		if active_participants.size() == 1:
 			var survivor := active_participants[0] as NPC
-			if survivor is NPCWorker:
+			if _is_law_side_participant(survivor):
 				return Result.WORKERS_WON
 			if survivor is NPCGuest:
 				return Result.NO_CONTEST
@@ -504,7 +573,7 @@ func _get_result(active_participants: Array) -> Result:
 	var has_active_worker := false
 	var has_active_guest := false
 	for participant: NPC in active_participants:
-		if participant is NPCWorker:
+		if _is_law_side_participant(participant):
 			has_active_worker = true
 		elif participant is NPCGuest:
 			has_active_guest = true
@@ -551,6 +620,16 @@ func _should_apply_worker_win_to_guest(guest: NPCGuest) -> bool:
 		return did_participant_start_brawl(guest)
 	return true
 
+func _is_law_side_participant(npc: NPC) -> bool:
+	if npc is NPCWorker:
+		return true
+	var join_reason := int(participant_join_reasons.get(npc, JoinReason.UNKNOWN))
+	return (
+		join_reason == JoinReason.WORKER_RESPONSE
+		or join_reason == JoinReason.ARREST_RESPONSE
+		or join_reason == JoinReason.ROBBERY_RESPONSE
+	)
+
 func _join_reason_name(npc: NPC) -> String:
 	return JoinReason.keys()[int(participant_join_reasons.get(npc, JoinReason.UNKNOWN))]
 
@@ -562,6 +641,7 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 			participant_join_reasons.erase(participant)
 			target_mapping.erase(participant)
 			last_attack.erase(participant)
+			attack_intervals.erase(participant)
 			pending_attacks.erase(participant)
 			fight_positions.erase(participant)
 			continue
@@ -571,6 +651,7 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 			participant_join_reasons.erase(participant)
 			target_mapping.erase(participant)
 			last_attack.erase(participant)
+			attack_intervals.erase(participant)
 			pending_attacks.erase(participant)
 			fight_positions.erase(participant)
 
@@ -589,9 +670,13 @@ func _cleanup_inactive_participants(active_participants: Array) -> void:
 		if not active_participants.has(participant) or not active_participants.has(target):
 			target_mapping.erase(participant)
 
-	for participant in last_attack.keys():
+	for participant in last_attack.keys().duplicate():
 		if not is_instance_valid(participant) or not active_participants.has(participant):
 			last_attack.erase(participant)
+
+	for participant in attack_intervals.keys().duplicate():
+		if not is_instance_valid(participant) or not active_participants.has(participant):
+			attack_intervals.erase(participant)
 
 	for participant in pending_attacks.keys().duplicate():
 		if not is_instance_valid(participant) or not active_participants.has(participant):

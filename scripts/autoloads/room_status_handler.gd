@@ -79,6 +79,11 @@ func notification_loop():
 						var has_cleaners = JobHandler.count_workers_in(Enum.Jobs.BROOM_CLEANER) > 0
 						notify(r, "awaiting cleaner" if has_cleaners else "no cleaner", Color.DARK_GOLDENROD if has_cleaners else Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
+				elif r is RoomSafe:
+					var safe := r as RoomSafe
+					if safe.worker and safe.should_warn_cannot_store_more_money():
+						notify(safe, safe.get_full_warning_text(), Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomStove:
 					if not (r as RoomStove).is_heating() and not r.worker:
 						notify(r, "no worker", Color.ORANGE)

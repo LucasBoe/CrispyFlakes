@@ -132,7 +132,7 @@ func _run_startup_sequence() -> void:
 			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
 				Global.UI.menu.build_tab.tab_cointainer,
-				Building.room_data_table.room_type,
+				2,
 				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_table),
 				func(): return not Building.query.all_rooms_of_type(RoomTable).is_empty()
 			)

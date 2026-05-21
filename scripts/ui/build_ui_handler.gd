@@ -25,7 +25,7 @@ func _ready():
 	for t in Enum.RoomType.values():
 		groups[t] = room_group.new(t)
 	
-	create_button(groups, Building.room_data_empty)
+	create_button(groups, Building.room_data_empty, RoomEmpty.custom_placement_check)
 	create_button(groups, Building.room_data_digging, RoomDigging.custom_placement_check)
 	create_button(groups, Building.room_data_table)
 	create_button(groups, Building.room_data_bar)
@@ -133,9 +133,6 @@ func _count_buildable(data) -> int:
 	return Building.count_rooms_by_data(data)
 
 func _on_hover_enter(button : Button, data):
-	if _new_unlock_data.has(data):
-		_new_unlock_data.erase(data)
-		_refresh_button_availability()
 	_hover_info.show_for(data)
 	_refresh_desc(data)
 	last_hover = data
@@ -170,7 +167,11 @@ func _on_tab_changed(tab):
 func _on_build_button_pressed(data, custom_placement_check, build_action: Callable) -> void:
 	if not _is_data_unlocked(data):
 		return
+	if _new_unlock_data.has(data):
+		_new_unlock_data.erase(data)
+		_refresh_button_availability()
 	SoundPlayer.play_ui_click_down()
+	PlacementHandler.stop_building()
 	build_action.call(data, custom_placement_check)
 
 func _refresh_button_availability() -> void:

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.349"
+config/version="0.0.1-dev.350"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -40,6 +40,7 @@ TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 TierHandler="*res://scripts/autoloads/tier_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
 NPCEventHandler="*res://scripts/autoloads/npc_event_handler.gd"
+AlarmHandler="*res://scripts/autoloads/alarm_handler.gd"
 FightHandler="*res://scripts/autoloads/fight_handler.gd"
 FireHandler="*res://scripts/autoloads/fire_handler.gd"
 CowboyTalk="*res://scripts/autoloads/cowboy_talk_handler.gd"

@@ -8,7 +8,6 @@ var room: RoomBase
 var age := 0.0
 var health := MAX_HEALTH
 var spread_roll_elapsed := 0.0
-var highlight
 var extinguish_bar
 var propagation_bar
 var light_overlay

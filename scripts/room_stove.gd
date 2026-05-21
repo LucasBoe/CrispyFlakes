@@ -6,6 +6,7 @@ const EMBER_DURATION := 8.0
 const REFUEL_THRESHOLD_RATIO := 0.2
 const LOW_FUEL_VISIBILITY_RATIO := 0.25
 const REFUEL_DURATION := 2.5
+const FIRE_START_CHANCE_PER_SECOND := 0.001
 const HEAT_RANGE := 96.0
 const HEAT_LIGHT_ENERGY := 0.85
 const HEAT_RADIUS_FILL_COLOR := Color(1.0, 0.38, 0.08, 0.12)
@@ -43,6 +44,8 @@ func _process(delta: float) -> void:
 	var had_fuel := _fuel_remaining > 0.0
 	if _fuel_remaining > 0.0:
 		_fuel_remaining = maxf(0.0, _fuel_remaining - delta)
+		if _should_start_fire(delta):
+			FireHandler.start_fire(self)
 		if had_fuel and _fuel_remaining <= 0.0:
 			_ember_remaining = EMBER_DURATION
 	elif _ember_remaining > 0.0:
@@ -99,6 +102,9 @@ func get_temperature_strength() -> float:
 	if _ember_remaining > 0.0:
 		return 0.25 * (_ember_remaining / EMBER_DURATION)
 	return 0.0
+
+func _should_start_fire(delta: float) -> bool:
+	return not FireHandler.is_room_on_fire(self) and randf() < FIRE_START_CHANCE_PER_SECOND * delta
 
 func _refresh_visual_state() -> void:
 	if _fuel_remaining > 0.0:

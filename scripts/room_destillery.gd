@@ -1,6 +1,8 @@
 extends RoomBase
 class_name RoomDestillery
 
+const EXPLOSION_CHANCE := 0.05
+
 func init_room(_x : int, _y : int):
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.DESTILLERY
@@ -21,3 +23,6 @@ func uses_infrastructure_layer(layer_name: StringName) -> bool:
 
 func wants_infrastructure_layer(layer_name: StringName) -> bool:
 	return layer_name == &"water" and current_module != null
+
+func should_explode() -> bool:
+	return not FireHandler.is_room_on_fire(self) and randf() < EXPLOSION_CHANCE

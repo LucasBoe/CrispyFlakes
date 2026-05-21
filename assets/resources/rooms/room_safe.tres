@@ -8,7 +8,7 @@
 [resource]
 script = ExtResource("1_safe")
 packed_scene = ExtResource("2_safe")
-money_capacity = 1000
+money_capacity = 3000
 room_name = "Safe"
 room_type = 2
 placement_limit = 2

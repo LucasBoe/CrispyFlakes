@@ -35,7 +35,8 @@ script = ExtResource("6_pec21")
 icon = ExtResource("5_o8qhr")
 price = 20
 module_name = "Small Brewer"
-describtion = "1 barrel per day"
+describtion = "2 barrels per day"
+brew_duration = 10.0
 bought = true
 
 [node name="Big" type="Sprite2D" parent="ModulesRoot/Brewer"]
@@ -48,6 +49,6 @@ script = ExtResource("6_pec21")
 icon = ExtResource("4_7sj4r")
 price = 50
 module_name = "Big Brewer"
-describtion = "3 barrels per day"
-brew_duration = 6.667
+describtion = "6 barrels per day"
+brew_duration = 3.3335
 brews_per_water = 2

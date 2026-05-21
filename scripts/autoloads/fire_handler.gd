@@ -12,8 +12,6 @@ const FIRE_EXTINGUISH_SMOKE_SCENE = preload("res://scenes/fire_extinguish_smoke_
 const RESPONSE_RANGE_X := 96.0
 const RESPONSE_RANGE_Y := 16.0
 const SPREAD_CHANCE := 0.25
-const FIRE_COLOR := Color(1.0, 0.08, 0.02, 1.0)
-const FIRE_PULSE_COLOR := Color(1.0, 0.46, 0.02, 1.0)
 const EXTINGUISH_BAR_COLOR := Color(0.55, 0.55, 0.55, 1.0)
 const PROPAGATION_BAR_COLOR := Color(1.0, 0.08, 0.02, 1.0)
 const FIRE_BAR_SIZE := Vector2(30.0, 2.0)
@@ -40,7 +38,7 @@ func _process(delta: float) -> void:
 		var propagation_delta: float = delta * fire.get_extinguish_ratio()
 		fire.age += propagation_delta
 		fire.spread_roll_elapsed += propagation_delta
-		_update_highlight(fire)
+		_update_fire_effects(fire)
 		_try_panic_near_fire(fire)
 		_try_auto_respond_near_fire(fire)
 		_try_spawn_regular_smoke(fire, delta)
@@ -58,11 +56,10 @@ func start_fire(room: RoomBase):
 	fire.debug_id = _next_fire_debug_id
 	_next_fire_debug_id += 1
 	fire.next_smoke_time = randf_range(REGULAR_SMOKE_MIN_INTERVAL, REGULAR_SMOKE_MAX_INTERVAL)
-	fire.highlight = RoomHighlighter.request_rect(room, FIRE_COLOR, 2, RoomHighlighter.Priority.FIRE)
 	_create_fire_bars(fire)
 	_create_flame_particles(fire)
 	_create_fire_sound(fire)
-	SoundPlayer.play_alarm()
+	AlarmHandler.start_alarm(fire, AlarmHandler.TYPE_FIRE)
 	active_fires.append(fire)
 	print("[FireHandler] start fire %s" % fire.debug_label())
 	return fire
@@ -98,8 +95,7 @@ func end_fire(fire) -> void:
 	_dispose_flame_particles(fire)
 	_dispose_spark_particles(fire)
 	_dispose_fire_sound(fire)
-	RoomHighlighter.dispose(fire.highlight)
-	fire.highlight = null
+	AlarmHandler.end_alarm(fire)
 	active_fires.erase(fire)
 
 func apply_liquid(fire, amount: float) -> void:
@@ -298,11 +294,7 @@ func _get_adjacent_rooms(room: RoomBase) -> Array[RoomBase]:
 				candidates.append(candidate)
 	return candidates
 
-func _update_highlight(fire) -> void:
-	if not is_instance_valid(fire.highlight):
-		return
-	var t := (sin(Global.time_now * 8.0) + 1.0) * 0.5
-	fire.highlight.modulate = FIRE_COLOR.lerp(FIRE_PULSE_COLOR, t)
+func _update_fire_effects(fire) -> void:
 	_update_fire_bars(fire)
 	_update_light_overlay(fire)
 	_update_flame_particles(fire)
