@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://u0hj7jr35wva"]
+
+[ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="1_cloud"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_stink"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_stink"]
+offsets = PackedFloat32Array(0, 0.24, 0.68, 1)
+colors = PackedColorArray(0.16, 0.24, 0.04, 0, 0.36, 0.58, 0.08, 0.34, 0.55, 0.76, 0.14, 0.22, 0.7, 0.84, 0.24, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_stink"]
+gradient = SubResource("Gradient_stink")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_stink"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(4, 1, 0)
+direction = Vector3(0, -1, 0)
+spread = 34.0
+initial_velocity_min = 1.2
+initial_velocity_max = 3.4
+angular_velocity_min = -14.0
+angular_velocity_max = 14.0
+gravity = Vector3(0, -3, 0)
+scale_min = 0.5
+scale_max = 0.95
+color_initial_ramp = SubResource("GradientTexture1D_stink")
+anim_speed_min = 0.5
+anim_speed_max = 0.85
+
+[node name="FloorDirtStinkParticles" type="GPUParticles2D"]
+z_index = 1
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_stink")
+amount = 5
+texture = ExtResource("1_cloud")
+lifetime = 2.2
+visibility_rect = Rect2(-4096, -4096, 8192, 8192)
+process_material = SubResource("ParticleProcessMaterial_stink")

@@ -41,6 +41,8 @@ enum NpcStatus {
 	KNOWN_FUGITIVE,
 	CARRYING_LOOT,
 	HAS_OUTSTANDING_FINE,
+	# Environment
+	DISGUSTED,
 }
 
 enum RoomType {

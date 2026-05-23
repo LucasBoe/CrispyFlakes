@@ -211,9 +211,7 @@ func _serialize_guests() -> Array[Dictionary]:
 	if Global.NPCSpawner == null:
 		return guests
 
-	for guest: NPCGuest in Global.NPCSpawner.guests:
-		if not is_instance_valid(guest):
-			continue
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		guests.append({
 			"name": guest.character_name,
 			"position": _serialize_vector2(guest.global_position),
@@ -403,9 +401,7 @@ func _clear_spawned_npcs() -> void:
 	NPCWorker.was_dragging = false
 	JobHandler.workers.clear()
 
-	for guest: NPCGuest in Global.NPCSpawner.guests.duplicate():
-		if not is_instance_valid(guest):
-			continue
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		Global.NPCSpawner.on_guest_destroy(guest)
 		guest.destroy()
 	Global.NPCSpawner.guests.clear()

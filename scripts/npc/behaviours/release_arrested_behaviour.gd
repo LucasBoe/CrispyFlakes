@@ -23,7 +23,7 @@ func _get_next_arrested() -> NPCGuest:
 
 func _get_all_arrested() -> Array:
 	var result: Array = []
-	for guest: NPCGuest in Global.NPCSpawner.guests:
-		if is_instance_valid(guest) and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+		if guest.Behaviour.behaviour_instance is ArrestedBehaviour:
 			result.append(guest)
 	return result

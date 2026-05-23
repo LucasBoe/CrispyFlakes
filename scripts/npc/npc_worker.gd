@@ -298,7 +298,7 @@ func resume_job_behaviour() -> void:
 
 
 func _get_pending_arrest_in_room(room: RoomBase) -> NPCGuest:
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if not ConflictResponseHandler.is_marked_for_arrest(guest):
 			continue
 		var guest_room = FightHandler._get_actor_room(guest)

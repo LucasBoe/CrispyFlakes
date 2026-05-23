@@ -173,7 +173,7 @@ func _wait_for_queue_turn(room: Node, waiting_narrative: String, get_queue_posit
 	if stopped or not is_instance_valid(room):
 		return false
 
-	while is_instance_valid(room) and not can_enter.call():
+	while is_instance_valid(room) and is_instance_valid(npc) and not can_enter.call():
 		if stopped or not is_instance_valid(room):
 			return false
 		if not on_wait_tick.is_null() and not on_wait_tick.call():
@@ -186,7 +186,7 @@ func _wait_for_queue_turn(room: Node, waiting_narrative: String, get_queue_posit
 		else:
 			await end_of_frame()
 
-	return not stopped and is_instance_valid(room)
+	return not stopped and is_instance_valid(room) and is_instance_valid(npc)
 
 func _ensure_toilet_water_supply() -> bool:
 	if toilet.has_available_water_supply():

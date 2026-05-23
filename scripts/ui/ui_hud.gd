@@ -7,6 +7,7 @@ extends Control
 @onready var label_guest_amount: Label = %Label_GuestAmount
 @onready var progression_bar: ProgressBar = %ProgressBar_GuestProgression
 @onready var label_guest_rate: Label = %Label_GuestRate
+@onready var label_avg_satisfaction: Label = %Label_AvgSatisfaction
 
 var _highlights_active: bool = false
 
@@ -92,3 +93,20 @@ func _process(_delta: float) -> void:
 		label_guest_rate.text = str("+", Global.NPCSpawner.guests_per_day_rate(), "/M")
 	else:
 		label_guest_rate.text = ""
+	_update_avg_satisfaction()
+
+func _update_avg_satisfaction() -> void:
+	var total := 0.0
+	var count := 0
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+		if not guest.counts_towards_guest_total() or guest.Needs == null:
+			continue
+		total += guest.Needs.satisfaction.strength
+		count += 1
+	if count == 0:
+		label_avg_satisfaction.text = "Satisfaction: -"
+		label_avg_satisfaction.remove_theme_color_override("font_color")
+		return
+	var avg := total / count
+	label_avg_satisfaction.text = "Satisfaction: %d%%" % roundi(avg * 100)
+	label_avg_satisfaction.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg))

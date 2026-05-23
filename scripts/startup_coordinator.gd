@@ -500,11 +500,7 @@ func _get_served_guest_for_milestone(served_guest_count: int) -> NPCGuest:
 
 
 func _track_served_startup_guests() -> void:
-	for guest in Global.NPCSpawner.guests:
-		if guest is not NPCGuest:
-			continue
-		if not is_instance_valid(guest):
-			continue
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if guest in _served_startup_guests:
 			continue
 		if guest.Item == null or guest.Item.current_item == null:

@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://bvdg5m76lwct6"]
+
+[ext_resource type="Texture2D" uid="uid://dyx8y7ygsjayi" path="res://assets/sprites/ui/ui_rect_8x8.png" id="1_pixel"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_flies"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(5, 2, 0)
+spread = 180.0
+initial_velocity_min = 4.0
+initial_velocity_max = 8.0
+angular_velocity_min = -120.0
+angular_velocity_max = 120.0
+scale_min = 0.125
+scale_max = 0.125
+color = Color(0.08, 0.08, 0.06, 0.95)
+
+[node name="FloorDirtFlyParticles" type="GPUParticles2D"]
+z_index = 2
+texture_filter = 1
+amount = 6
+texture = ExtResource("1_pixel")
+lifetime = 0.55
+visibility_rect = Rect2(-4096, -4096, 8192, 8192)
+process_material = SubResource("ParticleProcessMaterial_flies")

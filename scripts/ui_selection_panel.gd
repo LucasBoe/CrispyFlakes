@@ -192,12 +192,8 @@ func _on_click_hovered_node_signal(node):
 		selected_npc_highlight_instance.destroy()
 	selected_npc_highlight_instance = null
 
-	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
-		if not is_instance_valid(npc_ref):
-			continue
+	for npc_ref in Global.NPCSpawner.get_live_workers() + Global.NPCSpawner.get_live_guests():
 		var npc := npc_ref as NPC
-		if npc == null:
-			continue
 		npc.Tint.remove_outline_for(self)
 
 	target = node
@@ -1129,12 +1125,8 @@ func do_hide():
 		selected_npc_highlight_instance.destroy()
 	selected_npc_highlight_instance = null
 
-	for npc_ref in Global.NPCSpawner.workers + Global.NPCSpawner.guests:
-		if not is_instance_valid(npc_ref):
-			continue
+	for npc_ref in Global.NPCSpawner.get_live_workers() + Global.NPCSpawner.get_live_guests():
 		var npc := npc_ref as NPC
-		if npc == null:
-			continue
 		npc.Tint.remove_outline_for(self)
 
 	_connection_line.hide()

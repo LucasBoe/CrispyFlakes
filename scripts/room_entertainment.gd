@@ -46,7 +46,7 @@ func count_guests_in_range() -> int:
 		return 0
 
 	var count := 0
-	for guest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if _is_guest_in_range(guest):
 			count += 1
 	return count
@@ -63,7 +63,7 @@ func entertain_guests() -> int:
 		return 0
 
 	var boosted_guest_count := 0
-	for guest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		guest.add_satisfaction(get_satisfaction_boost(), "Entertainment")
 		boosted_guest_count += 1
 

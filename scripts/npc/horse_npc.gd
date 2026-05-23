@@ -6,8 +6,8 @@ var tied_post: RoomHorsePost = null
 
 const TEX_HORSE = preload("res://assets/sprites/horse.png")
 const WANDER_SPEED = 12.0
-const FREE_DIRT_INTERVAL_MIN = 10.0
-const FREE_DIRT_INTERVAL_MAX = 22.0
+const FREE_DIRT_INTERVAL_MIN = 18.0
+const FREE_DIRT_INTERVAL_MAX = 34.0
 
 const SQUASH_STRENGTH = 0.06
 const IDLE_SPEED = 2.0

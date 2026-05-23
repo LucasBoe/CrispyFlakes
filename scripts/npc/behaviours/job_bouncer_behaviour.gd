@@ -60,7 +60,7 @@ func _find_room() -> RoomBouncer:
 	return null
 
 func _find_pending_arrest_target(worker: NPCWorker) -> NPCGuest:
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if not ConflictResponseHandler.is_marked_for_arrest(guest):
 			continue
 		if not ConflictResponseHandler.can_worker_respond_to_position(worker, guest.global_position):

@@ -208,7 +208,7 @@ func _try_panic_near_fire(fire) -> void:
 	if Global.NPCSpawner == null:
 		return
 
-	for guest: NPCGuest in Global.NPCSpawner.guests:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		_try_panic_npc(guest, fire)
 
 func _try_panic_npc(npc: NPC, fire) -> bool:

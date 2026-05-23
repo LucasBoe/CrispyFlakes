@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=6 format=3 uid="uid://dy1ot8uuqy43s"]
 
 [ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="1_cloud"]
 
@@ -23,23 +23,20 @@ direction = Vector3(0, -1, 0)
 spread = 28.0
 initial_velocity_min = 2.0
 initial_velocity_max = 7.0
-gravity = Vector3(0, -2, 0)
 angular_velocity_min = -15.0
 angular_velocity_max = 15.0
+gravity = Vector3(0, -2, 0)
 scale_min = 0.65
-scale_max = 1.0
 color_initial_ramp = SubResource("GradientTexture1D_smoke")
 anim_speed_min = 0.45
 anim_speed_max = 0.75
 
 [node name="FireRegularSmokeParticles" type="GPUParticles2D"]
-texture_filter = 1
 z_index = 715
+texture_filter = 1
 material = SubResource("CanvasItemMaterial_smoke")
-amount = 8
+emitting = false
 texture = ExtResource("1_cloud")
 lifetime = 2.4
 one_shot = true
-explosiveness = 0.45
-randomness = 0.55
 process_material = SubResource("ParticleProcessMaterial_smoke")

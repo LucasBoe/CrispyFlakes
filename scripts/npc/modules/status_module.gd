@@ -30,6 +30,8 @@ func get_entries() -> Array:
 	_refresh_dynamic_guest_statuses()
 	var entries: Array = []
 
+	if has_status(Enum.NpcStatus.DISGUSTED):
+		entries.append({icon = UiNotifications.ICON_EWW, label = "Disgusted by nearby filth"})
 	if has_status(Enum.NpcStatus.INJURED):
 		entries.append({icon = UiNotifications.ICON_INJURED, label = "Untreated Injury"})
 	if has_status(Enum.NpcStatus.WELL_TREATED):

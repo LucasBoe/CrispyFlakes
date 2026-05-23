@@ -65,4 +65,4 @@ func _process(delta):
 	var energy_loss_multiplier := SITTING_ENERGY_LOSS_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0
 	Energy.strength = maxf(0.0, Energy.strength - (0.35 + drunkenness.strength * 0.35) * energy_loss_multiplier * delta_minute)
 
-	satisfaction.strength -= passive_satisfaction_loss.strength * delta_minute
+	satisfaction.strength = clampf(satisfaction.strength - passive_satisfaction_loss.strength * delta_minute, 0.0, 1.0)

@@ -237,7 +237,7 @@ func _find_joinable_brawl_for_guest(guest: NPCGuest) -> Fight:
 	return null
 
 func _has_nearby_brawl_responder(guest: NPCGuest) -> bool:
-	for other_guest: NPCGuest in Global.NPCSpawner.guests:
+	for other_guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 		if _can_guest_respond_to_new_brawl(other_guest, guest):
 			return true
 	for worker: NPCWorker in Global.NPCSpawner.workers:

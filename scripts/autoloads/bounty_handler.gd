@@ -94,8 +94,8 @@ func get_total_arrested_payout() -> int:
 	if Global.NPCSpawner == null:
 		return 0
 	var total := 0
-	for guest: NPCGuest in Global.NPCSpawner.guests:
-		if not is_instance_valid(guest) or guest.Behaviour == null:
+	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+		if guest.Behaviour == null:
 			continue
 		if not (guest.Behaviour.behaviour_instance is ArrestedBehaviour):
 			continue
