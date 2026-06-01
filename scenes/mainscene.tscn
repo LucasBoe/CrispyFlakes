@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=37 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" uid="uid://b7x6p4y77lcp8" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_fake_cursor.tscn" id="ui_fake_cursor"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
 
@@ -316,6 +317,8 @@ offset_right = 3.0
 offset_bottom = 2.0
 
 [node name="UIPause" parent="UI" instance=ExtResource("2_0o2or")]
+
+[node name="UIFakeCursor" parent="UI" instance=ExtResource("ui_fake_cursor")]
 
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_jifap")

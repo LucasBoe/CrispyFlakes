@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://bs4son1urw67n"]
+
+[ext_resource type="Script" uid="uid://os60ddvo06yy" path="res://scripts/ui/ui_fake_cursor.gd" id="1_apnn3"]
+
+[node name="UIFakeCursor" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_apnn3")
+
+[node name="Cursor" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 17.0
+offset_bottom = 18.0
+scale = Vector2(2, 2)
+mouse_filter = 2
+stretch_mode = 5
