@@ -32,7 +32,8 @@ func loop():
 			await progress(duration)
 			if destillery.should_explode():
 				_narrative = ["The still blew!", "The boiler burst into flames!", "The distillery caught fire!"].pick_random()
-				FireHandler.start_fire(destillery)
+				destillery.trigger_explosion()
+				FireHandler.start_distillery_explosion_fires(destillery)
 				continue
 			var item_spawn_pos = destillery.get_random_floor_position()
 			var item = Global.ItemSpawner.create(Enum.Items.WISKEY_BOX_RAW, item_spawn_pos)
