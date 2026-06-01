@@ -125,14 +125,18 @@ func _process(delta):
 		_update_shake(unscaled_delta)
 		return
 
-	handle_zoom(delta)
-	simple_pan(_get_pan_delta(delta, unscaled_delta))
-	click_and_drag()
+	if not _is_console_open():
+		handle_zoom(delta)
+		simple_pan(_get_pan_delta(delta, unscaled_delta))
+		click_and_drag()
 	clamp_pan_to_bounds()
 	_update_shake(unscaled_delta)
 
 func _refresh_offset() -> void:
 	offset = _camera_offset_base + _shake_offset
+
+func _is_console_open() -> bool:
+	return Console != null and Console.control != null and Console.control.visible
 
 func add_shake(strength := 4.0, duration := 0.12) -> void:
 	if strength <= 0.0 or duration <= 0.0:
@@ -185,6 +189,8 @@ func handle_zoom(delta):
 		zoom_in_out();
 
 func _unhandled_input(event):
+	if _is_console_open():
+		return
 
 	var delta = get_process_delta_time()
 
