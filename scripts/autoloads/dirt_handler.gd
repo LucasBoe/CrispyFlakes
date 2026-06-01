@@ -4,7 +4,6 @@ const FLOOR_DIRT_SCENE := preload("res://scenes/floor_dirt_mess.tscn")
 const STINK_PARTICLES_SCENE := preload("res://scenes/floor_dirt_stink_particles.tscn")
 const FLY_PARTICLES_SCENE := preload("res://scenes/floor_dirt_fly_particles.tscn")
 const DIRT_MERGE_RADIUS := 10.0
-const DEBUG_NOTIFICATION_DURATION := 0.15
 const STINK_BASE_AMOUNT := 12
 const FLY_BASE_AMOUNT := 14
 const MAX_REPRESENTED_DIRT := 32
@@ -54,12 +53,10 @@ func _effects_loop() -> void:
 		_stink_particles.global_position = stink_target.get_stink_anchor_global_position()
 		_stink_particles.visible = true
 		_stink_particles.emitting = true
-		_debug_teleport("S %d,%d" % [roundi(_stink_particles.global_position.x), roundi(_stink_particles.global_position.y)], _stink_particles.global_position, Color.YELLOW)
 
 		_fly_particles.global_position = fly_target.get_fly_anchor_global_position()
 		_fly_particles.visible = true
 		_fly_particles.emitting = true
-		_debug_teleport("F %d,%d" % [roundi(_fly_particles.global_position.x), roundi(_fly_particles.global_position.y)], _fly_particles.global_position, Color.CYAN)
 
 func create_dirt_at(position_in_global_space: Vector2) -> void:
 	var closest_existing := get_closest_to(position_in_global_space)
@@ -113,6 +110,3 @@ func _prune_invalid_dirt() -> void:
 	for i in range(dirt_instances.size() - 1, -1, -1):
 		if not is_instance_valid(dirt_instances[i]):
 			dirt_instances.remove_at(i)
-
-func _debug_teleport(text: String, world_pos: Vector2, color: Color) -> void:
-	UiNotifications.create_notification_static(text, world_pos + Vector2(-8, -18), null, color, DEBUG_NOTIFICATION_DURATION)
