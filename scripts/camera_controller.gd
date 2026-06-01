@@ -5,6 +5,7 @@ const minZoom: float = 0.5
 const maxZoom: float = 6.0
 const panBounds: Rect2 = Rect2(Vector2(-1920,-1080), Vector2(3840,2160))
 const FOCUS_LOCK_LERP_SPEED := 6.0
+const CAMERA_POSITION_SAVE_PATH := "user://camera_position.json"
 
 
 var zoomTarget : float = 1
@@ -36,6 +37,8 @@ var _focus_restore_position := Vector2.ZERO
 var _focus_restore_zoom_target := 2.0
 
 func _ready():
+	Console.add_command("save_cam_pos", console_save_cam_pos, 0, 0, "Saves the current camera position and zoom.")
+	Console.add_command("load_cam_pos", console_load_cam_pos, 0, 0, "Loads the saved camera position and zoom.")
 	_rng.randomize()
 	_last_shake_update_usec = Time.get_ticks_usec()
 	camera_offset_base = offset
@@ -43,6 +46,75 @@ func _ready():
 	zoomTarget = 2
 	zoom = Vector2(2,2)
 	global_position = Vector2(-24,-48)
+
+func console_save_cam_pos() -> void:
+	var saved_position := global_position + camera_offset_base
+	var saved_zoom := zoom.x
+	var save_data := {
+		"position": {
+			"x": saved_position.x,
+			"y": saved_position.y,
+		},
+		"zoom": saved_zoom,
+	}
+
+	var file := FileAccess.open(CAMERA_POSITION_SAVE_PATH, FileAccess.WRITE)
+	if file == null:
+		Console.print_error("Failed to open %s for writing." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
+		return
+
+	file.store_string(JSON.stringify(save_data, "\t"))
+	Console.print_line("Saved camera position (%.2f, %.2f) and zoom %.2f to %s." % [
+		saved_position.x,
+		saved_position.y,
+		saved_zoom,
+		ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH),
+	])
+
+func console_load_cam_pos() -> void:
+	if not FileAccess.file_exists(CAMERA_POSITION_SAVE_PATH):
+		Console.print_error("No saved camera position found at %s." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
+		return
+
+	var file := FileAccess.open(CAMERA_POSITION_SAVE_PATH, FileAccess.READ)
+	if file == null:
+		Console.print_error("Failed to open %s for reading." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
+		return
+
+	var parsed = JSON.parse_string(file.get_as_text())
+	if not (parsed is Dictionary):
+		Console.print_error("Saved camera position is not valid JSON.")
+		return
+
+	var position_data = parsed.get("position", {})
+	if not (position_data is Dictionary):
+		Console.print_error("Saved camera position is missing position data.")
+		return
+
+	var saved_zoom := float(parsed.get("zoom", zoomTarget))
+	var saved_position := Vector2(
+		float(position_data.get("x", global_position.x)),
+		float(position_data.get("y", global_position.y))
+	)
+
+	if zoom_tween:
+		zoom_tween.kill()
+		zoom_tween = null
+	_focus_lock_owner = null
+	_focus_lock_target = null
+	isDragging = false
+	isLMBDragging = false
+
+	zoomTarget = clampf(saved_zoom, minZoom, maxZoom)
+	zoom = Vector2(zoomTarget, zoomTarget)
+	camera_offset_base = Vector2.ZERO
+	global_position = saved_position
+	clamp_pan_to_bounds()
+	Console.print_line("Loaded camera position (%.2f, %.2f) and zoom %.2f." % [
+		global_position.x,
+		global_position.y,
+		zoomTarget,
+	])
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
