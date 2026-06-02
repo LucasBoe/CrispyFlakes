@@ -82,7 +82,7 @@ func _select_next_idle() -> void:
 	var idle: NPCWorker = idle_workers.pick_random()
 	Camera.zoomTarget = 2.0
 	Camera.zoom_in_out(true, 0.1)
-	Camera.position = idle.position
+	Camera.set_camera_target_position(idle.global_position)
 	await Camera.tween_offset_to_zero().finished
 	Global.UI.selection.manually_select(idle)
 
