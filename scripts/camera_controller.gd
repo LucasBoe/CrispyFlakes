@@ -7,7 +7,7 @@ const panBounds: Rect2 = Rect2(Vector2(-1920,-1080), Vector2(3840,2160))
 const CAMERA_POSITION_SAVE_PATH := "user://camera_position.json"
 const ZOOM_TAP_IN_MULTIPLIER := 0.9
 const ZOOM_TAP_OUT_MULTIPLIER := 1.1
-const ZOOM_HOLD_MULTIPLIER_PER_SECOND := 1.8
+const ZOOM_HOLD_MULTIPLIER_PER_SECOND := 1.1
 const PAN_SCREEN_SPEED := 100.0
 const POSITION_SMOOTHING_SPEED := 10.0
 const ZOOM_SMOOTHING_SPEED := 12.0
@@ -15,7 +15,6 @@ const OFFSET_SMOOTHING_SPEED := 14.0
 const POSITION_SNAP_EPSILON := 0.01
 const ZOOM_SNAP_EPSILON := 0.001
 const FOCUS_LOCK_LERP_SPEED := 6.0
-const CAMERA_POSITION_SAVE_PATH := "user://camera_position.json"
 
 
 var zoomTarget : float = 1
@@ -126,75 +125,6 @@ func console_load_cam_pos() -> void:
 
 	zoomTarget = clampf(saved_zoom, minZoom, maxZoom)
 	_snap_to_camera_state(saved_position, zoomTarget, Vector2.ZERO)
-	clamp_pan_to_bounds()
-	Console.print_line("Loaded camera position (%.2f, %.2f) and zoom %.2f." % [
-		global_position.x,
-		global_position.y,
-		zoomTarget,
-	])
-
-func console_save_cam_pos() -> void:
-	var saved_position := global_position + camera_offset_base
-	var saved_zoom := zoom.x
-	var save_data := {
-		"position": {
-			"x": saved_position.x,
-			"y": saved_position.y,
-		},
-		"zoom": saved_zoom,
-	}
-
-	var file := FileAccess.open(CAMERA_POSITION_SAVE_PATH, FileAccess.WRITE)
-	if file == null:
-		Console.print_error("Failed to open %s for writing." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
-		return
-
-	file.store_string(JSON.stringify(save_data, "\t"))
-	Console.print_line("Saved camera position (%.2f, %.2f) and zoom %.2f to %s." % [
-		saved_position.x,
-		saved_position.y,
-		saved_zoom,
-		ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH),
-	])
-
-func console_load_cam_pos() -> void:
-	if not FileAccess.file_exists(CAMERA_POSITION_SAVE_PATH):
-		Console.print_error("No saved camera position found at %s." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
-		return
-
-	var file := FileAccess.open(CAMERA_POSITION_SAVE_PATH, FileAccess.READ)
-	if file == null:
-		Console.print_error("Failed to open %s for reading." % ProjectSettings.globalize_path(CAMERA_POSITION_SAVE_PATH))
-		return
-
-	var parsed = JSON.parse_string(file.get_as_text())
-	if not (parsed is Dictionary):
-		Console.print_error("Saved camera position is not valid JSON.")
-		return
-
-	var position_data = parsed.get("position", {})
-	if not (position_data is Dictionary):
-		Console.print_error("Saved camera position is missing position data.")
-		return
-
-	var saved_zoom := float(parsed.get("zoom", zoomTarget))
-	var saved_position := Vector2(
-		float(position_data.get("x", global_position.x)),
-		float(position_data.get("y", global_position.y))
-	)
-
-	if zoom_tween:
-		zoom_tween.kill()
-		zoom_tween = null
-	_focus_lock_owner = null
-	_focus_lock_target = null
-	isDragging = false
-	isLMBDragging = false
-
-	zoomTarget = clampf(saved_zoom, minZoom, maxZoom)
-	zoom = Vector2(zoomTarget, zoomTarget)
-	camera_offset_base = Vector2.ZERO
-	global_position = saved_position
 	clamp_pan_to_bounds()
 	Console.print_line("Loaded camera position (%.2f, %.2f) and zoom %.2f." % [
 		global_position.x,
