@@ -189,7 +189,7 @@ func _serialize_workers() -> Array[Dictionary]:
 	if Global.NPCSpawner == null:
 		return workers
 
-	for worker: NPCWorker in Global.NPCSpawner.workers:
+	for worker: NPCWorker in Global.NPCSpawner.get_live_workers():
 		if not is_instance_valid(worker):
 			continue
 
