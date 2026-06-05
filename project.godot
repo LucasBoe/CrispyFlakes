@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.359"
+config/version="0.0.1-dev.360"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -74,11 +74,6 @@ window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep_height"
-
-[editor]
-
-movie_writer/video_quality=1.0
-movie_writer/movie_file="/Users/lucasbodeker/CrispyFlakes/recs/output.png"
 
 [editor_plugins]
 

@@ -26,6 +26,7 @@ func _ready() -> void:
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 	Console.add_command("random_fire", console_start_random_fire, 0, 0, "Starts a fire in a random indoor room.")
 	Console.add_command("fire_random", console_start_random_fire, 0, 0, "Starts a fire in a random indoor room.")
+	Console.add_command("destillery_explosion", console_start_destillery_explosion, 0, 0, "Plays a distillery explosion on the hovered or first placed distillery.")
 
 func _process(delta: float) -> void:
 	for fire in active_fires.duplicate():
@@ -85,6 +86,31 @@ func console_start_random_fire() -> void:
 		return
 
 	Console.print_line("Started fire in %s at (%d, %d)." % [room.data.room_name, room.x, room.y])
+
+func console_start_destillery_explosion() -> void:
+	var destillery := HoverHandler.currently_hovered as RoomDestillery
+	if destillery == null:
+		destillery = _pick_destillery_room()
+	if destillery == null:
+		Console.print_error("No placed distillery available for an explosion test.")
+		return
+
+	var knocked_out := destillery.trigger_explosion()
+	var fires_started := start_distillery_explosion_fires(destillery)
+	Console.print_line("Triggered distillery explosion at (%d, %d), started %d fires, knocked out %d workers." % [destillery.x, destillery.y, fires_started, knocked_out])
+
+func start_distillery_explosion_fires(destillery: RoomDestillery) -> int:
+	if destillery == null or not is_instance_valid(destillery):
+		return 0
+
+	var fires_started := 0
+	var targets: Array[RoomBase] = []
+	targets.append(destillery)
+	targets.append_array(_get_adjacent_rooms(destillery))
+	for target: RoomBase in targets:
+		if not is_room_on_fire(target) and start_fire(target) != null:
+			fires_started += 1
+	return fires_started
 
 func end_fire(fire) -> void:
 	if fire == null or not active_fires.has(fire):
@@ -271,6 +297,14 @@ func _pick_random_fire_room() -> RoomBase:
 	if candidates.is_empty():
 		return null
 	return candidates.pick_random()
+
+func _pick_destillery_room() -> RoomDestillery:
+	for floor_rooms: Dictionary in Building.floors.values():
+		for room: RoomBase in floor_rooms.values():
+			var destillery := room as RoomDestillery
+			if destillery != null:
+				return destillery
+	return null
 
 func _get_adjacent_rooms(room: RoomBase) -> Array[RoomBase]:
 	var candidates: Array[RoomBase] = []

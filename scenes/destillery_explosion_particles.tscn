@@ -1,0 +1,69 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Texture2D" uid="uid://cdybg2n2j16xg" path="res://assets/sprites/explosion_sprite_sheet.png" id="1_explosion"]
+[ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="2_cloud"]
+[ext_resource type="Script" path="res://scripts/destillery_explosion_particles.gd" id="3_script"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_explosion"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_explosion"]
+particle_flag_disable_z = true
+anim_speed_min = 1.0
+anim_speed_max = 1.0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_smoke"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="Gradient" id="Gradient_smoke"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(0.28, 0.26, 0.23, 0.75, 0.45, 0.42, 0.36, 0.45, 0.62, 0.58, 0.5, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_smoke"]
+gradient = SubResource("Gradient_smoke")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_smoke"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(10, 2, 0)
+direction = Vector3(0, -1, 0)
+spread = 55.0
+initial_velocity_min = 5.0
+initial_velocity_max = 13.0
+gravity = Vector3(0, -5, 0)
+color_initial_ramp = SubResource("GradientTexture1D_smoke")
+anim_speed_min = 0.8
+anim_speed_max = 1.0
+
+[node name="DestilleryExplosionParticles" type="Node2D"]
+script = ExtResource("3_script")
+
+[node name="SmokeParticles" type="GPUParticles2D" parent="."]
+z_index = 718
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_smoke")
+emitting = false
+amount = 10
+texture = ExtResource("2_cloud")
+lifetime = 1.0
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_smoke")
+
+[node name="ExplosionParticles" type="GPUParticles2D" parent="."]
+z_index = 725
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_explosion")
+emitting = false
+amount = 1
+texture = ExtResource("1_explosion")
+lifetime = 0.9
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_explosion")

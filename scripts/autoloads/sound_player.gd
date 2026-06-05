@@ -20,6 +20,7 @@ const _ALARM_STREAM : AudioStream = preload("res://assets/sounds/sounds/alarm.wa
 const _BREWERY_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/brewery_active_loop.wav")
 const _FIRE_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_loop.wav")
 const _FIRE_EXTINGUISH_STREAM : AudioStream = preload("res://assets/sounds/sounds/fire_extinguish.wav")
+const _EXPLOSION_STREAM : AudioStream = preload("res://assets/sounds/sounds/explosion.mp3")
 const _PIANO_LOOP_STREAM : AudioStream = preload("res://assets/sounds/sounds/piano_loop.wav")
 const _PUNCH_STREAM : AudioStream = preload("res://assets/sounds/sounds/punch.wav")
 const _SERVE_DRINK_STREAM : AudioStream = preload("res://assets/sounds/sounds/serve_drink.wav")
@@ -102,6 +103,9 @@ func play_fire_loop(world_position: Vector2) -> AudioStreamPlayer2D:
 
 func play_fire_extinguish(world_position: Vector2) -> void:
 	_play_2d(_FIRE_EXTINGUISH_STREAM, world_position, 4.0, 0.95, 1.05)
+
+func play_explosion(world_position: Vector2) -> void:
+	_play_2d(_EXPLOSION_STREAM, world_position, 2.0, 0.98, 1.02)
 
 func play_punch(world_position: Vector2) -> void:
 	_play_2d(_PUNCH_STREAM, world_position, -12.0, 0.7, 1.3)
