@@ -18,7 +18,7 @@ const PEE_TRIGGER_THRESHOLD: float = 0.8
 const PEE_RATE: float = 0.004
 const MAX_STAY_DURATION = 20.0
 const DIRT_DROP_CHECK_INTERVAL := 1.6
-const DIRT_DROP_CHANCE_WHILE_MOVING := 0.08
+const DIRT_DROP_CHANCE_WHILE_MOVING := 0.035
 
 var _arrest_highlight = null
 var _arrest_highlight_room = null

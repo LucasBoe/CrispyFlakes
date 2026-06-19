@@ -1,6 +1,8 @@
 extends Node
 class_name StatusModule
 
+const SHOW_DISGUSTED_STATUS_INDICATOR := false
+
 var npc: NPC
 var _statuses: Array[Enum.NpcStatus] = []
 
@@ -30,7 +32,7 @@ func get_entries() -> Array:
 	_refresh_dynamic_guest_statuses()
 	var entries: Array = []
 
-	if has_status(Enum.NpcStatus.DISGUSTED):
+	if SHOW_DISGUSTED_STATUS_INDICATOR and has_status(Enum.NpcStatus.DISGUSTED):
 		entries.append({icon = UiNotifications.ICON_EWW, label = "Disgusted by nearby filth"})
 	if has_status(Enum.NpcStatus.INJURED):
 		entries.append({icon = UiNotifications.ICON_INJURED, label = "Untreated Injury"})

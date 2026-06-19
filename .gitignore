@@ -21,6 +21,9 @@ mono_crash.*.json
 # Local build outputs
 builds/
 
+# Local recordings
+rec/
+
 # OS files
 .DS_Store
 .claude
