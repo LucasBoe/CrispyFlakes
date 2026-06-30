@@ -11,7 +11,7 @@ func loop():
 	bed = _find_available_bed()
 
 	if bed == null:
-		npc.add_satisfaction(-0.05, "No Bed")
+		npc.add_mood(-0.05, "No Bed")
 		npc.notify(UiNotifications.ICON_MINUS_1)
 		await pause(1)
 		return
@@ -53,7 +53,7 @@ func loop():
 	UiNotifications.create_notification_dynamic("sleep_done", npc, Vector2(0, -64), null, Color.ORANGE_RED, 1.5)
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	npc.Needs.Energy.strength = minf(1.0, npc.Needs.Energy.strength + 0.8)
-	add_satisfaction(0.7 - npc.Needs.satisfaction.strength, "Slept")
+	add_mood(0.7 - npc.Needs.mood.strength, "Slept")
 
 func _find_available_bed() -> RoomBed:
 	return get_least_loaded_room_of_type(

@@ -350,12 +350,12 @@ func _get_progress_duration(duration: float) -> float:
 		return maxf(0.05, duration * npc.get_work_duration_multiplier())
 	return duration
 
-func add_satisfaction(amount: float, reason: String = ""):
-	if npc != null and npc.has_method("add_satisfaction"):
-		npc.add_satisfaction(amount, reason)
+func add_mood(amount: float, reason: String = ""):
+	if npc != null and npc.has_method("add_mood"):
+		npc.add_mood(amount, reason)
 		return
 
-	npc.Needs.satisfaction.strength += amount
+	npc.Needs.mood.strength += amount
 	if amount > 0.5:
 		npc.notify(UiNotifications.ICON_PLUS_3)
 	elif amount > 0.25:

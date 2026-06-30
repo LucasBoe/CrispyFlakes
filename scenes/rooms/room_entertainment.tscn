@@ -68,5 +68,5 @@ script = ExtResource("5_module")
 icon = ExtResource("6_piano")
 module_name = "Piano"
 describtion = "keep this floor entertained"
-satisfaction_boost = 0.08
+mood_boost = 0.08
 bought = true

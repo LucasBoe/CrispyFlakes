@@ -55,9 +55,9 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var gambling_revenue_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/RevenueRow
 @onready var gambling_summary_host_button: Button = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI/SummaryState/HostNewRoundButton
 @onready var trading_office_ui = $MarginContainer/MarginContainer/VBoxContainer/TradingOfficeUI
-@onready var satisfaction_log_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection
-@onready var satisfaction_log_toggle_button: Button = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection/SatisfactionLogToggleButton
-@onready var satisfaction_log_items: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection/SatisfactionLogItems
+@onready var mood_log_section: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/MoodLogSection
+@onready var mood_log_toggle_button: Button = $MarginContainer/MarginContainer/VBoxContainer/MoodLogSection/MoodLogToggleButton
+@onready var mood_log_items: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/MoodLogSection/MoodLogItems
 @onready var narrative_label: RichTextLabel = $MarginContainer/MarginContainer/VBoxContainer/NarrativeLabel
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
@@ -83,8 +83,8 @@ var _connection_line: PixelLine = null
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
 var _trait_container: VBoxContainer = null
-var _satisfaction_log_size: int = -1
-var _is_satisfaction_log_expanded := true
+var _mood_log_size: int = -1
+var _is_mood_log_expanded := true
 var _equipment_container: VBoxContainer = null
 var _storage_items_container: VBoxContainer = null
 var _storage_items_signature: Array = []
@@ -111,7 +111,7 @@ func _ready():
 	NPCEventHandler.on_destroy_npc_signal.connect(_on_potential_target_deleted)
 
 	panel_close_button.pressed.connect(do_hide)
-	satisfaction_log_toggle_button.pressed.connect(_on_satisfaction_log_toggle_pressed)
+	mood_log_toggle_button.pressed.connect(_on_mood_log_toggle_pressed)
 	gambling_new_round_button.pressed.connect(_on_gambling_new_round_pressed)
 	gambling_start_round_button.pressed.connect(_on_gambling_start_round_pressed)
 	gambling_setup_loop_toggle.toggled.connect(_on_gambling_setup_loop_toggled)
@@ -158,8 +158,8 @@ func _ready():
 	hire_guest_button.hide()
 	arrest_button.hide()
 	worker_fight_response_row.hide()
-	satisfaction_log_section.hide()
-	satisfaction_log_items.hide()
+	mood_log_section.hide()
+	mood_log_items.hide()
 	narrative_label.hide()
 	gambling_ui.hide()
 	medical_treatment_ui.hide()
@@ -234,7 +234,7 @@ func _clear_instances():
 	narrative_label.text = ""
 	_npc_base_description = ""
 	_npc_narrative_text = ""
-	_is_satisfaction_log_expanded = true
+	_is_mood_log_expanded = true
 	_bound_hire_guest = null
 	_bound_hire_cost = -1
 	_bound_hire_block_reason = ""
@@ -270,9 +270,9 @@ func _clear_instances():
 	storage_filter_container.hide()
 	medical_treatment_ui.hide()
 
-	satisfaction_log_section.hide()
-	_clear_satisfaction_log_items()
-	_satisfaction_log_size = -1
+	mood_log_section.hide()
+	_clear_mood_log_items()
+	_mood_log_size = -1
 
 	if is_instance_valid(_equipment_container):
 		_equipment_container.queue_free()
@@ -295,7 +295,7 @@ func _clear_instances():
 func _keep_bottom_items_last() -> void:
 	var parent = room_delete_button.get_parent()
 	parent.move_child(room_delete_button, parent.get_child_count())
-	parent.move_child(satisfaction_log_section, parent.get_child_count())
+	parent.move_child(mood_log_section, parent.get_child_count())
 	parent.move_child(narrative_label, parent.get_child_count())
 
 func _get_status_icon_entries(npc: NPC) -> Array:
@@ -387,9 +387,10 @@ func _show_for_guest(guest: NPCGuest):
 
 	needs = guest.Needs
 	_rebuild_equipment_ui(guest)
-	_rebuild_satisfaction_log(guest)
+	_rebuild_mood_log(guest)
 	for need : Need in needs.needs:
-		if need.type != Enum.Need.SATISFACTION \
+		if need.type != Enum.Need.MOOD \
+		and need.type != Enum.Need.SATISFACTION \
 		and need.type != Enum.Need.DRUNKENNESS \
 		and need.type != Enum.Need.ENERGY \
 		and need.type != Enum.Need.STAY_DURATION:
@@ -464,19 +465,19 @@ func _create_trait_row(data) -> Control:
 	text_box.add_child(desc_label)
 	return panel
 
-func _rebuild_satisfaction_log(guest: NPCGuest):
-	_satisfaction_log_size = guest.satisfaction_log.size()
-	_clear_satisfaction_log_items()
+func _rebuild_mood_log(guest: NPCGuest):
+	_mood_log_size = guest.mood_log.size()
+	_clear_mood_log_items()
 
-	if guest.satisfaction_log.is_empty():
-		satisfaction_log_section.hide()
-		satisfaction_log_items.hide()
+	if guest.mood_log.is_empty():
+		mood_log_section.hide()
+		mood_log_items.hide()
 		return
 
-	satisfaction_log_section.show()
+	mood_log_section.show()
 
 	var by_reason: Dictionary = {}
-	for entry in guest.satisfaction_log:
+	for entry in guest.mood_log:
 		var key: String = entry.reason if entry.reason != "" else "?"
 		if by_reason.has(key):
 			by_reason[key].amount += entry.amount
@@ -493,26 +494,26 @@ func _rebuild_satisfaction_log(guest: NPCGuest):
 		lbl.text = "  %s%.2f  %s%s" % [sign_str, amount, entry.reason, count_str]
 		lbl.add_theme_color_override("font_color", Color.LIGHT_GREEN if amount >= 0 else Color.SALMON)
 		lbl.show()
-		satisfaction_log_items.add_child(lbl)
+		mood_log_items.add_child(lbl)
 
-	_update_satisfaction_log_ui()
+	_update_mood_log_ui()
 
-func _clear_satisfaction_log_items() -> void:
-	for child in satisfaction_log_items.get_children():
-		satisfaction_log_items.remove_child(child)
+func _clear_mood_log_items() -> void:
+	for child in mood_log_items.get_children():
+		mood_log_items.remove_child(child)
 		child.queue_free()
 
-func _update_satisfaction_log_ui() -> void:
-	var has_entries := satisfaction_log_items.get_child_count() > 0
-	satisfaction_log_section.visible = has_entries
-	satisfaction_log_toggle_button.text = "v Satisfaction Log" if _is_satisfaction_log_expanded else "> Satisfaction Log"
-	satisfaction_log_items.visible = has_entries and _is_satisfaction_log_expanded
+func _update_mood_log_ui() -> void:
+	var has_entries := mood_log_items.get_child_count() > 0
+	mood_log_section.visible = has_entries
+	mood_log_toggle_button.text = "v Mood Log" if _is_mood_log_expanded else "> Mood Log"
+	mood_log_items.visible = has_entries and _is_mood_log_expanded
 
-func _on_satisfaction_log_toggle_pressed() -> void:
-	if not satisfaction_log_section.visible:
+func _on_mood_log_toggle_pressed() -> void:
+	if not mood_log_section.visible:
 		return
-	_is_satisfaction_log_expanded = not _is_satisfaction_log_expanded
-	_update_satisfaction_log_ui()
+	_is_mood_log_expanded = not _is_mood_log_expanded
+	_update_mood_log_ui()
 
 func _show_for_room(room: RoomBase):
 	#needs = null
@@ -1395,8 +1396,8 @@ func _process(delta):
 		_bind_guest_hire_button(target)
 		_bind_guest_arrest_button(target)
 		var guest := target as NPCGuest
-		if guest.satisfaction_log.size() != _satisfaction_log_size:
-			_rebuild_satisfaction_log(guest)
+		if guest.mood_log.size() != _mood_log_size:
+			_rebuild_mood_log(guest)
 
 	if target is NPCWorker:
 		var worker := target as NPCWorker

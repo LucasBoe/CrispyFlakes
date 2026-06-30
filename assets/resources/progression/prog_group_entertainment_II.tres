@@ -1,9 +1,10 @@
 [gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://qqu1e11sw7dr"]
 
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_safety_II.tres" id="2_dep"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_entertainment.tres" id="3_piano"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_saloon.tres" id="4_saloon"]
+[ext_resource type="Resource" uid="uid://4uyxc124moe5" path="res://assets/resources/progression/prog_group_safety_II.tres" id="2_dep"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_et5o8"]
+[ext_resource type="Resource" uid="uid://chwjjtse0boci" path="res://assets/resources/rooms/room_entertainment.tres" id="3_piano"]
+[ext_resource type="Resource" uid="uid://csaloonrtres1" path="res://assets/resources/rooms/room_saloon.tres" id="4_saloon"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_ss0gn"]
 
 [resource]

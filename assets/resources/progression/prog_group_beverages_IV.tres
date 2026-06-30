@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3 uid="uid://c4apour4ut6xw"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_trading_office.tres" id="2_trade_office"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_IV.tres" id="3_dep"]
-[ext_resource type="Script" path="res://scripts/room_data.gd" id="4_roomdata"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bucf8au433od2" path="res://assets/resources/rooms/room_trading_office.tres" id="2_trade_office"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_3oyih"]
+[ext_resource type="Resource" uid="uid://cuh55v68bmigp" path="res://assets/resources/progression/prog_group_infrastructure_IV.tres" id="3_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_roomdata"]
 
 [resource]
 script = ExtResource("1_script")

@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3 uid="uid://0eaipffrfdrf"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_water_tower.tres" id="2_water_tower"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_III.tres" id="3_dep"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://c0o0luogaa1km" path="res://assets/resources/rooms/room_water_tower.tres" id="2_water_tower"]
+[ext_resource type="Resource" uid="uid://duhe4p6ck78lx" path="res://assets/resources/progression/prog_group_infrastructure_III.tres" id="3_dep"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_u26om"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_roomdata"]
 
 [resource]

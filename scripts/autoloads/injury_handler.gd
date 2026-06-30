@@ -6,7 +6,7 @@ signal guest_injured_signal(guest: NPCGuest)
 signal guest_recovered_signal(guest: NPCGuest)
 
 const INFIRMARY_ROOM_DATA := preload("res://assets/resources/rooms/room_infirmary.tres")
-const UNTREATED_INJURY_SATISFACTION_LOSS := 0.05
+const UNTREATED_INJURY_MOOD_LOSS := 0.05
 const UNTREATED_INJURY_TICK_SECONDS := 20.0
 const GOOD_TREATMENT_THRESHOLD := 0.6
 
@@ -234,7 +234,7 @@ func _apply_guest_penalties(injured_npcs: Array[NPC]) -> void:
 		if Global.time_now < next_tick:
 			continue
 
-		guest.add_satisfaction(-UNTREATED_INJURY_SATISFACTION_LOSS, "Untreated Injury")
+		guest.add_mood(-UNTREATED_INJURY_MOOD_LOSS, "Untreated Injury")
 		_next_guest_penalty_time[guest] = Global.time_now + UNTREATED_INJURY_TICK_SECONDS
 
 func _should_keep_npc_injured(npc: NPC) -> bool:

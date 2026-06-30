@@ -1,7 +1,7 @@
 extends NeedBehaviour
 class_name NeedPeeBehaviour
 
-const ROOM_RELIEF_SATISFACTION := 0.35
+const ROOM_RELIEF_MOOD := 0.35
 const OUTSIDE_RELIEF_DURATION := 2.0
 
 var outhouse : RoomOuthouse
@@ -102,7 +102,7 @@ func _use_outhouse() -> bool:
 		await outhouse.play_close_animation()
 		outhouse.user = null
 		outhouse.uses += 1
-		return _finish_relief(outhouse, "Used Bathroom", ROOM_RELIEF_SATISFACTION)
+		return _finish_relief(outhouse, "Used Bathroom", ROOM_RELIEF_MOOD)
 
 	return false
 
@@ -148,7 +148,7 @@ func _use_toilet() -> bool:
 	if is_instance_valid(toilet):
 		await toilet.play_close_animation(stall_index)
 		toilet.release_stall(npc, true)
-		return _finish_relief(toilet, "Used Bathroom", ROOM_RELIEF_SATISFACTION)
+		return _finish_relief(toilet, "Used Bathroom", ROOM_RELIEF_MOOD)
 
 	return false
 
@@ -195,16 +195,16 @@ func _ensure_toilet_water_supply() -> bool:
 	return false
 
 func _handle_full_outhouse() -> void:
-	npc.add_satisfaction(-0.3, "Outhouse Full")
+	npc.add_mood(-0.3, "Outhouse Full")
 	npc.notify(UiNotifications.ICON_MINUS_2)
 
-func _finish_relief(room: RoomBase = null, reason: String = "", satisfaction: float = 0.0) -> bool:
+func _finish_relief(room: RoomBase = null, reason: String = "", mood: float = 0.0) -> bool:
 	npc.needs_to_pee = 0.0
 
 	if room != null and room.get_service_price() > 0:
 		ResourceHandler.add_animated(Enum.Resources.MONEY, room.get_service_price(), room.get_center_position(), Vector2i(room.x, room.y))
 
-	if satisfaction > 0.0:
-		add_satisfaction(satisfaction, reason)
+	if mood > 0.0:
+		add_mood(mood, reason)
 
 	return not stopped

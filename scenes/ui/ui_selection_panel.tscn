@@ -854,17 +854,17 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 text = "Dig Deeper"
 
-[node name="SatisfactionLogSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
+[node name="MoodLogSection" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="SatisfactionLogToggleButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection"]
+[node name="MoodLogToggleButton" type="Button" parent="MarginContainer/MarginContainer/VBoxContainer/MoodLogSection"]
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
-text = "> Satisfaction Log"
+text = "> Mood Log"
 
-[node name="SatisfactionLogItems" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/SatisfactionLogSection"]
+[node name="MoodLogItems" type="VBoxContainer" parent="MarginContainer/MarginContainer/VBoxContainer/MoodLogSection"]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 0

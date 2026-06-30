@@ -24,8 +24,8 @@ var _arrest_highlight_room = null
 var Needs : NeedsModule
 var is_dirty = true
 
-const MAX_SATISFACTION_LOG = 15
-var satisfaction_log: Array = []
+const MAX_MOOD_LOG = 15
+var mood_log: Array = []
 
 @onready var dirt = $AnimationModule/Dirt
 
@@ -107,7 +107,7 @@ func get_next_behaviour():
 	if is_robber:
 		return RobBehaviour
 
-	if Needs.satisfaction.strength <= 0.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
+	if Needs.mood.strength + Needs.satisfaction.strength < 1.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
 		return NeedLeaveBehaviour
 
 	if Needs.drunkenness.strength > randf():
@@ -159,13 +159,13 @@ func try_drop_dirt():
 func clean():
 	is_dirty = false
 	Tint.remove_tint_for(self)
-	add_satisfaction(0.3, "Cleaned")
+	add_mood(0.3, "Cleaned")
 
-func add_satisfaction(amount: float, reason: String = ""):
-	Needs.satisfaction.strength = clampf(Needs.satisfaction.strength + amount, 0.0, 1.0)
-	satisfaction_log.append({amount = amount, reason = reason})
-	if satisfaction_log.size() > MAX_SATISFACTION_LOG:
-		satisfaction_log.pop_front()
+func add_mood(amount: float, reason: String = ""):
+	Needs.mood.strength = clampf(Needs.mood.strength + amount, 0.0, 1.0)
+	mood_log.append({amount = amount, reason = reason})
+	if mood_log.size() > MAX_MOOD_LOG:
+		mood_log.pop_front()
 	if amount <= 0:
 		return
 	if amount > 0.5:

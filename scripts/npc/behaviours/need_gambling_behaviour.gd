@@ -4,7 +4,7 @@ class_name NeedGamblingBehaviour
 var room: RoomGambling
 
 static func get_probability_by_needs(needs: NeedsModule) -> float:
-	return needs.satisfaction.strength * 0.25
+	return needs.mood.strength * 0.25
 
 func loop():
 	_narrative = ["Looking for a game...", "Feeling lucky...", "Heading to the table..."].pick_random()

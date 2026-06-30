@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://ir28dwa84bh7"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_V.tres" id="2_dep"]
-[ext_resource type="Resource" path="res://assets/resources/infrastructure/infrastructure_water_pipe.tres" id="3_pipes"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_toilet.tres" id="4_toilet"]
-[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="5_infra"]
-[ext_resource type="Script" path="res://scripts/room_data.gd" id="6_roomdata"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://0eaipffrfdrf" path="res://assets/resources/progression/prog_group_infrastructure_V.tres" id="2_dep"]
+[ext_resource type="Resource" uid="uid://kmmg3xvl1ath" path="res://assets/resources/infrastructure/infrastructure_water_pipe.tres" id="3_pipes"]
+[ext_resource type="Resource" uid="uid://dats8t5oih6it" path="res://assets/resources/rooms/room_toilet.tres" id="4_toilet"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="5_infra"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")

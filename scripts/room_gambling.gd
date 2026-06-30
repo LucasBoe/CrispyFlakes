@@ -304,7 +304,7 @@ func _finish_round() -> void:
 
 	for guest in participants.duplicate():
 		if is_instance_valid(guest):
-			guest.add_satisfaction(0.1, "Gambling")
+			guest.add_mood(0.1, "Gambling")
 			stand_up(guest)
 	participants.clear()
 

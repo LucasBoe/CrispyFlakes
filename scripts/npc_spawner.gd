@@ -16,13 +16,13 @@ var guests = []
 var workers = []
 var special_npcs = []
 
-func get_average_satisfaction() -> float:
+func get_average_mood() -> float:
 	var total := 0.0
 	var count := 0
 	for guest: NPCGuest in get_live_guests():
 		if not guest.counts_towards_guest_total() or guest.Needs == null:
 			continue
-		total += guest.Needs.satisfaction.strength
+		total += guest.Needs.mood.strength
 		count += 1
 	if count == 0:
 		return 1.0
@@ -30,8 +30,8 @@ func get_average_satisfaction() -> float:
 
 func guests_per_day_rate() -> float:
 	var base = Balancing.GUEST_SPAWN_BASE_RATE + get_active_guest_count() * Balancing.GUEST_SPAWN_CURRENT_GUEST_COUNT_EFFECT
-	var se = Balancing.GUEST_SPAWN_SATISFACTION_EFFECT_STRENGTH
-	return base * ((1.0 - se) + se * get_average_satisfaction())
+	var se = Balancing.GUEST_SPAWN_MOOD_EFFECT_STRENGTH
+	return base * ((1.0 - se) + se * get_average_mood())
 var next_guest_progression = 1.0
 const SPECIAL_ENCOUNTER_DAYS := 4.0
 var next_special_encounter_progression := 0.0

@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://cuh55v68bmigp"]
 
-[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_infirmary.tres" id="2_infirmary"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_sick_ward.tres" id="3_sick_ward"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_III.tres" id="5_dep"]
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://bvqjgc1nxblt5" path="res://assets/resources/rooms/room_infirmary.tres" id="2_infirmary"]
+[ext_resource type="Resource" uid="uid://bwrkhe2oycmu6" path="res://assets/resources/rooms/room_sick_ward.tres" id="3_sick_ward"]
+[ext_resource type="Resource" uid="uid://duhe4p6ck78lx" path="res://assets/resources/progression/prog_group_infrastructure_III.tres" id="5_dep"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="7_infrastructuredata"]
 
 [resource]
 script = ExtResource("1_script")

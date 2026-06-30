@@ -7,7 +7,7 @@ extends Control
 @onready var label_guest_amount: Label = %Label_GuestAmount
 @onready var progression_bar: ProgressBar = %ProgressBar_GuestProgression
 @onready var label_guest_rate: Label = %Label_GuestRate
-@onready var label_avg_satisfaction: Label = %Label_AvgSatisfaction
+@onready var label_avg_mood: Label = %Label_AvgMood
 
 var _highlights_active: bool = false
 
@@ -94,13 +94,13 @@ func _process(_delta: float) -> void:
 		label_guest_rate.text = "+%.2f/M" % Global.NPCSpawner.guests_per_day_rate()
 	else:
 		label_guest_rate.text = ""
-	_update_avg_satisfaction(guest_count)
+	_update_avg_mood(guest_count)
 
-func _update_avg_satisfaction(guest_count: int) -> void:
+func _update_avg_mood(guest_count: int) -> void:
 	if guest_count == 0:
-		label_avg_satisfaction.text = "Satisfaction: -"
-		label_avg_satisfaction.remove_theme_color_override("font_color")
+		label_avg_mood.text = "Mood: -"
+		label_avg_mood.remove_theme_color_override("font_color")
 		return
-	var avg := Global.NPCSpawner.get_average_satisfaction()
-	label_avg_satisfaction.text = "Satisfaction: %d%%" % roundi(avg * 100)
-	label_avg_satisfaction.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg))
+	var avg := Global.NPCSpawner.get_average_mood()
+	label_avg_mood.text = "Mood: %d%%" % roundi(avg * 100)
+	label_avg_mood.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg))

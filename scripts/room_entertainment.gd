@@ -2,7 +2,7 @@ extends RoomBase
 class_name RoomEntertainment
 
 const DEFAULT_EFFECT_INTERVAL := 10.0
-const DEFAULT_SATISFACTION_BOOST := 0.08
+const DEFAULT_MOOD_BOOST := 0.08
 const PERFORMANCE_RANGE := 2
 
 var _guests_swaying_enabled := false
@@ -25,10 +25,10 @@ func get_performance_interval() -> float:
 		return current_module.effect_interval
 	return DEFAULT_EFFECT_INTERVAL
 
-func get_satisfaction_boost() -> float:
-	if current_module and current_module.satisfaction_boost > 0.0:
-		return current_module.satisfaction_boost
-	return DEFAULT_SATISFACTION_BOOST
+func get_mood_boost() -> float:
+	if current_module and current_module.mood_boost > 0.0:
+		return current_module.mood_boost
+	return DEFAULT_MOOD_BOOST
 
 func has_active_performance() -> bool:
 	return current_module != null and worker != null
@@ -64,7 +64,7 @@ func entertain_guests() -> int:
 
 	var boosted_guest_count := 0
 	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
-		guest.add_satisfaction(get_satisfaction_boost(), "Entertainment")
+		guest.add_mood(get_mood_boost(), "Entertainment")
 		boosted_guest_count += 1
 
 	return boosted_guest_count

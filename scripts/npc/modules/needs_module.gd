@@ -3,9 +3,9 @@ class_name NeedsModule
 
 const SITTING_ENERGY_LOSS_MULTIPLIER := 0.25
 
-var satisfaction : Need
+var mood : Need
 var stay_duration : Need
-var passive_satisfaction_loss : Need
+var satisfaction : Need
 var drunkenness : Need
 var Energy : Need
 
@@ -14,9 +14,9 @@ var needs = []
 var npc
 
 func _ready():
-	satisfaction = new_need(Enum.Need.SATISFACTION, 0.5)
+	mood = new_need(Enum.Need.MOOD, 0.5)
 	stay_duration = new_need(Enum.Need.STAY_DURATION, 0.0)
-	passive_satisfaction_loss = new_need(Enum.Need.PASSIVE_SATISFACTION_LOSS, 0.0)
+	satisfaction = new_need(Enum.Need.SATISFACTION, 1.0)
 	drunkenness = new_need(Enum.Need.DRUNKENNESS, 0.0)
 	Energy = new_need(Enum.Need.ENERGY, randf_range(0.65, 0.95))
 	
@@ -57,12 +57,8 @@ func _process(delta):
 
 	stay_duration.strength += delta_minute
 
-	var max_loss := 2.0        # cap (per minute)
-	var ramp := 0.15        # how fast it approaches the cap
+	var ramp := 0.15
 
-	# diminishing returns: grows fast at first, then slows as it gets higher
-	passive_satisfaction_loss.strength += (max_loss - passive_satisfaction_loss.strength) * ramp * delta_minute
+	satisfaction.strength += (0.0 - satisfaction.strength) * ramp * delta_minute
 	var energy_loss_multiplier := SITTING_ENERGY_LOSS_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0
 	Energy.strength = maxf(0.0, Energy.strength - (0.35 + drunkenness.strength * 0.35) * energy_loss_multiplier * delta_minute)
-
-	satisfaction.strength = clampf(satisfaction.strength - passive_satisfaction_loss.strength * delta_minute, 0.0, 1.0)

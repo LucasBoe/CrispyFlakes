@@ -73,18 +73,18 @@ func loop():
 			CowboyTalk.talk("Have you heard about MECH BROTLAUCH? He seems to be the evil guy around here.", npc)
 
 		var drunkenenes_increase = 0.0
-		var satisfaction_increase = 0.2
+		var mood_increase = 0.2
 
 		if drink_type == Enum.Items.BEER_BARREL:
 			drunkenenes_increase = .1
-			satisfaction_increase = .7
+			mood_increase = .7
 
 		elif drink_type == Enum.Items.WISKEY_BOX:
 			drunkenenes_increase = .3
-			satisfaction_increase = 1.0
+			mood_increase = 1.0
 
 		if not table:
-			satisfaction_increase /= 4
+			mood_increase /= 4
 
 		var drink_duration = 10
 
@@ -98,7 +98,7 @@ func loop():
 			if stopped:
 				return
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
-			add_satisfaction(satisfaction_increase / float(drink_duration), "Drinking")
+			add_mood(mood_increase / float(drink_duration), "Drinking")
 
 		if is_instance_valid(table) and table.is_guest_seated(npc):
 			table.stand_up(npc)
@@ -108,7 +108,7 @@ func loop():
 			drink.destroy()
 	else:
 		#UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
-		npc.add_satisfaction(-0.1, "No Drink")
+		npc.add_mood(-0.1, "No Drink")
 		npc.notify(UiNotifications.ICON_MINUS_1)
 
 func stop_loop() -> BehaviourSaveData:

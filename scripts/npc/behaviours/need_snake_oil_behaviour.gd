@@ -1,13 +1,13 @@
 extends NeedBehaviour
 class_name NeedSnakeOilBehaviour
 
-const SATISFACTION_BOOST := 0.2
+const MOOD_BOOST := 0.2
 
 var salesman = null
 var request = null
 
 static func get_probability_by_needs(needs: NeedsModule):
-	return needs.satisfaction.strength * maxf(0.0, 1.0 - needs.drunkenness.strength)
+	return needs.mood.strength * maxf(0.0, 1.0 - needs.drunkenness.strength)
 
 func loop() -> void:
 	_narrative = ["Curious about the tonic...", "Thinking about a miracle cure...", "Looking for a quick pick-me-up..."].pick_random()
@@ -47,7 +47,7 @@ func loop() -> void:
 		await end_of_frame()
 
 	if request.status == Enum.RequestStatus.FULFILLED:
-		add_satisfaction(SATISFACTION_BOOST, "Snake Oil")
+		add_mood(MOOD_BOOST, "Snake Oil")
 
 func stop_loop() -> BehaviourSaveData:
 	if salesman != null:
