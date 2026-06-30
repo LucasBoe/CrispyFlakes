@@ -16,8 +16,22 @@ var guests = []
 var workers = []
 var special_npcs = []
 
+func get_average_satisfaction() -> float:
+	var total := 0.0
+	var count := 0
+	for guest: NPCGuest in get_live_guests():
+		if not guest.counts_towards_guest_total() or guest.Needs == null:
+			continue
+		total += guest.Needs.satisfaction.strength
+		count += 1
+	if count == 0:
+		return 1.0
+	return maxf(0.1, total / count)
+
 func guests_per_day_rate() -> float:
-	return 3.0 + get_active_guest_count() * 0.1
+	var base = Balancing.GUEST_SPAWN_BASE_RATE + get_active_guest_count() * Balancing.GUEST_SPAWN_CURRENT_GUEST_COUNT_EFFECT
+	var se = Balancing.GUEST_SPAWN_SATISFACTION_EFFECT_STRENGTH
+	return base * ((1.0 - se) + se * get_average_satisfaction())
 var next_guest_progression = 1.0
 const SPECIAL_ENCOUNTER_DAYS := 4.0
 var next_special_encounter_progression := 0.0
@@ -56,12 +70,13 @@ func _process(delta):
 	if next_guest_progression > 1.0:
 		spawn_new_guest()
 		next_guest_progression = 0.0
-
-	next_special_encounter_progression += delta / (Global.DAY_DURATION * SPECIAL_ENCOUNTER_DAYS)
-	if next_special_encounter_progression > 1.0:
-		if can_spawn_special_encounter():
-			spawn_special_encounter()
-		next_special_encounter_progression = 0.0
+	
+	# SPECIAL ENCOUNTERS
+	#next_special_encounter_progression += delta / (Global.DAY_DURATION * SPECIAL_ENCOUNTER_DAYS)
+	#if next_special_encounter_progression > 1.0:
+		#if can_spawn_special_encounter():
+			#spawn_special_encounter()
+		#next_special_encounter_progression = 0.0
 
 func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false, display_name := ""):
 	if not ignore_worker_limit and not can_hire_worker():
@@ -378,9 +393,7 @@ func console_spawn_guest(adj):
 		elif adj == "robber":
 			guest.is_robber = true
 		elif adj == "injured":
-			if guest.Status != null:
-				guest.Status.set_status(Enum.NpcStatus.INJURED)
-				InjuryHandler.on_guest_injured(guest)
+			InjuryHandler.try_injure_guest(guest)
 
 func console_spawn_guests(amount, adj):
 	print("spawn_guests", amount)

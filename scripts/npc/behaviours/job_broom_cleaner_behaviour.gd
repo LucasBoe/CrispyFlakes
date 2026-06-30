@@ -8,6 +8,8 @@ const BED_CLEAN_DURATION := 3.0
 const OUTHOUSE_CLEAN_DURATION := 4.0
 const IDLE_WAIT_DURATION := 2.0
 const FLOOR_MESS_CLEAN_RADIUS := 16.0
+const OUTDOOR_PENALTY := 90000.0  # ~300px bias toward indoor targets
+const SPREAD_RADIUS := 100.0      # penalty radius around other cleaners' targets
 
 var closet: RoomBroomCloset
 var active_room_target: RoomBase
@@ -15,6 +17,7 @@ var active_broom_particles: GPUParticles2D
 
 static var occupied_beds = []
 static var occupied_outhouses = []
+static var cleaner_targets: Dictionary = {}  # npc -> Vector2
 
 func start_loop():
 	closet = _find_closet()
@@ -59,6 +62,7 @@ func loop():
 			_narrative = ["Mopping up a puddle...", "Cleaning the floor...", "Soaking it up..."].pick_random()
 		else:
 			_narrative = ["Sweeping up the dirt...", "Getting every last bit...", "Tidying the floor..."].pick_random()
+		cleaner_targets[npc] = _target_position(target)
 		_reserve_room_target(target)
 		await move(_target_position(target))
 
@@ -83,6 +87,7 @@ func loop():
 			_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
+	cleaner_targets.erase(npc)
 	_stop_broom_effect_immediately()
 	if is_instance_valid(closet):
 		if closet.on_destroy_signal.is_connected(_change_to_idle):
@@ -157,35 +162,45 @@ func _ensure_broom() -> void:
 		npc.Item.pick_up(broom)
 
 func _find_cleanup_target():
+	var candidates: Array = []
+
 	var closest_bed := _find_dirty_bed()
+	if closest_bed != null:
+		candidates.append(closest_bed)
 	var closest_outhouse := _find_dirty_outhouse()
+	if closest_outhouse != null:
+		candidates.append(closest_outhouse)
 
-	if closest_bed != null or closest_outhouse != null:
-		var priority = []
-		if closest_bed != null:
-			priority.append(closest_bed)
-		if closest_outhouse != null:
-			priority.append(closest_outhouse)
-		priority.sort_custom(func(a, b): return _target_position(a).distance_squared_to(npc.global_position) < _target_position(b).distance_squared_to(npc.global_position))
-		return priority[0]
+	candidates.append_array(DirtHandler.get_all_in_range(npc.global_position, 99999.0))
+	candidates.append_array(PuddleHandler.get_all_in_range(npc.global_position, 99999.0))
 
-	var closest_dirt := DirtHandler.get_closest_to(npc.global_position)
-	var closest_puddle := PuddleHandler.get_closest_to(npc.global_position)
 	var closest_drink: Item = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.DRINK)
-	var candidates = []
-
-	if closest_dirt != null:
-		candidates.append(closest_dirt)
-	if closest_puddle != null:
-		candidates.append(closest_puddle)
 	if closest_drink != null:
 		candidates.append(closest_drink)
 
 	if candidates.is_empty():
 		return null
 
-	candidates.sort_custom(func(a, b): return _target_position(a).distance_squared_to(npc.global_position) < _target_position(b).distance_squared_to(npc.global_position))
+	candidates.sort_custom(func(a, b): return _score_candidate(a) < _score_candidate(b))
 	return candidates[0]
+
+func _score_candidate(candidate) -> float:
+	var pos := _target_position(candidate)
+	var score := pos.distance_squared_to(npc.global_position)
+
+	var room = Building.query.room_at_position(pos)
+	if room == null or room.is_outside_room:
+		score += OUTDOOR_PENALTY
+
+	var spread_sq := SPREAD_RADIUS * SPREAD_RADIUS
+	for other_npc: Node in cleaner_targets:
+		if other_npc == npc:
+			continue
+		var dist_sq := pos.distance_squared_to(cleaner_targets[other_npc])
+		if dist_sq < spread_sq:
+			score += spread_sq - dist_sq
+
+	return score
 
 func _target_position(target) -> Vector2:
 	if not is_instance_valid(target):

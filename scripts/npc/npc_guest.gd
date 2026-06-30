@@ -17,8 +17,6 @@ const INITIAL_MAX_PEE_URGE: float = 0.9
 const PEE_TRIGGER_THRESHOLD: float = 0.8
 const PEE_RATE: float = 0.004
 const MAX_STAY_DURATION = 20.0
-const DIRT_DROP_CHECK_INTERVAL := 1.6
-const DIRT_DROP_CHANCE_WHILE_MOVING := 0.08
 
 var _arrest_highlight = null
 var _arrest_highlight_room = null
@@ -37,7 +35,7 @@ func init(custom_look = null):
 	apply_look(custom_look)
 	while is_dirty:
 		try_drop_dirt()
-		await get_tree().create_timer(DIRT_DROP_CHECK_INTERVAL).timeout
+		await get_tree().create_timer(Balancing.GUEST_DIRT_DROP_CHECK_INTERVAL).timeout
 
 func _ready():
 	super._ready()
@@ -153,7 +151,7 @@ func try_drop_dirt():
 	if not dirt.get_child(0).visible:
 		return
 
-	if randf() > DIRT_DROP_CHANCE_WHILE_MOVING:
+	if randf() > Balancing.GUEST_DIRT_SPAWN_CHANCE:
 		return
 
 	DirtHandler.create_dirt_at(global_position)

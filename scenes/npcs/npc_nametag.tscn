@@ -5,8 +5,8 @@
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="3_vu7n7"]
 
 [node name="NpcNametag" type="CenterContainer"]
-z_as_relative = false
 z_index = 4096
+z_as_relative = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5

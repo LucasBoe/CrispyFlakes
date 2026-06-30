@@ -5,6 +5,7 @@ signal npc_recovered_signal(npc: NPC)
 signal guest_injured_signal(guest: NPCGuest)
 signal guest_recovered_signal(guest: NPCGuest)
 
+const INFIRMARY_ROOM_DATA := preload("res://assets/resources/rooms/room_infirmary.tres")
 const UNTREATED_INJURY_SATISFACTION_LOSS := 0.05
 const UNTREATED_INJURY_TICK_SECONDS := 20.0
 const GOOD_TREATMENT_THRESHOLD := 0.6
@@ -13,8 +14,26 @@ var _injured: Array[NPC] = []
 var _next_guest_penalty_time: Dictionary = {}
 var _recovery_payment_sources: Dictionary = {}
 
+func is_injury_unlocked() -> bool:
+	return ProgressionHandler.is_room_build_unlocked(INFIRMARY_ROOM_DATA)
+
+func try_injure_npc(npc: NPC) -> bool:
+	if not is_injury_unlocked() or npc == null or not is_instance_valid(npc) or npc.Status == null:
+		return false
+	if npc.Status.has_status(Enum.NpcStatus.INJURED):
+		return false
+
+	npc.Status.set_status(Enum.NpcStatus.INJURED)
+	on_npc_injured(npc)
+	return true
+
+func try_injure_guest(guest: NPCGuest) -> bool:
+	return try_injure_npc(guest)
+
 func on_npc_injured(npc: NPC) -> void:
 	if npc == null or not is_instance_valid(npc):
+		return
+	if not is_injury_unlocked():
 		return
 	if npc.Status != null:
 		npc.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
@@ -170,10 +189,24 @@ func collect_recovery_payment(npc: NPC) -> void:
 	)
 
 func _process(_delta: float) -> void:
+	_clear_injuries_if_locked()
 	_clear_invalid_payment_sources()
 	var injured_npcs := get_injured_npcs()
 	_sync_treatment_behaviours(injured_npcs.duplicate())
 	_apply_guest_penalties(injured_npcs.duplicate())
+
+func _clear_injuries_if_locked() -> void:
+	if is_injury_unlocked():
+		return
+
+	for injured: NPC in get_injured_npcs().duplicate():
+		if injured == null or not is_instance_valid(injured):
+			continue
+		if injured.Status != null:
+			injured.Status.clear_status(Enum.NpcStatus.INJURED)
+			injured.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
+			injured.Status.clear_status(Enum.NpcStatus.BADLY_TREATED)
+		on_npc_recovered(injured)
 
 func _sync_treatment_behaviours(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:

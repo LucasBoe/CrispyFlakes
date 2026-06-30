@@ -35,7 +35,7 @@ func _update_money_visual() -> void:
 	var frame := 0
 
 	if capacity > 0.0:
-		var fill_ratio := pow(clampf(amount / capacity, 0.0, 1.0), 2)
+		var fill_ratio := sqrt(clampf(amount / capacity, 0.0, 1.0))
 		frame = mini(MAX_MONEY_FRAME, int(floor(1 + fill_ratio * float(MAX_MONEY_FRAME))))
 		if amount == 0:
 			frame = 0

@@ -465,9 +465,7 @@ func _knock_out(npc: NPC) -> void:
 	_remove_participant_from_fight(npc)
 	_debug("knockout %s participants=%s" % [_npc_debug(npc), _participants_debug()])
 	npc.Behaviour.set_behaviour(KnockedOutBehaviour)
-	if npc.Status != null:
-		npc.Status.set_status(Enum.NpcStatus.INJURED)
-		InjuryHandler.on_npc_injured(npc)
+	if InjuryHandler.try_injure_npc(npc):
 		print("[Fight] %s knocked out and marked INJURED — fight_type=%s" % [
 			"Guest" if npc is NPCGuest else "Worker",
 			FightType.keys()[fight_type]
@@ -475,9 +473,7 @@ func _knock_out(npc: NPC) -> void:
 
 func _injure_participant(npc: NPC) -> void:
 	_remove_participant_from_fight(npc)
-	if npc.Status != null and not npc.Status.has_status(Enum.NpcStatus.INJURED):
-		npc.Status.set_status(Enum.NpcStatus.INJURED)
-		InjuryHandler.on_npc_injured(npc)
+	if InjuryHandler.try_injure_npc(npc):
 		print("[Fight] %s injured and removed from fight — fight_type=%s" % [
 			"Guest" if npc is NPCGuest else "Worker",
 			FightType.keys()[fight_type]
@@ -506,6 +502,8 @@ func _remove_participant_from_fight(npc: NPC) -> void:
 
 func _should_convert_knockout_to_injury(target: NPC, target_energy_after_hit: float) -> bool:
 	if target == null or not is_instance_valid(target):
+		return false
+	if not InjuryHandler.is_injury_unlocked():
 		return false
 	if target_energy_after_hit > 0.0:
 		return false

@@ -87,26 +87,20 @@ func _select_next_idle() -> void:
 	Global.UI.selection.manually_select(idle)
 
 func _process(_delta: float) -> void:
-	label_guest_amount.text = str("Guests: ", Global.NPCSpawner.get_active_guest_count())
+	var guest_count := Global.NPCSpawner.get_active_guest_count()
+	label_guest_amount.text = str("Guests: ", guest_count)
 	if Global.should_auto_spawn_guests:
 		progression_bar.value = Global.NPCSpawner.next_guest_progression
-		label_guest_rate.text = str("+", Global.NPCSpawner.guests_per_day_rate(), "/M")
+		label_guest_rate.text = "+%.2f/M" % Global.NPCSpawner.guests_per_day_rate()
 	else:
 		label_guest_rate.text = ""
-	_update_avg_satisfaction()
+	_update_avg_satisfaction(guest_count)
 
-func _update_avg_satisfaction() -> void:
-	var total := 0.0
-	var count := 0
-	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
-		if not guest.counts_towards_guest_total() or guest.Needs == null:
-			continue
-		total += guest.Needs.satisfaction.strength
-		count += 1
-	if count == 0:
+func _update_avg_satisfaction(guest_count: int) -> void:
+	if guest_count == 0:
 		label_avg_satisfaction.text = "Satisfaction: -"
 		label_avg_satisfaction.remove_theme_color_override("font_color")
 		return
-	var avg := total / count
+	var avg := Global.NPCSpawner.get_average_satisfaction()
 	label_avg_satisfaction.text = "Satisfaction: %d%%" % roundi(avg * 100)
 	label_avg_satisfaction.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg))

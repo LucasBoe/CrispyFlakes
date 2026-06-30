@@ -42,13 +42,12 @@ func _run_startup_sequence() -> void:
 	Global.UI.menu.start_tutorial_menu_gating()
 	Global.UI.selection.set_context_menu_blocked(true)
 	spawn_bounties(3)
-	spawn_item_stack(Enum.Items.WOOD, 3, 0, 10)
+	spawn_item_stack(Enum.Items.WOOD, 4, 0, 10)
 	_set_startup_money(STARTUP_INITIAL_MONEY)
 	ProgressionHandler.unlock_default_rooms()
 	Global.should_auto_spawn_guests = false
 	_skip_requested = false
-
-	var skip_layer := create_skip_tutorial_button()
+	_set_skip_tutorial_available(true)
 
 	RoomStatusHandler.enabled = false
 	Global.UI.hud.hide()
@@ -57,23 +56,22 @@ func _run_startup_sequence() -> void:
 	await _fade_outside_overlay()
 	if not _skip_requested and is_instance_valid(tutorial_worker):
 		_reveal_quest_for_target(_quests.cleanup, tutorial_worker)
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.cleanup)):
+		if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.cleanup)):
 			return
 		_quests.cleanup.start()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_cleanup_completion(_quests.cleanup)):
+		if _finish_startup_if_aborted(await _wait_for_cleanup_completion(_quests.cleanup)):
 			return
 		_quests.cleanup.set_done()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_claim(_quests.cleanup)):
+		if _finish_startup_if_aborted(await _wait_for_tutorial_claim(_quests.cleanup)):
 			return
 		Global.UI.selection.set_context_menu_blocked(false)
 
 		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_bar)):
+		if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.build_bar)):
 			return
 		_quests.build_bar.start()
 		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
-			skip_layer,
 			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
 				Global.UI.menu.build_tab.tab_cointainer,
@@ -83,14 +81,14 @@ func _run_startup_sequence() -> void:
 			)
 		):
 			return
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_bar_setup_completion(tutorial_worker)):
+		if _finish_startup_if_aborted(await _wait_for_bar_setup_completion(tutorial_worker)):
 			return
 		_quests.build_bar.set_done()
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_initial_bar_water_stock(tutorial_worker)):
+		if _finish_startup_if_aborted(await _wait_for_initial_bar_water_stock(tutorial_worker)):
 			return
 
 		_reveal_quest_for_target(_quests.serve_guests, tutorial_worker)
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.serve_guests)):
+		if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.serve_guests)):
 			return
 		_quests.serve_guests.start()
 
@@ -105,12 +103,11 @@ func _run_startup_sequence() -> void:
 				STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT
 			)
 		)
-		if _finish_startup_if_aborted(skip_layer, await _wait_for_served_guest_completion(_quests.serve_guests)):
+		if _finish_startup_if_aborted(await _wait_for_served_guest_completion(_quests.serve_guests)):
 			return
 		_quests.serve_guests.set_done()
 
 		if _finish_startup_if_aborted(
-			skip_layer,
 			await _wait_for_served_guest_milestone(STARTUP_QUESTS.BUILD_TABLE_TRIGGER_SERVED_GUEST_COUNT)
 		):
 			return
@@ -120,7 +117,7 @@ func _run_startup_sequence() -> void:
 			table_quest_target = tutorial_worker
 		if is_instance_valid(table_quest_target):
 			_reveal_quest_for_target(_quests.build_table, table_quest_target)
-			if _finish_startup_if_aborted(skip_layer, await _wait_for_tutorial_activation(_quests.build_table)):
+			if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.build_table)):
 				return
 		else:
 			TutorialHandler.activate_quest(_quests.build_table)
@@ -128,11 +125,10 @@ func _run_startup_sequence() -> void:
 		_quests.build_table.start()
 		Global.UI.menu.unlock_tutorial_build_menu()
 		if _finish_startup_if_aborted(
-			skip_layer,
 			await _wait_for_tab_arrow_step(
 				Global.UI.menu.build_button,
 				Global.UI.menu.build_tab.tab_cointainer,
-				2,
+				0,
 				Global.UI.menu.build_tab.data_to_button.get(Building.room_data_table),
 				func(): return not Building.query.all_rooms_of_type(RoomTable).is_empty()
 			)
@@ -140,7 +136,7 @@ func _run_startup_sequence() -> void:
 			return
 		_quests.build_table.set_done()
 
-	_finish_startup(skip_layer, _skip_requested)
+	_finish_startup(_skip_requested)
 
 
 func _prepare_startup_content() -> void:
@@ -180,28 +176,13 @@ func setup_building() -> void:
 	b.initialize_all_rooms()
 	b.update_foreground_tiles()
 
-func create_skip_tutorial_button() -> CanvasLayer:
-	var skip_layer := CanvasLayer.new()
-	skip_layer.layer = 101
-	var skip_button := Button.new()
-	skip_button.text = "Skip Tutorial"
-	skip_button.anchor_left = 0.0
-	skip_button.anchor_top = 1.0
-	skip_button.anchor_right = 0.0
-	skip_button.anchor_bottom = 1.0
-	skip_button.offset_left = 8.0
-	skip_button.offset_top = -28.0
-	skip_button.offset_right = 100.0
-	skip_button.offset_bottom = -8.0
-	skip_button.pressed.connect(func():
-		_skip_requested = true
-		LetterUIHandler.skip()
-		Global.UI.dialogue.finish_dialogue()
-		TutorialHandler.clear_quests()
-	, CONNECT_ONE_SHOT)
-	skip_layer.add_child(skip_button)
-	add_child(skip_layer)
-	return skip_layer
+func request_skip_tutorial() -> void:
+	if _skip_requested:
+		return
+	_skip_requested = true
+	LetterUIHandler.skip()
+	Global.UI.dialogue.finish_dialogue()
+	TutorialHandler.clear_quests()
 
 func _spawn_tutorial_worker() -> NPCWorker:
 	var worker := Global.NPCSpawner.spawn_new_worker(Vector2(-320, 0), true) as NPCWorker
@@ -270,6 +251,7 @@ func _wait_for_menu_arrow_step(button: Button, completion_condition: Callable) -
 
 func _wait_for_tab_arrow_step(button: Button, tab_bar: TabBar, tab_index: int, tab_content_button: Button, completion_condition: Callable) -> bool:
 	var current_state := -1
+	var prev_state := -1
 	while not _skip_requested and not completion_condition.call():
 		var menu := Global.UI.menu
 		var new_state: int
@@ -280,11 +262,18 @@ func _wait_for_tab_arrow_step(button: Button, tab_bar: TabBar, tab_index: int, t
 		else:
 			new_state = 2
 		if new_state != current_state:
+			prev_state = current_state
 			current_state = new_state
 			match current_state:
 				0: _show_menu_tutorial_arrow(button)
-				1: _show_menu_tutorial_arrow_at_tab(tab_bar, tab_index)
+				1:
+					if prev_state != 0:
+						_show_menu_tutorial_arrow_at_tab(tab_bar, tab_index)
+					else:
+						_destroy_menu_tutorial_arrow()
 				2: _show_menu_tutorial_arrow(tab_content_button)
+		elif current_state == 1 and not is_instance_valid(_menu_tutorial_arrow):
+			_show_menu_tutorial_arrow_at_tab(tab_bar, tab_index)
 		if current_state == 0:
 			_update_menu_tutorial_arrow_visibility()
 		await get_tree().process_frame
@@ -514,14 +503,14 @@ func _poll_until(condition: Callable) -> bool:
 	return _skip_requested
 
 
-func _finish_startup_if_aborted(skip_layer: CanvasLayer, aborted: bool) -> bool:
+func _finish_startup_if_aborted(aborted: bool) -> bool:
 	if not aborted:
 		return false
-	_finish_startup(skip_layer, true)
+	_finish_startup(true)
 	return true
 
 
-func _finish_startup(skip_layer: CanvasLayer, skipped := false) -> void:
+func _finish_startup(skipped := false) -> void:
 	if skipped:
 		_set_startup_money(STARTUP_SKIP_MONEY)
 		for room in Building.query.all_rooms_of_type(RoomJunk).duplicate():
@@ -538,9 +527,17 @@ func _finish_startup(skip_layer: CanvasLayer, skipped := false) -> void:
 	Global.UI.hud.show()
 	Global.should_auto_spawn_guests = true
 	Global.UI.controls.hide()
-	if is_instance_valid(skip_layer):
-		skip_layer.queue_free()
+	_set_skip_tutorial_available(false)
 	_skip_requested = false
+
+
+func _set_skip_tutorial_available(available: bool) -> void:
+	if Global.UI == null or Global.UI.menu == null:
+		return
+	var settings_tab = Global.UI.menu.settings_tab
+	if settings_tab == null or not settings_tab.has_method("set_skip_tutorial_available"):
+		return
+	settings_tab.set_skip_tutorial_available(available)
 
 func spawn_item_stack(item_type: Enum.Items, room_x: int, room_y: int, amount: int = 1) -> void:
 	const COLS := 4
