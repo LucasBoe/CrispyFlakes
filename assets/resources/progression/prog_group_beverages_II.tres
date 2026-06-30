@@ -1,14 +1,12 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_destillery.tres" id="2_destillery"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_aging_cellar.tres" id="3_aging_cellar"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_bar_whiskey.tres" id="4_whiskey_bar"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_storage.tres" id="2_storage"]
 [ext_resource type="Resource" path="res://assets/resources/progression/prog_group_beverages_I.tres" id="5_dep"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-display_name = "Beverages II."
-unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_destillery"), ExtResource("3_aging_cellar"), ExtResource("4_whiskey_bar")])
+display_name = "Storage"
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_storage")])
 depends_on = ExtResource("5_dep")

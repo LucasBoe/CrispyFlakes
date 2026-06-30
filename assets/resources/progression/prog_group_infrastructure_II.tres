@@ -1,15 +1,13 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3 uid="uid://brgpj3aj0sd86"]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3 uid="uid://brgpj3aj0sd86"]
 
 [ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
 [ext_resource type="Resource" uid="uid://ctkcra1n0qb53" path="res://assets/resources/rooms/room_broom_closet.tres" id="2_broom"]
-[ext_resource type="Resource" uid="uid://h6js6a66xoeh" path="res://assets/resources/rooms/room_bed.tres" id="3_bunkhouse"]
-[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="3_i13x8"]
-[ext_resource type="Resource" uid="uid://db78rpgkifewk" path="res://assets/resources/rooms/room_horse_post.tres" id="4_horse_post"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_outhouse.tres" id="3_outhouse"]
 [ext_resource type="Resource" uid="uid://bd54mqikuaypd" path="res://assets/resources/progression/prog_group_infrastructure_I.tres" id="5_dep"]
 [ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-display_name = "Infrastructure II."
-unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_broom"), ExtResource("3_bunkhouse"), ExtResource("4_horse_post")])
+display_name = "Clean & Dirty"
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_broom"), ExtResource("3_outhouse")])
 depends_on = ExtResource("5_dep")

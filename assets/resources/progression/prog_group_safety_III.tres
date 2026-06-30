@@ -1,9 +1,15 @@
-[gd_resource type="Resource" script_class="ProgressionItem" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_safety_II.tres" id="2_dep"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_infrastructure_V.tres" id="2_dep"]
+[ext_resource type="Resource" path="res://assets/resources/infrastructure/infrastructure_water_pipe.tres" id="3_pipes"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_toilet.tres" id="4_toilet"]
+[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="5_infra"]
+[ext_resource type="Script" path="res://scripts/room_data.gd" id="6_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-display_name = "Safety III."
+display_name = "Piping"
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("4_toilet")])
+unlocks_infrastructure_list = Array[ExtResource("5_infra")]([ExtResource("3_pipes")])
 depends_on = ExtResource("2_dep")

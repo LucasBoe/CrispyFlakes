@@ -1,12 +1,12 @@
 [gd_resource type="Resource" script_class="ProgressionItem" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
-[ext_resource type="Resource" path="res://assets/resources/rooms/room_gambling.tres" id="2_gambling"]
-[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_entertainment_II.tres" id="3_dep"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_bar_whiskey.tres" id="2_whiskey_bar"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_whiskey.tres" id="3_dep"]
 [ext_resource type="Script" path="res://scripts/room_data.gd" id="4_roomdata"]
 
 [resource]
 script = ExtResource("1_script")
-display_name = "Gambling"
-unlocks_rooms = Array[ExtResource("4_roomdata")]([ExtResource("2_gambling")])
+display_name = "Whiskey Bar"
+unlocks_rooms = Array[ExtResource("4_roomdata")]([ExtResource("2_whiskey_bar")])
 depends_on = ExtResource("3_dep")

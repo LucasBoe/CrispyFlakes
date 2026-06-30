@@ -10,7 +10,7 @@
 
 [resource]
 script = ExtResource("1_script")
-display_name = "Beverages I."
+display_name = "Beer Brewing"
 description = "Brew and serve beer once the basics of the saloon are in place."
-unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_brewery"), ExtResource("3_beer_bar"), ExtResource("4_outhouse")])
+unlocks_rooms = Array[ExtResource("6_roomdata")]([ExtResource("2_brewery"), ExtResource("3_beer_bar")])
 depends_on = ExtResource("5_dep")

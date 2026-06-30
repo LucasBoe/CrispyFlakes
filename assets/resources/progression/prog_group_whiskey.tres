@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_destillery.tres" id="2_destillery"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_aging_cellar.tres" id="3_aging_cellar"]
+[ext_resource type="Resource" path="res://assets/resources/progression/prog_group_beverages_II.tres" id="4_dep"]
+[ext_resource type="Script" path="res://scripts/room_data.gd" id="5_roomdata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Whiskey"
+unlocks_rooms = Array[ExtResource("5_roomdata")]([ExtResource("2_destillery"), ExtResource("3_aging_cellar")])
+depends_on = ExtResource("4_dep")
