@@ -1,8 +1,6 @@
 extends Node
 class_name NeedsModule
 
-const SITTING_ENERGY_LOSS_MULTIPLIER := 0.25
-
 var mood : Need
 var stay_duration : Need
 var satisfaction : Need
@@ -57,8 +55,6 @@ func _process(delta):
 
 	stay_duration.strength += delta_minute
 
-	var ramp := 0.15
-
-	satisfaction.strength += (0.0 - satisfaction.strength) * ramp * delta_minute
-	var energy_loss_multiplier := SITTING_ENERGY_LOSS_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0
-	Energy.strength = maxf(0.0, Energy.strength - (0.35 + drunkenness.strength * 0.35) * energy_loss_multiplier * delta_minute)
+	satisfaction.strength += (0.0 - satisfaction.strength) * Balancing.GUEST_SATISFACTION_DECAY_RATE * delta_minute
+	var energy_loss_multiplier := Balancing.GUEST_ENERGY_SITTING_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0
+	Energy.strength = maxf(0.0, Energy.strength - (Balancing.GUEST_ENERGY_LOSS_PER_MINUTE + drunkenness.strength * Balancing.GUEST_ENERGY_DRUNK_MULTIPLIER) * energy_loss_multiplier * delta_minute)

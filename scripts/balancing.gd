@@ -7,3 +7,9 @@ static var GUEST_SPAWN_MOOD_EFFECT_STRENGTH = 0.9 # (base rate + count effect) *
 
 static var GUEST_DIRT_SPAWN_CHANCE = 0.01
 static var GUEST_DIRT_DROP_CHECK_INTERVAL := 1.6
+
+static var GUEST_SATISFACTION_DECAY_RATE := 0.15       # how fast satisfaction decays toward 0 per minute
+
+static var GUEST_ENERGY_LOSS_PER_MINUTE := 0.35        # base energy drain per minute
+static var GUEST_ENERGY_DRUNK_MULTIPLIER := 0.35       # extra energy drain per unit of drunkenness
+static var GUEST_ENERGY_SITTING_MULTIPLIER := 0.25     # multiplier when seated so you are encounraged to build tables
