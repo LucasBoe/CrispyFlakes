@@ -4,6 +4,7 @@ class_name NPCGuest
 const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
 const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
+const INJURED_MOVE_SPEED_MULTIPLIER := 0.5
 
 var manual_behaviour = false
 var character_name = ""
@@ -92,6 +93,12 @@ func counts_towards_guest_total() -> bool:
 func is_on_horse() -> bool:
 	return Animator != null and Animator.is_riding
 
+func get_move_speed_multiplier() -> float:
+	var multiplier := super.get_move_speed_multiplier()
+	if Status != null and Status.has_status(Enum.NpcStatus.INJURED):
+		multiplier *= INJURED_MOVE_SPEED_MULTIPLIER
+	return multiplier
+
 func get_next_behaviour():
 	var treatment_behaviour = InjuryHandler.get_treatment_behaviour(self)
 	if treatment_behaviour != null:
@@ -107,7 +114,7 @@ func get_next_behaviour():
 	if is_robber:
 		return RobBehaviour
 
-	if Needs.mood.strength + Needs.satisfaction.strength < 1.0 or Needs.stay_duration.strength > MAX_STAY_DURATION:
+	if Needs.mood.strength < Needs.satisfaction.strength or Needs.stay_duration.strength > MAX_STAY_DURATION:
 		return NeedLeaveBehaviour
 
 	if Needs.drunkenness.strength > randf():

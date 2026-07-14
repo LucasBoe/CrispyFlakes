@@ -14,7 +14,7 @@ var npc
 func _ready():
 	mood = new_need(Enum.Need.MOOD, 0.5)
 	stay_duration = new_need(Enum.Need.STAY_DURATION, 0.0)
-	satisfaction = new_need(Enum.Need.SATISFACTION, 1.0)
+	satisfaction = new_need(Enum.Need.SATISFACTION, 0.0)
 	drunkenness = new_need(Enum.Need.DRUNKENNESS, 0.0)
 	Energy = new_need(Enum.Need.ENERGY, randf_range(0.65, 0.95))
 	
@@ -55,6 +55,6 @@ func _process(delta):
 
 	stay_duration.strength += delta_minute
 
-	satisfaction.strength += (0.0 - satisfaction.strength) * Balancing.GUEST_SATISFACTION_DECAY_RATE * delta_minute
+	satisfaction.strength += (1.0 - satisfaction.strength) * Balancing.GUEST_SATISFACTION_DECAY_RATE * delta_minute
 	var energy_loss_multiplier := Balancing.GUEST_ENERGY_SITTING_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0
 	Energy.strength = maxf(0.0, Energy.strength - (Balancing.GUEST_ENERGY_LOSS_PER_MINUTE + drunkenness.strength * Balancing.GUEST_ENERGY_DRUNK_MULTIPLIER) * energy_loss_multiplier * delta_minute)
