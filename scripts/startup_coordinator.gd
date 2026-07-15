@@ -40,7 +40,7 @@ func _run_startup_sequence() -> void:
 
 	_reset_outside_overlay()
 	Global.UI.menu.start_tutorial_menu_gating()
-	Global.UI.selection.set_context_menu_blocked(true)
+	Global.UI.selection.block_context_menu(self)
 	spawn_bounties(3)
 	spawn_item_stack(Enum.Items.WOOD, 4, 0, 10)
 	_set_startup_money(STARTUP_INITIAL_MONEY)
@@ -64,7 +64,7 @@ func _run_startup_sequence() -> void:
 		_quests.cleanup.set_done()
 		if _finish_startup_if_aborted(await _wait_for_tutorial_claim(_quests.cleanup)):
 			return
-		Global.UI.selection.set_context_menu_blocked(false)
+		Global.UI.selection.unblock_context_menu(self)
 
 		_reveal_quest_for_target(_quests.build_bar, tutorial_worker)
 		if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.build_bar)):
@@ -522,7 +522,7 @@ func _finish_startup(skipped := false) -> void:
 	_tutorial_worker = null
 	_destroy_menu_tutorial_arrow()
 	Global.UI.menu.finish_tutorial_menu_gating()
-	Global.UI.selection.set_context_menu_blocked(false)
+	Global.UI.selection.unblock_context_menu(self)
 	RoomStatusHandler.enabled = true
 	Global.UI.hud.show()
 	Global.should_auto_spawn_guests = true

@@ -91,7 +91,7 @@ var _storage_items_signature: Array = []
 var _gambling_signature: String = ""
 var _manual_follow_offset := Vector2.ZERO
 var _follow_side: int = 0
-var _context_menu_blocked := false
+var _context_menu_block_authors: Array = []
 var _gambling_jackpot_buttons: Array[Button] = []
 var _gambling_guest_buy_in_rows: Array[HBoxContainer] = []
 var _bound_hire_guest = null
@@ -167,13 +167,19 @@ func _ready():
 func manually_select(node):
 	_on_click_hovered_node_signal(node)
 
-func set_context_menu_blocked(blocked: bool) -> void:
-	_context_menu_blocked = blocked
-	if blocked:
-		do_hide()
+func block_context_menu(author) -> void:
+	if not _context_menu_block_authors.has(author):
+		_context_menu_block_authors.append(author)
+	do_hide()
+
+func unblock_context_menu(author) -> void:
+	_context_menu_block_authors.erase(author)
+
+func _is_context_menu_blocked() -> bool:
+	return not _context_menu_block_authors.is_empty()
 
 func _on_click_hovered_node_signal(node):
-	if _context_menu_blocked:
+	if _is_context_menu_blocked():
 		do_hide()
 		return
 
@@ -961,7 +967,7 @@ func _on_gambling_summary_host_pressed() -> void:
 func _show_storage_filter(room: RoomStorage):
 	storage_filter_container.visible = true
 	Util.delete_all_children_execept_index_0(storage_filter_grid)
-	for item_type in Enum.Items.values().filter(func(t): return t != Enum.Items.BROOM and t != Enum.Items.MONEY and t != Enum.Items.CRATE and t != Enum.Items.PICKAXE):
+	for item_type in Item.get_non_shadow_items():
 		var btn := storage_filter_button_dummy.duplicate() as Button
 		var is_allowed: bool = item_type in room.allowed_items
 		btn.button_pressed = is_allowed

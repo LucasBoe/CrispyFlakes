@@ -1,9 +1,11 @@
-[gd_scene load_steps=36 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=38 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
 [ext_resource type="Script" uid="uid://b7bo83wpu73wu" path="res://scripts/time_button.gd" id="6_4amiu"]
 [ext_resource type="Script" uid="uid://drqq0is6by4ae" path="res://scripts/time_ui_handler.gd" id="6_rt53s"]
+[ext_resource type="Material" uid="uid://qe3h81d6f7he" path="res://assets/materials/mat_ui_outline_white.tres" id="7_wkmvq"]
+[ext_resource type="Texture2D" uid="uid://c1i86518h6wtr" path="res://assets/sprites/ui/item_wood.png" id="8_jj3vu"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="12_gejso"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
@@ -63,6 +65,61 @@ unique_name_in_owner = true
 
 [node name="UIEncounter" parent="UI" instance=ExtResource("ui_encounter")]
 unique_name_in_owner = true
+
+[node name="UIItems" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIItems"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -92.0
+offset_top = -36.0
+grow_horizontal = 0
+grow_vertical = 0
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIItems/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="Item_VBoxContainer" type="VBoxContainer" parent="UI/UIItems/MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Amount_Label" type="Label" parent="UI/UIItems/MarginContainer/HBoxContainer/Item_VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "12"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Icon_TextureRect" type="TextureRect" parent="UI/UIItems/MarginContainer/HBoxContainer/Item_VBoxContainer"]
+material = ExtResource("7_wkmvq")
+layout_mode = 2
+texture = ExtResource("8_jj3vu")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="UI/UIItems"]
+layout_mode = 0
+offset_left = 104.0
+offset_right = 104.0
+offset_bottom = 37.0
+
+[node name="Control" type="Control" parent="UI/UIItems/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="UIMoney" type="Control" parent="UI"]
 unique_name_in_owner = true

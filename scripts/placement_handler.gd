@@ -30,6 +30,7 @@ func start_building(data : RoomData, check):
 	self.custom_placement_check = check
 	is_placing = true
 	_prepare_highlights(data.width * data.height)
+	Global.UI.selection.block_context_menu(self)
 
 func start_building_infrastructure(data, check = null):
 	build_mode = BuildMode.INFRASTRUCTURE
@@ -40,6 +41,7 @@ func start_building_infrastructure(data, check = null):
 	_prepare_highlights(data.width * data.height)
 	if data.layer_name == BuildingInfrastructure.WATER_LAYER:
 		Building.infrastructure.show_water_info()
+	Global.UI.selection.block_context_menu(self)
 
 func stop_building():
 	is_placing = false
@@ -48,6 +50,7 @@ func stop_building():
 		Building.infrastructure.hide_water_info()
 	building_data = null
 	infrastructure_data = null
+	Global.UI.selection.unblock_context_menu(self)
 	_clear_highlights()
 
 func _prepare_highlights(count: int) -> void:

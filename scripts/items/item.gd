@@ -73,35 +73,35 @@ func spawn_one_from_trade_crate(spawn_pos: Vector2 = global_position) -> Item:
 func refresh_texture():
 	var info = get_info(itemType)
 	var tex = info.Tex
+	var bottom_padding_y := 1
 	if itemType == Enum.Items.MONEY:
 		tex = get_money_texture(money_amount)
+		bottom_padding_y = 0
 	elif itemType == Enum.Items.DRINK:
 		tex = _get_drink_texture(drink_source_type)
-	apply_texture(tex, info.Offset.x, info.Offset.y)
+	apply_texture(tex, info.Offset.x, info.Offset.y, bottom_padding_y)
 
-func apply_texture(tex, offset_x = 0, offset_y = 0):
+func apply_texture(tex, offset_x = 0, offset_y = 0, bottom_padding_y = 0):
 	texture = tex
-	offset = Vector2(offset_x, -texture.get_height()/2 + offset_y)
+	offset = Vector2(offset_x, -texture.get_height()/2 + bottom_padding_y + offset_y)
 
 static func get_info(itemType : Enum.Items) -> TextureInfo:
 	var tex = null;
 	var offset = Vector2i.ZERO
 	var display_name := ""
 	var trade_price := -1
-	var trade_orderable := false
+	var is_shadow_item := false
 
 	match itemType:
 		Enum.Items.BEER_BARREL:
 			tex = load("res://assets/sprites/item_barrel.png")
 			display_name = "Beer Barrel"
 			trade_price = 16
-			trade_orderable = true
 
 		Enum.Items.WISKEY_BOX:
 			tex = load("res://assets/sprites/item_wiskey_crate.png")
 			display_name = "Whiskey Box"
 			trade_price = 28
-			trade_orderable = true
 
 		Enum.Items.WISKEY_BOX_RAW:
 			tex = load("res://assets/sprites/item_wiskey_crate_raw.png")
@@ -115,45 +115,41 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			tex = load("res://assets/sprites/item_water-bucket.png")
 			display_name = "Water Bucket"
 			trade_price = 6
-			trade_orderable = true
+			
+		Enum.Items.WOOD:
+			tex = load("res://assets/sprites/ui/item_wood.png")
+			display_name = "Wood"
+			trade_price = 8
 
+		# SHADOW ITEMS
 		Enum.Items.BROOM:
 			tex = load("res://assets/sprites/item_broom.png")
 			display_name = "Broom"
 			trade_price = 10
-			trade_orderable = true
-
-		Enum.Items.WOOD:
-			tex = load("res://assets/sprites/ui/item_wood.png")
-			display_name = "Firewood"
-			trade_price = 8
-			trade_orderable = true
+			is_shadow_item = true
 
 		Enum.Items.MONEY:
 			tex = get_money_texture()
 			display_name = "Money"
 			offset = Vector2i(16, -2)
+			is_shadow_item = true
 
 		Enum.Items.CRATE:
 			tex = load("res://assets/sprites/item_crate.png")
 			display_name = "Crate"
+			is_shadow_item = true
 
 		Enum.Items.PICKAXE:
 			tex = load("res://assets/sprites/item_pickaxe.png")
 			display_name = "Pickaxe"
-
-		Enum.Items.WOOD:
-			tex = load("res://assets/sprites/ui/item_wood.png")
-			display_name = "Wood"
-			trade_price = 8
-			trade_orderable = true
+			is_shadow_item = true
 
 	var info = TextureInfo.new()
 	info.Tex = tex
 	info.Offset = offset
 	info.Name = display_name
 	info.TradePrice = trade_price
-	info.TradeOrderable = trade_orderable
+	info.IsShadowItem = is_shadow_item
 	return info
 
 static func _get_drink_texture(source_type: int) -> Texture2D:
@@ -171,11 +167,21 @@ static func get_trade_price(itemType: Enum.Items) -> int:
 static func get_display_name(itemType: Enum.Items) -> String:
 	return get_info(itemType).Name
 
+static func is_shadow_item(itemType: int) -> bool:
+	return get_info(itemType).IsShadowItem
+
+static func get_non_shadow_items() -> Array[int]:
+	var visible: Array[int] = []
+	for item_type in Enum.Items.values():
+		if not is_shadow_item(item_type):
+			visible.append(item_type)
+	return visible
+
 static func get_trade_orderable_items() -> Array[int]:
 	var orderable: Array[int] = []
-	for item_type in Enum.Items.values():
+	for item_type in get_non_shadow_items():
 		var info := get_info(item_type)
-		if info.TradeOrderable and info.TradePrice > 0:
+		if info.TradePrice > 0:
 			orderable.append(item_type)
 	return orderable
 
@@ -213,4 +219,4 @@ class TextureInfo:
 	var Offset : Vector2i
 	var Name : String
 	var TradePrice : int = -1
-	var TradeOrderable : bool = false
+	var IsShadowItem : bool = false

@@ -56,6 +56,20 @@ func get_closest_to(global_pos: Vector2, item_type ):
 
 	return closest
 
+func get_loose_item_amounts() -> Dictionary:
+	_prune_all_invalid()
+
+	var loose_amounts := {}
+	for item_type in loose_items.keys():
+		var arr: Array = loose_items[item_type]
+		for entry in arr:
+			var item := entry as Item
+			if item == null or not is_instance_valid(item):
+				continue
+			_add_item_to_amounts(item, loose_amounts)
+
+	return loose_amounts
+
 func _prune_invalid_for(item_type) -> void:
 	if not loose_items.has(item_type):
 		return
@@ -68,3 +82,19 @@ func _prune_invalid_for(item_type) -> void:
 func _prune_all_invalid() -> void:
 	for item_type in loose_items.keys():
 		_prune_invalid_for(item_type)
+
+func _add_item_to_amounts(item: Item, amounts: Dictionary) -> void:
+	if item.is_trade_crate():
+		var contained_type := item.get_trade_crate_item_type()
+		var contained_amount := item.get_trade_crate_item_amount()
+		if contained_type >= 0 and contained_amount > 0:
+			amounts[contained_type] = int(amounts.get(contained_type, 0)) + contained_amount
+			return
+
+	if item.itemType == Enum.Items.MONEY:
+		var money_amount := int(round(item.money_amount))
+		if money_amount > 0:
+			amounts[Enum.Items.MONEY] = int(amounts.get(Enum.Items.MONEY, 0)) + money_amount
+		return
+
+	amounts[item.itemType] = int(amounts.get(item.itemType, 0)) + 1

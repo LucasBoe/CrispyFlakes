@@ -102,6 +102,16 @@ func get_stored_item_amounts() -> Dictionary:
 		stored_amounts[stored_item_type] = int(stored_amounts.get(stored_item_type, 0)) + stored_amount
 	return stored_amounts
 
+static func get_global_stored_item_amounts() -> Dictionary:
+	var stored_amounts := {}
+	if Building == null or Building.query == null:
+		return stored_amounts
+
+	for storage: RoomStorageBase in Building.query.all_rooms_of_type(RoomStorageBase):
+		_merge_item_amounts(stored_amounts, storage.get_stored_item_amounts())
+
+	return stored_amounts
+
 func remove_item(item: Item) -> bool:
 	if item == null:
 		return false
@@ -154,3 +164,7 @@ func _place_item_in_slot(item: Item, slot_index: int, play_sound: bool) -> bool:
 	if play_sound:
 		item.play_spawn_sound()
 	return true
+
+static func _merge_item_amounts(target: Dictionary, source: Dictionary) -> void:
+	for item_type in source.keys():
+		target[int(item_type)] = int(target.get(int(item_type), 0)) + int(source[item_type])
