@@ -235,9 +235,10 @@ func _input(event):
 					_set_invalid_target_reason("only below ground", Enum.placement_limit_to_icon(building_data.placement_limit))
 	else:
 		landed_location = location
-		has_valid_target = Building.infrastructure.can_place(infrastructure_data, validation_location)
+		var placement_check: Dictionary = Building.infrastructure.can_place(infrastructure_data, validation_location)
+		has_valid_target = placement_check.valid
 		if not has_valid_target:
-			_set_invalid_target_reason(_get_infrastructure_invalid_reason(validation_location))
+			_set_invalid_target_reason(placement_check.reason)
 
 	if custom_placement_check:
 		var custom_valid: bool = custom_placement_check.call(validation_location)
@@ -356,38 +357,6 @@ func _get_custom_placement_invalid_reason(target_location: Vector2i) -> String:
 	if building_data != null and (building_data.is_outdoor or building_data == Building.room_data_bouncer):
 		return "only ground floor"
 	return "target invalid"
-
-func _get_infrastructure_invalid_reason(target_location: Vector2i) -> String:
-	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.WATER_LAYER:
-		if Building.infrastructure.has_data_at(target_location, BuildingInfrastructure.WATER_LAYER):
-			return "pipe already placed"
-		var room := Building.get_room_from_index(target_location) as RoomBase
-		if Building.infrastructure.room_provides_layer(room, BuildingInfrastructure.WATER_LAYER):
-			return "tower supplies here"
-		if room == null:
-			return "requires a room"
-		if target_location.y > 0 and not _has_room_or_pipe_support_below(target_location):
-			return "needs support below"
-		if Building.infrastructure.get_provider_rooms(BuildingInfrastructure.WATER_LAYER).is_empty():
-			return "needs water tower"
-		return "connect to water line"
-	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.ELECTRICITY_LAYER:
-		if Building.infrastructure.has_data_at(target_location, BuildingInfrastructure.ELECTRICITY_LAYER):
-			return "electricity already placed"
-		var room := Building.get_room_from_index(target_location) as RoomBase
-		if room == null or room is RoomEmpty:
-			return "requires a room"
-		if room.is_outside_room:
-			return "indoor rooms only"
-		return "target invalid"
-	return "target invalid"
-
-func _has_room_or_pipe_support_below(target_location: Vector2i) -> bool:
-	var below := target_location + Vector2i(0, -1)
-	var room_below := Building.get_room_from_index(below) as RoomBase
-	if room_below != null and room_below is not RoomEmpty:
-		return true
-	return Building.infrastructure.has_data_at(below, BuildingInfrastructure.WATER_LAYER)
 
 func _spawn_place_dust(room: Node2D) -> void:
 	var dust := ROOM_PLACE_DUST_SCENE.instantiate() as GPUParticles2D

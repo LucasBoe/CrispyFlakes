@@ -29,6 +29,11 @@ func pick_up(item):
 	current_item.z_index = 0
 
 func try_put_to(storage) -> bool:
+	
+	#storage has been destroyed
+	if not is_instance_valid(storage):
+		return false
+	
 	if storage.try_receive(current_item):
 		current_item = null
 		return true

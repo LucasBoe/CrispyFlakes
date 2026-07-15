@@ -27,16 +27,16 @@ func _ready() -> void:
 
 # --- Placement ---
 
-func can_place(data, origin: Vector2i) -> bool:
+func can_place(data, origin: Vector2i) -> Dictionary:
 	match data.layer_name:
 		WATER_LAYER:
 			return _water.can_place(data, origin)
 		ELECTRICITY_LAYER:
 			return _can_place_electricity(data, origin)
-	return false
+	return {"valid": false, "reason": "target invalid"}
 
 func place(data, origin: Vector2i) -> bool:
-	if not can_place(data, origin):
+	if not can_place(data, origin).valid:
 		return false
 
 	var layer: Dictionary = _layers.get(data.layer_name, {})
@@ -60,22 +60,6 @@ func prune_infrastructure() -> void:
 			continue
 		_refresh_layer_visuals(layer_name)
 		_emit_changed(layer_name)
-
-func remove_at(index: Vector2i, layer_name: StringName) -> bool:
-	var layer: Dictionary = _layers.get(layer_name, {})
-	if not layer.has(index):
-		return false
-
-	layer.erase(index)
-	compact_layer(layer_name)
-
-	if layer_name == WATER_LAYER:
-		while _water.prune():
-			pass
-
-	_refresh_layer_visuals(layer_name)
-	_emit_changed(layer_name)
-	return true
 
 # --- Queries ---
 
@@ -129,18 +113,6 @@ func count_cells_by_data(data) -> int:
 		if value == data:
 			count += 1
 	return count
-
-func get_layer_columns(layer_name: StringName) -> Array[int]:
-	var columns: Array[int] = []
-	var seen := {}
-	var layer: Dictionary = _layers.get(layer_name, {})
-	for index in layer.keys():
-		if seen.has(index.x):
-			continue
-		seen[index.x] = true
-		columns.append(index.x)
-	columns.sort()
-	return columns
 
 # --- Water info overlay ---
 
@@ -229,26 +201,6 @@ func _refresh_layer_visuals(layer_name: StringName) -> void:
 		ELECTRICITY_LAYER:
 			_refresh_electricity_visuals()
 
-func _remove_cells_under_room(room: RoomBase, layer_name: StringName) -> bool:
-	var layer: Dictionary = _layers.get(layer_name, {})
-	if layer.is_empty():
-		return false
-
-	var dirty := false
-	for col in room.data.width:
-		for row in room.data.height:
-			var index := Vector2i(room.x + col, room.y + row)
-			if not layer.has(index):
-				continue
-			layer.erase(index)
-			dirty = true
-
-	if not dirty:
-		return false
-
-	compact_layer(layer_name)
-	return true
-
 func _get_adjacent_provider(index: Vector2i, layer_name: StringName) -> RoomBase:
 	for direction in _CARDINAL_DIRECTIONS:
 		var room := Building.get_room_from_index(index + direction) as RoomBase
@@ -266,16 +218,18 @@ func _get_provider_for_index(index: Vector2i, layer_name: StringName) -> RoomBas
 
 	return _get_adjacent_provider(index, layer_name)
 
-func _can_place_electricity(data: InfrastructureData, origin: Vector2i) -> bool:
+func _can_place_electricity(data: InfrastructureData, origin: Vector2i) -> Dictionary:
 	for col in data.width:
 		for row in data.height:
 			var index := origin + Vector2i(col, row)
 			if has_data_at(index, ELECTRICITY_LAYER):
-				return false
+				return {"valid": false, "reason": "electricity already placed"}
 			var room := Building.get_room_from_index(index) as RoomBase
-			if room == null or room.is_outside_room:
-				return false
-	return true
+			if room == null:
+				return {"valid": false, "reason": "requires a room"}
+			if room.is_outside_room:
+				return {"valid": false, "reason": "indoor rooms only"}
+	return {"valid": true, "reason": ""}
 
 func _refresh_electricity_visuals() -> void:
 	if _electricity_tilemap == null:

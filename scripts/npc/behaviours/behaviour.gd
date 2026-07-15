@@ -258,6 +258,7 @@ func fetch_item(item: Enum.Items):
 	if source_item != null:
 		npc.Item.pick_up(source_item)
 	else:
+		GlobalEventHandler.notify_item_needed(item)
 		await pause(3)
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), Item.get_info(item).Tex)
 

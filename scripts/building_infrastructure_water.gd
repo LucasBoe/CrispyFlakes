@@ -29,7 +29,6 @@ enum PipeTile {
 const _HORIZONTAL_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT]
 const _GRID_ABOVE_OFFSET := Vector2i(0, 1)
 const _GRID_BELOW_OFFSET := Vector2i(0, -1)
-const _NETWORK_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT, _GRID_BELOW_OFFSET]
 const _SUPPORT_BELOW_OFFSET := _GRID_BELOW_OFFSET
 
 var _infra
@@ -108,39 +107,77 @@ func _get_room_water_color(room: RoomBase) -> Color:
 
 	return Color.YELLOW
 
-func can_place(data, origin: Vector2i) -> bool:
-	var pending := {}
+func can_place(data, origin: Vector2i) -> Dictionary:
+	var provider_connected := _collect_provider_connected_cells()
+
 	for col in data.width:
 		for row in data.height:
 			var index := origin + Vector2i(col, row)
 			if _infra.has_data_at(index, BuildingInfrastructure.WATER_LAYER):
-				return false
+				return {"valid": false, "reason": "pipe already placed"}
 			if _is_provider_room_cell(index):
-				return false
-			pending[index] = true
+				return {"valid": false, "reason": "tower supplies here"}
+			if not _is_cell_supported(index):
+				return {"valid": false, "reason": "needs support below"}
+			if not _is_cell_provider_connected(index, provider_connected):
+				return {"valid": false, "reason": "connect to water source"}
 
-	var supported := _collect_supported_cells(pending)
-	var provider_connected := _collect_provider_connected_cells(pending)
+	return {"valid": true, "reason": ""}
 
-	for index in pending.keys():
-		if not supported.has(index):
-			return false
-		if not provider_connected.has(index):
-			return false
+func _is_cell_provider_connected(index: Vector2i, provider_connected: Array) -> bool:
+	#directly adjacent to the water tower in all 4 directions
+	if get_provider_neighbor(index) != null:
+		return true
 
-	return true
+	#to the left and right of an already-connected water pipe
+	for direction in _HORIZONTAL_DIRECTIONS:
+		if provider_connected.has(index + direction):
+			return true
+
+	#directly below an already-connected water pipe
+	return provider_connected.has(index + _GRID_ABOVE_OFFSET)
+
+func _collect_provider_connected_cells() -> Array:
+	var connected: Array[Vector2i] = []
+
+	#all cells to the left and right of water pipes
+	for index in _infra.get_layer_cells(BuildingInfrastructure.WATER_LAYER):
+		for direction in _HORIZONTAL_DIRECTIONS:
+			var neighbor: Vector2i = index + direction
+			if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
+				connected.append(neighbor)
+
+	var towers: Array[RoomBase] = _infra.get_provider_rooms(BuildingInfrastructure.WATER_LAYER)
+
+	#all cells that are directly adjacent to the water tower sides
+	for tower in towers:
+		for row in tower.data.height:
+			var tower_cell := Vector2i(tower.x, tower.y + row)
+			if not _tower_provides_at(tower, tower_cell.y):
+				continue
+			for direction in _HORIZONTAL_DIRECTIONS:
+				var neighbor: Vector2i = tower_cell + direction
+				if _infra.has_data_at(neighbor, BuildingInfrastructure.WATER_LAYER):
+					connected.append(neighbor)
+
+	#all cells directly below pipes that are below water towers
+	for tower in towers:
+		var index := Vector2i(tower.x, tower.y - 1)
+		while _infra.has_data_at(index, BuildingInfrastructure.WATER_LAYER):
+			connected.append(index)
+			index += _GRID_BELOW_OFFSET
+
+	return connected
 
 func prune() -> bool:
 	var layer: Dictionary = _infra.get_layer(BuildingInfrastructure.WATER_LAYER)
 	if layer.is_empty():
 		return false
 
-	var supported := _collect_supported_cells()
-	var provider_connected := _collect_provider_connected_cells()
 	var dirty := false
 
 	for index in layer.keys():
-		if supported.has(index) and provider_connected.has(index):
+		if _is_cell_supported(index):
 			continue
 		layer.erase(index)
 		dirty = true
@@ -194,60 +231,29 @@ func _refresh_provider_output_tiles() -> void:
 				else (PipeTile.OUTDOOR_TOWER_OUTPUT_DOUBLE if outdoor else PipeTile.INDOOR_TOWER_OUTPUT_DOUBLE)
 			provider.add_infrastructure_output_tile(BuildingInfrastructure.WATER_LAYER, floor_index, tile)
 
-func _collect_supported_cells(pending: Dictionary = {}) -> Dictionary:
-	var all_cells := {}
-	for index in _infra.get_layer_cells(BuildingInfrastructure.WATER_LAYER):
-		all_cells[index] = true
-	for index in pending.keys():
-		all_cells[index] = true
-
-	var visited := {}
-	for index in all_cells.keys():
-		if _is_locally_supported(index):
-			visited[index] = true
-
-	return visited
-
-func _collect_provider_connected_cells(pending: Dictionary = {}) -> Dictionary:
-	var all_cells := {}
-	for index in _infra.get_layer_cells(BuildingInfrastructure.WATER_LAYER):
-		all_cells[index] = true
-	for index in pending.keys():
-		all_cells[index] = true
-
-	var open: Array[Vector2i] = []
-	var visited := {}
-
-	for index in all_cells.keys():
-		if get_provider_neighbor(index) != null:
-			open.append(index)
-
-	while not open.is_empty():
-		var index: Vector2i = open.pop_back()
-		if visited.has(index):
-			continue
-		visited[index] = true
-		for direction in _NETWORK_DIRECTIONS:
-			var next: Vector2i = index + direction
-			if all_cells.has(next) and not visited.has(next):
-				open.append(next)
-
-	return visited
-
-func _is_locally_supported(index: Vector2i) -> bool:
-	if index.y <= 0:
+func _is_cell_supported(location: Vector2i) -> bool:
+	#if underground or ground floor cell return it instantly
+	if location.y <= 0:
 		return true
-	if _has_support_room(index):
-		return true
-	return _has_support_below(index)
 
-func _has_support_room(index: Vector2i) -> bool:
-	var room := Building.get_room_from_index(index) as RoomBase
-	return room != null and room is not RoomEmpty
+	#if cell has ANY room directly at the location return it as well
+	if _has_room_at(location):
+		return true
+
+	#if cell has ANY room or existing pipes directly below return it as well
+	if _has_support_below(location):
+		return true
+
+	#else NOT return it
+	return false
+
+func _has_room_at(index: Vector2i) -> bool:
+	var room = Building.get_room_from_index(index) as RoomBase
+	return room != null and not room.is_outside_room
 
 func _has_support_below(index: Vector2i) -> bool:
 	var below := index + _SUPPORT_BELOW_OFFSET
-	if _has_support_room(below):
+	if _has_room_at(below):
 		return true
 	return _infra.has_data_at(below, BuildingInfrastructure.WATER_LAYER)
 
