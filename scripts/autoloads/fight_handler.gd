@@ -1,6 +1,5 @@
 extends Node
 
-const PanicBehaviourScript = preload("res://scripts/npc/behaviours/panic_behaviour.gd")
 const GUEST_DRUNK_FIGHT_MIN_START_ENERGY := 0.35
 const DEBUG_GUTLESS_PANIC := true
 
@@ -148,27 +147,10 @@ func end_fight(fight: Fight) -> void:
 		fight.state = Fight.State.OVER
 		fight.result = Fight.Result.NO_CONTEST
 	fight.is_over = true
-	_release_panicking_guests(fight)
 	fight.clear_health_bars()
 	AlarmHandler.end_alarm(fight)
 	active_fights.erase(fight)
-
-func _release_panicking_guests(fight: Fight) -> void:
-	if Global.NPCSpawner == null:
-		return
-
-	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
-		if not is_instance_valid(guest) or guest.Behaviour == null:
-			continue
-
-		var current = guest.Behaviour.behaviour_instance
-		if current == null or current.get_script() != PanicBehaviourScript:
-			continue
-
-		if current.data == null or current.data.extra.get("fight", null) != fight:
-			continue
-
-		guest.Behaviour.clear_behaviour()
+	PanicHandler.clear_reason(fight)
 
 func _try_attract_brawlers(fight: Fight) -> bool:
 	if Global.NPCSpawner == null or fight.room == null:
@@ -297,12 +279,7 @@ func _try_panic_gutless_npc(npc: NPC, fight: Fight) -> bool:
 		return false
 
 	_debug_gutless_panic(npc, fight, "panic start")
-	var panic_data := BehaviourSaveData.new(PanicBehaviourScript)
-	panic_data.extra["fight"] = fight
-	panic_data.extra["threat_room"] = fight.room
-	panic_data.extra["threat_position"] = get_fight_position(fight)
-	npc.Behaviour.set_behaviour(PanicBehaviourScript, panic_data)
-	return true
+	return PanicHandler.start_panic(npc, fight, fight.room, get_fight_position(fight))
 
 func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
 	if not is_instance_valid(npc) or npc.Traits == null:
@@ -325,8 +302,6 @@ func _can_panic_from_fight(npc: NPC, fight: Fight) -> bool:
 		return false
 
 	var current = npc.Behaviour.behaviour_instance
-	if current != null and current.get_script() == PanicBehaviourScript:
-		return false
 	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
 		return false
 	return true

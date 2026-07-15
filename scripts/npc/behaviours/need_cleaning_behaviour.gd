@@ -22,6 +22,10 @@ func loop():
 	var request_time = Time.get_ticks_msec()
 	bath.register_as_customer(self)
 	UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32))	
+	
+	if not is_instance_valid(npc):
+		return
+		
 	while npc.is_dirty and Time.get_ticks_msec() - request_time < TIMEOUT:
 		await end_of_frame()
 	bath.unregister_as_customer(self)

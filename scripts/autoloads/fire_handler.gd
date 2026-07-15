@@ -1,6 +1,5 @@
 extends Node
 
-const PanicBehaviourScript = preload("res://scripts/npc/behaviours/panic_behaviour.gd")
 const ExtinguishFireBehaviourScript = preload("res://scripts/npc/behaviours/extinguish_fire_behaviour.gd")
 const FireIncidentScript = preload("res://scripts/fire.gd")
 const FIRE_LIGHT_OVERLAY_SCENE = preload("res://scenes/fire_light_overlay.tscn")
@@ -123,6 +122,7 @@ func end_fire(fire) -> void:
 	_dispose_fire_sound(fire)
 	AlarmHandler.end_alarm(fire)
 	active_fires.erase(fire)
+	PanicHandler.clear_reason(fire)
 
 func apply_liquid(fire, amount: float) -> void:
 	if fire == null or not active_fires.has(fire):
@@ -241,12 +241,7 @@ func _try_panic_npc(npc: NPC, fire) -> bool:
 	if not _can_panic_from_fire(npc, fire):
 		return false
 
-	var panic_data := BehaviourSaveData.new(PanicBehaviourScript)
-	panic_data.extra["fire"] = fire
-	panic_data.extra["threat_room"] = fire.room
-	panic_data.extra["threat_position"] = fire.get_position()
-	npc.Behaviour.set_behaviour(PanicBehaviourScript, panic_data)
-	return true
+	return PanicHandler.start_panic(npc, fire, fire.room, fire.get_position())
 
 func _can_panic_from_fire(npc: NPC, fire) -> bool:
 	if not is_instance_valid(npc) or npc.Behaviour == null:
@@ -255,8 +250,6 @@ func _can_panic_from_fire(npc: NPC, fire) -> bool:
 		return false
 
 	var current = npc.Behaviour.behaviour_instance
-	if current != null and current.get_script() == PanicBehaviourScript:
-		return false
 	if current is KnockedOutBehaviour or current is ArrestedBehaviour or current is FollowSheriffBehaviour or current is LeaveOnHorseBehaviour:
 		return false
 	return true

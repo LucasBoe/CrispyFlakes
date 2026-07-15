@@ -73,13 +73,7 @@ func _process(_delta):
 
 	if Behaviour.has_behaviour:
 		return
-	var new_behaviour = IdleBehaviour
-
-	if not manual_behaviour:
-		new_behaviour = get_next_behaviour()
-
-	if new_behaviour != null:
-		Behaviour.set_behaviour(new_behaviour)
+	resume_autonomous_behaviour()
 
 func counts_towards_guest_total() -> bool:
 	var behaviour = Behaviour.behaviour_instance
@@ -98,6 +92,17 @@ func get_move_speed_multiplier() -> float:
 	if Status != null and Status.has_status(Enum.NpcStatus.INJURED):
 		multiplier *= INJURED_MOVE_SPEED_MULTIPLIER
 	return multiplier
+
+func resume_autonomous_behaviour() -> void:
+	if Behaviour == null or Behaviour.has_behaviour:
+		return
+
+	var new_behaviour = IdleBehaviour
+	if not manual_behaviour:
+		new_behaviour = get_next_behaviour()
+
+	if new_behaviour != null:
+		Behaviour.set_behaviour(new_behaviour)
 
 func get_next_behaviour():
 	var treatment_behaviour = InjuryHandler.get_treatment_behaviour(self)

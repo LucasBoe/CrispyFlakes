@@ -1,49 +1,32 @@
 extends Behaviour
 class_name PanicBehaviour
 
-const RECHECK_INTERVAL := 0.5
-
 var _notification = null
 var _threat_position: Vector2 = Vector2.ZERO
 var _threat_room: RoomBase = null
-var _source_fight: Fight = null
-var _source_fire = null
 
 func start_loop() -> void:
 	_narrative = ["Panicking!", "Getting away!", "Nope nope nope!"].pick_random()
 	_notification = UiNotifications.create_notification_dynamic("!", npc, Vector2(0, -32), null, Color.ORANGE, INF)
 	_read_data()
-	print("[GutlessPanic] behaviour start npc=%s threat_room=%s threat_pos=%s source_fight=%s source_fire=%s" % [
+	print("[GutlessPanic] behaviour start npc=%s threat_room=%s threat_pos=%s" % [
 		npc.name,
 		_threat_room.name if _threat_room != null else "<none>",
 		_threat_position,
-		_source_fight.debug_label() if _source_fight != null else "<none>",
-		_source_fire.debug_label() if _source_fire != null else "<none>",
 	])
 
 func loop() -> void:
-	
 	if npc.Item.current_item != null:
 		npc.Item.drop_current()
 
-	var escape_room := _find_escape_room()
-	if escape_room != null:
-		print("[GutlessPanic] npc=%s fleeing_to=%s pos=%s" % [npc.name, escape_room.name, escape_room.get_center_floor_position()])
-		await move(escape_room.get_random_floor_position())
-	else:
-		print("[GutlessPanic] npc=%s no_escape_room" % npc.name)
-
-	while _should_keep_panicking():
-		_narrative = _waiting_narrative()
-		await pause(RECHECK_INTERVAL)
+	_move_to_escape_room()
 
 	if stopped:
 		return
 
-	if npc is NPCWorker:
-		var worker := npc as NPCWorker
-		if worker.current_job != Enum.Jobs.IDLE:
-			_restore_worker_job()
+	_narrative = _waiting_narrative()
+	while not stopped:
+		await end_of_frame()
 
 func stop_loop() -> BehaviourSaveData:
 	UiNotifications.try_kill(_notification)
@@ -53,10 +36,21 @@ func _read_data() -> void:
 	if data == null:
 		_threat_position = npc.global_position
 		return
-	_source_fight = data.extra.get("fight", null)
-	_source_fire = data.extra.get("fire", null)
 	_threat_room = data.extra.get("threat_room", null) as RoomBase
 	_threat_position = data.extra.get("threat_position", npc.global_position)
+
+func register_threat(threat_room: RoomBase, threat_position: Vector2) -> void:
+	_threat_room = threat_room
+	_threat_position = threat_position
+	_move_to_escape_room()
+
+func _move_to_escape_room() -> void:
+	var escape_room := _find_escape_room()
+	if escape_room != null:
+		print("[GutlessPanic] npc=%s fleeing_to=%s pos=%s" % [npc.name, escape_room.name, escape_room.get_center_floor_position()])
+		npc.Navigation.set_target(escape_room.get_random_floor_position(), -1)
+	else:
+		print("[GutlessPanic] npc=%s no_escape_room" % npc.name)
 
 func _find_escape_room() -> RoomBase:
 	var reachable := npc.Navigation.get_reachable_rooms()
@@ -100,35 +94,5 @@ func _is_room_near_any_threat(room: RoomBase) -> bool:
 		return true
 	return false
 
-func _should_keep_panicking() -> bool:
-	if npc is NPCWorker:
-		var worker := npc as NPCWorker
-		if is_instance_valid(worker.current_job_room):
-			var job_room_unsafe := FightHandler.is_fight_near_room(worker.current_job_room) or FireHandler.is_fire_near_room(worker.current_job_room)
-			print("[GutlessPanic] npc=%s job_room=%s unsafe=%s" % [npc.name, worker.current_job_room.name, job_room_unsafe])
-			return job_room_unsafe
-	if _source_fire != null:
-		var fire_active := FireHandler.is_active_fire(_source_fire)
-		print("[GutlessPanic] npc=%s source_fire_active=%s" % [npc.name, fire_active])
-		return fire_active
-	var source_active := FightHandler.is_started_active_fight(_source_fight)
-	print("[GutlessPanic] npc=%s source_fight_active=%s" % [npc.name, source_active])
-	return source_active
-
-func _restore_worker_job() -> void:
-	var previous_data := npc.Behaviour.previous_data
-	print("[GutlessPanic] npc=%s restoring_job previous=%s" % [
-		npc.name,
-		previous_data.type.resource_path.get_file() if previous_data != null and previous_data.type != null else "<none>",
-	])
-	if previous_data != null and previous_data.type == FightBehaviour:
-		(npc as NPCWorker).resume_job_behaviour()
-	elif previous_data != null and previous_data.type != get_script():
-		npc.Behaviour.restore_previous_behaviour()
-	else:
-		(npc as NPCWorker).resume_job_behaviour()
-
 func _waiting_narrative() -> String:
-	if _source_fire != null:
-		return ["Keeping clear of the fire...", "Staying away from the flames...", "Waiting it out..."].pick_random()
-	return ["Hiding from the fight...", "Keeping clear...", "Waiting it out..."].pick_random()
+	return ["Hiding out...", "Keeping clear...", "Waiting it out..."].pick_random()

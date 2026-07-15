@@ -28,7 +28,8 @@ func clean_customer():
 
 	var customer = customers[0]
 	if is_instance_valid(customer):
-		customer.npc.clean()
+		if is_instance_valid(customer.npc):
+			customer.npc.clean()
 	unregister_as_customer(customer)
 
 func register_as_customer(customer):
