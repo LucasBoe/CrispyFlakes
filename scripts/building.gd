@@ -10,6 +10,8 @@ var floors = {}
 var query : BuildingRoomQueries
 var _tile_renderer : BuildingTileRenderer
 var _roof_stove_pipes_by_x: Dictionary = {}
+var _stairs_overlay: BuildingStairsOverlay
+var _stairs_info_requests: int = 0
 const FLOOR_POSITION_Y_BIAS := -1.0
 const ROOF_STOVE_PIPE_SCENE := preload("res://scenes/building_roof_stove_pipe.tscn")
 const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
@@ -55,6 +57,8 @@ func _ready():
 	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
 	if is_instance_valid(infrastructure) and not infrastructure.on_infrastructure_changed_signal.is_connected(_on_infrastructure_changed):
 		infrastructure.on_infrastructure_changed_signal.connect(_on_infrastructure_changed)
+	_stairs_overlay = BuildingStairsOverlay.new()
+	_stairs_overlay.setup()
 
 func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene
@@ -142,6 +146,16 @@ func _spill_deleted_room_money_without_room(room: RoomBase) -> void:
 				continue
 
 			Global.ItemSpawner.create(Enum.Items.MONEY, global_position_from_room_index(location)).set_money_amount(spilled)
+
+func show_stairs_info() -> void:
+	_stairs_info_requests += 1
+	if _stairs_info_requests == 1:
+		_stairs_overlay.show_info()
+
+func hide_stairs_info() -> void:
+	_stairs_info_requests = max(0, _stairs_info_requests - 1)
+	if _stairs_info_requests == 0:
+		_stairs_overlay.hide_info()
 
 func refresh_adjacent_stair_visuals(x: int, y: int, width: int, height: int) -> void:
 	for col in width:

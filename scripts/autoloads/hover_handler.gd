@@ -78,11 +78,17 @@ func change_hover(new_hover):
 	if is_instance_valid(previously_hovered) and previously_hovered is RoomWaterTower:
 		Building.infrastructure.hide_water_info()
 
+	if is_instance_valid(previously_hovered) and previously_hovered is RoomStairs:
+		Building.hide_stairs_info()
+
 	if is_instance_valid(previously_hovered):
 		_set_outline(previously_hovered, false)
 
 	if is_instance_valid(currently_hovered) and currently_hovered is RoomWaterTower:
 		Building.infrastructure.show_water_info()
+
+	if is_instance_valid(currently_hovered) and currently_hovered is RoomStairs:
+		Building.show_stairs_info()
 
 	if is_instance_valid(currently_hovered):
 		_set_outline(currently_hovered, true)
