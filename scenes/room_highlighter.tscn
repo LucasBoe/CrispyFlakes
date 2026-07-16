@@ -1,7 +1,9 @@
-[gd_scene load_steps=7 format=4 uid="uid://dc2ivw8t5ba5a"]
+[gd_scene load_steps=9 format=4 uid="uid://dc2ivw8t5ba5a"]
 
 [ext_resource type="Script" uid="uid://dibl81e3mj8l5" path="res://scripts/room_highlight_handler.gd" id="1_a1pht"]
 [ext_resource type="Texture2D" uid="uid://t0b7d5g7cuuj" path="res://assets/sprites/room_highlight.png" id="2_p2okt"]
+[ext_resource type="Material" uid="uid://qe3h81d6f7he" path="res://assets/materials/mat_ui_outline_white.tres" id="3_ptlno"]
+[ext_resource type="Texture2D" uid="uid://ciksxnn2v3w7" path="res://assets/sprites/ui/no-water-received_icon.png" id="4_3rv6k"]
 
 [sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_hvbcb"]
 _data = PackedByteArray("AAADAAUAAAABAAAAIAAAABAAAACAAAAAUklGRngAAABXRUJQVlA4TGsAAAAvH8ADEB8gFkzm/8ebhkCAcKxTFSEBwWH/m/kP4C9lwCiSJCk9y+UBNSNhX4hAzYrgPq0ghvfZs4GFiP6bTdvG2Sr6COJ5sZ2FpSYnsZ+7bythx34JKUyTkHSqQcJY4iPzRkIQSwpDZop4AAA=")
@@ -64,6 +66,12 @@ patch_margin_left = 4
 patch_margin_top = 4
 patch_margin_right = 4
 patch_margin_bottom = 4
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 3500
+texture_filter = 1
+material = ExtResource("3_ptlno")
+texture = ExtResource("4_3rv6k")
 
 [node name="Arrow" type="AnimatedSprite2D" parent="."]
 z_index = 3500

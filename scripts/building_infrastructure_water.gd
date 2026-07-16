@@ -26,6 +26,11 @@ enum PipeTile {
 	OUTDOOR_RIGHT_END_IF_ABOVE = 17,
 }
 
+const _ICON_WATER_RECEIVED := preload("res://assets/sprites/ui/water-received_icon.png")
+const _ICON_NO_WATER_RECEIVED := preload("res://assets/sprites/ui/no-water-received_icon.png")
+const _ICON_NO_PIPE_CONNECTION_REQUIRED := preload("res://assets/sprites/ui/no-pipe-connection-but-required_icon.png")
+const _ICON_NO_PIPE_CONNECTION_OPTIONAL := preload("res://assets/sprites/ui/no-pipe-connection-optional_icon.png")
+
 const _HORIZONTAL_DIRECTIONS := [Vector2i.LEFT, Vector2i.RIGHT]
 const _GRID_ABOVE_OFFSET := Vector2i(0, 1)
 const _GRID_BELOW_OFFSET := Vector2i(0, -1)
@@ -68,10 +73,10 @@ func show_info() -> void:
 			var room_base := room as RoomBase
 			if room_base == null:
 				continue
-			var color := _get_room_water_color(room_base)
-			if color == Color.TRANSPARENT:
+			var icon := _get_room_water_icon(room_base)
+			if icon == null:
 				continue
-			_info_highlights.append(RoomHighlighter.request_rect(room_base, color, 2, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
+			_info_highlights.append(RoomHighlighter.request_icon(room_base, icon, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
 
 func hide_info() -> void:
 	_info_active = false
@@ -86,26 +91,26 @@ func _clear_display() -> void:
 		RoomHighlighter.dispose(highlight)
 	_info_highlights.clear()
 
-func _get_room_water_color(room: RoomBase) -> Color:
+func _get_room_water_icon(room: RoomBase) -> Texture2D:
 	var wants: bool = room.wants_infrastructure_layer(BuildingInfrastructure.WATER_LAYER)
 	var requires: bool = room.requires_infrastructure_layer(BuildingInfrastructure.WATER_LAYER)
 	if not wants and not requires:
-		return Color.TRANSPARENT
+		return null
 
 	var provider := _infra.get_connected_provider(room, BuildingInfrastructure.WATER_LAYER) as RoomWaterTower
 	if provider != null and provider.has_water():
-		return Color.GREEN
+		return _ICON_WATER_RECEIVED
 
 	if provider != null:
-		return Color.RED
+		return _ICON_NO_WATER_RECEIVED
 
 	if _infra.room_has_layer(room, BuildingInfrastructure.WATER_LAYER):
-		return Color.ORANGE
+		return _ICON_NO_WATER_RECEIVED
 
 	if requires:
-		return Color.RED
+		return _ICON_NO_PIPE_CONNECTION_REQUIRED
 
-	return Color.YELLOW
+	return _ICON_NO_PIPE_CONNECTION_OPTIONAL
 
 func can_place(data, origin: Vector2i) -> Dictionary:
 	var provider_connected := _collect_provider_connected_cells()

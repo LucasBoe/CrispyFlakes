@@ -112,7 +112,7 @@ func delete_room(room: RoomBase):
 				var above = get_room_from_index(Vector2i(room.x + col, room.y + row + 1))
 				if above == room:
 					above = null
-				if above == null or above is RoomEmpty:
+				if above == null:
 					_erase_room_cell(room.x + col, room.y + row)
 				else:
 					set_room(room_data_empty, room.x + col, room.y + row)

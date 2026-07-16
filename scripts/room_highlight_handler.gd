@@ -24,6 +24,7 @@ const META_WORLD_OFFSET_FROM_ROOM_ORIGIN := &"world_offset_from_room_origin"
 
 @onready var rect_dummy = $Rect;
 @onready var arrow_dummy = $Arrow;
+@onready var icon_dummy = $Icon;
 @onready var _highlight_layer: CanvasLayer = $HighlightLayer
 @onready var _drag_layer: CanvasLayer = $DragLayer
 
@@ -36,6 +37,7 @@ var active = {}
 func _ready():
 	rect_dummy.visible = false
 	arrow_dummy.visible = false
+	icon_dummy.visible = false
 
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 
@@ -56,6 +58,12 @@ func texture_from_size(size):
 		return rect_texture_2px
 
 	return rect_texture_1px
+
+func request_icon(room, texture: Texture2D, priority = Priority.STATUS):
+	var inst: Sprite2D = create(icon_dummy, room, priority)
+	inst.texture = texture
+	_position_highlight(inst, room)
+	return inst
 
 func request_arrow(room, priority = Priority.SELECTION, world_offset_from_room_origin = null):
 	var inst = create(arrow_dummy, room, priority)
