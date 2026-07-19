@@ -107,10 +107,6 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			tex = load("res://assets/sprites/item_wiskey_crate_raw.png")
 			display_name = "Fresh Whiskey"
 
-		Enum.Items.DRINK:
-			offset = Vector2i(3, -2)
-			display_name = "Drink"
-
 		Enum.Items.WATER_BUCKET:
 			tex = load("res://assets/sprites/item_water-bucket.png")
 			display_name = "Water Bucket"
@@ -122,6 +118,11 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			trade_price = 8
 
 		# SHADOW ITEMS
+		Enum.Items.DRINK:
+			offset = Vector2i(3, -2)
+			display_name = "Drink"
+			is_shadow_item = true
+		
 		Enum.Items.BROOM:
 			tex = load("res://assets/sprites/item_broom.png")
 			display_name = "Broom"
