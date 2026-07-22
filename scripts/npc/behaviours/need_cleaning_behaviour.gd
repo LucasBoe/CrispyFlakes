@@ -20,7 +20,10 @@ func loop():
 	
 	await move(bath.get_random_floor_position())
 	var request_time = Time.get_ticks_msec()
-	bath.register_as_customer(self)
+	
+	if not is_instance_valid(bath):
+		bath.register_as_customer(self)
+	
 	UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32))	
 	
 	if not is_instance_valid(npc):
