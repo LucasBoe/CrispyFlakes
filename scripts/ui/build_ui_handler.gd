@@ -30,6 +30,7 @@ func _ready():
 	create_button(groups, Building.room_data_table)
 	create_button(groups, Building.room_data_bar)
 	create_button(groups, Building.room_data_stairs)
+	create_button(groups, Building.room_data_elevator)
 	create_button(groups, Building.room_data_broom_closet)
 	create_button(groups, Building.room_data_storage)
 	create_button(groups, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
@@ -64,7 +65,10 @@ func _ready():
 
 func create_button(room_groups : Dictionary, data : BuildableData, custom_placement_check = null, build_action: Callable = PlacementHandler.start_building):
 
-	var group = room_groups[data.room_type]
+	var room_type := int(data.room_type)
+	if not room_groups.has(room_type):
+		room_groups[room_type] = room_group.new(room_type)
+	var group = room_groups[room_type]
 	var tier = 0
 	while group.tiers.size() <= tier:
 		group.create_new_tier_dummy(room_tier_dummy)
