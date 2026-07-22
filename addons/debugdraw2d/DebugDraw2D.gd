@@ -16,14 +16,15 @@ func line_vector(origin, vector, color := Color(1, 0, 1), line_width := 1.0, dur
 	var line = Line.new(origin, origin + vector, color, line_width, duration)
 	lines.push_back(line)
 
-func arrow(from, to, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0):
+func arrow(from, to, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0, head_size := -1.0):
 	var arrow_len = (to - from).length()
 	var arrow_dir = (to - from) / arrow_len
-	var arrow_head_size = arrow_len * .25
-	var arrow_head_start = from + arrow_dir * arrow_len * .75
+	# head_size < 0 keeps the original behavior: scale with shaft length
+	var resolved_head_size = head_size if head_size >= 0.0 else arrow_len * .25
+	var arrow_head_start = to - arrow_dir * resolved_head_size
 	var arrow_normal = Vector2(arrow_dir.y, -arrow_dir.x)
-	var arrow_start_1 = arrow_head_start + arrow_normal * arrow_head_size
-	var arrow_start_2 = arrow_head_start - arrow_normal * arrow_head_size
+	var arrow_start_1 = arrow_head_start + arrow_normal * resolved_head_size
+	var arrow_start_2 = arrow_head_start - arrow_normal * resolved_head_size
 
 	var line = Line.new(from, to, color, line_width, duration)
 	var head_line_1 = Line.new(arrow_start_1, to - arrow_dir * line_width/2, color, line_width, duration)
@@ -33,8 +34,8 @@ func arrow(from, to, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0
 	lines.push_back(head_line_1)
 	lines.push_back(head_line_2)
 
-func arrow_vector(origin, vector, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0):
-	arrow(origin, origin + vector, color, line_width, duration)
+func arrow_vector(origin, vector, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0, head_size := -1.0):
+	arrow(origin, origin + vector, color, line_width, duration, head_size)
 
 func cube(center, size := 10.0, color := Color(1, 0, 1), line_width := 1.0, duration := 0.0):
 	var cube = Rect.new(center, Vector2(size, size), color, false, line_width, duration)
@@ -72,7 +73,8 @@ func circle_arc_filled(center, radius := 10.0, angle_from := 0.0, angle_to := 90
 
 func _ready():
 	set_process(true)
-	z_index = 1000
+	z_index = 4096
+	z_as_relative = false
 
 func _process(delta):
 	_process_primitives(rects, delta)

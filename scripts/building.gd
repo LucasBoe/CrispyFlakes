@@ -8,10 +8,16 @@ extends Node2D
 
 var floors = {}
 var query : BuildingRoomQueries
+var navigation_helper_query : BuildingNavigationHelperQuery
 var _tile_renderer : BuildingTileRenderer
 var _roof_stove_pipes_by_x: Dictionary = {}
 var _stairs_overlay: BuildingStairsOverlay
 var _stairs_info_requests: int = 0
+var _debug_nav_floors: bool = false
+var _debug_nav_hover: bool = false
+var _debug_nav_path: bool = false
+var _debug_nav_path_start: Vector2 = Vector2.ZERO
+var _debug_nav_path_has_start: bool = false
 const FLOOR_POSITION_Y_BIAS := -1.0
 const ROOF_STOVE_PIPE_SCENE := preload("res://scenes/building_roof_stove_pipe.tscn")
 const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
@@ -21,6 +27,7 @@ const room_data_empty := preload("res://assets/resources/rooms/room_empty.tres")
 const room_data_digging := preload("res://assets/resources/rooms/room_digging.tres")
 const room_data_junk := preload("res://assets/resources/rooms/room_junk.tres")
 const room_data_stairs := preload("res://assets/resources/rooms/room_stairs.tres")
+const room_data_elevator := preload("res://assets/resources/rooms/room_elevator.tres")
 const room_data_brewery := preload("res://assets/resources/rooms/room_brewery.tres")
 const room_data_storage := preload("res://assets/resources/rooms/room_storage.tres")
 const room_data_bath := preload("res://assets/resources/rooms/room_bath.tres")
@@ -54,11 +61,46 @@ const infrastructure_data_electricity := preload("res://assets/resources/infrast
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
+	navigation_helper_query = BuildingNavigationHelperQuery.new(self)
 	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
 	if is_instance_valid(infrastructure) and not infrastructure.on_infrastructure_changed_signal.is_connected(_on_infrastructure_changed):
 		infrastructure.on_infrastructure_changed_signal.connect(_on_infrastructure_changed)
 	_stairs_overlay = BuildingStairsOverlay.new()
 	_stairs_overlay.setup()
+	Console.add_command("debug_nav_floors", _console_toggle_debug_nav_floors, 0, 0, "Toggles debug drawing of the abstracted floor navigation model.")
+	Console.add_command("debug_nav_hover", _console_toggle_debug_nav_hover, 0, 0, "Toggles debug drawing of just the hovered floor, its connectors, and adjacent floors (ghosted).")
+	Console.add_command("debug_nav_path", _console_toggle_debug_nav_path, 0, 0, "Toggles debug drawing of the phase-graph path between a clicked point and the cursor.")
+
+func _process(_delta: float) -> void:
+	if _debug_nav_floors:
+		navigation_helper_query.debug_draw_floor_infos()
+	if _debug_nav_hover:
+		navigation_helper_query.debug_draw_hovered_floor_info(get_global_mouse_position())
+	if _debug_nav_path and _debug_nav_path_has_start:
+		navigation_helper_query.debug_draw_path_between(_debug_nav_path_start, get_global_mouse_position())
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _debug_nav_path:
+		return
+	if event is InputEventMouseButton \
+	and event.button_index == MOUSE_BUTTON_LEFT \
+	and event.pressed \
+	and get_viewport().gui_get_hovered_control() == null:
+		_debug_nav_path_start = get_global_mouse_position()
+		_debug_nav_path_has_start = true
+
+func _console_toggle_debug_nav_floors() -> void:
+	_debug_nav_floors = !_debug_nav_floors
+	Console.print_line("Nav floor debug draw " + ("ON" if _debug_nav_floors else "OFF"))
+
+func _console_toggle_debug_nav_hover() -> void:
+	_debug_nav_hover = !_debug_nav_hover
+	Console.print_line("Nav hover debug draw " + ("ON" if _debug_nav_hover else "OFF"))
+
+func _console_toggle_debug_nav_path() -> void:
+	_debug_nav_path = !_debug_nav_path
+	_debug_nav_path_has_start = false
+	Console.print_line("Nav path debug draw " + ("ON - click to set start point" if _debug_nav_path else "OFF"))
 
 func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene

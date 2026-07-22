@@ -4,6 +4,8 @@ class_name NavigationModule
 var _debug = false
 var _debug_inside_notification: UiNotifications.instance_info = null
 
+const ELEVATOR_ROOM_SCRIPT = preload("res://scripts/room_elevator.gd")
+
 var npc: NPC
 var current_room_index
 var target_path = []
@@ -12,6 +14,7 @@ var target_final
 var has_target = false
 var is_moving = false
 var _stair_waypoints_remaining: int = 0
+var _active_elevator_request = null
 var _is_inside: bool = false
 var _last_known_room: RoomBase = null
 var _has_enter_gate: bool = false
@@ -35,7 +38,22 @@ func _process(delta):
 	if not has_target:
 		return
 
+	#this should only be null if the npc is acutally ON an elevator
+	if _active_elevator_request != null:
+		npc.Animator.direction = Vector2.ZERO
+		return
+
+	if target_path.is_empty():
+		stop_navigation()
+		target_reached_signal.emit()
+		return
+
 	npc.Animator.direction = Vector2.ZERO
+
+	#this looks like a potential issue since it's assuming that a dict value means elevator allways
+	if target_path[0] is Dictionary:
+		_start_elevator_step(target_path[0])
+		return
 
 	if global_position.distance_to(target_path[0]) < 1:
 		npc.global_position = target_path[0]
@@ -61,6 +79,7 @@ func stop_navigation():
 	has_target = false
 	is_moving = false
 	_stair_waypoints_remaining = 0
+	_active_elevator_request = null
 	npc.Animator.direction = Vector2.ZERO
 	if _has_enter_gate:
 		_has_enter_gate = false
@@ -148,6 +167,9 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 
 
 func refresh_target_path() -> void:
+	if _active_elevator_request != null:
+		return
+
 	# Save remaining stair waypoints before clearing — a mid-stair NPC must finish
 	# the current stair segment before following any newly computed path, otherwise
 	# the wrong floor is detected for start_room (floor() snaps y=-24 to floor 0
@@ -163,6 +185,7 @@ func refresh_target_path() -> void:
 	_has_enter_gate = false
 	_has_leave_gate = false
 
+	#final target compuation
 	var final_target: Vector2
 	if target_final is NPC:
 		var target_room := Building.query.closest_room_of_type(RoomBase, (target_final as NPC).global_position) as RoomBase
@@ -275,6 +298,14 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 		var room_above := _get_room_above_stairs(room as RoomStairs)
 		_append_connected_room(result, room_above, room.y + 1)
 
+	if room.get_script() == ELEVATOR_ROOM_SCRIPT:
+		var elevator_above = Building.get_room_from_index(Vector2i(room.x, room.y + 1))
+		var elevator_below = Building.get_room_from_index(Vector2i(room.x, room.y - 1))
+		if elevator_above != null and elevator_above.get_script() == ELEVATOR_ROOM_SCRIPT:
+			_append_connected_room(result, elevator_above, room.y + 1)
+		if elevator_below != null and elevator_below.get_script() == ELEVATOR_ROOM_SCRIPT:
+			_append_connected_room(result, elevator_below, room.y - 1)
+
 	for stair_below in _get_stairs_below(room):
 		if stair_below != room:
 			_append_connected_room(result, stair_below, stair_below.y)
@@ -284,6 +315,15 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 
 func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, is_final := false) -> void:
 	if from_room == null or to_room == null:
+		return
+
+	var transition_elevator = _get_transition_elevator(from_room, to_room)
+	if transition_elevator != null and from_room.y != to_room.y:
+		target_path.append({
+			"type": "elevator",
+			"from": from_room,
+			"to": to_room,
+		})
 		return
 
 	# Vertical movement uses the stair on the lower floor.
@@ -336,25 +376,26 @@ func _append_stairs_transition(stairs: RoomStairs, go_downwards: bool) -> void:
 	_append_stairs_zig_zag(stairs, go_downwards)
 
 
+static func compute_stairs_waypoints(stairs_global_position: Vector2, go_downwards: bool) -> Array[Vector2]:
+	var top_aligned_origin := stairs_global_position + Vector2(0, -48)
+	if go_downwards:
+		return [
+			top_aligned_origin + Vector2(8, 0),
+			top_aligned_origin + Vector2(28, 24),
+			top_aligned_origin + Vector2(36, 24),
+			top_aligned_origin + Vector2(36, 48),
+		]
+	return [
+		top_aligned_origin + Vector2(36, 48),
+		top_aligned_origin + Vector2(36, 24),
+		top_aligned_origin + Vector2(28, 24),
+		top_aligned_origin + Vector2(8, 0),
+	]
+
 func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
 	_stair_waypoints_remaining += 4
-	var waypoints: Array[Vector2] = []
 	var room_above := _get_room_above_stairs(stairs)
-	var top_aligned_origin := stairs.global_position + Vector2(0, -48)
-	if go_downwards:
-		waypoints = [
-			top_aligned_origin + Vector2(8, 0),
-			top_aligned_origin + Vector2(28, 24),
-			top_aligned_origin + Vector2(36, 24),
-			top_aligned_origin + Vector2(36, 48),
-		]
-	else:
-		waypoints = [
-			top_aligned_origin + Vector2(36, 48),
-			top_aligned_origin + Vector2(36, 24),
-			top_aligned_origin + Vector2(28, 24),
-			top_aligned_origin + Vector2(8, 0),
-		]
+	var waypoints: Array[Vector2] = compute_stairs_waypoints(stairs.global_position, go_downwards)
 
 	if _debug:
 		for i in range(waypoints.size()):
@@ -542,6 +583,30 @@ func _get_transition_stairs(from_room: RoomBase, to_room: RoomBase) -> RoomStair
 
 	return null
 
+func _get_transition_elevator(from_room: RoomBase, to_room: RoomBase):
+	if from_room.get_script() == ELEVATOR_ROOM_SCRIPT and to_room.get_script() == ELEVATOR_ROOM_SCRIPT and from_room.x == to_room.x:
+		return from_room
+	return null
+
+func _start_elevator_step(step: Dictionary) -> void:
+	if _active_elevator_request != null:
+		return
+	ElevatorHandler.debug_log("nav start elevator npc=%s from=(%d,%d) to=(%d,%d)" % [
+		npc.name,
+		step["from"].x, step["from"].y,
+		step["to"].x, step["to"].y,
+	])
+	_active_elevator_request = ElevatorHandler.request_trip(npc, step["from"], step["to"])
+	_active_elevator_request.finished.connect(_on_elevator_step_finished, CONNECT_ONE_SHOT)
+
+func _on_elevator_step_finished() -> void:
+	ElevatorHandler.debug_log("nav finish elevator npc=%s" % npc.name)
+	_active_elevator_request = null
+	target_path.remove_at(0)
+	if target_path.is_empty():
+		stop_navigation()
+		target_reached_signal.emit()
+
 
 func _append_connected_room(result: Array[RoomBase], room, floor_y: int) -> void:
 	if room is RoomBase and _is_walkable_room_on_floor(room, floor_y) and room not in result:
@@ -688,3 +753,47 @@ func _update_debug_inside_label() -> void:
 	else:
 		var label: Label = _debug_inside_notification.instance.get_node("MarginContainer/HBoxContainer/Label")
 		label.text = text
+
+# phase data containers
+class navigationPhase:
+	var target_location : Vector2
+	var inside = false
+	signal on_finished_phase
+		
+class manualPhase:
+	extends navigationPhase
+	func trigger_manual_finish():
+		on_finished_phase.emit()
+		
+class walkPhase:
+	extends navigationPhase
+	func _init(target):
+		target_location = target
+	
+class useStairsPhase:
+	extends navigationPhase
+	var waypoints = []
+
+	func last_waypoint():
+		return waypoints[waypoints.size()-1]
+
+class swapInOutSidewaysPhase:
+	extends navigationPhase
+	func _init(target):
+		target_location = target
+
+class useDoorSwapPhase:
+	extends manualPhase
+	var door_room : RoomBouncer
+	func _init(door):
+		door_room = door
+		target_location = door.get_center_floor_position()
+
+class useElevatorPhase:
+	extends manualPhase
+	var from_room : RoomElevator
+	var to_room : RoomElevator
+	func _init(from, to):
+		from_room = from
+		to_room = to
+		target_location = from.get_boarding_position()
