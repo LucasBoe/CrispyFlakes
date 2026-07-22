@@ -22,13 +22,26 @@ func loop():
 	var request_time = Time.get_ticks_msec()
 	
 	if not is_instance_valid(bath):
-		bath.register_as_customer(self)
+		return
+
+	bath.register_as_customer(self)
 	
 	UiNotifications.create_notification_dynamic("?", npc, Vector2(0,-32))	
 	
 	if not is_instance_valid(npc):
+		_unregister_from_bath()
 		return
 		
-	while npc.is_dirty and Time.get_ticks_msec() - request_time < TIMEOUT:
+	while is_instance_valid(npc) and npc.is_dirty and Time.get_ticks_msec() - request_time < TIMEOUT:
 		await end_of_frame()
-	bath.unregister_as_customer(self)
+	
+	_unregister_from_bath()
+
+func stop_loop() -> BehaviourSaveData:
+	_unregister_from_bath()
+	return super.stop_loop()
+
+func _unregister_from_bath() -> void:
+	if is_instance_valid(bath):
+		bath.unregister_as_customer(self)
+	bath = null
