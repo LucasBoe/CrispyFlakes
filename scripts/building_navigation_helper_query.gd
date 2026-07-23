@@ -130,7 +130,8 @@ func _rebuild_row(floor):
 	# this is the only floor where indoor/outside linking applies
 	if floor == 0:
 		_link_indoor_outside_neighbors(floors_on_level)
-		
+		_link_outside_segments_directly(floors_on_level)
+
 	_floors[floor] = floors_on_level
 
 # Indoor and outside segments strictly alternate along a row, so an indoor
@@ -147,6 +148,22 @@ func _link_indoor_outside_neighbors(floors_on_level: Array) -> void:
 			continue
 		a.neighbors.append(b)
 		b.neighbors.append(a)
+
+# The street is one contiguous space - walking from one outside segment to
+# another (passing several buildings along the way) shouldn't require
+# detouring through every building in between, which would also wrongly
+# trigger an entering/frisking transition at each one along the way. Link
+# every outside segment on this row directly to every other, so the search
+# can always take the direct along-the-street route instead.
+func _link_outside_segments_directly(floors_on_level: Array) -> void:
+	var outside_segments : Array = []
+	for f : floorInfo in floors_on_level:
+		if f.is_outside:
+			outside_segments.append(f)
+	for i in range(outside_segments.size()):
+		for j in range(i + 1, outside_segments.size()):
+			outside_segments[i].neighbors.append(outside_segments[j])
+			outside_segments[j].neighbors.append(outside_segments[i])
 
 # _connectors is only ever added to (see _rebuild_row) and never pruned when
 # a room is freed - a bulk teardown (e.g. loading a save clears the whole
@@ -217,20 +234,30 @@ func _sum(array):
 		v+= i
 	return v
 
-func refresh_target_path(current_phase : NavigationModule.navigationPhase, current_position : Vector2, target_position : Vector2):
-	var path = []
-	var came_from = {}
-	
-	#finish current stairs movement
-	if current_phase is NavigationModule.useStairsPhase:
-		path.append(current_phase)
+func refresh_target_path(current_phase : NavigationModule.navigationPhase, current_position : Vector2, target_position : Vector2, requires_bouncer : bool = true) -> Array[NavigationModule.navigationPhase]:
+	# finish current stairs movement before planning a new path, so the BFS
+	# starts from the stairs' exit rather than the in-between y the NPC
+	# currently occupies
+	var resuming_stairs : bool = current_phase is NavigationModule.useStairsPhase and not current_phase.is_done()
+	if resuming_stairs:
 		current_position = current_phase.last_waypoint()
-		
-	var current_floor = query_floor_at_position(current_position)
-	var target_floor = query_floor_at_position(target_position)
-	
-	path = _find_path(current_floor, target_floor, current_position)
-	
+
+	var current_floor : floorInfo = query_floor_at_position(current_position)
+	var target_floor : floorInfo = query_floor_at_position(target_position)
+
+	if current_floor == null or target_floor == null:
+		return []
+
+	var hops : Array[NavigationModule.navigationPhase] = []
+	if current_floor != target_floor:
+		hops = _find_path(current_floor, target_floor, current_position, requires_bouncer)
+		if hops.is_empty():
+			return []
+
+	var path : Array[NavigationModule.navigationPhase] = []
+	if resuming_stairs:
+		path.append(current_phase)
+	path.append_array(hops)
 	path.append(NavigationModule.walkPhase.new(target_position))
 	return path
 	
@@ -263,16 +290,27 @@ func query_floor_at_position(position : Vector2):
 func _debug_floor_label(floor_info: floorInfo) -> String:
 	return "y=%d x=%.0f outside=%s" % [floor_info.y_level, floor_info.x_center, floor_info.is_outside]
 
+# The bouncer that gates crossings for this indoor segment, if any - if a
+# bouncer exists anywhere on the floor, guests are meant to be forced through
+# it regardless of which side of the segment they're actually crossing
+# (there's only one legitimate door once the building has one at all).
+func _bouncer_gating(indoor : floorInfo, _outside : floorInfo):
+	for connector in _valid_connectors_of(indoor):
+		if connector is RoomBouncer:
+			return connector
+	return null
+
 # Point (world x) where an indoor segment and its outside neighbor connect -
 # the bouncer's position if one gates the crossing, otherwise the segment
 # edge facing the other side. Shared by cost calculation and phase creation
 # so both agree on exactly where a same-level hop actually crosses.
-func _indoor_outside_crossing_x(a : floorInfo, b : floorInfo) -> float:
+func _indoor_outside_crossing_x(a : floorInfo, b : floorInfo, requires_bouncer : bool = true) -> float:
 	var indoor : floorInfo = a if not a.is_outside else b
 	var outside : floorInfo = b if indoor == a else a
-	for connector in _valid_connectors_of(indoor):
-		if connector is RoomBouncer:
-			return connector.get_center_position().x
+	if requires_bouncer:
+		var bouncer = _bouncer_gating(indoor, outside)
+		if bouncer != null:
+			return bouncer.get_center_position().x
 	return _segment_edge_facing(indoor, outside.x_center)
 
 # Same-level (indoor/outside) hops are a real walk, so a longer one should
@@ -287,9 +325,9 @@ func _indoor_outside_crossing_x(a : floorInfo, b : floorInfo) -> float:
 # floor and would otherwise make a distant connector look artificially cheap.
 const VERTICAL_HOP_BASE_COST := 48.0
 
-func _edge_cost(current: floorInfo, neighbor: floorInfo, from_x: float) -> Dictionary:
+func _edge_cost(current: floorInfo, neighbor: floorInfo, from_x: float, requires_bouncer : bool = true) -> Dictionary:
 	if current.y_level == neighbor.y_level:
-		var crossing_x := _indoor_outside_crossing_x(current, neighbor)
+		var crossing_x := _indoor_outside_crossing_x(current, neighbor, requires_bouncer)
 		return {"cost": absf(from_x - crossing_x), "arrival_x": crossing_x}
 	var connector = _find_connecting_connector(current, neighbor, from_x)
 	if connector == null:
@@ -297,7 +335,7 @@ func _edge_cost(current: floorInfo, neighbor: floorInfo, from_x: float) -> Dicti
 	var connector_x : float = connector.get_center_position().x
 	return {"cost": absf(from_x - connector_x) + VERTICAL_HOP_BASE_COST, "arrival_x": connector_x}
 
-func _find_path(start_floor: floorInfo, goal_floor: floorInfo, start_pos: Vector2) -> Array[NavigationModule.navigationPhase]:
+func _find_path(start_floor: floorInfo, goal_floor: floorInfo, start_pos: Vector2, requires_bouncer : bool = true) -> Array[NavigationModule.navigationPhase]:
 	if start_floor == goal_floor:
 		return []
 
@@ -316,12 +354,12 @@ func _find_path(start_floor: floorInfo, goal_floor: floorInfo, start_pos: Vector
 
 		if current == goal_floor:
 			DebugLog.info("[NavPath]", "found path", "cost", cost_so_far[current], "nodes_visited", cost_so_far.size())
-			return _reconstruct_path(came_from, goal_floor, arrival_x)
+			return _reconstruct_path(came_from, goal_floor, arrival_x, requires_bouncer)
 
 		for neighbor in _get_connected_floors(current):
 			if neighbor == null:
 				continue
-			var hop : Dictionary = _edge_cost(current, neighbor, arrival_x[current])
+			var hop : Dictionary = _edge_cost(current, neighbor, arrival_x[current], requires_bouncer)
 			if hop.cost == INF:
 				continue
 			var new_cost : float = cost_so_far[current] + hop.cost
@@ -356,12 +394,12 @@ func _query_floor_info(y_level: int, x: int) -> floorInfo:
 	return query_floor_at_position(position)
 
 
-func _reconstruct_path(came_from: Dictionary, goal_floor: floorInfo, arrival_x: Dictionary) -> Array[NavigationModule.navigationPhase]:
+func _reconstruct_path(came_from: Dictionary, goal_floor: floorInfo, arrival_x: Dictionary, requires_bouncer : bool = true) -> Array[NavigationModule.navigationPhase]:
 	var path: Array[NavigationModule.navigationPhase] = []
 	var current = goal_floor
 	while came_from.has(current):
 		var predecessor = came_from[current]
-		path.push_front(create_phase(predecessor, current, arrival_x[predecessor]))
+		path.push_front(create_phase(predecessor, current, arrival_x[predecessor], requires_bouncer))
 		current = predecessor
 	return path
 
@@ -369,11 +407,13 @@ func _reconstruct_path(came_from: Dictionary, goal_floor: floorInfo, arrival_x: 
 # given they're adjacent in the floorInfo graph (see _get_connected_floors).
 # `from_x` is the actual arrival position on `from` (see _find_path) - passing
 # it through keeps the connector chosen here consistent with whichever one
-# the search actually costed for this hop.
-func create_phase(from : floorInfo, to : floorInfo, from_x : float = INF) -> NavigationModule.navigationPhase:
+# the search actually costed for this hop. `requires_bouncer` false lets an
+# indoor/outside crossing skip the door and use the open side instead, even
+# when a bouncer is present (e.g. workers, who aren't gated by it).
+func create_phase(from : floorInfo, to : floorInfo, from_x : float = INF, requires_bouncer : bool = true) -> NavigationModule.navigationPhase:
 	if from.y_level != to.y_level:
 		return _create_vertical_phase(from, to, from_x)
-	return _create_indoor_outside_phase(from, to)
+	return _create_indoor_outside_phase(from, to, requires_bouncer)
 
 func _create_vertical_phase(from : floorInfo, to : floorInfo, from_x : float) -> NavigationModule.navigationPhase:
 	var connector = _find_connecting_connector(from, to, from_x)
@@ -409,22 +449,19 @@ func _find_connecting_connector(a : floorInfo, b : floorInfo, reference_x : floa
 			best = connector
 	return best
 
-func _create_indoor_outside_phase(from : floorInfo, to : floorInfo) -> NavigationModule.navigationPhase:
+func _create_indoor_outside_phase(from : floorInfo, to : floorInfo, requires_bouncer : bool = true) -> NavigationModule.navigationPhase:
 	var indoor : floorInfo = from if not from.is_outside else to
 	var outside : floorInfo = to if indoor == from else from
+	var entering : bool = indoor == to
 
-	var bouncer = null
-	for connector in _valid_connectors_of(indoor):
-		if connector is RoomBouncer:
-			bouncer = connector
-			break
-
-	if bouncer != null:
-		return NavigationModule.useDoorSwapPhase.new(bouncer)
+	if requires_bouncer:
+		var bouncer = _bouncer_gating(indoor, outside)
+		if bouncer != null:
+			return NavigationModule.useDoorSwapPhase.new(bouncer, entering)
 
 	var crossing_x : float = _segment_edge_facing(indoor, outside.x_center)
 	var crossing_y : float = indoor.y_level * -48.0
-	return NavigationModule.swapInOutSidewaysPhase.new(Vector2(crossing_x, crossing_y))
+	return NavigationModule.swapInOutSidewaysPhase.new(Vector2(crossing_x, crossing_y), entering)
 
 # Debug visualization for the abstracted floor model. Encodes:
 #   box style    -> outside (gray outline) vs real floor (filled green)
@@ -490,11 +527,7 @@ const CROSSING_ARROW_MIN_LEN := 14.0
 const CROSSING_ARROW_MAX_LEN := 40.0
 
 func _debug_draw_indoor_outside_crossing(indoor: floorInfo, outside: floorInfo, world_y: float, duration: float, alpha: float) -> void:
-	var bouncer = null
-	for connector in _valid_connectors_of(indoor):
-		if connector is RoomBouncer:
-			bouncer = connector
-			break
+	var bouncer = _bouncer_gating(indoor, outside)
 
 	var from_x : float = bouncer.get_center_position().x if bouncer != null else _segment_edge_facing(indoor, outside.x_center)
 	var to_x : float = _segment_edge_facing(outside, indoor.x_center)
@@ -570,10 +603,24 @@ func debug_draw_path_between(start_pos: Vector2, end_pos: Vector2, duration: flo
 
 	var phases : Array[NavigationModule.navigationPhase] = _find_path(start_floor, goal_floor, start_pos)
 	phases.append(NavigationModule.walkPhase.new(end_pos))
+	debug_draw_phases(phases, start_pos, duration)
 
+# Draws an already-computed phase sequence starting from start_pos - shared by
+# the hypothetical click-to-cursor tool above and the live selected-NPC path
+# viewer below, so both always agree on what each phase type looks like.
+func debug_draw_phases(phases: Array[NavigationModule.navigationPhase], start_pos: Vector2, duration: float = 0.0) -> void:
 	var current_pos := start_pos
 	for phase in phases:
 		current_pos = _debug_draw_phase(phase, current_pos, duration)
+
+# Debug visualization of a live NPC's actual in-flight navigation path - same
+# palette as debug_draw_path_between, but reads the real target_path instead
+# of computing a hypothetical one.
+func debug_draw_live_npc_path(npc: NPC, duration: float = 0.0) -> void:
+	if npc == null or npc.Navigation == null or not npc.Navigation.has_target:
+		return
+	DebugDraw2D.circle_filled(_v(npc.global_position), 4.0, 8, Color(Color.LIME_GREEN, DEBUG_OPACITY), duration)
+	debug_draw_phases(npc.Navigation.target_path, npc.global_position, duration)
 
 func _debug_draw_phase(phase: NavigationModule.navigationPhase, from_pos: Vector2, duration: float) -> Vector2:
 	if phase is NavigationModule.useStairsPhase:

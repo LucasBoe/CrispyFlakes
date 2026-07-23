@@ -4,23 +4,28 @@ class_name NavigationModule
 var _debug = false
 var _debug_inside_notification: UiNotifications.instance_info = null
 
+# Shared across all NPCs - toggled via the "debug_zlayer" console command
+# (see building.gd). Marks every place _is_inside actually flips with a
+# colored marker (lime = swapped indoor, orange = swapped outside) plus a
+# console line naming the NPC, the phase kind that caused it, and position -
+# for tracking down exactly when/where a swap fires wrongly.
+static var debug_zlayer_swaps := false
+
 const ELEVATOR_ROOM_SCRIPT = preload("res://scripts/room_elevator.gd")
+const FRISK_PROGRESS_BAR_SCENE = preload("res://scenes/npc_progress_bar.tscn")
+const FRISK_DURATION := 1.0
 
 var npc: NPC
 var current_room_index
-var target_path = []
+var target_path : Array[navigationPhase] = []
 var target_final
 
 var has_target = false
 var is_moving = false
 var _stair_waypoints_remaining: int = 0
 var _active_elevator_request = null
+var _frisk_in_progress := false
 var _is_inside: bool = false
-var _last_known_room: RoomBase = null
-var _has_enter_gate: bool = false
-var _enter_gate_position: Vector2 = Vector2.ZERO
-var _has_leave_gate: bool = false
-var _leave_gate_position: Vector2 = Vector2.ZERO
 
 const DEFAULT_MOVE_SPEED = 32
 var move_speed = DEFAULT_MOVE_SPEED
@@ -35,11 +40,14 @@ func _ready():
 	call_deferred("sync_inside_outside_state")
 
 func _process(delta):
+	if debug_zlayer_swaps:
+		_debug_draw_zlayer_rect()
+
 	if not has_target:
 		return
 
 	#this should only be null if the npc is acutally ON an elevator
-	if _active_elevator_request != null:
+	if _active_elevator_request != null or _frisk_in_progress:
 		npc.Animator.direction = Vector2.ZERO
 		return
 
@@ -50,25 +58,39 @@ func _process(delta):
 
 	npc.Animator.direction = Vector2.ZERO
 
-	#this looks like a potential issue since it's assuming that a dict value means elevator allways
-	if target_path[0] is Dictionary:
-		_start_elevator_step(target_path[0])
+	var phase : navigationPhase = target_path[0]
+
+	if phase is useElevatorPhase:
+		_start_elevator_phase(phase as useElevatorPhase)
 		return
 
-	if global_position.distance_to(target_path[0]) < 1:
-		npc.global_position = target_path[0]
-		_on_waypoint_arrived(target_path[0])
+	var target : Vector2 = (phase as useStairsPhase).current_waypoint() if phase is useStairsPhase else phase.target_location
+
+	if global_position.distance_to(target) < 1:
+		npc.global_position = target
+		if phase is useStairsPhase:
+			var stairs_phase := phase as useStairsPhase
+			stairs_phase.current_index += 1
+			_stair_waypoints_remaining = stairs_phase.waypoints.size() - stairs_phase.current_index
+			if not stairs_phase.is_done():
+				return
+		elif phase is useDoorSwapPhase:
+			var door_phase := phase as useDoorSwapPhase
+			if door_phase.entering and npc is NPCGuest and is_instance_valid(door_phase.door_room) and door_phase.door_room.has_active_bouncer():
+				_start_frisk(door_phase)
+				return
+			_apply_door_swap_phase(door_phase)
+		elif phase is swapInOutSidewaysPhase:
+			_apply_sideways_swap_phase(phase as swapInOutSidewaysPhase)
 		target_path.remove_at(0)
-		if _stair_waypoints_remaining > 0:
-			_stair_waypoints_remaining -= 1
 		if target_path.is_empty():
 			stop_navigation()
 			target_reached_signal.emit()
 			return
+		return
 
-	npc.Animator.direction = target_path[0] - npc.global_position
-	npc.global_position = npc.global_position.move_toward(target_path[0], delta * move_speed)
-	_check_inside_outside_transition()
+	npc.Animator.direction = target - npc.global_position
+	npc.global_position = npc.global_position.move_toward(target, delta * move_speed)
 
 	if _debug:
 		_draw_debug_path()
@@ -80,11 +102,12 @@ func stop_navigation():
 	is_moving = false
 	_stair_waypoints_remaining = 0
 	_active_elevator_request = null
+	# a stopped navigation has nothing left to resume - if the NPC's position
+	# gets changed out from under it before the next set_target (e.g. dragged
+	# and dropped elsewhere), a stale in-progress phase must not survive to be
+	# wrongly "resumed" by refresh_target_path
+	target_path.clear()
 	npc.Animator.direction = Vector2.ZERO
-	if _has_enter_gate:
-		_has_enter_gate = false
-		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
-	_has_leave_gate = false
 	_check_inside_outside_transition()
 
 func is_on_stair_path() -> bool:
@@ -167,23 +190,16 @@ func check_valid_path(start_pos: Vector2, goal_pos: Vector2) -> bool:
 
 
 func refresh_target_path() -> void:
-	if _active_elevator_request != null:
+	if _active_elevator_request != null or _frisk_in_progress:
 		return
 
-	# Save remaining stair waypoints before clearing — a mid-stair NPC must finish
-	# the current stair segment before following any newly computed path, otherwise
-	# the wrong floor is detected for start_room (floor() snaps y=-24 to floor 0
-	# even when the NPC is ascending toward floor 1) and the NPC flies diagonally.
-	var saved_stair_count := _stair_waypoints_remaining
-	var saved_stair_waypoints: Array[Vector2] = []
-	if saved_stair_count > 0 and target_path.size() >= saved_stair_count:
-		for i in range(saved_stair_count):
-			saved_stair_waypoints.append(target_path[i])
+	# a mid-stair NPC must finish the current stair segment before following
+	# any newly computed path - pass it along so the new path can resume from
+	# its exit instead of restarting from the in-between y the NPC occupies
+	var current_phase : navigationPhase = target_path[0] if not target_path.is_empty() else null
 
 	target_path.clear()
 	_stair_waypoints_remaining = 0
-	_has_enter_gate = false
-	_has_leave_gate = false
 
 	#final target compuation
 	var final_target: Vector2
@@ -201,50 +217,27 @@ func refresh_target_path() -> void:
 
 	refresh_room_index()
 
-	# When mid-stair, use the stair exit position (last saved waypoint) as the
-	# effective start so BFS begins from the correct floor instead of the
-	# between-floor y the NPC currently occupies.
-	var effective_pos := global_position
-	if not saved_stair_waypoints.is_empty():
-		effective_pos = saved_stair_waypoints.back()
-
-	var start_room := _get_current_floor_room(effective_pos)
+	# snap to the goal room's exact floor line, so a target sourced from a raw
+	# position (Node2D/Vector2) doesn't leave the NPC standing slightly off-grid
 	final_target.y = snappedf(final_target.y, 48.0)
 	var goal_room := _get_goal_floor_room(final_target)
+	if goal_room != null:
+		final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
 
-	if start_room == null or goal_room == null:
-		_fail_target_path()
-		_prepend_saved_stair_waypoints(saved_stair_waypoints)
-		return
-
-	final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
-
-	if not (npc is NPCWorker) and not _should_ignore_bouncer_gate():
-		var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
-		if bouncer_room != null:
-			if not _is_inside and not _is_outside_target(final_target):
-				if _apply_enter_gate(bouncer_room, goal_room, final_target):
-					_prepend_saved_stair_waypoints(saved_stair_waypoints)
-					return
-			elif _is_inside and _is_outside_target(final_target):
-				if _apply_leave_gate(bouncer_room, start_room, final_target):
-					_prepend_saved_stair_waypoints(saved_stair_waypoints)
-					return
-
-	var room_path := _find_room_path(start_room, goal_room)
-	if room_path.is_empty():
+	# workers aren't gated by the bouncer, and neither is anyone currently
+	# chasing another NPC (e.g. an escort/arrest chain shouldn't detour
+	# through a supervised door) - both can cross at the open side instead
+	var requires_bouncer := not (npc is NPCWorker) and not (target_final is NPC)
+	var new_path : Array[navigationPhase] = Building.navigation_helper_query.refresh_target_path(current_phase, global_position, final_target, requires_bouncer)
+	if new_path.is_empty():
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), no_path_icon)
 		_fail_target_path()
-		_prepend_saved_stair_waypoints(saved_stair_waypoints)
 		return
 
-	for i in range(room_path.size() - 1):
-		var from_room := room_path[i] as RoomBase
-		var to_room := room_path[i + 1] as RoomBase
-		_append_transition_to_target_path(from_room, to_room, i == room_path.size() - 2)
-
-	target_path.append(final_target)
-	_prepend_saved_stair_waypoints(saved_stair_waypoints)
+	target_path = new_path
+	if target_path[0] is useStairsPhase:
+		var stairs_phase := target_path[0] as useStairsPhase
+		_stair_waypoints_remaining = stairs_phase.waypoints.size() - stairs_phase.current_index
 
 
 func _find_room_path(start_room: RoomBase, goal_room: RoomBase) -> Array[RoomBase]:
@@ -313,69 +306,6 @@ func _get_connected_rooms(room: RoomBase) -> Array[RoomBase]:
 	return result
 
 
-func _append_transition_to_target_path(from_room: RoomBase, to_room: RoomBase, is_final := false) -> void:
-	if from_room == null or to_room == null:
-		return
-
-	var transition_elevator = _get_transition_elevator(from_room, to_room)
-	if transition_elevator != null and from_room.y != to_room.y:
-		target_path.append({
-			"type": "elevator",
-			"from": from_room,
-			"to": to_room,
-		})
-		return
-
-	# Vertical movement uses the stair on the lower floor.
-	var transition_stairs := _get_transition_stairs(from_room, to_room)
-	if transition_stairs != null and from_room.y != to_room.y:
-		if _debug:
-			print(
-				"[STAIRS][PATH] ",
-				npc.name,
-				" from=",
-				_debug_room_label(from_room),
-				" to=",
-				_debug_room_label(to_room),
-				" using=",
-				_debug_room_label(transition_stairs),
-				" dir=",
-				"down" if to_room.y < from_room.y else "up",
-				" room_above=",
-				_debug_room_label(_get_room_above_stairs(transition_stairs))
-			)
-		_append_stairs_transition(transition_stairs, to_room.y < from_room.y)
-		if not is_final and to_room is not RoomStairs:
-			target_path.append(_get_transition_waypoint(from_room, to_room))
-		return
-
-	# Skip center waypoint when entering stairs (zig-zag provides the entry point)
-	# or on the last hop (final_target handles the destination)
-	if to_room is RoomStairs or is_final:
-		return
-
-	target_path.append(_get_transition_waypoint(from_room, to_room))
-
-
-func _append_stairs_transition(stairs: RoomStairs, go_downwards: bool) -> void:
-	if stairs == null:
-		return
-
-	if _debug:
-		print(
-			"[STAIRS][TRANSITION] ",
-			npc.name,
-			" stairs=",
-			_debug_room_label(stairs),
-				" go_down=",
-				go_downwards,
-				" ",
-				_debug_stair_geometry(stairs)
-		)
-
-	_append_stairs_zig_zag(stairs, go_downwards)
-
-
 static func compute_stairs_waypoints(stairs_global_position: Vector2, go_downwards: bool) -> Array[Vector2]:
 	var top_aligned_origin := stairs_global_position + Vector2(0, -48)
 	if go_downwards:
@@ -392,46 +322,12 @@ static func compute_stairs_waypoints(stairs_global_position: Vector2, go_downwar
 		top_aligned_origin + Vector2(8, 0),
 	]
 
-func _append_stairs_zig_zag(stairs: RoomStairs, go_downwards: bool) -> void:
-	_stair_waypoints_remaining += 4
-	var room_above := _get_room_above_stairs(stairs)
-	var waypoints: Array[Vector2] = compute_stairs_waypoints(stairs.global_position, go_downwards)
-
-	if _debug:
-		for i in range(waypoints.size()):
-			print(
-				"[STAIRS][WAYPOINT] ",
-				npc.name,
-				" step=",
-				i,
-				" anchor=",
-				_debug_room_label(stairs),
-				" above=",
-				_debug_room_label(room_above),
-				" delta=",
-				waypoints[i] - stairs.global_position,
-				" waypoint=",
-				_debug_waypoint_label(waypoints[i])
-			)
-
-	for waypoint in waypoints:
-		target_path.append(waypoint)
-
-
 func _fail_target_path() -> void:
 	target_path.clear()
 	var current_room := _get_current_floor_room(global_position)
 	if current_room != null:
 		var floor_y: int = Building.round_floor_index_from_global_position(global_position).y
-		target_path.append(_get_room_random_floor_position(current_room, floor_y))
-
-
-func _prepend_saved_stair_waypoints(waypoints: Array[Vector2]) -> void:
-	if waypoints.is_empty():
-		return
-	for i in range(waypoints.size() - 1, -1, -1):
-		target_path.push_front(waypoints[i])
-	_stair_waypoints_remaining += waypoints.size()
+		target_path.append(walkPhase.new(_get_room_random_floor_position(current_room, floor_y)))
 
 
 func _reconstruct_path(came_from: Dictionary, goal_room: RoomBase) -> Array[RoomBase]:
@@ -452,51 +348,110 @@ func _draw_room_path(path: Array[RoomBase], valid: bool, start_pos: Vector2, goa
 		DebugDraw2D.line(path[i].get_center_position(), path[i + 1].get_center_position(), color)
 
 
-func _apply_enter_gate(bouncer_room: RoomBouncer, goal_room: RoomBase, final_target: Vector2) -> bool:
-	var path: Array[RoomBase] = _find_room_path(bouncer_room, goal_room)
-	if path.is_empty():
-		return false
-	var bouncer_pos: Vector2 = bouncer_room.get_center_floor_position()
-	target_path.append(bouncer_pos)
-	for i in range(path.size() - 1):
-		_append_transition_to_target_path(path[i], path[i + 1], i == path.size() - 2)
-	target_path.append(final_target)
-	_has_enter_gate = true
-	_enter_gate_position = bouncer_pos
-	return true
-
-
-func _apply_leave_gate(bouncer_room: RoomBouncer, start_room: RoomBase, final_target: Vector2) -> bool:
-	var path: Array[RoomBase] = _find_room_path(start_room, bouncer_room)
-	if path.is_empty():
-		return false
-	var bouncer_pos: Vector2 = bouncer_room.get_center_floor_position()
-	for i in range(path.size() - 1):
-		_append_transition_to_target_path(path[i], path[i + 1], i == path.size() - 2)
-	target_path.append(bouncer_pos)
-	target_path.append(final_target)
-	_has_leave_gate = true
-	_leave_gate_position = bouncer_pos
-	return true
-
-
-func _on_waypoint_arrived(pos: Vector2) -> void:
-	if _has_enter_gate and pos.distance_to(_enter_gate_position) < 2.0:
-		_has_enter_gate = false
+# Leaving (or entering with no active bouncer to frisk at) is instant, same
+# as before. Entering through an active bouncer instead goes through
+# _start_frisk, which queues, waits its turn, and removes the phase itself.
+func _apply_door_swap_phase(phase: useDoorSwapPhase) -> void:
+	if phase.entering:
+		_is_inside = true
 		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
-		_try_frisk_at_bouncer()
-	if _has_leave_gate and pos.distance_to(_leave_gate_position) < 2.0:
-		_has_leave_gate = false
+	else:
 		_is_inside = false
 		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+	_debug_mark_zlayer_swap("door")
 
+# Open-side crossing (no bouncer door involved) - same deterministic,
+# phase-driven swap as _apply_door_swap_phase, just for the sideways case.
+func _apply_sideways_swap_phase(phase: swapInOutSidewaysPhase) -> void:
+	_is_inside = phase.entering
+	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT if phase.entering else Enum.ZLayer.NPC_OUTSIDE)
+	_debug_mark_zlayer_swap("sideways")
 
-func _try_frisk_at_bouncer() -> void:
-	if not npc is NPCGuest:
+func _debug_mark_zlayer_swap(label: String) -> void:
+	if not debug_zlayer_swaps or not is_instance_valid(npc):
 		return
-	var bouncer_room: RoomBouncer = Building.query.closest_room_of_type(RoomBouncer, global_position) as RoomBouncer
-	if bouncer_room == null or not bouncer_room.has_active_bouncer():
+	print("[zlayer] %s -> %s via %s at %s" % [npc.name, "INSIDE" if _is_inside else "OUTSIDE", label, global_position])
+
+# Always-on overlay (while debug_zlayer_swaps is toggled) so you can see the
+# NPC's actual currently-applied z-layer at a glance, not just what
+# NavigationModule's own _is_inside thinks - several behaviours (need_pee,
+# job_bar, need_sleep, etc.) set Animator.z_index directly, bypassing
+# NavigationModule entirely, so reading z_index here (not _is_inside) is the
+# only way this reflects ground truth. Redrawn every frame (duration 0.0),
+# sized to the NPC's own height so it reads as "which layer is this body on".
+func _debug_draw_zlayer_rect() -> void:
+	var color := _debug_color_for_zlayer(npc.Animator.z_index)
+	DebugDraw2D.rect(global_position + Vector2(0, -12), Vector2(14, 24), color, 2.0)
+
+func _debug_color_for_zlayer(z: int) -> Color:
+	match z:
+		Enum.ZLayer.NPC_IN_OUTHOUSE:
+			return Color.PURPLE
+		Enum.ZLayer.NPC_OUTSIDE:
+			return Color.ORANGE_RED
+		Enum.ZLayer.NPC_FAR_BACK:
+			return Color.SADDLE_BROWN
+		Enum.ZLayer.NPC_BEHIND_CONTENT:
+			return Color.YELLOW
+		Enum.ZLayer.NPC_DEFAULT:
+			return Color.LIME_GREEN
+		Enum.ZLayer.NPC_DRAGGED:
+			return Color.MAGENTA
+		_:
+			return Color.WHITE
+
+# Only one guest gets frisked at a bouncer at a time (see
+# RoomBouncer.register_guest_for_frisk) - queue up, wait for a turn, show a
+# progress bar for the duration, then resolve the check. Bails out cleanly
+# (no phase removal/signal) if navigation gets cancelled or the npc/room
+# stops being valid partway through, since this spans many frames.
+func _start_frisk(phase: useDoorSwapPhase) -> void:
+	_frisk_in_progress = true
+	var bouncer_room := phase.door_room
+	bouncer_room.register_guest_for_frisk(npc as NPCGuest)
+
+	while is_instance_valid(bouncer_room) and bouncer_room.frisk_current_user != npc:
+		await get_tree().process_frame
+		if not has_target or not is_instance_valid(npc):
+			if is_instance_valid(bouncer_room):
+				bouncer_room.unregister_guest_for_frisk(npc as NPCGuest)
+			_frisk_in_progress = false
+			return
+
+	if is_instance_valid(bouncer_room) and has_target:
+		var bar := FRISK_PROGRESS_BAR_SCENE.instantiate() as TextureProgressBar
+		npc.add_child(bar)
+		var t := 0.0
+		while t < FRISK_DURATION:
+			t += get_process_delta_time()
+			bar.value = clampf((t / FRISK_DURATION) * 100.0, 0.0, 100.0)
+			await get_tree().process_frame
+			if not has_target or not is_instance_valid(npc):
+				bar.queue_free()
+				if is_instance_valid(bouncer_room):
+					bouncer_room.unregister_guest_for_frisk(npc as NPCGuest)
+				_frisk_in_progress = false
+				return
+		bar.queue_free()
+
+		if is_instance_valid(bouncer_room):
+			if has_target:
+				_resolve_frisk_check(bouncer_room)
+			bouncer_room.unregister_guest_for_frisk(npc as NPCGuest)
+
+	_frisk_in_progress = false
+
+	if not has_target or target_path.is_empty() or target_path[0] != phase:
 		return
+	_is_inside = true
+	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	_debug_mark_zlayer_swap("frisk")
+	target_path.remove_at(0)
+	if target_path.is_empty():
+		stop_navigation()
+		target_reached_signal.emit()
+
+func _resolve_frisk_check(bouncer_room: RoomBouncer) -> void:
 	var bounty = BountyHandler.get_official_bounty_for(npc)
 	if bounty == null:
 		return
@@ -510,11 +465,7 @@ func _try_frisk_at_bouncer() -> void:
 	if randf() < minf(1.0, best_intelligence):
 		(npc as NPCGuest).is_known_fugitive = true
 
-func _should_ignore_bouncer_gate() -> bool:
-	return target_final is NPC
-
 func sync_inside_outside_state() -> void:
-	_last_known_room = null
 	_check_inside_outside_transition()
 
 func is_heading_outside() -> bool:
@@ -531,21 +482,20 @@ func _is_outside_target(pos: Vector2) -> bool:
 	return room == null or room.is_outside_room
 
 
+# One-off resync to the NPC's actual current room. Used only where phase-
+# driven state can't be trusted yet: at spawn (before any phases exist) and
+# when navigation is stopped/interrupted (e.g. dragged elsewhere). During
+# normal navigation, z-layer/_is_inside are instead set deterministically on
+# arrival by _apply_door_swap_phase/_start_frisk/_apply_sideways_swap_phase -
+# polling literal room occupancy every frame can't tell "genuinely crossing"
+# apart from "just walking past a building on the street".
 func _check_inside_outside_transition() -> void:
 	var current_room := Building.query.room_at_floor_position(global_position) as RoomBase
-	if current_room == _last_known_room:
-		return
-	var prev_room: RoomBase = _last_known_room
-	_last_known_room = current_room
-	var entering: bool = (prev_room == null or prev_room.is_outside_room) and (current_room != null and not current_room.is_outside_room)
-	var leaving: bool = (prev_room != null and not prev_room.is_outside_room) and (current_room == null or current_room.is_outside_room)
-	if entering:
-		_is_inside = true
-		if not _has_enter_gate:
-			npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
-	elif leaving:
-		_is_inside = false
-		npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
+	var was_inside := _is_inside
+	_is_inside = current_room != null and not current_room.is_outside_room
+	if _is_inside != was_inside:
+		_debug_mark_zlayer_swap("resync")
+	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT if _is_inside else Enum.ZLayer.NPC_OUTSIDE)
 
 func _get_current_floor_room(pos: Vector2) -> RoomBase:
 	return _get_walkable_room_on_position_floor(pos)
@@ -574,29 +524,13 @@ func _get_stairs_below(room: RoomBase) -> Array[RoomStairs]:
 	return stairs_below
 
 
-func _get_transition_stairs(from_room: RoomBase, to_room: RoomBase) -> RoomStairs:
-	if from_room is RoomStairs and _get_room_above_stairs(from_room as RoomStairs) == to_room:
-		return from_room as RoomStairs
-
-	if to_room is RoomStairs and _get_room_above_stairs(to_room as RoomStairs) == from_room:
-		return to_room as RoomStairs
-
-	return null
-
-func _get_transition_elevator(from_room: RoomBase, to_room: RoomBase):
-	if from_room.get_script() == ELEVATOR_ROOM_SCRIPT and to_room.get_script() == ELEVATOR_ROOM_SCRIPT and from_room.x == to_room.x:
-		return from_room
-	return null
-
-func _start_elevator_step(step: Dictionary) -> void:
-	if _active_elevator_request != null:
-		return
+func _start_elevator_phase(phase: useElevatorPhase) -> void:
 	ElevatorHandler.debug_log("nav start elevator npc=%s from=(%d,%d) to=(%d,%d)" % [
 		npc.name,
-		step["from"].x, step["from"].y,
-		step["to"].x, step["to"].y,
+		phase.from_room.x, phase.from_room.y,
+		phase.to_room.x, phase.to_room.y,
 	])
-	_active_elevator_request = ElevatorHandler.request_trip(npc, step["from"], step["to"])
+	_active_elevator_request = ElevatorHandler.request_trip(npc, phase.from_room, phase.to_room)
 	_active_elevator_request.finished.connect(_on_elevator_step_finished, CONNECT_ONE_SHOT)
 
 func _on_elevator_step_finished() -> void:
@@ -642,32 +576,6 @@ func _is_walkable_room_on_floor(room: RoomBase, floor_y: int) -> bool:
 	return floor_y == room.y
 
 
-func _get_best_floor_y_for_room(room: RoomBase, preferred_floor_y: int) -> int:
-	if _is_walkable_room_on_floor(room, preferred_floor_y):
-		return preferred_floor_y
-	return room.y if room != null else preferred_floor_y
-
-
-func _get_transition_waypoint(from_room: RoomBase, to_room: RoomBase) -> Vector2:
-	var floor_y := _get_shared_floor_y(from_room, to_room)
-	return _get_room_center_floor_position(to_room, floor_y)
-
-
-func _get_shared_floor_y(from_room: RoomBase, to_room: RoomBase) -> int:
-	if from_room == null:
-		return to_room.y if to_room != null else 0
-	if to_room == null:
-		return from_room.y
-
-	var from_height := from_room.data.height if from_room.data != null else 1
-	for row in range(from_height):
-		var floor_y: int = from_room.y + row
-		if _is_walkable_room_on_floor(from_room, floor_y) and _is_walkable_room_on_floor(to_room, floor_y):
-			return floor_y
-
-	return _get_best_floor_y_for_room(to_room, from_room.y)
-
-
 func _get_room_center_floor_position(room: RoomBase, floor_y: int) -> Vector2:
 	if room == null:
 		return Vector2.ZERO
@@ -688,56 +596,17 @@ func _get_room_floor_y_world(room: RoomBase, floor_y: int) -> float:
 	return room.global_position.y - float(floor_y - room.y) * 48.0
 
 
-func _debug_room_label(room: RoomBase) -> String:
-	if room == null:
-		return "null"
-
-	var room_name := room.data.room_name if room.data != null else room.get_class()
-	return "%s[%d,%d]@%s" % [room_name, room.x, room.y, str(room.global_position)]
-
-
-func _debug_stair_geometry(stairs: RoomStairs) -> String:
-	if stairs == null:
-		return "stairs=null"
-
-	var room_above := _get_room_above_stairs(stairs)
-	var sprite_center: Variant = stairs.stairs_sprite.global_position if stairs.stairs_sprite != null else "null"
-	return "origin=%s floor_center=%s top_center=%s sprite_center=%s floor_room=%s visual_room=%s above=%s above_floor_center=%s" % [
-		str(stairs.global_position),
-		str(stairs.get_center_floor_position()),
-		str(stairs.get_top_center_position()),
-		str(sprite_center),
-		_debug_room_label(Building.query.room_at_floor_position(stairs.global_position) as RoomBase),
-		_debug_room_label(Building.query.room_at_position(stairs.global_position) as RoomBase),
-		_debug_room_label(room_above),
-		str(room_above.get_center_floor_position() if room_above != null else null),
-	]
-
-
-func _debug_waypoint_label(pos: Vector2) -> String:
-	var biased_pos: Vector2 = pos + Vector2(0, Building.FLOOR_POSITION_Y_BIAS)
-	var floor_idx: Vector2i = Building.round_floor_index_from_global_position(pos)
-	return "%s biased=%s room_idx=%s floor_idx=%s floor_origin=%s floor=%s visual=%s" % [
-		str(pos),
-		str(biased_pos),
-		str(Building.round_room_index_from_global_position(pos)),
-		str(floor_idx),
-		str(Building.global_position_from_room_index(floor_idx)),
-		_debug_room_label(Building.query.room_at_floor_position(pos) as RoomBase),
-		_debug_room_label(Building.query.room_at_position(pos) as RoomBase),
-	]
-
-
 func _draw_debug_path() -> void:
 	if target_path.is_empty():
 		return
 	var prev := global_position
-	for point: Vector2 in target_path:
-		var dy: float = abs(point.y - prev.y)
-		var suspicious: bool = dy > 24.0 and _stair_waypoints_remaining == 0
-		DebugDraw2D.line(prev, point, Color.RED if suspicious else Color.CYAN)
-		prev = point
-	DebugDraw2D.circle(target_path.back(), 3.0, 8, Color.YELLOW)
+	var last := prev
+	for phase : navigationPhase in target_path:
+		var target : Vector2 = phase.last_waypoint() if phase is useStairsPhase else phase.target_location
+		DebugDraw2D.line(prev, target, Color.CYAN)
+		prev = target
+		last = target
+	DebugDraw2D.circle(last, 3.0, 8, Color.YELLOW)
 
 
 func _draw_debug_line(start_pos: Vector2, goal_pos: Vector2, valid: bool) -> void:
@@ -773,20 +642,31 @@ class walkPhase:
 class useStairsPhase:
 	extends navigationPhase
 	var waypoints = []
+	var current_index := 0
 
 	func last_waypoint():
 		return waypoints[waypoints.size()-1]
 
+	func current_waypoint():
+		return waypoints[current_index]
+
+	func is_done() -> bool:
+		return current_index >= waypoints.size()
+
 class swapInOutSidewaysPhase:
 	extends navigationPhase
-	func _init(target):
+	var entering : bool
+	func _init(target, is_entering):
 		target_location = target
+		entering = is_entering
 
 class useDoorSwapPhase:
 	extends manualPhase
 	var door_room : RoomBouncer
-	func _init(door):
+	var entering : bool
+	func _init(door, is_entering):
 		door_room = door
+		entering = is_entering
 		target_location = door.get_center_floor_position()
 
 class useElevatorPhase:

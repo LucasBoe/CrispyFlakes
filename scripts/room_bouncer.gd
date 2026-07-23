@@ -55,3 +55,26 @@ func _refresh_primary_worker() -> void:
 
 func has_active_bouncer() -> bool:
 	return get_assigned_worker_count(Enum.Jobs.BOUNCER) > 0
+
+# Only one guest gets frisked at a time - same register/current_user/
+# unregister queue idiom as RoomWell.
+var frisk_current_user : NPCGuest = null
+var _frisk_queue : Array = []
+
+func register_guest_for_frisk(npc: NPCGuest) -> void:
+	if not _frisk_queue.has(npc):
+		_frisk_queue.append(npc)
+	_advance_frisk_queue()
+
+func unregister_guest_for_frisk(npc: NPCGuest) -> void:
+	_frisk_queue.erase(npc)
+	if frisk_current_user == npc:
+		frisk_current_user = null
+	_advance_frisk_queue()
+
+func _advance_frisk_queue() -> void:
+	for i in range(_frisk_queue.size() - 1, -1, -1):
+		if not is_instance_valid(_frisk_queue[i]):
+			_frisk_queue.remove_at(i)
+	if frisk_current_user == null and not _frisk_queue.is_empty():
+		frisk_current_user = _frisk_queue[0]

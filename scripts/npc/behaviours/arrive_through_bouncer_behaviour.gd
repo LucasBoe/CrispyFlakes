@@ -1,4 +1,5 @@
 extends Behaviour
+#TODO check if obsolete
 class_name ArriveThroughBouncerBehaviour
 
 func loop():

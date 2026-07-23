@@ -18,6 +18,8 @@ var _debug_nav_hover: bool = false
 var _debug_nav_path: bool = false
 var _debug_nav_path_start: Vector2 = Vector2.ZERO
 var _debug_nav_path_has_start: bool = false
+var _debug_nav_selected: bool = false
+var _debug_nav_selected_npc : NPC = null
 const FLOOR_POSITION_Y_BIAS := -1.0
 const ROOF_STOVE_PIPE_SCENE := preload("res://scenes/building_roof_stove_pipe.tscn")
 const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
@@ -70,6 +72,8 @@ func _ready():
 	Console.add_command("debug_nav_floors", _console_toggle_debug_nav_floors, 0, 0, "Toggles debug drawing of the abstracted floor navigation model.")
 	Console.add_command("debug_nav_hover", _console_toggle_debug_nav_hover, 0, 0, "Toggles debug drawing of just the hovered floor, its connectors, and adjacent floors (ghosted).")
 	Console.add_command("debug_nav_path", _console_toggle_debug_nav_path, 0, 0, "Toggles debug drawing of the phase-graph path between a clicked point and the cursor.")
+	Console.add_command("debug_nav_selected", _console_toggle_debug_nav_selected, 0, 0, "Toggles debug drawing of the currently-selected NPC's live navigation path.")
+	Console.add_command("debug_zlayer", _console_toggle_debug_zlayer, 0, 0, "Toggles a colored marker + console line on every NPC z-layer swap (lime = swapped indoor, orange = swapped outside).")
 
 func _process(_delta: float) -> void:
 	if _debug_nav_floors:
@@ -78,6 +82,15 @@ func _process(_delta: float) -> void:
 		navigation_helper_query.debug_draw_hovered_floor_info(get_global_mouse_position())
 	if _debug_nav_path and _debug_nav_path_has_start:
 		navigation_helper_query.debug_draw_path_between(_debug_nav_path_start, get_global_mouse_position())
+	if _debug_nav_selected:
+		# keep showing the last selected NPC's path through deselection (click
+		# empty space, select a room) - only swap on an actual new NPC pick,
+		# and only stop entirely when the command is toggled off
+		var selected = Global.UI.selection.target
+		if is_instance_valid(selected) and selected is NPC:
+			_debug_nav_selected_npc = selected
+		if is_instance_valid(_debug_nav_selected_npc):
+			navigation_helper_query.debug_draw_live_npc_path(_debug_nav_selected_npc)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _debug_nav_path:
@@ -101,6 +114,16 @@ func _console_toggle_debug_nav_path() -> void:
 	_debug_nav_path = !_debug_nav_path
 	_debug_nav_path_has_start = false
 	Console.print_line("Nav path debug draw " + ("ON - click to set start point" if _debug_nav_path else "OFF"))
+
+func _console_toggle_debug_nav_selected() -> void:
+	_debug_nav_selected = !_debug_nav_selected
+	if not _debug_nav_selected:
+		_debug_nav_selected_npc = null
+	Console.print_line("Selected NPC nav debug draw " + ("ON - click an NPC to select it" if _debug_nav_selected else "OFF"))
+
+func _console_toggle_debug_zlayer() -> void:
+	NavigationModule.debug_zlayer_swaps = !NavigationModule.debug_zlayer_swaps
+	Console.print_line("Z-layer swap debug draw " + ("ON" if NavigationModule.debug_zlayer_swaps else "OFF"))
 
 func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene

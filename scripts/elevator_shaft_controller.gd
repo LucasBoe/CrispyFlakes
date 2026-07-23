@@ -45,8 +45,17 @@ func request_trip(npc: NPC, from_room, to_room):
 func _run_queue() -> void:
 	if _running or _queue.is_empty():
 		return
-	_running = true
 	var request = _queue.pop_front()
+	# the npc or either room can become invalid while queued (npc removed,
+	# room deleted) - drop the request but still signal finished, or whatever
+	# is waiting on it (e.g. NavigationModule) would be stuck forever
+	if not is_instance_valid(request.npc) or not is_instance_valid(request.from_room) or not is_instance_valid(request.to_room):
+		ElevatorHandler.debug_log("skip trip - npc or room no longer valid")
+		request.finished.emit()
+		if not _queue.is_empty():
+			call_deferred("_run_queue")
+		return
+	_running = true
 	ElevatorHandler.debug_log("start trip npc=%s from=%d to=%d remaining_queue=%d" % [request.npc.name, request.from_room.y, request.to_room.y, _queue.size()])
 	await _serve_request(request)
 	_running = false
@@ -65,6 +74,9 @@ func _serve_request(request) -> void:
 	ElevatorHandler.debug_log("walk into cage npc=%s pos=%s" % [request.npc.name, str(cage.get_passenger_position())])
 	await _walk_npc_to(request.npc, cage.get_passenger_position())
 	cage.board(request.npc)
+	# render behind content for the whole ride, same as tables/gambling, so
+	# the closed cage door doesn't have the passenger floating in front of it
+	request.npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	ElevatorHandler.debug_log("close doors with passenger npc=%s" % request.npc.name)
 	await cage.close_doors()
 	ElevatorHandler.debug_log("move cage to target floor=%d npc=%s" % [request.to_room.y, request.npc.name])
@@ -72,6 +84,7 @@ func _serve_request(request) -> void:
 	ElevatorHandler.debug_log("open doors target floor=%d npc=%s" % [request.to_room.y, request.npc.name])
 	await cage.open_doors()
 	request.npc.global_position = cage.get_passenger_position()
+	request.npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 	cage.unboard(request.npc)
 	ElevatorHandler.debug_log("walk out npc=%s pos=%s" % [request.npc.name, str(request.to_room.get_exit_position())])
 	await _walk_npc_to(request.npc, request.to_room.get_exit_position())

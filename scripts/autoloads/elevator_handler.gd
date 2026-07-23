@@ -18,7 +18,17 @@ func _ready() -> void:
 
 func get_reachable_floors(room) -> Array:
 	var controller = _controller_by_room.get(room, null)
-	var result : Array = [room.y] if controller == null else controller.rooms.map(func(r): return r.y)
+	var result : Array = []
+	if controller == null:
+		result = [room.y]
+	else:
+		# the shaft rebuild is deferred (see _on_rooms_changed), so a room
+		# just deleted elsewhere in this same shaft can still be sitting in
+		# controller.rooms, not yet actually freed or already freed depending
+		# on timing - never touch a stale entry's properties
+		for r in controller.rooms:
+			if is_instance_valid(r):
+				result.append(r.y)
 	debug_log("get_reachable_floors room=(%d,%d) controller=%s pending_rebuild=%s result=%s" % [
 		room.x, room.y, str(controller), str(_rebuild_pending), str(result)
 	])

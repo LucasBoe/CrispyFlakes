@@ -144,6 +144,10 @@ func _activate_drag():
 	picked_up_npc = self
 	_drag_pending = false
 	Animator.set_z(Enum.ZLayer.NPC_DRAGGED)
+	# picking the worker up overrides whatever they were doing - stop cleanly
+	# rather than leave a stale in-progress phase to be wrongly resumed once
+	# they're dropped somewhere else entirely
+	Navigation.stop_navigation()
 	Navigation.set_process(false)
 
 	available_rooms_highlights.clear()

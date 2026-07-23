@@ -37,7 +37,7 @@ func stop_loop() -> BehaviourSaveData:
 	if is_instance_valid(outhouse):
 		outhouse.leave_queue(npc)
 		if outhouse.user == npc:
-			npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+			npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 			outhouse.user = null
 	return super.stop_loop()
 
@@ -96,7 +96,7 @@ func _use_outhouse() -> bool:
 	if is_instance_valid(outhouse):
 		SoundPlayer.play_outhouse_door(outhouse.global_position)
 		await outhouse.play_open_animation()
-	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	npc.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
 	if is_instance_valid(outhouse):
 		await outhouse.play_close_animation()
