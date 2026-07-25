@@ -123,6 +123,14 @@ func set_target(target, custom_speed):
 		var base_speed = DEFAULT_MOVE_SPEED if custom_speed < 0 else custom_speed
 		move_speed = base_speed * npc.get_move_speed_multiplier()
 
+func force_walk_to(target: Vector2, speed: float) -> void: # externally-forced local walk, used by ElevatorShaftController during rides
+	while npc.global_position.distance_to(target) > 1.0:
+		npc.Animator.direction = target - npc.global_position
+		npc.global_position = npc.global_position.move_toward(target, get_process_delta_time() * speed * npc.get_move_speed_multiplier())
+		await get_tree().process_frame
+	npc.global_position = target
+	npc.Animator.direction = Vector2.ZERO
+
 func get_random_target():
 	var rooms: Array = []
 	for floor_rooms in Building.floors.values():

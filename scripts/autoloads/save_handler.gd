@@ -432,6 +432,7 @@ func _clear_building() -> void:
 	for room: RoomBase in rooms:
 		if not is_instance_valid(room):
 			continue
+		GlobalEventHandler.on_room_deleted_signal.emit(room)
 		room.destroy()
 
 	MoneyHandler.location_money.clear()

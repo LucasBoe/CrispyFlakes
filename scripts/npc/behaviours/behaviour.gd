@@ -103,8 +103,12 @@ func get_least_loaded_room_from_list(rooms: Array, filter_fn: Callable = Callabl
 
 func get_guest_allowed_random_floor_position(drunkenness: float) -> Vector2:
 	var reachable = npc.Navigation.get_reachable_rooms()
+	var non_elevator: Array[RoomBase] = []
 	var allowed: Array[RoomBase] = []
 	for room: RoomBase in reachable:
+		if room is RoomElevator:
+			continue
+		non_elevator.append(room)
 		if drunkenness < 0.3:
 			if room.is_outside_room or room.is_basement:
 				continue
@@ -114,6 +118,8 @@ func get_guest_allowed_random_floor_position(drunkenness: float) -> Vector2:
 			if room.is_outside_room or room.is_basement:
 				continue
 		allowed.append(room)
+	if allowed.is_empty():
+		allowed = non_elevator
 	if allowed.is_empty():
 		allowed = reachable
 	return allowed.pick_random().get_random_floor_position()

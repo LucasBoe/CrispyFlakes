@@ -324,6 +324,7 @@ func _indoor_outside_crossing_x(a : floorInfo, b : floorInfo, requires_bouncer :
 # current.x_center, which can be far from where you actually are on a wide
 # floor and would otherwise make a distant connector look artificially cheap.
 const VERTICAL_HOP_BASE_COST := 48.0
+const ELEVATOR_QUEUE_COST_PER_GUEST := 24.0 # extra cost per guest queued anywhere on the shaft, favoring stairs/other shafts when busy
 
 func _edge_cost(current: floorInfo, neighbor: floorInfo, from_x: float, requires_bouncer : bool = true) -> Dictionary:
 	if current.y_level == neighbor.y_level:
@@ -333,7 +334,10 @@ func _edge_cost(current: floorInfo, neighbor: floorInfo, from_x: float, requires
 	if connector == null:
 		return {"cost": INF, "arrival_x": from_x}
 	var connector_x : float = connector.get_center_position().x
-	return {"cost": absf(from_x - connector_x) + VERTICAL_HOP_BASE_COST, "arrival_x": connector_x}
+	var cost := absf(from_x - connector_x) + VERTICAL_HOP_BASE_COST
+	if connector is RoomElevator:
+		cost += ElevatorHandler.get_shaft_queue_count(connector) * ELEVATOR_QUEUE_COST_PER_GUEST
+	return {"cost": cost, "arrival_x": connector_x}
 
 func _find_path(start_floor: floorInfo, goal_floor: floorInfo, start_pos: Vector2, requires_bouncer : bool = true) -> Array[NavigationModule.navigationPhase]:
 	if start_floor == goal_floor:
@@ -399,7 +403,10 @@ func _reconstruct_path(came_from: Dictionary, goal_floor: floorInfo, arrival_x: 
 	var current = goal_floor
 	while came_from.has(current):
 		var predecessor = came_from[current]
-		path.push_front(create_phase(predecessor, current, arrival_x[predecessor], requires_bouncer))
+		var phase := create_phase(predecessor, current, arrival_x[predecessor], requires_bouncer)
+		if phase == null: # stale connector (see _create_vertical_phase) - fail the whole path, same as "no route found"
+			return []
+		path.push_front(phase)
 		current = predecessor
 	return path
 
@@ -422,8 +429,11 @@ func _create_vertical_phase(from : floorInfo, to : floorInfo, from_x : float) ->
 		phase.waypoints = NavigationModule.compute_stairs_waypoints(connector.global_position, to.y_level < from.y_level)
 		return phase
 	if connector is RoomElevator:
-		var from_room : RoomElevator = Building.get_room_from_index(Vector2i(connector.x, from.y_level))
-		var to_room : RoomElevator = Building.get_room_from_index(Vector2i(connector.x, to.y_level))
+		# fresh grid lookups - the elevator connector cache can be briefly stale (see ElevatorHandler.shafts_rebuilt)
+		var from_room = Building.get_room_from_index(Vector2i(connector.x, from.y_level))
+		var to_room = Building.get_room_from_index(Vector2i(connector.x, to.y_level))
+		if from_room is not RoomElevator or to_room is not RoomElevator:
+			return null
 		return NavigationModule.useElevatorPhase.new(from_room, to_room)
 	return null
 

@@ -5,7 +5,6 @@ const STALL_COUNT := 2
 const USE_DURATION := 5.0
 const STALL_POSITIONS := [Vector2(14, 0), Vector2(34, 0)]
 const QUEUE_SPACING := 10.0
-const QUEUE_CLAMP_STEP := 4.0
 const FRAME_DURATION := 0.08
 
 @onready var _door_sprites: Array[Sprite2D] = [$Door1, $Door2]
@@ -60,9 +59,7 @@ func get_queue_position(waiting_npc: NPC) -> Vector2:
 	var index := queue.find(waiting_npc)
 	if index < 0:
 		return get_center_floor_position()
-	var direction: float = get_preferred_horizontal_queue_direction(1.0 if global_position.x >= 0.0 else -1.0)
-	var queue_target: Vector2 = get_center_floor_position() + Vector2(direction * (index + 1) * QUEUE_SPACING, 0.0)
-	return _get_valid_queue_position(queue_target)
+	return QueueHelper.get_queue_slot_position(self, index, QUEUE_SPACING)
 
 func get_stall_position(using_npc: NPC) -> Vector2:
 	var stall_index: int = _stall_users.get(using_npc, 0)
@@ -144,19 +141,3 @@ func play_close_animation(stall_index: int) -> void:
 	for f in range(last_frame - 1, -1, -1):
 		door.frame = f
 		await get_tree().create_timer(FRAME_DURATION).timeout
-
-func _get_valid_queue_position(queue_target: Vector2) -> Vector2:
-	var center: Vector2 = get_center_floor_position()
-	var clamped_target: Vector2 = queue_target
-
-	while true:
-		var room := Building.query.room_at_position(clamped_target) as RoomBase
-		if room != null and room.y == y and room is not RoomStairs:
-			return clamped_target
-
-		if is_equal_approx(clamped_target.x, center.x):
-			return center
-
-		clamped_target.x = move_toward(clamped_target.x, center.x, QUEUE_CLAMP_STEP)
-
-	return center
