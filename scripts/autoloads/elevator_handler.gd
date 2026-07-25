@@ -4,6 +4,7 @@ signal shafts_rebuilt
 
 const ELEVATOR_ROOM_SCRIPT = preload("res://scripts/room_elevator.gd")
 const SHAFT_CONTROLLER_SCRIPT = preload("res://scripts/elevator_shaft_controller.gd")
+const CAGE_SCENE = preload("res://scenes/elevator_cage.tscn")
 const DEBUG_SHAFT_COLORS := [Color.CYAN, Color.MAGENTA, Color.LIME_GREEN, Color.ORANGE, Color.PINK, Color.YELLOW]
 
 var debug_logging := true
@@ -16,6 +17,8 @@ func _ready() -> void:
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
 	Console.add_command("debug_elevator", _console_toggle_debug_elevator, 0, 0, "Toggles shapes-only debug drawing of elevator shafts, cage state, queues, and requests.")
+	Console.add_command("place_cage", _console_place_cage, ["x", "y"], 2, "Places an elevator cage on the shaft at room (x,y). Stand-in for a proper build-menu placement flow.")
+	Console.add_command("remove_cage", _console_remove_cage, ["x", "y"], 2, "Removes the elevator cage currently at room (x,y).")
 	call_deferred("rebuild_shafts")
 
 func _process(_delta: float) -> void:
@@ -51,6 +54,73 @@ func get_shaft_queue_count(room) -> int:
 		if is_instance_valid(r):
 			count += r.queue_up.size() + r.queue_down.size()
 	return count
+
+# Placement API - cages are their own placeable, independent of shaft rooms, so a shaft
+# can have zero, one, or several.
+func can_place_cage(location: Vector2i) -> Dictionary:
+	var room = Building.get_room_from_index(location)
+	if room == null or room.get_script() != ELEVATOR_ROOM_SCRIPT:
+		return {"valid": false, "reason": "needs an elevator shaft"}
+	if _controller_by_room.get(room, null) == null:
+		return {"valid": false, "reason": "shaft not ready"}
+	if get_cage_at(location.x, location.y) != null:
+		return {"valid": false, "reason": "already has a cage"}
+	return {"valid": true, "reason": ""}
+
+func place_cage(x: int, y: int) -> ElevatorCage:
+	var location := Vector2i(x, y)
+	var check := can_place_cage(location)
+	if not check.valid:
+		debug_log("place_cage failed at (%d,%d) - %s" % [x, y, check.reason])
+		return null
+	var room = Building.get_room_from_index(location)
+	var controller = _controller_by_room.get(room)
+	var cage := CAGE_SCENE.instantiate() as ElevatorCage
+	add_child(cage)
+	cage.place(room)
+	controller.add_cage(cage)
+	debug_log("cage placed at (%d,%d)" % [x, y])
+	GlobalEventHandler.on_infrastructure_changed_signal.emit()
+	return cage
+
+func remove_cage(cage: ElevatorCage) -> void:
+	if not is_instance_valid(cage):
+		return
+	if is_instance_valid(cage.controller):
+		cage.controller.remove_cage(cage)
+	cage.queue_free()
+	debug_log("cage removed")
+	GlobalEventHandler.on_infrastructure_changed_signal.emit()
+
+func get_cage_at(x: int, y: int) -> ElevatorCage:
+	var room = Building.get_room_from_index(Vector2i(x, y))
+	var controller = _controller_by_room.get(room, null)
+	if controller == null:
+		return null
+	for cage in controller.cages:
+		if cage.current_floor_y == y:
+			return cage
+	return null
+
+func count_cages_by_data(_data) -> int: # only one cage type exists right now, so this counts all of them
+	var count := 0
+	for controller in _controllers:
+		count += controller.cages.size()
+	return count
+
+func _console_place_cage(x: String, y: String) -> void:
+	if place_cage(x.to_int(), y.to_int()) == null:
+		Console.print_line("No elevator shaft room at (%s,%s)" % [x, y])
+	else:
+		Console.print_line("Cage placed at (%s,%s)" % [x, y])
+
+func _console_remove_cage(x: String, y: String) -> void:
+	var cage := get_cage_at(x.to_int(), y.to_int())
+	if cage == null:
+		Console.print_line("No cage at (%s,%s)" % [x, y])
+		return
+	remove_cage(cage)
+	Console.print_line("Cage removed from (%s,%s)" % [x, y])
 
 func request_trip(npc: NPC, from_room, to_room):
 	var controller = _controller_by_room.get(from_room, null)
@@ -92,9 +162,9 @@ func rebuild_shafts() -> void: # one-shot full scan, only used as the initial-lo
 		_create_controller(shaft_rooms)
 	shafts_rebuilt.emit()
 
-func _create_controller(rooms: Array) -> void:
+func _create_controller(rooms: Array) -> ElevatorShaftController:
 	if rooms.is_empty():
-		return
+		return null
 	var controller = SHAFT_CONTROLLER_SCRIPT.new()
 	add_child(controller)
 	controller.setup(rooms)
@@ -102,6 +172,7 @@ func _create_controller(rooms: Array) -> void:
 	for room in rooms:
 		_controller_by_room[room] = controller
 	debug_log("controller created floors=%s controllers=%d" % [str(rooms.map(func(r): return r.y)), _controllers.size()])
+	return controller
 
 # Deferred: during save load, Building.set_room() emits this before the room's x/y
 # are patched in by a second pass right after (see save_handler.gd) - reading them
@@ -173,6 +244,9 @@ func _merge_controllers(keep_controller, other_controller, bridging_room) -> voi
 	for room in other_controller.rooms.duplicate():
 		keep_controller.add_room(room)
 		_controller_by_room[room] = keep_controller
+	for cage in other_controller.cages.duplicate():
+		other_controller.remove_cage(cage)
+		keep_controller.add_cage(cage)
 	_controllers.erase(other_controller)
 	other_controller.queue_free()
 	debug_log("merge done floors=%s controllers=%d" % [str(keep_controller.rooms.map(func(r): return r.y)), _controllers.size()])
@@ -194,21 +268,30 @@ func _split_if_disconnected(controller) -> void:
 	if runs.size() <= 1:
 		return
 
-	var cage_floor: int = controller.get_current_floor_y()
 	var keep_run: Array = runs[0]
 	for run in runs:
-		for r in run:
-			if r.y == cage_floor:
-				keep_run = run
-				break
+		if run.size() > keep_run.size():
+			keep_run = run
 
-	debug_log("split shaft into %d segments, keeping cage's segment" % runs.size())
+	debug_log("split shaft into %d segments, keeping largest" % runs.size())
 	for run in runs:
 		if run == keep_run:
 			continue
 		for room in run:
 			controller.remove_room(room)
-		_create_controller(run)
+		var new_controller := _create_controller(run)
+		_migrate_cages_into_run(controller, new_controller, run)
+
+# Each cage stays with whichever segment its current floor actually landed in - a shaft
+# split can leave cages on either side of the break.
+func _migrate_cages_into_run(old_controller, new_controller, run: Array) -> void:
+	var run_floors: Dictionary = {}
+	for room in run:
+		run_floors[room.y] = true
+	for cage in old_controller.cages.duplicate():
+		if run_floors.has(cage.current_floor_y):
+			old_controller.remove_cage(cage)
+			new_controller.add_cage(cage)
 
 func debug_log(message: String) -> void:
 	if debug_logging:

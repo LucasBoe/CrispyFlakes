@@ -1,0 +1,2 @@
+extends BuildableData
+class_name CageData

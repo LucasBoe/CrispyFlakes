@@ -53,6 +53,7 @@ func _ready():
 	create_button(groups, Building.room_data_water_tower, RoomWaterTower.custom_placement_check)
 	create_button(groups, Building.infrastructure_data_water_pipe, null, PlacementHandler.start_building_infrastructure)
 	create_button(groups, Building.infrastructure_data_electricity, null, PlacementHandler.start_building_infrastructure)
+	create_button(groups, Building.cage_data_elevator_cage, null, PlacementHandler.start_building_cage)
 	create_button(groups, Building.room_data_toilet)
 	create_button(groups, Building.room_data_bath)
 	create_button(groups, Building.room_data_infirmary)
@@ -134,6 +135,8 @@ func _refresh_desc(data):
 func _count_buildable(data) -> int:
 	if data is InfrastructureData:
 		return Building.infrastructure.count_cells_by_data(data)
+	if data is CageData:
+		return ElevatorHandler.count_cages_by_data(data)
 	return Building.count_rooms_by_data(data)
 
 func _on_hover_enter(button : Button, data):

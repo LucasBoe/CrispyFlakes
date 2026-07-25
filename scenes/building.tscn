@@ -30,6 +30,7 @@ texture_region_size = Vector2i(48, 48)
 8:0/0 = 0
 9:0/0 = 0
 10:0/0 = 0
+11:0/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_basement"]
 texture = ExtResource("3_fg_basement")
@@ -45,6 +46,7 @@ texture_region_size = Vector2i(48, 48)
 8:0/0 = 0
 9:0/0 = 0
 10:0/0 = 0
+11:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_fg"]
 tile_size = Vector2i(48, 48)

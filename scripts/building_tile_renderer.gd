@@ -8,6 +8,7 @@ var roof_room_index_by_x: Dictionary = {}
 
 enum levelDifference { SAME, HIGHER, LOWER }
 enum placementContext { OUTER_LEFT = 0, LEFT = 1, LEFT_ONLY =2, RIGHT_ONLY = 3, MIDDLE = 4, RIGHT = 5, OUTER_RIGHT = 6, OUTER_DOUBLE = 7, MIDDLE_OUTER = 8, OUTER_LEFT_ONLY = 9, OUTER_RIGHT_ONLY = 10 }
+const ELEVATOR_SHAFT_WALL_TILE := 11 # newest column in both foreground tilesets - shaft body, everywhere but the topmost cell
 enum roofIndexMap {
 	OUTER_LEFT_LOWER = 0,
 	RIGHT_END_HIGHER = 1,
@@ -82,16 +83,21 @@ func update(floors: Dictionary) -> void:
 			var same_room_left: bool = has_left and floors[y].get(x - 1) == room
 			var same_room_right: bool = has_right and floors[y].get(x + 1) == room
 
+			var context: int
 			if same_room_right and not same_room_left:
-				set_wall(x, y, placementContext.OUTER_LEFT_ONLY if not has_left else placementContext.LEFT_ONLY)
+				context = placementContext.OUTER_LEFT_ONLY if not has_left else placementContext.LEFT_ONLY
 			elif same_room_left and not same_room_right:
-				set_wall(x, y, placementContext.OUTER_RIGHT_ONLY if not has_right else placementContext.RIGHT_ONLY)
+				context = placementContext.OUTER_RIGHT_ONLY if not has_right else placementContext.RIGHT_ONLY
 			elif has_left and has_right:
-				set_wall(x, y, placementContext.MIDDLE)
+				context = placementContext.MIDDLE
 			elif not has_left and has_right:
-				set_wall(x, y, placementContext.LEFT)
+				context = placementContext.LEFT
 			else:
-				set_wall(x, y, placementContext.MIDDLE_OUTER)
+				context = placementContext.MIDDLE_OUTER
+
+			if room is RoomElevator and not _is_topmost_elevator(room, floors):
+				context = ELEVATOR_SHAFT_WALL_TILE
+			set_wall(x, y, context)
 
 	for x in list_of_x_positions:
 		var y = max_floor_height_at_x[x]
@@ -146,6 +152,10 @@ func check_at_indoor_room_at(x, y, list):
 		return false
 			
 	return not list[y][x].is_outside_room
+
+func _is_topmost_elevator(room: RoomBase, floors: Dictionary) -> bool:
+	var above = floors.get(room.y + 1, {}).get(room.x)
+	return not (above is RoomElevator)
 
 func _ignores_foreground_tiles(room: RoomBase) -> bool:
 	if room == null or room.data == null:

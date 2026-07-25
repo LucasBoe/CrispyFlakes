@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" uid="uid://b30ankpbn3wt6" path="res://assets/sprites/elevator_weight.png" id="1_weight"]
+
+[node name="ElevatorWeight" type="Sprite2D"]
+z_index = -90
+texture = ExtResource("1_weight")

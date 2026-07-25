@@ -7,6 +7,7 @@ enum BuildMode {
 	NONE,
 	ROOM,
 	INFRASTRUCTURE,
+	CAGE,
 }
 
 var is_placing = false
@@ -14,6 +15,7 @@ var has_valid_target = false
 var build_mode: BuildMode = BuildMode.NONE
 var building_data: RoomData
 var infrastructure_data : InfrastructureData = null
+var cage_data : CageData = null
 var location : Vector2i
 var landed_location : Vector2i
 var highlights : Array = []
@@ -38,11 +40,22 @@ func start_building_infrastructure(data, check = null):
 	build_mode = BuildMode.INFRASTRUCTURE
 	self.infrastructure_data = data
 	self.building_data = null
+	self.cage_data = null
 	self.custom_placement_check = check
 	is_placing = true
 	_prepare_highlights(data.width * data.height)
 	if data.layer_name == BuildingInfrastructure.WATER_LAYER:
 		Building.infrastructure.show_water_info()
+	Global.UI.selection.block_context_menu(self)
+
+func start_building_cage(data : CageData, check = null):
+	build_mode = BuildMode.CAGE
+	self.cage_data = data
+	self.building_data = null
+	self.infrastructure_data = null
+	self.custom_placement_check = check
+	is_placing = true
+	_prepare_highlights(data.width * data.height)
 	Global.UI.selection.block_context_menu(self)
 
 func stop_building():
@@ -54,6 +67,7 @@ func stop_building():
 		Building.hide_stairs_info()
 	building_data = null
 	infrastructure_data = null
+	cage_data = null
 	Global.UI.selection.unblock_context_menu(self)
 	_clear_highlights()
 
@@ -77,10 +91,19 @@ func _get_highlight_anchor_room() -> RoomBase:
 	return null
 
 func _get_active_data():
-	return building_data if build_mode == BuildMode.ROOM else infrastructure_data
+	match build_mode:
+		BuildMode.ROOM:
+			return building_data
+		BuildMode.CAGE:
+			return cage_data
+		_:
+			return infrastructure_data
 
 func _is_building_room() -> bool:
 	return build_mode == BuildMode.ROOM
+
+func _is_building_cage() -> bool:
+	return build_mode == BuildMode.CAGE
 
 func _is_digging_room() -> bool:
 	return building_data == Building.room_data_digging
@@ -237,6 +260,12 @@ func _input(event):
 					has_valid_target = false
 					has_wrong_placement_category = true
 					_set_invalid_target_reason("only below ground", Enum.placement_limit_to_icon(building_data.placement_limit))
+	elif _is_building_cage():
+		landed_location = location
+		var placement_check: Dictionary = ElevatorHandler.can_place_cage(validation_location)
+		has_valid_target = placement_check.valid
+		if not has_valid_target:
+			_set_invalid_target_reason(placement_check.reason)
 	else:
 		landed_location = location
 		var placement_check: Dictionary = Building.infrastructure.can_place(infrastructure_data, validation_location)
@@ -267,6 +296,7 @@ func _input(event):
 			var placement_location := validation_location
 			var repeat_room_data: RoomData = building_data
 			var repeat_infrastructure_data = infrastructure_data
+			var repeat_cage_data: CageData = cage_data
 			var repeat_mode := build_mode
 			var repeat_check = custom_placement_check
 			var shift_held = Input.is_key_pressed(KEY_SHIFT)
@@ -310,6 +340,10 @@ func _input(event):
 					var placed_post := Building.get_room_from_index(placement_location) as RoomHorsePost
 					if placed_post != null:
 						Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
+			elif _is_building_cage():
+				SoundPlayer.play_construction_placed()
+				ElevatorHandler.place_cage(placement_location.x, placement_location.y)
+				Camera.add_shake(2.0, 0.08)
 			else:
 				if infrastructure_data.layer_name == &"water":
 					SoundPlayer.play_pipe_placed(mouse)
@@ -321,10 +355,13 @@ func _input(event):
 			stop_building()
 			ResourceHandler.change_resource(Enum.Resources.MONEY, -active_data.construction_price)
 			if shift_held:
-				if repeat_mode == BuildMode.ROOM:
-					start_building(repeat_room_data, repeat_check)
-				else:
-					start_building_infrastructure(repeat_infrastructure_data, repeat_check)
+				match repeat_mode:
+					BuildMode.ROOM:
+						start_building(repeat_room_data, repeat_check)
+					BuildMode.CAGE:
+						start_building_cage(repeat_cage_data, repeat_check)
+					_:
+						start_building_infrastructure(repeat_infrastructure_data, repeat_check)
 			return
 		else:
 			if not has_valid_target:

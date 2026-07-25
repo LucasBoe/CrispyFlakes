@@ -60,6 +60,7 @@ const room_data_infirmary := preload("res://assets/resources/rooms/room_infirmar
 const room_data_sick_ward := preload("res://assets/resources/rooms/room_sick_ward.tres")
 const infrastructure_data_water_pipe := preload("res://assets/resources/infrastructure/infrastructure_water_pipe.tres")
 const infrastructure_data_electricity := preload("res://assets/resources/infrastructure/infrastructure_electricity.tres")
+const cage_data_elevator_cage := preload("res://assets/resources/infrastructure/cage_data_elevator_cage.tres")
 
 func _ready():
 	query = BuildingRoomQueries.new(self)
