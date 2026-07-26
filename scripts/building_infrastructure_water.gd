@@ -139,8 +139,8 @@ func _is_cell_provider_connected(index: Vector2i, provider_connected: Array) -> 
 		if provider_connected.has(index + direction):
 			return true
 
-	#directly below an already-connected water pipe
-	return provider_connected.has(index + _GRID_ABOVE_OFFSET)
+	#directly below a chain of pipes dropping down from a water tower
+	return _is_tower_drop_pipe(index)
 
 func _collect_provider_connected_cells() -> Array:
 	var connected: Array[Vector2i] = []
