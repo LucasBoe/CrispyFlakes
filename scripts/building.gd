@@ -161,11 +161,19 @@ func erase_empty(room: RoomBase):
 
 func replace_with_empty(room: RoomBase):
 	set_room(room_data_empty, room.x, room.y)
+	_refresh_adjacent_dig_layouts(room.x, room.y)
 	infrastructure.prune_infrastructure()
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
 	update_foreground_tiles()
 	GlobalEventHandler.on_room_deleted_signal.emit(room)
 	room.destroy()
+
+func _refresh_adjacent_dig_layouts(x: int, y: int) -> void:
+	for offset in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var adjacent := get_room_from_index(Vector2i(x, y) + offset) as RoomDigging
+		if adjacent == null:
+			continue
+		adjacent.refresh_dig_layout()
 
 func delete_room(room: RoomBase):
 	if room != null and room.has_method("can_delete") and not room.can_delete():

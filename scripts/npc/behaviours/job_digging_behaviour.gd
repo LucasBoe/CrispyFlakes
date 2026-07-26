@@ -38,13 +38,14 @@ func loop():
 			continue
 
 		var completed_room = room
+		var completed_index := Vector2i(completed_room.x, completed_room.y)
 		completed_room.set_dig_progress(1.0)
 		_release_room()
 		Building.replace_with_empty(completed_room)
 		_refresh_worker_z_for_current_room()
-		room = null
+		room = _claim_adjacent_room(completed_index)
 
-		if _get_closest_workable_room(npc.Navigation.get_reachable_rooms()) == null:
+		if room == null and _get_closest_workable_room(npc.Navigation.get_reachable_rooms()) == null:
 			_clear_pickaxe()
 			_change_to_idle()
 			return
@@ -108,6 +109,16 @@ func _claim_room() -> RoomDigging:
 		_change_to_idle()
 		return null
 
+	return _occupy_room(target_room)
+
+func _claim_adjacent_room(origin_index: Vector2i) -> RoomDigging:
+	var reachable_rooms: Array = npc.Navigation.get_reachable_rooms()
+	var target_room := _get_adjacent_workable_room(origin_index, reachable_rooms)
+	if target_room == null:
+		return null
+	return _occupy_room(target_room)
+
+func _occupy_room(target_room: RoomDigging) -> RoomDigging:
 	occupied_rooms.append(target_room)
 	target_room.worker = npc
 	if not target_room.on_destroy_signal.is_connected(_change_to_idle):
@@ -129,6 +140,25 @@ func _get_closest_workable_room(reachable_rooms: Array) -> RoomDigging:
 	var closest_distance := INF
 
 	for candidate in Building.query.all_rooms_of_type(RoomDigging):
+		var workable := _can_work_room(candidate, reachable_rooms)
+		if occupied_rooms.has(candidate):
+			continue
+		if not workable:
+			continue
+
+		var distance := npc.global_position.distance_squared_to(candidate.get_dig_start_position())
+		if distance < closest_distance:
+			closest_distance = distance
+			closest_room = candidate
+
+	return closest_room
+
+func _get_adjacent_workable_room(origin_index: Vector2i, reachable_rooms: Array) -> RoomDigging:
+	var closest_room: RoomDigging = null
+	var closest_distance := INF
+
+	for offset in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var candidate := Building.get_room_from_index(origin_index + offset) as RoomDigging
 		var workable := _can_work_room(candidate, reachable_rooms)
 		if occupied_rooms.has(candidate):
 			continue

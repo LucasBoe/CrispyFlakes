@@ -20,24 +20,26 @@ enum DigVariant {
 var dig_direction := -1.0
 var dig_variant := DigVariant.HORIZONTAL
 var frame_count := HORIZONTAL_FRAME_COUNT
+var dig_progress := 0.0
 
 func init_room(_x: int, _y: int):
 	is_outside_room = true
 	super.init_room(_x, _y)
 	associated_job = Enum.Jobs.DIGGING
-	_refresh_dig_layout()
+	refresh_dig_layout()
 	set_dig_progress(0.0)
 
 func get_job_capacity(job = null) -> int:
 	return get_associated_job_capacity(job)
 
 func set_dig_progress(progress: float) -> void:
-	var frame_index: int = clampi(floori(progress * float(frame_count - 1)), 0, frame_count - 1)
+	dig_progress = clampf(progress, 0.0, 1.0)
+	var frame_index: int = clampi(floori(dig_progress * float(frame_count - 1)), 0, frame_count - 1)
 	background_sprite.frame = frame_index
 	foreground_sprite.frame = frame_index
 	progress_bar.max_value = 100.0
-	progress_bar.value = clampf(progress, 0.0, 1.0) * 100.0
-	progress_bar.visible = progress > 0.0 and progress < 1.0
+	progress_bar.value = dig_progress * 100.0
+	progress_bar.visible = dig_progress > 0.0 and dig_progress < 1.0
 
 func get_dig_start_position() -> Vector2:
 	if is_digging_down():
@@ -67,6 +69,10 @@ func get_dig_animation_direction() -> Vector2:
 
 func is_digging_down() -> bool:
 	return dig_variant == DigVariant.DOWNWARD
+
+func refresh_dig_layout() -> void:
+	_refresh_dig_layout()
+	set_dig_progress(dig_progress)
 
 func _refresh_dig_layout() -> void:
 	var left_room := Building.get_room_from_index(Vector2i(x - 1, y)) as RoomBase
