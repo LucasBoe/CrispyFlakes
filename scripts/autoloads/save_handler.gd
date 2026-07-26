@@ -15,6 +15,7 @@ func console_save() -> void:
 	var loose_items := _serialize_loose_items()
 	var workers := _serialize_workers()
 	var guests := _serialize_guests()
+	var cages := _serialize_cages()
 	var payload := {
 		"version": SAVE_VERSION,
 		"rooms": rooms,
@@ -24,6 +25,7 @@ func console_save() -> void:
 		"loose_items": loose_items,
 		"workers": workers,
 		"guests": guests,
+		"cages": cages,
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -32,7 +34,7 @@ func console_save() -> void:
 		return
 
 	file.store_string(JSON.stringify(payload, "\t"))
-	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests to %s." % [
+	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages to %s." % [
 		rooms.size(),
 		water_pipes.size(),
 		electricity_tiles.size(),
@@ -40,6 +42,7 @@ func console_save() -> void:
 		loose_items.size(),
 		workers.size(),
 		guests.size(),
+		cages.size(),
 		ProjectSettings.globalize_path(SAVE_PATH),
 	])
 
@@ -68,7 +71,8 @@ func console_load() -> void:
 	var loose_item_count := _get_array(save_data, "loose_items").size()
 	var worker_count := _get_array(save_data, "workers").size()
 	var guest_count := _get_array(save_data, "guests").size()
-	Console.print_line("Loaded %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests from %s." % [
+	var cage_count := _get_array(save_data, "cages").size()
+	Console.print_line("Loaded %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages from %s." % [
 		room_count,
 		pipe_count,
 		electricity_count,
@@ -76,6 +80,7 @@ func console_load() -> void:
 		loose_item_count,
 		worker_count,
 		guest_count,
+		cage_count,
 		ProjectSettings.globalize_path(SAVE_PATH),
 	])
 
@@ -101,6 +106,11 @@ func _apply_save(save_data: Dictionary) -> void:
 	_restore_guests(_get_array(save_data, "guests"))
 
 	await get_tree().process_frame
+
+	# Cages need their shaft's ElevatorShaftController to already exist - that's built off the
+	# room-created signals emitted during _restore_rooms above, which ElevatorHandler handles
+	# deferred (see elevator_handler.gd), so waiting for the process_frame above first is required.
+	_restore_cages(_get_array(save_data, "cages"))
 
 	Global.should_auto_spawn_guests = previous_auto_spawn
 	TimeHandler.pop_pause_lock(self)
@@ -218,6 +228,20 @@ func _serialize_guests() -> Array[Dictionary]:
 		})
 
 	return guests
+
+func _serialize_cages() -> Array[Dictionary]:
+	var cages: Array[Dictionary] = []
+	for controller in ElevatorHandler._controllers:
+		if controller.rooms.is_empty():
+			continue
+		var x: int = controller.rooms[0].x
+		for cage in controller.cages:
+			if not is_instance_valid(cage):
+				continue
+			cages.append(_serialize_room_index(Vector2i(x, cage.current_floor_y)))
+
+	cages.sort_custom(func(a: Dictionary, b: Dictionary): return _sort_grid_entries(a, b))
+	return cages
 
 func _restore_rooms(entries: Array) -> void:
 	for entry_variant in entries:
@@ -354,6 +378,13 @@ func _restore_guests(entries: Array) -> void:
 			String(entry.get("name", ""))
 		)
 
+func _restore_cages(entries: Array) -> void:
+	for entry_variant in entries:
+		if entry_variant is not Dictionary:
+			continue
+		var entry := entry_variant as Dictionary
+		ElevatorHandler.place_cage(int(entry.get("x", 0)), int(entry.get("y", 0)))
+
 func _restore_worker_assignment(worker: NPCWorker, job: int, job_room: RoomBase) -> void:
 	worker.current_job = job
 	worker.current_job_room = job_room
@@ -427,6 +458,7 @@ func _clear_building() -> void:
 	var rooms := _get_unique_rooms()
 	if is_instance_valid(Building.infrastructure):
 		Building.infrastructure.clear_all()
+	ElevatorHandler.clear_all_cages() # cages aren't rooms, so the loop below never reaches them
 
 	Building.floors.clear()
 	for room: RoomBase in rooms:

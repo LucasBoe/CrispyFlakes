@@ -62,10 +62,21 @@ func request_trip(npc: NPC, from_room, to_room) -> ElevatorRideRequest:
 	ElevatorHandler.debug_log("queue trip npc=%s from=%d to=%d direction=%d pending=%d" % [
 		npc.name, from_room.y, to_room.y, request.direction, pending_requests.size()
 	])
+	if cages.is_empty():
+		ElevatorHandler.debug_log("WARNING: shaft has no cage placed on it - this request (and any others) will never be serviced until one is placed")
 	# wake every idle cage - whichever gets there first claims it (see ElevatorCage._run_cycle)
 	for cage in cages:
 		cage.request_run()
 	return request
+
+# Called when the requesting NPC's navigation gets interrupted before the ride happened
+# (job reassignment, fight, drag, etc.) - without this the request sits in pending_requests
+# forever with a still-connected `finished` signal that would later fire into whatever
+# unrelated navigation state the NPC has moved on to.
+func cancel_trip(request: ElevatorRideRequest) -> void:
+	pending_requests.erase(request)
+	if is_instance_valid(request.from_room):
+		request.from_room.leave_queue(request.npc, request.direction)
 
 func prune_invalid_pending() -> void:
 	var i: int = pending_requests.size() - 1

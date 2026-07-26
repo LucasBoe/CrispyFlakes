@@ -92,6 +92,14 @@ func remove_cage(cage: ElevatorCage) -> void:
 	debug_log("cage removed")
 	GlobalEventHandler.on_infrastructure_changed_signal.emit()
 
+# Cages live outside Building.floors (they're not rooms), so a full building wipe/reload
+# (see SaveHandler._clear_building) has no other way to reach them - without this they'd
+# survive the wipe as orphaned nodes still holding a reference to their now-freed controller.
+func clear_all_cages() -> void:
+	for controller in _controllers:
+		for cage in controller.cages.duplicate():
+			remove_cage(cage)
+
 func get_cage_at(x: int, y: int) -> ElevatorCage:
 	var room = Building.get_room_from_index(Vector2i(x, y))
 	var controller = _controller_by_room.get(room, null)
@@ -131,6 +139,13 @@ func request_trip(npc: NPC, from_room, to_room):
 		str(controller)
 	])
 	return controller.request_trip(npc, from_room, to_room)
+
+func cancel_trip(request: ElevatorRideRequest) -> void:
+	if request == null or not is_instance_valid(request.from_room):
+		return
+	var controller = _controller_by_room.get(request.from_room, null)
+	if controller != null:
+		controller.cancel_trip(request)
 
 func rebuild_shafts() -> void: # one-shot full scan, only used as the initial-load bootstrap - room add/remove is incremental below
 	debug_log("rebuild_shafts start")

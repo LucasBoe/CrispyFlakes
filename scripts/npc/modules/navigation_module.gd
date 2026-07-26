@@ -101,7 +101,12 @@ func stop_navigation():
 	has_target = false
 	is_moving = false
 	_stair_waypoints_remaining = 0
-	_active_elevator_request = null
+	if _active_elevator_request != null:
+		# otherwise the abandoned request sits in the shaft forever with a still-connected
+		# `finished` signal that would later fire into whatever unrelated path this NPC has since started
+		_active_elevator_request.finished.disconnect(_on_elevator_step_finished)
+		ElevatorHandler.cancel_trip(_active_elevator_request)
+		_active_elevator_request = null
 	# a stopped navigation has nothing left to resume - if the NPC's position
 	# gets changed out from under it before the next set_target (e.g. dragged
 	# and dropped elsewhere), a stale in-progress phase must not survive to be
