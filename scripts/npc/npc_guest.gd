@@ -173,6 +173,21 @@ func clean():
 	Tint.remove_tint_for(self)
 	add_mood(0.3, "Cleaned")
 
+func get_collapsed_mood_log() -> Array[Dictionary]:
+	var by_reason: Dictionary = {}
+	for entry in mood_log:
+		var key: String = entry.reason if entry.reason != "" else "?"
+		if by_reason.has(key):
+			by_reason[key].amount += entry.amount
+			by_reason[key].count += 1
+		else:
+			by_reason[key] = {amount = entry.amount, reason = key, count = 1}
+
+	var collapsed: Array[Dictionary] = []
+	for value in by_reason.values():
+		collapsed.append(value)
+	return collapsed
+
 func add_mood(amount: float, reason: String = ""):
 	Needs.mood.strength = clampf(Needs.mood.strength + amount, 0.0, 1.0)
 	mood_log.append({amount = amount, reason = reason})

@@ -28,6 +28,51 @@ func get_average_mood() -> float:
 		return 1.0
 	return maxf(0.1, total / count)
 
+func get_mood_affector_summary() -> Array[Dictionary]:
+	var by_reason: Dictionary = {}
+	for guest: NPCGuest in get_live_guests():
+		if not guest.counts_towards_guest_total() or guest.Needs == null:
+			continue
+
+		for entry in guest.get_collapsed_mood_log():
+			var amount: float = entry.amount
+			if is_zero_approx(amount):
+				continue
+
+			var reason: String = entry.reason
+			if by_reason.has(reason):
+				by_reason[reason].amount += amount
+				by_reason[reason].guest_count += 1
+				by_reason[reason].event_count += entry.count
+			else:
+				by_reason[reason] = {
+					amount = amount,
+					reason = reason,
+					guest_count = 1,
+					event_count = entry.count,
+				}
+
+	var summary: Array[Dictionary] = []
+	for value in by_reason.values():
+		summary.append(value)
+
+	summary.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var a_amount: float = a.amount
+		var b_amount: float = b.amount
+		var a_negative := a_amount < 0.0
+		var b_negative := b_amount < 0.0
+		if a_negative != b_negative:
+			return a_negative
+
+		var a_abs := absf(a_amount)
+		var b_abs := absf(b_amount)
+		if not is_equal_approx(a_abs, b_abs):
+			return a_abs > b_abs
+
+		return String(a.reason) < String(b.reason)
+	)
+	return summary
+
 func guests_per_day_rate() -> float:
 	var base = Balancing.GUEST_SPAWN_BASE_RATE + get_active_guest_count() * Balancing.GUEST_SPAWN_CURRENT_GUEST_COUNT_EFFECT
 	var se = Balancing.GUEST_SPAWN_MOOD_EFFECT_STRENGTH
