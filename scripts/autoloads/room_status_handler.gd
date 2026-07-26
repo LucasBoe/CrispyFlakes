@@ -81,7 +81,10 @@ func notification_loop():
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomSafe:
 					var safe := r as RoomSafe
-					if safe.worker and safe.should_warn_cannot_store_more_money():
+					if not safe.worker:
+						notify(safe, "no worker", Color.ORANGE)
+						await pause(REFRESH_RATE / rooms.size() - .01)
+					elif safe.should_warn_cannot_store_more_money():
 						notify(safe, safe.get_full_warning_text(), Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomStove:

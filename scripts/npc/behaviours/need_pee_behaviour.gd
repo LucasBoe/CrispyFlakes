@@ -10,6 +10,7 @@ var _hidden_in_toilet := false
 
 func loop():
 	_narrative = ["Nature calls...", "Can't hold it much longer...", "In a hurry..."].pick_random()
+
 	toilet = _get_usable_toilet()
 	if toilet != null:
 		if await _use_toilet():
@@ -204,7 +205,7 @@ func _finish_relief(room: RoomBase = null, reason: String = "", mood: float = 0.
 	if room != null and room.get_service_price() > 0:
 		ResourceHandler.add_animated(Enum.Resources.MONEY, room.get_service_price(), room.get_center_position(), Vector2i(room.x, room.y))
 
-	if mood > 0.0:
+	if not is_zero_approx(mood):
 		add_mood(mood, reason)
 
 	return not stopped
