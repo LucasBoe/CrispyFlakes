@@ -18,7 +18,15 @@ func is_injury_unlocked() -> bool:
 	return ProgressionHandler.is_room_build_unlocked(INFIRMARY_ROOM_DATA)
 
 func try_injure_npc(npc: NPC) -> bool:
-	if not is_injury_unlocked() or npc == null or not is_instance_valid(npc) or npc.Status == null:
+	return _injure_npc(npc, false)
+
+func force_injure_npc(npc: NPC) -> bool:
+	return _injure_npc(npc, true)
+
+func _injure_npc(npc: NPC, ignore_unlock: bool) -> bool:
+	if npc == null or not is_instance_valid(npc) or npc.Status == null:
+		return false
+	if not ignore_unlock and not is_injury_unlocked():
 		return false
 	if npc.Status.has_status(Enum.NpcStatus.INJURED):
 		return false
@@ -32,8 +40,6 @@ func try_injure_guest(guest: NPCGuest) -> bool:
 
 func on_npc_injured(npc: NPC) -> void:
 	if npc == null or not is_instance_valid(npc):
-		return
-	if not is_injury_unlocked():
 		return
 	if npc.Status != null:
 		npc.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
@@ -189,24 +195,10 @@ func collect_recovery_payment(npc: NPC) -> void:
 	)
 
 func _process(_delta: float) -> void:
-	_clear_injuries_if_locked()
 	_clear_invalid_payment_sources()
 	var injured_npcs := get_injured_npcs()
 	_sync_treatment_behaviours(injured_npcs.duplicate())
 	_apply_guest_penalties(injured_npcs.duplicate())
-
-func _clear_injuries_if_locked() -> void:
-	if is_injury_unlocked():
-		return
-
-	for injured: NPC in get_injured_npcs().duplicate():
-		if injured == null or not is_instance_valid(injured):
-			continue
-		if injured.Status != null:
-			injured.Status.clear_status(Enum.NpcStatus.INJURED)
-			injured.Status.clear_status(Enum.NpcStatus.WELL_TREATED)
-			injured.Status.clear_status(Enum.NpcStatus.BADLY_TREATED)
-		on_npc_recovered(injured)
 
 func _sync_treatment_behaviours(injured_npcs: Array[NPC]) -> void:
 	for injured: NPC in injured_npcs:

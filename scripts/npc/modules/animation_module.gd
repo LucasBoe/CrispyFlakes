@@ -142,14 +142,14 @@ func _process(_delta):
 
 
 func walk_tween(time_in_seconds):
-	var drunk = 0.0
+	var movement_impairment := 0.0
 
 	if npc and npc is NPCGuest:
-		drunk = npc.Needs.drunkenness.strength
-		if npc.Status != null and npc.Status.has_status(Enum.NpcStatus.INJURED):
-			drunk = 1.0
+		movement_impairment = npc.Needs.drunkenness.strength
+	if npc != null and npc.Status != null and npc.Status.has_status(Enum.NpcStatus.INJURED):
+		movement_impairment = 1.0
 
-	var t = time_in_seconds * WALK_ANIMATION_SPEED / (1.0 + drunk)
+	var t = time_in_seconds * WALK_ANIMATION_SPEED / (1.0 + movement_impairment)
 	var raw = pow(abs(sin(t)), .2) * sign(sin(t))
 
 	var flat_direction = direction * Vector2(1, .2)
@@ -158,7 +158,7 @@ func walk_tween(time_in_seconds):
 		x_orientation = sign(direction.x)
 
 	var dir_to_rotation = Vector2(1, flat_direction.y * 0.2).angle() * x_orientation
-	var rotation_target = dir_to_rotation + raw * WALK_ROTATION_STRENGTH * lerp(1.0, (sin(t * .667) + 1.0) * 3.0, drunk)
+	var rotation_target = dir_to_rotation + raw * WALK_ROTATION_STRENGTH * lerp(1.0, (sin(t * .667) + 1.0) * 3.0, movement_impairment)
 
 	var rawS = pow(abs(sin(t)), .4) * sign(sin(t))
 	var scale_base = abs(rawS) * SQUASH_STRENGTH

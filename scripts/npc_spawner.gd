@@ -11,6 +11,7 @@ const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
 const traderWagonScene : PackedScene = preload("res://scenes/npcs/trader_wagon.tscn")
 const ROBBER_SPAWN_CHANCE := 0.1
+var CONSOLE_SPAWN_ADJECTIVES := PackedStringArray(["drunk", "horse", "fight", "robber", "injured"])
 
 var guests = []
 var workers = []
@@ -93,14 +94,18 @@ func _enter_tree():
 func _ready():
 	Console.add_command("guest", console_spawn_guest, ["adjective"])
 	Console.add_command("guests", console_spawn_guests, ["amount", "adjective"], 1)
-	Console.add_command("worker", console_spawn_worker)
-	Console.add_command("workers", console_spawn_workers, ["amount"])
+	Console.add_command("worker", console_spawn_worker, ["adjective"])
+	Console.add_command("workers", console_spawn_workers, ["amount", "adjective"], 1)
 	Console.add_command("encounter", console_spawn_special_encounter, ["id"], 0, "Spawns a special NPC encounter.")
 	Console.add_command("special", console_spawn_special_encounter, ["id"], 0, "Spawns a random special NPC encounter, or a specific one by id.")
 	Console.add_command("special_npc", console_spawn_special_encounter, ["id"], 0, "Spawns a special NPC encounter.")
 	Console.add_command("special_npcs", console_spawn_special_encounters, ["amount", "id"], 1, "Spawns multiple special NPC encounters.")
 	Console.add_command("wagon", console_spawn_wagon, ["item", "amount"])
 	Console.add_command("trader_wagon", console_spawn_wagon, ["item", "amount"])
+	Console.add_command_autocomplete_list("guest", CONSOLE_SPAWN_ADJECTIVES)
+	Console.add_command_autocomplete_list("guests", CONSOLE_SPAWN_ADJECTIVES)
+	Console.add_command_autocomplete_list("worker", CONSOLE_SPAWN_ADJECTIVES)
+	Console.add_command_autocomplete_list("workers", CONSOLE_SPAWN_ADJECTIVES)
 	Console.add_command_autocomplete_list("wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
 	Console.add_command_autocomplete_list("trader_wagon", PackedStringArray(["beer", "whiskey", "water", "broom", "wood"]))
 	Console.add_command("follow_test", console_follow_test)
@@ -424,37 +429,65 @@ func on_guest_destroy(guest):
 	ResourceHandler.change_resource(Enum.Resources.GUEST, -1)
 
 ## CONSOLE ##
-func console_spawn_guest(adj):
+func console_spawn_guest(adj = ""):
 	print("spawn_guest ", adj)
 	var guest = spawn_new_guest() as NPCGuest
+	_apply_console_spawn_adjective(guest, adj)
 
-	if adj and adj != "":
-		if adj == "drunk":
-			guest.Needs.drunkenness.strength = .5
-		elif adj == "horse":
-			guest.force_behaviour(ArriveOnHorseBehaviour)
-		elif adj == "fight":
-			FightHandler.create_or_join_drunk_fight(guest)
-		elif adj == "robber":
-			guest.is_robber = true
-		elif adj == "injured":
-			InjuryHandler.try_injure_guest(guest)
-
-func console_spawn_guests(amount, adj):
+func console_spawn_guests(amount, adj = ""):
 	print("spawn_guests", amount)
 	for i in amount.to_int():
 		console_spawn_guest(adj)
 
-func console_spawn_worker():
-	print("spawn_worker")
-	var _worker = spawn_new_worker() as NPCWorker
-	if _worker == null:
+func console_spawn_worker(adj = ""):
+	print("spawn_worker ", adj)
+	var worker := spawn_new_worker() as NPCWorker
+	if worker == null:
 		Console.print_error(get_worker_hire_block_reason())
+		return
+	_apply_console_spawn_adjective(worker, adj)
 
-func console_spawn_workers(amount):
+func console_spawn_workers(amount, adj = ""):
 	print("spawn_workers ", amount)
 	for i in amount.to_int():
-		console_spawn_worker()
+		console_spawn_worker(adj)
+
+func _apply_console_spawn_adjective(npc: NPC, adj) -> void:
+	if npc == null or not is_instance_valid(npc):
+		return
+
+	var adjective := str(adj).strip_edges().to_lower()
+	if adjective == "":
+		return
+
+	match adjective:
+		"drunk":
+			var guest := npc as NPCGuest
+			if guest == null or guest.Needs == null:
+				_console_spawn_adjective_unsupported(adjective, npc)
+				return
+			guest.Needs.drunkenness.strength = 0.5
+		"horse":
+			npc.force_behaviour(ArriveOnHorseBehaviour)
+		"fight":
+			var guest := npc as NPCGuest
+			if guest != null:
+				FightHandler.create_or_join_drunk_fight(guest)
+			else:
+				FightHandler.get_or_create_fight(npc)
+		"robber":
+			var guest := npc as NPCGuest
+			if guest == null:
+				_console_spawn_adjective_unsupported(adjective, npc)
+				return
+			guest.is_robber = true
+		"injured":
+			InjuryHandler.force_injure_npc(npc)
+		_:
+			Console.print_error("Unknown adjective: %s" % adjective)
+
+func _console_spawn_adjective_unsupported(adjective: String, npc: NPC) -> void:
+	Console.print_error("%s is not supported for %s." % [adjective, npc.get_display_name().to_lower()])
 
 func console_spawn_special_encounter(id = ""):
 	var special := spawn_special_encounter(str(id))
