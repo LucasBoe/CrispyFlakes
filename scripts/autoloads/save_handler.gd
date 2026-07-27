@@ -204,7 +204,7 @@ func _serialize_workers() -> Array[Dictionary]:
 			continue
 
 		var job := _sanitize_job(int(worker.current_job))
-		var job_room := _sanitize_job_room_for_job(worker.current_job_room as RoomBase, job)
+		var job_room := _sanitize_job_room_for_job(worker.current_job_room, job)
 		var entry := {
 			"name": worker.character_name,
 			"position": _serialize_vector2(worker.global_position),
@@ -625,14 +625,17 @@ func _room_from_variant(value) -> RoomBase:
 func _sanitize_job(job: int) -> int:
 	return job if job >= 0 and job < Enum.Jobs.keys().size() else Enum.Jobs.IDLE
 
-func _sanitize_job_room_for_job(job_room: RoomBase, job: int) -> RoomBase:
+func _sanitize_job_room_for_job(job_room: Variant, job: int) -> RoomBase:
 	if job == Enum.Jobs.IDLE:
 		return null
 	if job_room == null or not is_instance_valid(job_room):
 		return null
-	if job_room.associated_job != job:
+	if job_room is not RoomBase:
 		return null
-	return job_room
+	var room := job_room as RoomBase
+	if room.associated_job != job:
+		return null
+	return room
 
 func _sanitize_item_type(item_type: int) -> int:
 	return item_type if item_type >= 0 and item_type < Enum.Items.keys().size() else Enum.Items.MONEY
