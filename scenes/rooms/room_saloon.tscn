@@ -44,7 +44,7 @@ position = Vector2(48, -47)
 texture = ExtResource("4_ls4d6")
 
 [node name="LightOverlay" type="Sprite2D" parent="."]
-z_index = 2100
+z_index = 99
 material = ExtResource("7_light_mat")
 position = Vector2(48, -48)
 texture = ExtResource("6_light")

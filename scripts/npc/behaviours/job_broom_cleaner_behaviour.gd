@@ -98,7 +98,11 @@ func stop_loop() -> BehaviourSaveData:
 		_release_room_target(active_room_target)
 
 	if npc.Item.is_item(Enum.Items.BROOM):
-		npc.Item.drop_current()
+		var broom := npc.Item.drop_current()
+		if is_instance_valid(closet):
+			closet.return_broom()
+			if is_instance_valid(broom):
+				broom.destroy()
 
 	var save = super.stop_loop()
 	save.room = closet

@@ -61,6 +61,10 @@ func issue_broom() -> Item:
 	_refresh_shelf_brooms()
 	return Global.ItemSpawner.create(Enum.Items.BROOM, get_broom_pickup_position())
 
+func return_broom() -> void:
+	issued_broom_count = maxi(0, issued_broom_count - 1)
+	_refresh_shelf_brooms()
+
 func get_broom_pickup_position() -> Vector2:
 	return get_center_floor_position() + Vector2(2, 0)
 

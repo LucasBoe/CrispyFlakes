@@ -8,15 +8,11 @@ const LOW_FUEL_VISIBILITY_RATIO := 0.25
 const REFUEL_DURATION := 2.5
 const FIRE_START_CHANCE_PER_SECOND := 0.001
 const HEAT_RANGE := 96.0
-const HEAT_LIGHT_ENERGY := 0.85
-const HEAT_RADIUS_FILL_COLOR := Color(1.0, 0.38, 0.08, 0.12)
 const EMBER_MODULATE := Color(0.85, 0.68, 0.52, 1.0)
 const INACTIVE_MODULATE := Color(0.8, 0.8, 0.8, 1.0)
-const SPRITE_OFFSET := Vector2(8, -22)
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _progress_bar: TextureProgressBar = $ProgressBar
-@onready var _warmth_light: PointLight2D = $WarmthLight
 @onready var _smoke_particles: GPUParticles2D = $SmokeParticles
 @onready var _aura_sprite: Sprite2D = $AuraSprite
 
@@ -32,14 +28,6 @@ func _ready() -> void:
 	_refresh_progress_bar()
 	TemperatureHandler.register_source(self)
 
-func _draw() -> void:
-	if not is_heating():
-		return
-	var strength := clampf(get_temperature_strength(), 0.0, 1.0)
-	var fill_color := HEAT_RADIUS_FILL_COLOR
-	fill_color.a *= strength
-	draw_circle(SPRITE_OFFSET, HEAT_RANGE, fill_color)
-
 func _process(delta: float) -> void:
 	var had_fuel := _fuel_remaining > 0.0
 	if _fuel_remaining > 0.0:
@@ -53,8 +41,6 @@ func _process(delta: float) -> void:
 
 	_refresh_visual_state()
 	_refresh_progress_bar()
-	if is_heating():
-		queue_redraw()
 
 func _exit_tree() -> void:
 	TemperatureHandler.unregister_source(self)
@@ -121,14 +107,10 @@ func _refresh_visual_state() -> void:
 		_sprite.modulate = INACTIVE_MODULATE
 
 	var heating := is_heating()
-	if _warmth_light != null:
-		_warmth_light.enabled = heating
-		_warmth_light.energy = HEAT_LIGHT_ENERGY * clampf(get_temperature_strength(), 0.0, 1.0)
 	if _smoke_particles != null:
 		_smoke_particles.emitting = _fuel_remaining > 0.0
 	if _aura_sprite != null:
 		_aura_sprite.visible = heating
-	queue_redraw()
 
 func _refresh_progress_bar() -> void:
 	_progress_bar.max_value = 100.0

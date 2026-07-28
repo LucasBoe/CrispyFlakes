@@ -106,6 +106,7 @@ script = ExtResource("1_building")
 
 [node name="ForegroundTiles" type="TileMapLayer" parent="."]
 z_index = 2000
+material = ExtResource("4_g3pb6")
 position = Vector2(0, 1)
 tile_set = SubResource("TileSet_fg")
 
