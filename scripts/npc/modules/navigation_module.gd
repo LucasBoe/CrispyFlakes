@@ -26,6 +26,9 @@ var _stair_waypoints_remaining: int = 0
 var _active_elevator_request = null
 var _frisk_in_progress := false
 var _is_inside: bool = false
+var _last_debug_local_z: Variant = null
+var _last_debug_effective_z: Variant = null
+var _last_debug_chain := ""
 
 const DEFAULT_MOVE_SPEED = 32
 var move_speed = DEFAULT_MOVE_SPEED
@@ -41,6 +44,7 @@ func _ready():
 
 func _process(delta):
 	if debug_zlayer_swaps:
+		_debug_watch_z_state()
 		_debug_draw_zlayer_rect()
 
 	if not has_target:
@@ -386,15 +390,46 @@ func _debug_mark_zlayer_swap(label: String) -> void:
 	print("[zlayer] %s -> %s via %s at %s" % [npc.name, "INSIDE" if _is_inside else "OUTSIDE", label, global_position])
 
 # Always-on overlay (while debug_zlayer_swaps is toggled) so you can see the
-# NPC's actual currently-applied z-layer at a glance, not just what
-# NavigationModule's own _is_inside thinks - several behaviours (need_pee,
-# job_bar, need_sleep, etc.) set Animator.z_index directly, bypassing
-# NavigationModule entirely, so reading z_index here (not _is_inside) is the
-# only way this reflects ground truth. Redrawn every frame (duration 0.0),
-# sized to the NPC's own height so it reads as "which layer is this body on".
+# NPC's effective render z at a glance, not just what NavigationModule's own
+# _is_inside thinks. Several behaviours set Animator.z_index directly, and the
+# final draw order can also be offset by parent CanvasItem z values, so this
+# must use the Animator's effective canvas z instead of its local z_index.
+# Redrawn every frame (duration 0.0), sized to the NPC's own height so it
+# reads as "which layer is this body actually rendering on".
 func _debug_draw_zlayer_rect() -> void:
-	var color := _debug_color_for_zlayer(npc.Animator.z_index)
+	var color := _debug_color_for_zlayer(npc.Animator.get_effective_z_index())
 	DebugDraw2D.rect(global_position + Vector2(0, -12), Vector2(14, 24), color, 2.0)
+
+func _debug_watch_z_state() -> void:
+	if not is_instance_valid(npc) or npc.Animator == null:
+		return
+
+	var local_z := npc.Animator.z_index
+	var effective_z := npc.Animator.get_effective_z_index()
+	var chain := npc.Animator.get_z_debug_chain()
+
+	if _last_debug_local_z == local_z and _last_debug_effective_z == effective_z and _last_debug_chain == chain:
+		return
+
+	var current_room := Building.query.room_at_floor_position(global_position) as RoomBase
+	var room_name := "<outside>"
+	if current_room != null:
+		room_name = "%s(%d,%d)" % [current_room.name, current_room.x, current_room.y]
+
+	DebugLog.info(
+		"[zlayer:watch]",
+		npc.get_debug_display_name(),
+		"local", "%s -> %d" % [str(_last_debug_local_z), local_z],
+		"effective", "%s -> %d" % [str(_last_debug_effective_z), effective_z],
+		"chain", chain,
+		"room", room_name,
+		"inside", _is_inside,
+		"pos", global_position
+	)
+
+	_last_debug_local_z = local_z
+	_last_debug_effective_z = effective_z
+	_last_debug_chain = chain
 
 func _debug_color_for_zlayer(z: int) -> Color:
 	match z:

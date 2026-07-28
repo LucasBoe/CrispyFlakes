@@ -384,6 +384,66 @@ func _debug_log_z_change(previous_local_z: int, previous_effective_z: int) -> vo
 		stack
 	)
 
+func get_effective_z_index() -> int:
+	var effective_z := z_index
+	var current: CanvasItem = self
+
+	while current.z_as_relative:
+		var parent := current.get_parent()
+		if parent is not CanvasItem:
+			break
+		current = parent as CanvasItem
+		effective_z += current.z_index
+
+	return effective_z
+
+func get_z_debug_chain() -> String:
+	var segments := PackedStringArray()
+	var current: CanvasItem = self
+
+	while true:
+		segments.append("%s(z=%d%s)" % [
+			current.name,
+			current.z_index,
+			"" if current.z_as_relative else ", abs"
+		])
+
+		if not current.z_as_relative:
+			break
+
+		var parent := current.get_parent()
+		if parent is not CanvasItem:
+			break
+		current = parent as CanvasItem
+
+		return " <- ".join(segments)
+
+func _debug_log_z_change(previous_local_z: int, previous_effective_z: int) -> void:
+	if not NavigationModule.debug_zlayer_swaps or not is_instance_valid(npc):
+		return
+
+	var behaviour_name := "<none>"
+	if npc.Behaviour != null and npc.Behaviour.behaviour_instance != null:
+		var behaviour_script := npc.Behaviour.behaviour_instance.get_script() as Script
+		if behaviour_script != null:
+			behaviour_name = behaviour_script.resource_path.get_file()
+
+	var stack: Array = get_stack()
+	if stack.size() > 0:
+		stack.remove_at(0)
+	if stack.size() > 0:
+		stack.remove_at(0)
+
+	DebugLog.info(
+		"[zlayer:set]",
+		npc.get_debug_display_name(),
+		"behaviour", behaviour_name,
+		"local", "%d -> %d" % [previous_local_z, z_index],
+		"effective", "%d -> %d" % [previous_effective_z, get_effective_z_index()],
+		"chain", get_z_debug_chain(),
+		stack
+	)
+
 static func set_music_sway_enabled(value: bool) -> void:
 	if value:
 		_music_sway_sources += 1

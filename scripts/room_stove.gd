@@ -91,7 +91,10 @@ func get_ember_seconds_remaining() -> float:
 	return _ember_remaining
 
 func get_floor_position() -> Vector2:
-	return global_position
+	# The room node's origin is the tile's left floor edge. Returning that puts
+	# stove keepers on the room-edge seam in basement rooms instead of a proper
+	# standing position, which can leave them visually tucked into the wall.
+	return get_center_floor_position()
 
 func get_temperature_range() -> float:
 	return HEAT_RANGE
