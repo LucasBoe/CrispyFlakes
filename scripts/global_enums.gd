@@ -43,6 +43,7 @@ enum NpcStatus {
 	HAS_OUTSTANDING_FINE,
 	# Environment
 	DISGUSTED,
+	COLD,
 }
 
 enum RoomType {

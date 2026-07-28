@@ -18,6 +18,7 @@ const UI_ITEMS_CONTROLLER := preload("res://scripts/ui/ui_items_controller.gd")
 @onready var confirm : UIConfirm = %UIFullscreen.get_node("UIConfirm") as UIConfirm
 @onready var rename: UIRename = %UIFullscreen.get_node("UIRename") as UIRename
 @onready var ui_items: Control = $UIItems
+@onready var temperature_forecast: UITemperatureForecast = %UITemperatureForecast
 #@onready var pause: UIPause = $UIPause
 
 

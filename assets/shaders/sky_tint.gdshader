@@ -3,6 +3,8 @@ shader_type canvas_item;
 #include "res://assets/shaders/sky_colors.gdshaderinc"
 
 global uniform float sky_time_of_day;
+global uniform vec4 weather_tint_color : source_color;
+global uniform float weather_tint_strength;
 varying vec4 modulate_color;
 
 // How strongly the sky color is mixed onto the sprite (0 = no tint, 1 = full tint)
@@ -20,6 +22,11 @@ void fragment() {
 
 	// Multiply-blend toward sky color, scaled to neutral white at strength 0
 	vec3 tinted = sprite.rgb * mix(vec3(1.0), sky * 2.0, tint_strength);
+
+	// Weather overlay — same multiply-toward-color approach as the sky
+	// shader's own weather tint pass, so foreground objects darken/tint in
+	// step with the sky during weather effects instead of staying neutral.
+	tinted *= mix(vec3(1.0), weather_tint_color.rgb, weather_tint_strength);
 
 	COLOR = vec4(tinted, sprite.a) * modulate_color;
 }

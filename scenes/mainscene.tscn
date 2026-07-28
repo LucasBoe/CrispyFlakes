@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=39 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -26,6 +26,7 @@
 [ext_resource type="PackedScene" uid="uid://b7x6p4y77lcp8" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
+[ext_resource type="PackedScene" uid="uid://bpc6f1w275m04" path="res://scenes/ui/ui_temperature_forecast.tscn" id="ui_temperature_forecast"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
 
@@ -359,6 +360,19 @@ offset_top = -1.0
 offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("25_3ou18")
+
+[node name="UITemperatureForecast" parent="UI" instance=ExtResource("ui_temperature_forecast")]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -278.0
+offset_top = 2.0
+offset_right = -193.0
+offset_bottom = 26.0
+grow_horizontal = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 
 [node name="UIMenu" parent="UI" instance=ExtResource("ui_menu")]
 unique_name_in_owner = true

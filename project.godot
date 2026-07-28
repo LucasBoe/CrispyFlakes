@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.383"
+config/version="0.0.1-dev.384"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -61,6 +61,8 @@ TimeHandler="*res://scripts/time_handler.gd"
 LetterUIHandler="*res://scenes/autoloads/letter_ui_handler.tscn"
 ProgressionHandler="*res://scripts/autoloads/progression_handler.gd"
 TemperatureHandler="*res://scripts/autoloads/temperature_handler.gd"
+RoomTemperatureOverlayHandler="*res://scripts/autoloads/room_temperature_overlay_handler.gd"
+TemperatureDiscomfortHandler="*res://scripts/autoloads/temperature_discomfort_handler.gd"
 InjuryHandler="*res://scripts/autoloads/injury_handler.gd"
 SaveHandler="*res://scripts/autoloads/save_handler.gd"
 Pricing="*res://scripts/pricing.gd"
@@ -128,4 +130,12 @@ textures/vram_compression/import_etc2_astc=true
 sky_time_of_day={
 "type": "float",
 "value": 12.0
+}
+weather_tint_color={
+"type": "color",
+"value": Color(0.75, 0.77, 0.8, 1)
+}
+weather_tint_strength={
+"type": "float",
+"value": 0.0
 }

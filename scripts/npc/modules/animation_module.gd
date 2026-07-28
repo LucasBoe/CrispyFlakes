@@ -28,6 +28,9 @@ const PIANO_BOB_DISTANCE = 1.5
 const PIANO_ROTATION_STRENGTH = 0.1
 const SWAY_ANIMATION_SPEED = 12.0
 const SWAY_ROTATION_STRENGTH = 0.12
+const SHIVER_ANIMATION_SPEED = 45.0
+const SHIVER_POSITION_STRENGTH = 0.5
+const SHIVER_ROTATION_STRENGTH = 0.035
 
 const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
 const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
@@ -133,11 +136,19 @@ func _process(_delta):
 	if is_walking:
 		target = walk_tween(time_in_seconds)
 
+	var shiver: Vector3 = Vector3.ZERO
+	var is_cold: bool = npc != null and npc.Status != null and npc.Status.has_status(Enum.NpcStatus.COLD)
+	if is_cold:
+		var shiver_blocked: bool = npc.is_in_fight_state() or _is_in_punch or is_sleeping or is_peeing or is_puking \
+			or npc.Behaviour.behaviour_instance is KnockedOutBehaviourScript
+		if not shiver_blocked:
+			shiver = shiver_offset(time_in_seconds)
+
 	var lerp_speed = .2
 
 	var base_pos = RIDE_BODY_OFFSET if is_riding else Vector2.ZERO
-	position = lerp(position, base_pos + target.position + _event_position_offset + _impact_position_offset, lerp_speed)
-	rotation = lerp(rotation, target.rotation + _event_rotation_offset + _impact_rotation_offset, lerp_speed)
+	position = lerp(position, base_pos + target.position + _event_position_offset + _impact_position_offset + Vector2(shiver.x, shiver.y), lerp_speed)
+	rotation = lerp(rotation, target.rotation + _event_rotation_offset + _impact_rotation_offset + shiver.z, lerp_speed)
 	scale = lerp(scale, target.scale, lerp_speed)
 
 
@@ -217,16 +228,29 @@ func sway_tween(time_in_seconds):
 	var rot = sin(time_in_seconds * SWAY_ANIMATION_SPEED) * SWAY_ROTATION_STRENGTH
 	return TweenTargetData.new(Vector2.ZERO, rot, Vector2(x_orientation, 1.0))
 
+## Small, fast, additive jitter layered on top of whatever base animation is
+## playing (idle, walk, carry, ...) rather than replacing it — packed as
+## Vector3(offset.x, offset.y, rotation_offset) since it isn't a full pose.
+func shiver_offset(time_in_seconds) -> Vector3:
+	var t = time_in_seconds * SHIVER_ANIMATION_SPEED
+	var jitter_x = sin(t) * SHIVER_POSITION_STRENGTH
+	var jitter_y = sin(t * 1.7 + 1.3) * SHIVER_POSITION_STRENGTH * 0.4
+	var jitter_rot = sin(t * 1.3 + 0.7) * SHIVER_ROTATION_STRENGTH
+	return Vector3(jitter_x, jitter_y, jitter_rot)
+
 func knocked_out_tween():
 	var x = -1 if is_sleeping else x_orientation
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x, Vector2.ONE)
 
 func set_z(z: Enum.ZLayer) -> void:
+	var previous_local_z := z_index
+	var previous_effective_z := get_effective_z_index()
 	if z == Enum.ZLayer.NPC_DRAGGED:
 		_enter_drag_canvas()
 	elif _drag_canvas_wrapper != null:
 		_exit_drag_canvas()
 	z_index = z
+	_debug_log_z_change(previous_local_z, previous_effective_z)
 
 func play_gambling_card_punch() -> void:
 	if _event_tween != null and _event_tween.is_valid():
@@ -299,6 +323,66 @@ func _exit_drag_canvas() -> void:
 	wrapper.remove_child(self)
 	npc.add_child(self)
 	wrapper.queue_free()
+
+func get_effective_z_index() -> int:
+	var effective_z := z_index
+	var current: CanvasItem = self
+
+	while current.z_as_relative:
+		var parent := current.get_parent()
+		if parent is not CanvasItem:
+			break
+		current = parent as CanvasItem
+		effective_z += current.z_index
+
+	return effective_z
+
+func get_z_debug_chain() -> String:
+	var segments := PackedStringArray()
+	var current: CanvasItem = self
+
+	while true:
+		segments.append("%s(z=%d%s)" % [
+			current.name,
+			current.z_index,
+			"" if current.z_as_relative else ", abs"
+		])
+
+		if not current.z_as_relative:
+			break
+
+		var parent := current.get_parent()
+		if parent is not CanvasItem:
+			break
+		current = parent as CanvasItem
+
+	return " <- ".join(segments)
+
+func _debug_log_z_change(previous_local_z: int, previous_effective_z: int) -> void:
+	if not NavigationModule.debug_zlayer_swaps or not is_instance_valid(npc):
+		return
+
+	var behaviour_name := "<none>"
+	if npc.Behaviour != null and npc.Behaviour.behaviour_instance != null:
+		var behaviour_script := npc.Behaviour.behaviour_instance.get_script() as Script
+		if behaviour_script != null:
+			behaviour_name = behaviour_script.resource_path.get_file()
+
+	var stack: Array = get_stack()
+	if stack.size() > 0:
+		stack.remove_at(0)
+	if stack.size() > 0:
+		stack.remove_at(0)
+
+	DebugLog.info(
+		"[zlayer:set]",
+		npc.get_debug_display_name(),
+		"behaviour", behaviour_name,
+		"local", "%d -> %d" % [previous_local_z, z_index],
+		"effective", "%d -> %d" % [previous_effective_z, get_effective_z_index()],
+		"chain", get_z_debug_chain(),
+		stack
+	)
 
 static func set_music_sway_enabled(value: bool) -> void:
 	if value:

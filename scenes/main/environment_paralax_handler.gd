@@ -7,6 +7,12 @@ extends Node2D
 
 const _FULLSCREEN_DARKEN_SHOW_ALPHA := 1.0
 
+# Weather fade — at/below the cold reference, weather tint and snow read at
+# their full scene-authored strength; at/above the warm reference they're
+# faded out entirely; smoothly interpolated in between.
+const WEATHER_FADE_COLD_TEMPERATURE := -6.0
+const WEATHER_FADE_WARM_TEMPERATURE := 3.0
+
 var mointain_lerp = Vector2(.33, .1)
 
 var mountains_default_posisitions = []
@@ -15,12 +21,22 @@ var _fullscreen_darken_target_alpha := 0.0
 var _fullscreen_darken_fade_start_usec := 0
 var _fullscreen_darken_fade_duration := 0.0
 
+# Scene-authored maximums, read once so the weather fade below has something
+# to scale toward 0 without permanently losing the designer-set values.
+var _max_weather_tint_strength_before := 0.0
+var _max_weather_tint_strength_after := 0.0
+var _max_snow_amount := 0.0
+
 func _ready():
 	for i in mountains:
 		mountains_default_posisitions.append(i.global_position)
 	_setup_world_tint()
 	fullscreen_darken.modulate.a = 0.0
 	fullscreen_darken.hide()
+
+	_max_weather_tint_strength_before = $NewSky.material.get_shader_parameter("weather_tint_strength_before")
+	_max_weather_tint_strength_after = $NewSky.material.get_shader_parameter("weather_tint_strength_after")
+	_max_snow_amount = $NewSky.material.get_shader_parameter("snow_amount")
 
 func _setup_world_tint() -> void:
 	var layer: CanvasLayer = CanvasLayer.new()
@@ -40,6 +56,13 @@ func _process(_delta):
 	var tod: float = fmod(Global.time_now, Global.DAY_DURATION) / Global.DAY_DURATION * 24.0
 	$NewSky.material.set_shader_parameter("time_of_day", tod)
 	RenderingServer.global_shader_parameter_set("sky_time_of_day", tod)
+
+	_update_weather_from_temperature()
+
+	var weather_enabled: bool = $NewSky.material.get_shader_parameter("weather_tint_enabled")
+	var weather_strength: float = $NewSky.material.get_shader_parameter("weather_tint_strength_after") if weather_enabled else 0.0
+	RenderingServer.global_shader_parameter_set("weather_tint_color", $NewSky.material.get_shader_parameter("weather_tint_color"))
+	RenderingServer.global_shader_parameter_set("weather_tint_strength", weather_strength)
 	var cam_pos = Camera.global_position + Camera.camera_offset_base
 	var inv_zoom: Vector2 = Vector2.ONE / Camera.zoom
 	sky.global_position = cam_pos
@@ -52,6 +75,15 @@ func _process(_delta):
 		var default_position = mountains_default_posisitions[i]
 		mountain.global_position = Vector2(lerp(default_position.x, cam_pos.x, mointain_lerp.x), lerp(default_position.y, cam_pos.y, mointain_lerp.y))
 		mountain.scale = Vector2(lerp(1.0, inv_zoom.x, mointain_lerp.x), lerp(1.0, inv_zoom.y, mointain_lerp.y))
+
+func _update_weather_from_temperature() -> void:
+	var outdoor_temperature := TemperatureHandler.get_outdoor_temperature()
+	# 0 at/above the warm reference, 1 at/below the cold reference.
+	var cold_factor := 1.0 - smoothstep(WEATHER_FADE_COLD_TEMPERATURE, WEATHER_FADE_WARM_TEMPERATURE, outdoor_temperature)
+
+	$NewSky.material.set_shader_parameter("weather_tint_strength_before", _max_weather_tint_strength_before * cold_factor)
+	$NewSky.material.set_shader_parameter("weather_tint_strength_after", _max_weather_tint_strength_after * cold_factor)
+	$NewSky.material.set_shader_parameter("snow_amount", _max_snow_amount * cold_factor)
 
 func fade_fullscreen_darken_in(duration: float = 0.28) -> void:
 	_fade_fullscreen_darken_to(_FULLSCREEN_DARKEN_SHOW_ALPHA, duration)

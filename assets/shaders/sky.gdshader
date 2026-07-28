@@ -9,7 +9,6 @@ uniform sampler2D cloud_tex_1 : filter_nearest;
 uniform sampler2D cloud_tex_2 : filter_nearest;
 uniform sampler2D cloud_tex_3 : filter_nearest;
 uniform sampler2D cloud_tex_4 : filter_nearest;
-uniform sampler2D cloud_tex_5 : filter_nearest;
 
 uniform float cloud_speed : hint_range(0.001, 0.1) = 0.015;
 uniform float cloud_scale : hint_range(0.1, 10.0) = 1.0;
@@ -38,13 +37,31 @@ uniform vec4 sun_color_noon : source_color = vec4(1.0, 0.97, 0.78, 1.0);
 uniform float moon_alpha_min : hint_range(0.0, 1.0) = 0.25;
 uniform float moon_alpha_max : hint_range(0.0, 1.0) = 1.0;
 
+// Weather tint — flat color overlay across the whole sky (e.g. overcast grey)
+uniform bool weather_tint_enabled = false;
+uniform vec4 weather_tint_color : source_color = vec4(0.75, 0.77, 0.8, 1.0);
+uniform float weather_tint_strength_before : hint_range(0.0, 1.0) = 0.0;
+uniform float weather_tint_strength_after : hint_range(0.0, 1.0) = 0.0;
+
+// Snow — placed and sampled with the exact same technique as the cloud loop
+// below (UV-fraction space, single texture instance per slot), just falling
+// vertically instead of drifting horizontally. Temporary: once this renders
+// correctly we can bring back per-flake scatter/parallax on top of it.
+// Reuses the sampler slot freed by dropping cloud_tex_5 (6 clouds -> 5),
+// testing whether a *new* distinct sampler slot was the actual problem.
+uniform bool snow_enabled = false;
+uniform sampler2D snow_tex : filter_nearest;
+uniform float snow_amount : hint_range(0.0, 1.0) = 0.5;
+uniform float snow_speed : hint_range(0.05, 2.0) = 0.4;
+uniform float snow_scale : hint_range(0.1, 10.0) = 1.0;
+uniform float snow_wind_strength : hint_range(0.0, 1.0) = 0.5;
+
 vec4 sample_cloud(int idx, vec2 uv) {
 	if (idx == 0) return texture(cloud_tex_0, uv);
 	if (idx == 1) return texture(cloud_tex_1, uv);
 	if (idx == 2) return texture(cloud_tex_2, uv);
 	if (idx == 3) return texture(cloud_tex_3, uv);
-	if (idx == 4) return texture(cloud_tex_4, uv);
-	return texture(cloud_tex_5, uv);
+	return texture(cloud_tex_4, uv);
 }
 
 vec2 cloud_tex_size(int idx) {
@@ -52,14 +69,26 @@ vec2 cloud_tex_size(int idx) {
 	if (idx == 1) return vec2(textureSize(cloud_tex_1, 0));
 	if (idx == 2) return vec2(textureSize(cloud_tex_2, 0));
 	if (idx == 3) return vec2(textureSize(cloud_tex_3, 0));
-	if (idx == 4) return vec2(textureSize(cloud_tex_4, 0));
-	return vec2(textureSize(cloud_tex_5, 0));
+	return vec2(textureSize(cloud_tex_4, 0));
 }
 
 // Arc in SCREEN_UV space — zoom-independent since UV is always 0..1
 vec2 celestial_uv(float arc_t) {
 	float angle = PI * (1.0 - arc_t);
 	return vec2(0.5, arc_center_y) + vec2(cos(angle) * arc_radius_x, -sin(angle) * arc_radius_y);
+}
+
+// Smooth 1D value noise — used to fake gusting wind (a slowly, irregularly
+// varying value is far more convincing than a pure sine wave, which just
+// reads as a uniform sway).
+float hash1(float n) {
+	return fract(sin(n) * 43758.5453);
+}
+
+float noise1(float x) {
+	float i = floor(x);
+	float f = fract(x);
+	return mix(hash1(i), hash1(i + 1.0), smoothstep(0.0, 1.0, f));
 }
 
 vec3 sun_color(float tod) {
@@ -78,6 +107,15 @@ void fragment() {
 	float cloud_tint_strength = pow(1.0 - sky_lum, 2.0);
 
 	float screen_aspect = (1.0 / SCREEN_PIXEL_SIZE.x) / (1.0 / SCREEN_PIXEL_SIZE.y);
+
+	// Weather tint, pass 1 — darkens/tints the base sky gradient before
+	// stars/sun/moon/clouds/snow are drawn on top of it. Paired with a
+	// second pass at the very end (see bottom of fragment()) that grades
+	// the fully composited frame, so both the backdrop and everything
+	// drawn over it end up tinted rather than just one or the other.
+	if (weather_tint_enabled && weather_tint_strength_before > 0.0) {
+		col.rgb *= mix(vec3(1.0), weather_tint_color.rgb, weather_tint_strength_before);
+	}
 
 	// Stars — before celestial bodies and clouds so both occlude them
 	{
@@ -154,7 +192,7 @@ void fragment() {
 		}
 	}
 
-	// 8 cloud instances across the sky using all 6 textures
+	// 8 cloud instances across the sky using all 5 textures
 	// layout: [x_start_offset, y_pos, speed_multiplier, tex_index]
 	float data[32] = float[32](
 		0.00, 0.20, 1.00, 0.0,
@@ -162,7 +200,7 @@ void fragment() {
 		0.45, 0.32, 1.20, 2.0,
 		0.60, 0.12, 0.90, 3.0,
 		0.10, 0.44, 0.60, 4.0,
-		0.75, 0.24, 1.10, 5.0,
+		0.75, 0.24, 1.10, 1.0,
 		0.35, 0.04, 0.85, 2.0,
 		0.85, 0.36, 1.30, 0.0
 	);
@@ -192,6 +230,72 @@ void fragment() {
 			vec3 tinted = mix(cloud_c.rgb, cloud_c.rgb * bottom_col.rgb, cloud_tint_strength);
 			col.rgb = mix(col.rgb, tinted, cloud_c.a);
 		}
+	}
+
+	// Snow — snow_tex tiled infinitely (fract-wrapped UV) instead of placed
+	// as individual instances. A handful of parallax layers, each a
+	// differently-scaled/sped-up tiling of the same texture, reads as
+	// continuous falling snow for the cost of one sample per layer.
+	if (snow_enabled && snow_amount > 0.0) {
+		vec2 sts = vec2(textureSize(snow_tex, 0));
+
+		// Gusting wind: a slow base drift plus a faster wobble on top, both
+		// from smooth noise rather than a pure sine — reads as irregular
+		// gusts instead of a metronomic sway.
+		float wind_base = (noise1(TIME * 0.12) - 0.5) * 2.0;
+		float wind_gust = (noise1(TIME * 0.45 + 31.7) - 0.5) * 2.0;
+		float wind = (wind_base * 0.7 + wind_gust * 0.3) * snow_wind_strength;
+
+		// layout: [tile_scale, speed_multiplier, alpha_multiplier, wind_response]
+		// Nearer/faster layers react more to wind, same as real snow does.
+		float snow_layers[16] = float[16](
+			1.6, 0.5, 0.55, 0.5,
+			1.0, 0.8, 0.75, 0.8,
+			0.65, 1.2, 0.90, 1.0,
+			0.4, 1.8, 1.00, 1.3
+		);
+
+		int active = int(snow_amount * 4.0 + 0.999);
+		for (int i = 0; i < 4; i++) {
+			if (i >= active) {
+				break;
+			}
+			float tile_scale    = snow_layers[i * 4 + 0];
+			float speed_mult    = snow_layers[i * 4 + 1];
+			float alpha_mult    = snow_layers[i * 4 + 2];
+			float wind_response = snow_layers[i * 4 + 3];
+
+			float tw = (sts.x / reference_resolution.x) * snow_scale * tile_scale;
+			float th = tw * (sts.y / sts.x) * screen_aspect;
+
+			// Per-layer jitter so gusts don't hit every layer in lockstep.
+			float layer_gust = (noise1(TIME * 0.6 + float(i) * 9.1) - 0.5) * 2.0;
+			float layer_wind = (wind * 0.75 + layer_gust * snow_wind_strength * 0.25) * wind_response;
+
+			// Drift meanders the tiling sideways over time; skew tilts it
+			// diagonally with vertical position, so flakes read as blown at
+			// an angle while falling rather than just wobbling in place.
+			float drift = layer_wind * 0.6;
+			float skew = layer_wind * 0.35;
+			vec2 uv = vec2(
+				(SCREEN_UV.x + drift + SCREEN_UV.y * skew) / tw,
+				(SCREEN_UV.y - TIME * snow_speed * speed_mult) / th
+			);
+
+			vec4 flake = texture(snow_tex, fract(uv));
+			col.rgb = mix(col.rgb, flake.rgb, flake.a * alpha_mult);
+		}
+	}
+
+	// Weather tint, pass 2 — grades the fully composited frame (stars,
+	// sun/moon, clouds, snow included), pairing with pass 1 above so
+	// everything ends up tinted, not just the backdrop or just what's drawn
+	// on top of it. Multiply blend (not mix/lerp) so it scales existing
+	// brightness down instead of replacing it outright — a dark tint darkens
+	// proportionally rather than flattening the sky to one flat color.
+	if (weather_tint_enabled && weather_tint_strength_after > 0.0) {
+		vec3 tint_mul = mix(vec3(1.0), weather_tint_color.rgb, weather_tint_strength_after);
+		col.rgb *= tint_mul;
 	}
 
 	COLOR = col;

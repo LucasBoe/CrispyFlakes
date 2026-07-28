@@ -23,6 +23,7 @@ const ICON_TREATED = preload("uid://cmglyexhx4ow7")
 const ICON_FUGITIVE = preload("uid://dcde01v5i4hgb")
 const ICON_ROBBER = preload("uid://ccudedp2r2ik6")
 const ICON_EWW = preload("res://assets/sprites/icon_eww.png")
+const ICON_COLD = preload("uid://dj8pbycfmryyj")
 
 var instances = []
 const DEFAULT_LIFETIME = 3.0
