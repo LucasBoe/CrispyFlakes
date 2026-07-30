@@ -10,7 +10,6 @@ var health := MAX_HEALTH
 var spread_roll_elapsed := 0.0
 var extinguish_bar
 var propagation_bar
-var light_overlay
 var flame_particles
 var spark_particles
 var loop_sound: AudioStreamPlayer2D

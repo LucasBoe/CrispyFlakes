@@ -2,11 +2,12 @@ extends Node
 
 const ExtinguishFireBehaviourScript = preload("res://scripts/npc/behaviours/extinguish_fire_behaviour.gd")
 const FireIncidentScript = preload("res://scripts/fire.gd")
-const FIRE_LIGHT_OVERLAY_SCENE = preload("res://scenes/fire_light_overlay.tscn")
 const FIRE_FLAME_PARTICLES_SCENE = preload("res://scenes/fire_flame_particles.tscn")
 const FIRE_SPARK_PARTICLES_SCENE = preload("res://scenes/fire_spark_particles.tscn")
 const FIRE_REGULAR_SMOKE_SCENE = preload("res://scenes/fire_regular_smoke_particles.tscn")
 const FIRE_EXTINGUISH_SMOKE_SCENE = preload("res://scenes/fire_extinguish_smoke_particles.tscn")
+const FIRE_GLOW_TEXTURE := preload("res://assets/sprites/fire_glow_overlay.png")
+const FIRE_GLOW_TINT := Color(1.0, 0.28800005, 0.110000014, 1.0)
 
 const RESPONSE_RANGE_X := 96.0
 const RESPONSE_RANGE_Y := 16.0
@@ -364,25 +365,32 @@ func _dispose_fire_bars(fire) -> void:
 func _create_light_overlay(fire) -> void:
 	if fire == null or not is_instance_valid(fire.room):
 		return
-	var overlay = FIRE_LIGHT_OVERLAY_SCENE.instantiate()
-	fire.room.add_child(overlay)
-	overlay.global_position = fire.room.get_center_floor_position()
-	fire.light_overlay = overlay
+	RoomTemperatureOverlayHandler.register_light_input(
+		fire,
+		fire.room,
+		FIRE_GLOW_TEXTURE,
+		fire.room.get_center_floor_position(),
+		FIRE_GLOW_TINT,
+		1.0,
+		Vector2(0.0, -24.0)
+	)
 	_update_light_overlay(fire)
 
 func _update_light_overlay(fire) -> void:
-	if fire == null or not is_instance_valid(fire.light_overlay):
+	if fire == null:
 		return
 	var fire_size: float = fire.get_fire_growth_ratio() * fire.get_extinguish_ratio()
 	var pulse: float = lerpf(0.85, 1.0, (sin(Global.time_now * 10.0) + 1.0) * 0.5)
-	fire.light_overlay.modulate = Color(1.0, 1.0, 1.0, lerpf(0.45, 1.0, fire_size) * pulse)
+	RoomTemperatureOverlayHandler.update_light_input(
+		fire,
+		FIRE_GLOW_TINT,
+		lerpf(0.45, 1.0, fire_size) * pulse
+	)
 
 func _dispose_light_overlay(fire) -> void:
 	if fire == null:
 		return
-	if is_instance_valid(fire.light_overlay):
-		fire.light_overlay.queue_free()
-	fire.light_overlay = null
+	RoomTemperatureOverlayHandler.unregister_light_input(fire)
 
 func _create_flame_particles(fire) -> void:
 	if fire == null or not is_instance_valid(fire.room):

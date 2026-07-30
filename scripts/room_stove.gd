@@ -10,22 +10,26 @@ const FIRE_START_CHANCE_PER_SECOND := 0.001
 const HEAT_RANGE := 96.0
 const EMBER_MODULATE := Color(0.85, 0.68, 0.52, 1.0)
 const INACTIVE_MODULATE := Color(0.8, 0.8, 0.8, 1.0)
+const AURA_TEXTURE := preload("res://assets/sprites/sun.png")
+const AURA_POSITION := Vector2(24.0, -14.0)
+const AURA_TINT := Color(1.0, 0.74, 0.38, 1.0)
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _progress_bar: TextureProgressBar = $ProgressBar
 @onready var _smoke_particles: GPUParticles2D = $SmokeParticles
-@onready var _aura_sprite: Sprite2D = $AuraSprite
 
 const _STOVE_ON_TEXTURE = preload("res://assets/sprites/stove.png")
 const _STOVE_OFF_TEXTURE = preload("res://assets/sprites/stove_off.png")
 
 var _fuel_remaining := 0.0
 var _ember_remaining := 0.0
+var _overlay_light_registered := false
 
 func _ready() -> void:
 	_refresh_visual_state()
 	_refresh_progress_bar()
 	TemperatureHandler.register_source(self)
+	call_deferred("_sync_overlay_light")
 
 func _process(delta: float) -> void:
 	_before_heat_update(delta)
@@ -43,6 +47,7 @@ func _process(delta: float) -> void:
 	_refresh_progress_bar()
 
 func _exit_tree() -> void:
+	RoomTemperatureOverlayHandler.unregister_light_input(self)
 	TemperatureHandler.unregister_source(self)
 
 func init_room(_x: int, _y: int) -> void:
@@ -124,8 +129,25 @@ func _refresh_visual_state() -> void:
 	var heating := is_heating()
 	if _smoke_particles != null:
 		_smoke_particles.emitting = _fuel_remaining > 0.0
-	if _aura_sprite != null:
-		_aura_sprite.visible = heating
+	_sync_overlay_light()
+
+
+func _sync_overlay_light() -> void:
+	var should_register := is_heating()
+	if should_register == _overlay_light_registered:
+		return
+
+	_overlay_light_registered = should_register
+	if should_register:
+		RoomTemperatureOverlayHandler.register_light_input(
+			self,
+			self,
+			AURA_TEXTURE,
+			global_position + AURA_POSITION,
+			AURA_TINT
+		)
+	else:
+		RoomTemperatureOverlayHandler.unregister_light_input(self)
 
 func _refresh_progress_bar() -> void:
 	_progress_bar.max_value = 100.0

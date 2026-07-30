@@ -43,6 +43,10 @@ func _setup_world_tint() -> void:
 	layer.layer = 1
 	add_child(layer)
 
+	var back_buffer_copy := BackBufferCopy.new()
+	back_buffer_copy.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
+	layer.add_child(back_buffer_copy)
+
 	var rect: ColorRect = ColorRect.new()
 	rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE

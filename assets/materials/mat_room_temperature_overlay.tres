@@ -1,10 +1,8 @@
 [gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bwk3ymr3jdhs6"]
 
-[ext_resource type="Shader" path="res://assets/shaders/light_overlay.gdshader" id="1_shader"]
+[ext_resource type="Shader" path="res://assets/shaders/room_overlay.gdshader" id="1_shader"]
 
 [resource]
 resource_local_to_scene = true
 shader = ExtResource("1_shader")
-shader_parameter/light_color = Color(1, 1, 1, 1)
-shader_parameter/color_strength = 0.0
-shader_parameter/overlay_strength = 1.35
+shader_parameter/temperature_strength = 1.35
