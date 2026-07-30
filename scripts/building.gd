@@ -54,6 +54,7 @@ const room_data_bouncer := preload("res://assets/resources/rooms/room_bouncer.tr
 const room_data_water_tower := preload("res://assets/resources/rooms/room_water_tower.tres")
 const room_data_gambling := preload("res://assets/resources/rooms/room_gambling.tres")
 const room_data_trading_office := preload("res://assets/resources/rooms/room_trading_office.tres")
+const room_data_fireplace := preload("res://assets/resources/rooms/room_fireplace.tres")
 const room_data_stove := preload("res://assets/resources/rooms/room_stove.tres")
 const room_data_generator_wheel := preload("res://assets/resources/rooms/room_generator_wheel.tres")
 const room_data_infirmary := preload("res://assets/resources/rooms/room_infirmary.tres")

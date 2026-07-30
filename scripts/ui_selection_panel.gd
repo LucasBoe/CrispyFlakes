@@ -742,6 +742,13 @@ func _update_stove_status(stove: RoomStove) -> void:
 		status_text = "Out of Wood"
 		status_color = Color.ORANGE
 
+	if stove is RoomFireplace:
+		var fireplace := stove as RoomFireplace
+		var stock_text := "%d wood nearby" % fireplace.get_stockpiled_wood_count()
+		if fireplace.is_fire_poked():
+			status_text += ", poked (%ds)" % int(ceili(fireplace.get_poked_seconds_remaining()))
+		status_text += ", " + stock_text
+
 	if is_instance_valid(stove.worker):
 		stove.worker.Tint.add_outline(Color.WHITE, 20, self)
 		_set_stove_status_row(status_text, status_color, stove.worker, stove.worker.character_name)

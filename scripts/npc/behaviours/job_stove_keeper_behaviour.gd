@@ -53,6 +53,8 @@ func stop_loop() -> BehaviourSaveData:
 func _find_stove_needing_refuel() -> RoomStove:
 	_cleanup_occupied_stoves()
 	for candidate: RoomStove in Building.query.all_rooms_of_type(RoomStove):
+		if candidate.associated_job != Enum.Jobs.STOVE_KEEPER:
+			continue
 		if occupied_stoves.has(candidate):
 			continue
 		if candidate.needs_refuel():

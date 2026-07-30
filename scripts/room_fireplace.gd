@@ -1,0 +1,124 @@
+extends RoomStove
+class_name RoomFireplace
+
+const _FIREPLACE_TEXTURE := preload("res://assets/sprites/fireplace.png")
+const STOCKPILE_TARGET_WOOD := 2
+const STOCKPILE_RADIUS := 18.0
+const POKED_FIRE_DURATION := 18.0
+const POKED_BURN_MULTIPLIER := 0.35
+const REPOKE_THRESHOLD := 4.0
+const STOCKPILE_DROP_OFFSETS: Array[Vector2] = [
+	Vector2(-6.0, 0.0),
+	Vector2(-1.0, 0.0),
+	Vector2(4.0, 0.0),
+	Vector2(9.0, 0.0),
+]
+
+var _poked_fire_remaining := 0.0
+
+
+func init_room(_x: int, _y: int) -> void:
+	super.init_room(_x, _y)
+	associated_job = Enum.Jobs.FIREPLACE_KEEPER
+
+
+func get_heat_source_debug_name() -> String:
+	return "fireplace"
+
+
+func get_stockpile_anchor_position() -> Vector2:
+	return global_position + Vector2(35.0, 0.0)
+
+
+func get_stockpile_drop_position() -> Vector2:
+	var stockpiled := get_stockpiled_wood_count()
+	var offset_index := mini(stockpiled, STOCKPILE_DROP_OFFSETS.size() - 1)
+	return get_stockpile_anchor_position() + STOCKPILE_DROP_OFFSETS[offset_index]
+
+
+func get_stockpiled_wood_count() -> int:
+	return _get_stockpiled_wood_items().size()
+
+
+func has_stockpiled_wood() -> bool:
+	return get_stockpiled_wood_count() > 0
+
+
+func needs_stockpile() -> bool:
+	return get_stockpiled_wood_count() < STOCKPILE_TARGET_WOOD
+
+
+func consume_stockpiled_wood() -> bool:
+	var stockpiled_wood := _get_stockpiled_wood_items()
+	if stockpiled_wood.is_empty():
+		return false
+
+	var item := stockpiled_wood[0] as Item
+	if item == null or not is_instance_valid(item):
+		return false
+
+	item.destroy()
+	return true
+
+
+func is_loose_wood_stockpiled(item: Item) -> bool:
+	return item != null \
+	and is_instance_valid(item) \
+	and item.itemType == Enum.Items.WOOD \
+	and item.global_position.distance_squared_to(get_stockpile_anchor_position()) <= STOCKPILE_RADIUS * STOCKPILE_RADIUS
+
+
+func poke_fire() -> void:
+	if not is_heating():
+		return
+	_poked_fire_remaining = POKED_FIRE_DURATION
+
+
+func needs_poking() -> bool:
+	return is_heating() and _poked_fire_remaining <= REPOKE_THRESHOLD
+
+
+func is_fire_poked() -> bool:
+	return _poked_fire_remaining > 0.0
+
+
+func get_poked_seconds_remaining() -> float:
+	return _poked_fire_remaining
+
+
+func _before_heat_update(delta: float) -> void:
+	_poked_fire_remaining = maxf(0.0, _poked_fire_remaining - delta)
+
+
+func _get_fuel_burn_multiplier() -> float:
+	return POKED_BURN_MULTIPLIER if is_fire_poked() else 1.0
+
+
+func _get_ember_burn_multiplier() -> float:
+	return POKED_BURN_MULTIPLIER if is_fire_poked() else 1.0
+
+
+func _get_active_texture() -> Texture2D:
+	return _FIREPLACE_TEXTURE
+
+
+func _get_inactive_texture() -> Texture2D:
+	return _FIREPLACE_TEXTURE
+
+
+func _get_stockpiled_wood_items() -> Array[Item]:
+	var items: Array[Item] = []
+	var loose_wood_items := LooseItemHandler.loose_items.get(Enum.Items.WOOD, []) as Array
+	if loose_wood_items == null:
+		return items
+
+	for candidate in loose_wood_items:
+		var item := candidate as Item
+		if item == null or not is_instance_valid(item):
+			continue
+		if not is_loose_wood_stockpiled(item):
+			continue
+		items.append(item)
+
+	items.sort_custom(func(a: Item, b: Item): return a.global_position.x < b.global_position.x)
+	return items

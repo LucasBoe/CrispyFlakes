@@ -1,0 +1,75 @@
+[gd_scene load_steps=13 format=3 uid="uid://bfkpo4s2huwta"]
+
+[ext_resource type="Script" uid="uid://hjtyysfmyw21" path="res://scripts/room_fireplace.gd" id="1_roomscript"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://j1u2035m3wb4" path="res://assets/sprites/fireplace.png" id="4_fireplacetex"]
+[ext_resource type="PackedScene" uid="uid://df101627spr7c" path="res://scenes/progress_bar.tscn" id="5_progress"]
+[ext_resource type="Texture2D" uid="uid://dyx8y7ygsjayi" path="res://assets/sprites/ui/ui_rect_8x8.png" id="7_smoke_tex"]
+[ext_resource type="Material" uid="uid://dfa4jw2438l1m" path="res://assets/materials/mat_light_overlay.tres" id="6_light_mat"]
+[ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="8_aura_tex"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_blend"]
+blend_mode = 1
+
+[sub_resource type="Curve" id="Curve_smoke"]
+_data = [Vector2(0, 0.3199144), 0.0, 15.432118, 0, 0, Vector2(0.24311927, 0.987359), 0.76110876, 0.76110876, 0, 0, Vector2(0.7201835, 0.987359), -0.72150195, -0.72150195, 0, 0, Vector2(1, 0.0038894415), -5.341893, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="CurveTexture" id="CurveTexture_smoke"]
+curve = SubResource("Curve_smoke")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_smoke"]
+lifetime_randomness = 0.5
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(-0.5, -0.5, 0)
+emission_shape = 3
+emission_box_extents = Vector3(4, 0, 0)
+gravity = Vector3(0, -10, 0)
+scale_min = 0.25
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_smoke")
+color = Color(1, 0.56, 0.120000005, 0.2784314)
+anim_speed_min = -1.25
+anim_speed_max = -0.79999995
+anim_offset_max = 1.0
+
+[node name="Room_Fireplace" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_roomscript")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_backwall")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_outline")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(25, -12)
+texture = ExtResource("4_fireplacetex")
+
+[node name="ProgressBar" parent="." instance=ExtResource("5_progress")]
+visible = false
+offset_left = -6.0
+offset_top = -46.0
+offset_right = 22.0
+offset_bottom = -41.0
+
+[node name="SmokeParticles" type="GPUParticles2D" parent="."]
+material = SubResource("CanvasItemMaterial_blend")
+position = Vector2(24, -20)
+amount = 12
+texture = ExtResource("7_smoke_tex")
+lifetime = 2.0
+process_material = SubResource("ParticleProcessMaterial_smoke")
+
+[node name="AuraSprite" type="Sprite2D" parent="."]
+visible = false
+material = ExtResource("6_light_mat")
+position = Vector2(24, -14)
+texture = ExtResource("8_aura_tex")

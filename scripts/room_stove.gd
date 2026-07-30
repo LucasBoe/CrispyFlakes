@@ -21,7 +21,6 @@ const _STOVE_OFF_TEXTURE = preload("res://assets/sprites/stove_off.png")
 
 var _fuel_remaining := 0.0
 var _ember_remaining := 0.0
-var _aura_time := 0.0
 
 func _ready() -> void:
 	_refresh_visual_state()
@@ -29,15 +28,16 @@ func _ready() -> void:
 	TemperatureHandler.register_source(self)
 
 func _process(delta: float) -> void:
+	_before_heat_update(delta)
 	var had_fuel := _fuel_remaining > 0.0
 	if _fuel_remaining > 0.0:
-		_fuel_remaining = maxf(0.0, _fuel_remaining - delta)
+		_fuel_remaining = maxf(0.0, _fuel_remaining - delta * _get_fuel_burn_multiplier())
 		if _should_start_fire(delta):
 			FireHandler.start_fire(self)
 		if had_fuel and _fuel_remaining <= 0.0:
 			_ember_remaining = EMBER_DURATION
 	elif _ember_remaining > 0.0:
-		_ember_remaining = maxf(0.0, _ember_remaining - delta)
+		_ember_remaining = maxf(0.0, _ember_remaining - delta * _get_ember_burn_multiplier())
 
 	_refresh_visual_state()
 	_refresh_progress_bar()
@@ -95,15 +95,30 @@ func get_temperature_strength() -> float:
 func _should_start_fire(delta: float) -> bool:
 	return not FireHandler.is_room_on_fire(self) and randf() < FIRE_START_CHANCE_PER_SECOND * delta
 
+func _before_heat_update(_delta: float) -> void:
+	return
+
+func _get_fuel_burn_multiplier() -> float:
+	return 1.0
+
+func _get_ember_burn_multiplier() -> float:
+	return 1.0
+
+func _get_active_texture() -> Texture2D:
+	return _STOVE_ON_TEXTURE
+
+func _get_inactive_texture() -> Texture2D:
+	return _STOVE_OFF_TEXTURE
+
 func _refresh_visual_state() -> void:
 	if _fuel_remaining > 0.0:
-		_sprite.texture = _STOVE_ON_TEXTURE
+		_sprite.texture = _get_active_texture()
 		_sprite.modulate = Color.WHITE
 	elif _ember_remaining > 0.0:
-		_sprite.texture = _STOVE_OFF_TEXTURE
+		_sprite.texture = _get_inactive_texture()
 		_sprite.modulate = EMBER_MODULATE
 	else:
-		_sprite.texture = _STOVE_OFF_TEXTURE
+		_sprite.texture = _get_inactive_texture()
 		_sprite.modulate = INACTIVE_MODULATE
 
 	var heating := is_heating()
