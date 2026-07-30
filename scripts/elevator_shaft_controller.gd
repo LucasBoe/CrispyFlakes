@@ -77,6 +77,9 @@ func cancel_trip(request: ElevatorRideRequest) -> void:
 	pending_requests.erase(request)
 	if is_instance_valid(request.from_room):
 		request.from_room.leave_queue(request.npc, request.direction)
+	for cage: ElevatorCage in cages:
+		if is_instance_valid(cage) and cage.cancel_request(request):
+			return
 
 func prune_invalid_pending() -> void:
 	var i: int = pending_requests.size() - 1

@@ -28,6 +28,7 @@ const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
 const room_data_empty := preload("res://assets/resources/rooms/room_empty.tres")
 const room_data_digging := preload("res://assets/resources/rooms/room_digging.tres")
 const room_data_junk := preload("res://assets/resources/rooms/room_junk.tres")
+const room_data_broken := preload("res://assets/resources/rooms/room_broken.tres")
 const room_data_stairs := preload("res://assets/resources/rooms/room_stairs.tres")
 const room_data_elevator := preload("res://assets/resources/rooms/room_elevator.tres")
 const room_data_brewery := preload("res://assets/resources/rooms/room_brewery.tres")
@@ -54,8 +55,8 @@ const room_data_bouncer := preload("res://assets/resources/rooms/room_bouncer.tr
 const room_data_water_tower := preload("res://assets/resources/rooms/room_water_tower.tres")
 const room_data_gambling := preload("res://assets/resources/rooms/room_gambling.tres")
 const room_data_trading_office := preload("res://assets/resources/rooms/room_trading_office.tres")
-const room_data_fireplace := preload("res://assets/resources/rooms/room_fireplace.tres")
 const room_data_stove := preload("res://assets/resources/rooms/room_stove.tres")
+const room_data_fireplace := preload("res://assets/resources/rooms/room_fireplace.tres")
 const room_data_generator_wheel := preload("res://assets/resources/rooms/room_generator_wheel.tres")
 const room_data_infirmary := preload("res://assets/resources/rooms/room_infirmary.tres")
 const room_data_sick_ward := preload("res://assets/resources/rooms/room_sick_ward.tres")
@@ -162,6 +163,20 @@ func erase_empty(room: RoomBase):
 
 func replace_with_empty(room: RoomBase):
 	set_room(room_data_empty, room.x, room.y)
+	_refresh_adjacent_dig_layouts(room.x, room.y)
+	infrastructure.prune_infrastructure()
+	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)
+	update_foreground_tiles()
+	GlobalEventHandler.on_room_deleted_signal.emit(room)
+	room.destroy()
+
+func try_replace_with_broken(room: RoomBase):
+	if room == null or not is_instance_valid(room) or room is RoomEmpty:
+		return
+
+	for col in room.data.width:
+		for row in room.data.height:
+			set_room(room_data_broken, room.x + col, room.y + row)
 	_refresh_adjacent_dig_layouts(room.x, room.y)
 	infrastructure.prune_infrastructure()
 	refresh_adjacent_stair_visuals(room.x, room.y, room.data.width, room.data.height)

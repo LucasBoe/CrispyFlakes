@@ -339,6 +339,27 @@ func board(npc: NPC) -> void:
 	npc.global_position = global_position + _passenger_offsets[npc]
 	_log("board npc=%s slot=%d passengers=%d" % [npc.name, slot, passengers.size()])
 
+func cancel_request(request: ElevatorRideRequest) -> bool:
+	if request == null:
+		return false
+
+	var boarded_npc: NPC = null
+	for npc: NPC in boarded_requests.keys():
+		if boarded_requests[npc] == request:
+			boarded_npc = npc
+			break
+
+	if boarded_npc == null:
+		return false
+
+	boarded_requests.erase(boarded_npc)
+	if is_instance_valid(boarded_npc):
+		boarded_npc.global_position = get_passenger_position(boarded_npc)
+		boarded_npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
+	unboard(boarded_npc)
+	_log("cancel boarded request npc=%s passengers=%d" % [boarded_npc.name if is_instance_valid(boarded_npc) else "<invalid>", passengers.size()])
+	return true
+
 func unboard(npc: NPC) -> void:
 	passengers.erase(npc)
 	_passenger_offsets.erase(npc)

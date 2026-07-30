@@ -5,7 +5,7 @@ signal npc_recovered_signal(npc: NPC)
 signal guest_injured_signal(guest: NPCGuest)
 signal guest_recovered_signal(guest: NPCGuest)
 
-const INFIRMARY_ROOM_DATA := preload("res://assets/resources/rooms/room_infirmary.tres")
+const INFIRMARY_ROOM_DATA_PATH := "res://assets/resources/rooms/room_infirmary.tres"
 const UNTREATED_INJURY_MOOD_LOSS := 0.05
 const UNTREATED_INJURY_TICK_SECONDS := 20.0
 const GOOD_TREATMENT_THRESHOLD := 0.6
@@ -15,7 +15,7 @@ var _next_guest_penalty_time: Dictionary = {}
 var _recovery_payment_sources: Dictionary = {}
 
 func is_injury_unlocked() -> bool:
-	return ProgressionHandler.is_room_build_unlocked(INFIRMARY_ROOM_DATA)
+	return FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.INJURY_SYSTEM)
 
 func try_injure_npc(npc: NPC) -> bool:
 	return _injure_npc(npc, false)

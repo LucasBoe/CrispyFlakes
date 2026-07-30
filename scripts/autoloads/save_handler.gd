@@ -86,8 +86,8 @@ func console_load() -> void:
 
 func _apply_save(save_data: Dictionary) -> void:
 	TimeHandler.push_pause_lock(self)
-	var previous_auto_spawn: bool = Global.should_auto_spawn_guests
-	Global.should_auto_spawn_guests = false
+	var previous_auto_spawn: bool = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, false)
 
 	_clear_active_fights()
 	_clear_active_fires()
@@ -112,7 +112,7 @@ func _apply_save(save_data: Dictionary) -> void:
 	# deferred (see elevator_handler.gd), so waiting for the process_frame above first is required.
 	_restore_cages(_get_array(save_data, "cages"))
 
-	Global.should_auto_spawn_guests = previous_auto_spawn
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, previous_auto_spawn)
 	TimeHandler.pop_pause_lock(self)
 
 func _serialize_rooms() -> Array[Dictionary]:

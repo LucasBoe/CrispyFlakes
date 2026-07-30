@@ -39,8 +39,9 @@ func stop_loop() -> BehaviourSaveData:
 		npc.Item.current_item.destroy()
 		npc.Item.current_item = null
 
-	room.worker = null
-	occupied_rooms.erase(room)
+	if room != null:
+		room.worker = null
+		occupied_rooms.erase(room)
 
 	var save = super.stop_loop()
 	save.room = room

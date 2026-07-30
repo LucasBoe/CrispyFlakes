@@ -55,9 +55,9 @@ func start_fire(room: RoomBase):
 
 	var fire = FireIncidentScript.new(room)
 	fire.debug_id = _next_fire_debug_id
-	TemperatureHandler.register_source(fire)
 	_next_fire_debug_id += 1
 	fire.next_smoke_time = randf_range(REGULAR_SMOKE_MIN_INTERVAL, REGULAR_SMOKE_MAX_INTERVAL)
+	TemperatureHandler.register_source(fire)
 	_create_fire_bars(fire)
 	_create_flame_particles(fire)
 	_create_fire_sound(fire)
@@ -105,12 +105,11 @@ func start_distillery_explosion_fires(destillery: RoomDestillery) -> int:
 		return 0
 
 	var fires_started := 0
-	var targets: Array[RoomBase] = []
-	targets.append(destillery)
-	targets.append_array(_get_adjacent_rooms(destillery))
-	for target: RoomBase in targets:
+	for target: RoomBase in _get_adjacent_rooms(destillery):
 		if not is_room_on_fire(target) and start_fire(target) != null:
 			fires_started += 1
+
+	Building.try_replace_with_broken(destillery)
 	return fires_started
 
 func end_fire(fire) -> void:
@@ -120,9 +119,9 @@ func end_fire(fire) -> void:
 	_dispose_fire_bars(fire)
 	_dispose_light_overlay(fire)
 	_dispose_flame_particles(fire)
-	TemperatureHandler.unregister_source(fire)
 	_dispose_spark_particles(fire)
 	_dispose_fire_sound(fire)
+	TemperatureHandler.unregister_source(fire)
 	AlarmHandler.end_alarm(fire)
 	active_fires.erase(fire)
 	PanicHandler.clear_reason(fire)
@@ -268,8 +267,13 @@ func _try_spread(fire) -> void:
 		return
 
 	var target := _pick_spread_room(fire.room)
-	if target != null:
-		start_fire(target)
+	if target == null:
+		return
+
+	var source_room: RoomBase = fire.room
+	start_fire(target)
+	end_fire(fire)
+	Building.try_replace_with_broken(source_room)
 
 func _pick_spread_room(room: RoomBase) -> RoomBase:
 	var candidates := _get_adjacent_rooms(room)

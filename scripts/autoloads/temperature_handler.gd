@@ -53,6 +53,13 @@ const DAILY_TEMPERATURE_PRESETS: Array[float] = [
 # consistent through the day instead of the old ±4° wobble around it.
 const DAILY_SWING := 2.0
 const COLD_THRESHOLD := 0.0
+# Returned in place of the real forecast whenever Feature.TEMPERATURE_SYSTEM
+# is gated off — sits inside RoomTemperatureOverlayHandler's neutral band
+# (COLD_VISIBLE_TEMPERATURE 8..WARM_VISIBLE_TEMPERATURE 14) and above the sky
+# shader's WEATHER_FADE_WARM_TEMPERATURE (3), so every downstream consumer
+# (NPC cold status, the room overlay, snow/weather tint) naturally goes idle
+# on its own without needing its own separate gate check.
+const NEUTRAL_TEMPERATURE_WHEN_DISABLED := 11.0
 const FORECAST_DAYS_BEFORE := 3
 # Generously larger than UITemperatureForecast.VISIBLE_SLOT_COUNT needs, plus
 # one extra day as a scroll buffer so the strip always has a segment ready to
@@ -131,6 +138,8 @@ func is_room_heated(room: RoomBase, threshold: float = 16.0) -> bool:
 
 
 func get_outdoor_temperature() -> float:
+	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM):
+		return NEUTRAL_TEMPERATURE_WHEN_DISABLED
 	_ensure_temperature_curve()
 	_ensure_forecast()
 	var normalized_time := _get_normalized_time_of_day()

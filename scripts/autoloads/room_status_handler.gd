@@ -20,6 +20,9 @@ func _on_room_created(room : RoomBase):
 	if room is RoomWell: #not mandatory
 		return
 
+	if room is RoomJunk and (room as RoomJunk).suppress_no_worker_warning:
+		return
+
 	if room is RoomWaterTower or room is RoomToilet:
 		rooms.append(room)
 		return

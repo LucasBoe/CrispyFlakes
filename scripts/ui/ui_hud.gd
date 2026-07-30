@@ -27,8 +27,14 @@ func _ready() -> void:
 	button_idles.pressed.connect(_select_next_idle)
 	button_highlight.pressed.connect(_enable_worker_highlights)
 	button_mood_foldout.pressed.connect(_on_mood_foldout_pressed)
+	FeatureGateHandler.feature_changed_signal.connect(_on_feature_changed)
+	visible = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
 	_on_jobs_changed()
 	_update_mood_breakdown_visibility()
+
+func _on_feature_changed(feature: FeatureGateHandler.Feature, enabled: bool) -> void:
+	if feature == FeatureGateHandler.Feature.GUEST_AUTO_SPAWN:
+		visible = enabled
 
 func _on_visibility_changed() -> void:
 	if visible:
@@ -96,7 +102,7 @@ func _select_next_idle() -> void:
 func _process(_delta: float) -> void:
 	var guest_count := Global.NPCSpawner.get_active_guest_count()
 	label_guest_amount.text = str("Guests: ", guest_count)
-	if Global.should_auto_spawn_guests:
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
 		progression_bar.value = Global.NPCSpawner.next_guest_progression
 		label_guest_rate.text = "+%.2f/M" % Global.NPCSpawner.guests_per_day_rate()
 	else:

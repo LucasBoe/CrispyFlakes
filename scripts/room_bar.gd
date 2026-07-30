@@ -43,7 +43,7 @@ func get_sale_price() -> int:
 	return ceili(float(item_cost) * 1.5)
 
 func _process(_delta):
-	if not Global.should_auto_spawn_guests:
+	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
 		return
 	var t = Time.get_ticks_msec()
 	var done = []

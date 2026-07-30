@@ -64,6 +64,13 @@ func _ready() -> void:
 	_update_summary()
 
 func _process(_delta: float) -> void:
+	# Unlike TemperatureHandler's other consumers, this widget always has
+	# *something* to show (a neutral reading isn't "no data"), so it needs
+	# its own explicit hide rather than relying on the gated value alone.
+	visible = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM)
+	if not visible:
+		return
+
 	# Both pull from TemperatureHandler every frame, which also serves to
 	# detect a day rollover promptly even if nothing else touches it that
 	# frame — the strip drifts left continuously with the time of day and the

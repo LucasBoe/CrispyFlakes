@@ -316,6 +316,9 @@ func try_change_job_based_on_room(room : RoomBase):
 	if new_job != null and current_job_room != room and not room.can_accept_worker(new_job):
 		return
 
+	if current_job == Enum.Jobs.BROOM_CLEANER and (new_job == Enum.Jobs.OUTHOUSE_CLEANER or new_job == Enum.Jobs.BED_CLEANER):
+		return
+
 	current_job_room = room
 
 	if new_job == null:

@@ -113,20 +113,21 @@ func _ready():
 	Console.add_command("arrest_all", console_arrest_all, ["fine"], 0, "Marks all guests for arrest and adds a fine.")
 
 func _process(delta):
-	if not Global.should_auto_spawn_guests:
+	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
 		return
 
 	next_guest_progression += delta * (guests_per_day_rate() / Global.DAY_DURATION)
 	if next_guest_progression > 1.0:
 		spawn_new_guest()
 		next_guest_progression = 0.0
-	
+
 	# SPECIAL ENCOUNTERS
-	#next_special_encounter_progression += delta / (Global.DAY_DURATION * SPECIAL_ENCOUNTER_DAYS)
-	#if next_special_encounter_progression > 1.0:
-		#if can_spawn_special_encounter():
-			#spawn_special_encounter()
-		#next_special_encounter_progression = 0.0
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS):
+		next_special_encounter_progression += delta / (Global.DAY_DURATION * SPECIAL_ENCOUNTER_DAYS)
+		if next_special_encounter_progression > 1.0:
+			if can_spawn_special_encounter():
+				spawn_special_encounter()
+			next_special_encounter_progression = 0.0
 
 func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false, display_name := ""):
 	if not ignore_worker_limit and not can_hire_worker():
@@ -287,9 +288,8 @@ func spawn_new_guest():
 	add_child(guest)
 
 	#robber stuff
-	if guests.size() > 10 and workers.size() > 2:
-		if randf() < ROBBER_SPAWN_CHANCE:
-			guest.is_robber = true
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.ROBBER_SPAWN) and randf() < ROBBER_SPAWN_CHANCE:
+		guest.is_robber = true
 
 	# bounty stuff
 	var available_bounties = BountyHandler.get_available_bounties()
@@ -337,7 +337,7 @@ func spawn_special_encounter(encounter_id: String = "") -> SpecialNPC:
 	return npc
 
 func can_spawn_special_encounter() -> bool:
-	if get_active_guest_count() < 10:
+	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS):
 		return false
 	if Global.UI != null and Global.UI.encounter != null and Global.UI.encounter.is_active():
 		return false

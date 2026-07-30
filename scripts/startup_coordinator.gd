@@ -45,12 +45,11 @@ func _run_startup_sequence() -> void:
 	spawn_item_stack(Enum.Items.WOOD, 4, 0, 10)
 	_set_startup_money(STARTUP_INITIAL_MONEY)
 	ProgressionHandler.unlock_default_rooms()
-	Global.should_auto_spawn_guests = false
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, false)
 	_skip_requested = false
 	_set_skip_tutorial_available(true)
 
 	RoomStatusHandler.enabled = false
-	Global.UI.hud.hide()
 	_tutorial_worker = await _spawn_tutorial_worker()
 	var tutorial_worker := _tutorial_worker
 	await _fade_outside_overlay()
@@ -93,8 +92,7 @@ func _run_startup_sequence() -> void:
 		_quests.serve_guests.start()
 
 		RoomStatusHandler.enabled = true
-		Global.UI.hud.show()
-		Global.should_auto_spawn_guests = true
+		FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, true)
 
 		_reset_startup_served_guest_tracking()
 		await _spawn_tutorial_guest_wave(
@@ -524,8 +522,7 @@ func _finish_startup(skipped := false) -> void:
 	Global.UI.menu.finish_tutorial_menu_gating()
 	Global.UI.selection.unblock_context_menu(self)
 	RoomStatusHandler.enabled = true
-	Global.UI.hud.show()
-	Global.should_auto_spawn_guests = true
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, true)
 	Global.UI.controls.hide()
 	_set_skip_tutorial_available(false)
 	_skip_requested = false
