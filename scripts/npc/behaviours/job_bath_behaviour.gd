@@ -12,6 +12,10 @@ func loop():
 	await move(bath.get_random_floor_position())
 
 	while true:
+		if bath.needs_refuel():
+			await _stoke_water_heater()
+			continue
+
 		var can_run_bath := false
 
 		if bath.uses_infrastructure_layer(&"water"):
@@ -49,3 +53,28 @@ func stop_loop():
 	var save = super.stop_loop()
 	save.room = bath
 	return save
+
+func _stoke_water_heater() -> void:
+	if not npc.Item.is_item(Enum.Items.WOOD):
+		_narrative = ["Fetching firewood...", "Getting wood for the water heater...", "Stocking up on logs..."].pick_random()
+		await fetch_item(Enum.Items.WOOD)
+		if not npc.Item.is_item(Enum.Items.WOOD):
+			RoomStatusHandler.notify(bath, "no wood", Color.ORANGE, load("res://assets/sprites/ui/item_wood.png"))
+			await pause(2)
+			return
+
+	if not is_instance_valid(bath):
+		return
+
+	_narrative = ["Stoking the water heater...", "Feeding wood to the boiler...", "Getting the bath water hot..."].pick_random()
+	await move(bath.get_center_floor_position())
+	if not is_instance_valid(bath):
+		return
+
+	await progress(RoomBath.REFUEL_DURATION)
+	if not is_instance_valid(bath) or not npc.Item.is_item(Enum.Items.WOOD):
+		return
+
+	npc.Item.current_item.destroy()
+	npc.Item.current_item = null
+	bath.refuel()
