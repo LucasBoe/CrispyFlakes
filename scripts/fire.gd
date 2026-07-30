@@ -23,6 +23,9 @@ func _init(target_room: RoomBase) -> void:
 func is_active() -> bool:
 	return health > 0.0 and is_instance_valid(room)
 
+func is_heating() -> bool:
+	return is_active()
+
 func apply_liquid(amount: float) -> void:
 	health = maxf(0.0, health - amount)
 
@@ -41,6 +44,17 @@ func get_position() -> Vector2:
 	if is_instance_valid(room):
 		return room.get_center_floor_position()
 	return Vector2.INF
+
+func get_heat_room() -> RoomBase:
+	if is_instance_valid(room):
+		return room
+	return null
+
+func get_heat_source_position() -> Vector2:
+	return get_position()
+
+func get_heat_source_debug_name() -> String:
+	return "fire"
 
 func debug_label() -> String:
 	return "#%d room=%s health=%.2f age=%.1f" % [

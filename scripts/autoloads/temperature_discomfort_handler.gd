@@ -36,4 +36,4 @@ func _mood_penalty_loop() -> void:
 
 			var temperature := TemperatureHandler.get_temperature_at_global_position(guest.global_position)
 			if temperature >= TemperatureHandler.PRIMARY_HEAT_TEMPERATURE:
-				guest.add_mood(MOOD_GAIN, "Warmed by the stove")
+				guest.add_mood(MOOD_GAIN, "Warmed up")

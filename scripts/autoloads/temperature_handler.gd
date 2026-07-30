@@ -54,10 +54,14 @@ const DAILY_TEMPERATURE_PRESETS: Array[float] = [
 const DAILY_SWING := 2.0
 const COLD_THRESHOLD := 0.0
 const FORECAST_DAYS_BEFORE := 3
-# One extra day beyond what's normally visible — a scroll buffer so the
-# forecast UI always has a segment ready to slide in from the right as the
-# strip drifts, instead of a gap opening up right before the day rolls over.
-const FORECAST_DAYS_AFTER := 4
+# Generously larger than UITemperatureForecast.VISIBLE_SLOT_COUNT needs, plus
+# one extra day as a scroll buffer so the strip always has a segment ready to
+# slide in from the right as it drifts. The forecast UI's pointer sits near
+# the left edge of its row, so almost its whole width shows future days —
+# if VISIBLE_SLOT_COUNT there ever grows past what fits here, markers run
+# out and a gap opens up on the right (with fewer, narrower days shown
+# overall) rather than actually showing more days.
+const FORECAST_DAYS_AFTER := 20
 const FORECAST_WINDOW_SIZE := FORECAST_DAYS_BEFORE + FORECAST_DAYS_AFTER + 1
 
 signal on_forecast_changed_signal()
@@ -267,11 +271,20 @@ func _draw_debug_source(canvas: TemperatureDebugCanvas, source, font: Font, font
 	if not _is_active_heat_source(source):
 		return
 
-	var source_pos: Vector2 = Building.to_local(source.global_position)
+	var source_global_pos := _get_heat_source_position(source)
+	if not source_global_pos.is_finite():
+		return
+	var source_pos: Vector2 = Building.to_local(source_global_pos)
 	var color := _get_debug_temperature_color(PRIMARY_HEAT_TEMPERATURE)
 	canvas.draw_circle(source_pos, 6.0, Color(color, DEBUG_SOURCE_ALPHA))
 	canvas.draw_arc(source_pos, 6.0, 0.0, TAU, 24, Color(color, DEBUG_ROOM_BORDER_ALPHA), 1.0)
-	_draw_debug_label(canvas, source_pos + Vector2(8.0, -6.0), "stove %.0f" % PRIMARY_HEAT_TEMPERATURE, font, font_size)
+	_draw_debug_label(
+		canvas,
+		source_pos + Vector2(8.0, -6.0),
+		"%s %.0f" % [_get_heat_source_debug_name(source), PRIMARY_HEAT_TEMPERATURE],
+		font,
+		font_size
+	)
 
 
 func _draw_debug_label(canvas: TemperatureDebugCanvas, position: Vector2, text: String, font: Font, font_size: int) -> void:
@@ -353,7 +366,7 @@ func _rebuild_temperature_cache() -> void:
 		if not _is_active_heat_source(source):
 			continue
 
-		var source_room := source as RoomBase
+		var source_room := _get_heat_source_room(source)
 		if source_room == null or source_room.is_outside_room:
 			continue
 
@@ -498,3 +511,34 @@ func _is_active_heat_source(source) -> bool:
 	if source.has_method("get_temperature_strength"):
 		return float(source.get_temperature_strength()) > 0.0
 	return false
+
+
+func _get_heat_source_room(source) -> RoomBase:
+	if source == null or not is_instance_valid(source):
+		return null
+	if source is RoomBase:
+		return source as RoomBase
+	if source.has_method("get_heat_room"):
+		return source.get_heat_room() as RoomBase
+	return null
+
+
+func _get_heat_source_position(source) -> Vector2:
+	if source == null or not is_instance_valid(source):
+		return Vector2.INF
+	if source.has_method("get_heat_source_position"):
+		return source.get_heat_source_position()
+	var node := source as Node2D
+	if node != null:
+		return node.global_position
+	return Vector2.INF
+
+
+func _get_heat_source_debug_name(source) -> String:
+	if source == null or not is_instance_valid(source):
+		return "heat"
+	if source.has_method("get_heat_source_debug_name"):
+		return String(source.get_heat_source_debug_name())
+	if source is RoomStove:
+		return "stove"
+	return "heat"

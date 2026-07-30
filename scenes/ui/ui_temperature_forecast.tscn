@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://bpc6f1w275m04"]
+[gd_scene load_steps=7 format=3 uid="uid://bpc6f1w275m04"]
 
 [ext_resource type="Script" uid="uid://b08k671ueskqh" path="res://scripts/ui/ui_temperature_forecast.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://d3p3gc825he1n" path="res://assets/sprites/ui/temperarture_ui.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://h2bx1qlji6a4" path="res://assets/sprites/ui/2x/ui_rect_base_open_left_top.png" id="2_qsm2k"]
+[ext_resource type="Texture2D" uid="uid://7f52vs6moxq6" path="res://assets/sprites/ui/icon_sun.png" id="3_jfetw"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="4_rwcpq"]
+[ext_resource type="Texture2D" uid="uid://cvax16hsdkr8m" path="res://assets/sprites/ui/temperature_scale_item_head.png" id="5_xdgxl"]
+[ext_resource type="Texture2D" uid="uid://de42qap0ug615" path="res://assets/sprites/ui/temperature_scale_pointer.png" id="6_xdgxl"]
 
 [node name="UITemperatureForecast" type="Control"]
 custom_minimum_size = Vector2(85, 24)
@@ -12,82 +16,102 @@ offset_bottom = 24.0
 mouse_filter = 2
 script = ExtResource("1")
 
-[node name="MarkersRow" type="Control" parent="."]
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(102, 0)
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="MarginContainer_Background" type="MarginContainer" parent="MarginContainer2"]
+layout_mode = 2
+theme_override_constants/margin_left = -4
+theme_override_constants/margin_top = -4
+theme_override_constants/margin_right = -8
+theme_override_constants/margin_bottom = -6
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer2/MarginContainer_Background"]
+layout_mode = 2
+texture = ExtResource("2_qsm2k")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Weather_Icon_TextureRect" type="TextureRect" parent="MarginContainer2/VBoxContainer/HBoxContainer/CenterContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("3_jfetw")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = -2
+
+[node name="SeasonAndTemp_Label" type="Label" parent="MarginContainer2/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("4_rwcpq")
+text = "Summer (12°C)"
+
+[node name="ActionRequired_Label" type="Label" parent="MarginContainer2/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+modulate = Color(0.52, 0.52, 0.52, 1)
+layout_mode = 2
+theme = ExtResource("4_rwcpq")
+text = "No Fires needed"
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = -4
+theme_override_constants/margin_right = -8
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer2/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = -4
+
+[node name="MarkersRow" type="Control" parent="MarginContainer2/VBoxContainer/MarginContainer/MarginContainer"]
+unique_name_in_owner = true
 clip_contents = true
-anchors_preset = 0
-offset_left = 4.0
-offset_top = 11.0
-offset_right = 81.0
-offset_bottom = 19.0
+layout_mode = 2
 mouse_filter = 2
 
-[node name="Marker0" type="ColorRect" parent="MarkersRow"]
+[node name="MarkerDummy" type="ColorRect" parent="MarginContainer2/VBoxContainer/MarginContainer/MarginContainer/MarkersRow"]
 layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
+offset_right = 13.0
+offset_bottom = 8.0
+color = Color(0.99607843, 0.80784315, 0.23921569, 1)
 
-[node name="Marker1" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
+[node name="Header" type="NinePatchRect" parent="MarginContainer2/VBoxContainer/MarginContainer/MarginContainer/MarkersRow/MarkerDummy"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
 offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
+grow_horizontal = 2
+texture = ExtResource("5_xdgxl")
+patch_margin_left = 1
+patch_margin_right = 2
 
-[node name="Marker2" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
+[node name="MarginContainer2" type="MarginContainer" parent="MarginContainer2/VBoxContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
 
-[node name="Marker3Today" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.4, 0.4, 0.4, 1)
-
-[node name="Marker4" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
-
-[node name="Marker5" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
-
-[node name="Marker6" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
-
-[node name="Marker7" type="ColorRect" parent="MarkersRow"]
-layout_mode = 0
-offset_left = -5.0
-offset_top = -4.0
-offset_right = 6.0
-offset_bottom = 4.0
-color = Color(0.05, 0.05, 0.05, 1)
-
-[node name="Frame" type="TextureRect" parent="."]
+[node name="Frame" type="TextureRect" parent="MarginContainer2/VBoxContainer/MarginContainer/MarginContainer2"]
 texture_filter = 1
-layout_mode = 0
-offset_right = 85.0
-offset_bottom = 24.0
-texture = ExtResource("2")
+layout_mode = 2
+size_flags_horizontal = 0
+texture = ExtResource("6_xdgxl")
+stretch_mode = 5

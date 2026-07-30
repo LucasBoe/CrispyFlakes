@@ -55,6 +55,7 @@ func start_fire(room: RoomBase):
 
 	var fire = FireIncidentScript.new(room)
 	fire.debug_id = _next_fire_debug_id
+	TemperatureHandler.register_source(fire)
 	_next_fire_debug_id += 1
 	fire.next_smoke_time = randf_range(REGULAR_SMOKE_MIN_INTERVAL, REGULAR_SMOKE_MAX_INTERVAL)
 	_create_fire_bars(fire)
@@ -119,6 +120,7 @@ func end_fire(fire) -> void:
 	_dispose_fire_bars(fire)
 	_dispose_light_overlay(fire)
 	_dispose_flame_particles(fire)
+	TemperatureHandler.unregister_source(fire)
 	_dispose_spark_particles(fire)
 	_dispose_fire_sound(fire)
 	AlarmHandler.end_alarm(fire)
