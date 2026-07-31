@@ -22,16 +22,8 @@ func show_info() -> void:
 
 	for floor_dict in Building.floors.values():
 		for room in floor_dict.values():
-			var stairs := room as RoomStairs
-			if stairs == null:
-				continue
-
-			var connects_down := _has_stairs_below(stairs)
-			_highlights.append(RoomHighlighter.request_icon(stairs, _ICON_ALL if connects_down else _ICON_ABOVE, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
-
-			var above := _get_room_above(stairs)
-			if above != null and not (above is RoomStairs):
-				_highlights.append(RoomHighlighter.request_icon(above, _ICON_BELOW, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
+			if room is RoomStairs or room is RoomElevator:
+				_add_vertical_connector_highlights(room as RoomBase)
 
 func hide_info() -> void:
 	_active = false
@@ -42,8 +34,26 @@ func _clear_display() -> void:
 		RoomHighlighter.dispose(highlight)
 	_highlights.clear()
 
-func _get_room_above(stairs: RoomStairs) -> RoomBase:
-	return Building.get_room_from_index(Vector2i(stairs.x, stairs.y + 1)) as RoomBase
+func _add_vertical_connector_highlights(room: RoomBase) -> void:
+	var below: RoomBase = Building.get_room_from_index(Vector2i(room.x, room.y - 1))
+	var connects_down := _is_same_kind(room, below)
 
-func _has_stairs_below(stairs: RoomStairs) -> bool:
-	return Building.get_room_from_index(Vector2i(stairs.x, stairs.y - 1)) is RoomStairs
+	var above := Building.get_room_from_index(Vector2i(room.x, room.y + 1)) as RoomBase
+	var connects_up := _is_same_kind(room, above)
+
+	# An elevator's topmost cell is its only floor-level entry point - it never reaches a
+	# floor above, unlike stairs, so it only ever shows its own downward connector there,
+	# never an upward one, and the room above it (not reachable by the elevator at all)
+	# gets no highlight of its own.
+	if room is RoomElevator and not connects_up:
+		if connects_down:
+			_highlights.append(RoomHighlighter.request_icon(room, _ICON_BELOW, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
+	else:
+		_highlights.append(RoomHighlighter.request_icon(room, _ICON_ALL if connects_down else _ICON_ABOVE, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
+		if above != null and not connects_up:
+			_highlights.append(RoomHighlighter.request_icon(above, _ICON_BELOW, RoomHighlighter.Priority.TEMP_INFO_OVERLAY))
+
+func _is_same_kind(a, b) -> bool:
+	if a == null or b == null:
+		return false
+	return (a is RoomStairs and b is RoomStairs) or (a is RoomElevator and b is RoomElevator)

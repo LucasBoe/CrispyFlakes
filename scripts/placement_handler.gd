@@ -32,7 +32,7 @@ func start_building(data : RoomData, check):
 	self.custom_placement_check = check
 	is_placing = true
 	_prepare_highlights(data.width * data.height)
-	if data == Building.room_data_stairs:
+	if data == Building.room_data_stairs or data == Building.room_data_elevator:
 		Building.show_stairs_info()
 	Global.UI.selection.block_context_menu(self)
 
@@ -63,7 +63,7 @@ func stop_building():
 	build_mode = BuildMode.NONE
 	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.WATER_LAYER:
 		Building.infrastructure.hide_water_info()
-	if building_data == Building.room_data_stairs:
+	if building_data == Building.room_data_stairs or building_data == Building.room_data_elevator:
 		Building.hide_stairs_info()
 	building_data = null
 	infrastructure_data = null
