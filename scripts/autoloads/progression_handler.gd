@@ -5,27 +5,27 @@ signal room_unlocked_signal(room: RoomData)
 signal item_unlocked_signal(item: ProgressionItem)
 signal item_completed_signal(item: ProgressionItem)
 
-const ALL_ITEMS := [
-	preload("res://assets/resources/progression/prog_group_starter.tres"),
-	preload("res://assets/resources/progression/prog_group_infrastructure_I.tres"),
-	preload("res://assets/resources/progression/prog_group_beverages_I.tres"),
-	preload("res://assets/resources/progression/prog_group_infrastructure_II.tres"),
-	preload("res://assets/resources/progression/prog_group_beverages_II.tres"),
-	preload("res://assets/resources/progression/prog_group_safety_I.tres"),
-	preload("res://assets/resources/progression/prog_group_safety_II.tres"),
-	preload("res://assets/resources/progression/prog_group_infrastructure_III.tres"),
-	preload("res://assets/resources/progression/prog_group_entertainment_I.tres"),
-	preload("res://assets/resources/progression/prog_group_entertainment_II.tres"),
-	preload("res://assets/resources/progression/prog_group_infrastructure_IV.tres"),
-	preload("res://assets/resources/progression/prog_group_infrastructure_V.tres"),
-	preload("res://assets/resources/progression/prog_group_beverages_III.tres"),
-	preload("res://assets/resources/progression/prog_group_beverages_IV.tres"),
-	preload("res://assets/resources/progression/prog_group_safety_III.tres"),
-	preload("res://assets/resources/progression/prog_group_whiskey.tres"),
-	preload("res://assets/resources/progression/prog_group_stoves.tres"),
-	preload("res://assets/resources/progression/prog_group_bath.tres"),
-	preload("res://assets/resources/progression/prog_group_whiskey_bar.tres"),
-	preload("res://assets/resources/progression/prog_group_electricity_I.tres"),
+const ALL_ITEM_PATHS := [
+	"res://assets/resources/progression/prog_group_starter.tres",
+	"res://assets/resources/progression/prog_group_infrastructure_I.tres",
+	"res://assets/resources/progression/prog_group_beverages_I.tres",
+	"res://assets/resources/progression/prog_group_infrastructure_II.tres",
+	"res://assets/resources/progression/prog_group_beverages_II.tres",
+	"res://assets/resources/progression/prog_group_safety_I.tres",
+	"res://assets/resources/progression/prog_group_safety_II.tres",
+	"res://assets/resources/progression/prog_group_infrastructure_III.tres",
+	"res://assets/resources/progression/prog_group_entertainment_I.tres",
+	"res://assets/resources/progression/prog_group_entertainment_II.tres",
+	"res://assets/resources/progression/prog_group_infrastructure_IV.tres",
+	"res://assets/resources/progression/prog_group_infrastructure_V.tres",
+	"res://assets/resources/progression/prog_group_beverages_III.tres",
+	"res://assets/resources/progression/prog_group_beverages_IV.tres",
+	"res://assets/resources/progression/prog_group_safety_III.tres",
+	"res://assets/resources/progression/prog_group_whiskey.tres",
+	"res://assets/resources/progression/prog_group_stoves.tres",
+	"res://assets/resources/progression/prog_group_bath.tres",
+	"res://assets/resources/progression/prog_group_whiskey_bar.tres",
+	"res://assets/resources/progression/prog_group_electricity_I.tres",
 ]
 
 var _all_items: Array[ProgressionItem] = []
@@ -146,8 +146,12 @@ func get_completed_item_count() -> int:
 
 func _build_items() -> void:
 	_all_items.clear()
-	for item in ALL_ITEMS:
-		_all_items.append(item as ProgressionItem)
+	for path in ALL_ITEM_PATHS:
+		var item := load(path) as ProgressionItem
+		if item == null:
+			push_error("Failed to load progression item: %s" % path)
+			continue
+		_all_items.append(item)
 
 func _rebuild_maps() -> void:
 	_items_by_room.clear()

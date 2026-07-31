@@ -1,6 +1,8 @@
 extends RefCounted
 class_name EncounterCatalog
 
+const BARBER_SURGEON_TEMPERATURE_QUEST_BEHAVIOUR := preload("res://scripts/npc/behaviours/barber_surgeon_temperature_quest_behaviour.gd")
+
 class EncounterContext:
 	var npc: SpecialNPC
 	var encounter: Dictionary
@@ -105,6 +107,22 @@ static func load_entries() -> Array[Dictionary]:
 		# ),
 		_encounter(
 			"Barber Surgeon",
+			"I come from further north. I got here as fast as I could, but the snow came faster. Many died from the cold. Now I fear winter is coming south as well, so you'd better prepare.",
+			[
+				_choice(
+					"Tell me what to do",
+					0,
+					"Then listen closely. Learn the forecast, build your fireplaces, stack your wood, and when winter comes, keep every hearth burning.",
+					[],
+					BARBER_SURGEON_TEMPERATURE_QUEST_BEHAVIOUR
+				),
+			],
+			func() -> bool: return _can_offer_barber_surgeon_temperature_encounter(),
+			"",
+			"barber_surgeon_temperature"
+		),
+		_encounter(
+			"Barber Surgeon",
 			"I see fever, bad teeth, and worse judgment. Give me a corner and a fee, and I'll patch your people before they start dropping.",
 			[
 				_choice(
@@ -117,8 +135,9 @@ static func load_entries() -> Array[Dictionary]:
 				_choice("Refuse", 0, "Then enjoy your fevers and missing teeth."),
 				_choice("Later", 0, "Later, then. I'll be back before the next cough turns purple."),
 			],
-			func() -> bool: return not InjuryHandler.get_injured_npcs().is_empty(),
-			"scientist"
+			func() -> bool: return _can_offer_barber_surgeon_treatment_encounter(),
+			"",
+			"barber_surgeon_treatment"
 		),
 		# Re-enable once the entertainer has a full post-encounter gameplay loop.
 		# _encounter(
@@ -183,9 +202,10 @@ static func _encounter(
 	choices: Array[Dictionary],
 	condition: Callable = Callable(),
 	appearance_id: String = "",
+	entry_id: String = "",
 ) -> Dictionary:
 	return {
-		"id": name.to_snake_case(),
+		"id": entry_id if not entry_id.is_empty() else name.to_snake_case(),
 		"name": name,
 		"line": line,
 		"choices": choices,
@@ -233,6 +253,19 @@ static func _has_sheriff_targets() -> bool:
 			return true
 
 	return false
+
+static func _can_offer_barber_surgeon_temperature_encounter() -> bool:
+	return not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM) and _is_tomorrow_cold()
+
+static func _can_offer_barber_surgeon_treatment_encounter() -> bool:
+	return not _can_offer_barber_surgeon_temperature_encounter() and not InjuryHandler.get_injured_npcs().is_empty()
+
+static func _is_tomorrow_cold() -> bool:
+	var forecast := TemperatureHandler.get_forecast_temperatures()
+	var tomorrow_index := TemperatureHandler.get_forecast_center_index() + 1
+	if tomorrow_index < 0 or tomorrow_index >= forecast.size():
+		return false
+	return TemperatureHandler.is_cold(float(forecast[tomorrow_index]))
 
 static func _rename_sign_to_advertisement(lock_after_rename: bool) -> void:
 	var sign := Building.get_node_or_null("SaloonSign") as BuildingSign

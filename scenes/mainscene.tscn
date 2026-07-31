@@ -305,6 +305,17 @@ layout_mode = 2
 texture = ExtResource("29_8st1d")
 stretch_mode = 4
 
+[node name="UITemperatureForecast" parent="UI" instance=ExtResource("ui_temperature_forecast")]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -273.0
+offset_right = -188.0
+grow_horizontal = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
 [node name="UIHUD" parent="UI" instance=ExtResource("19_q3hll")]
 
 [node name="UITime" type="Control" parent="UI"]
@@ -360,17 +371,6 @@ offset_top = -1.0
 offset_right = 15.0
 offset_bottom = 15.0
 texture = ExtResource("25_3ou18")
-
-[node name="UITemperatureForecast" parent="UI" instance=ExtResource("ui_temperature_forecast")]
-unique_name_in_owner = true
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -273.0
-offset_right = -188.0
-grow_horizontal = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
 
 [node name="UIMenu" parent="UI" instance=ExtResource("ui_menu")]
 unique_name_in_owner = true

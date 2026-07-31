@@ -110,12 +110,24 @@ func _ensure_selected_section() -> void:
 
 	var preferred_quest = TutorialHandler.get_current_quest()
 	if preferred_quest != null:
+		var had_visible_selection := _has_visible_selected_quest()
 		for quest in _sidebar_quests:
 			if quest == preferred_quest:
 				_selected_section_title = preferred_quest.section_title
+				if not had_visible_selection and preferred_quest.phase == TutorialHandler.TutorialPhase.ACTIVE:
+					_is_expanded = false
 				return
 
 	_selected_section_title = _sidebar_quests[0].section_title
+
+
+func _has_visible_selected_quest() -> bool:
+	if not _is_expanded or not _quest_window.visible:
+		return false
+	if _selected_section_title.is_empty():
+		return false
+	var selected_quest := TutorialHandler.get_quest(_selected_section_title)
+	return selected_quest != null and _sidebar_quests.has(selected_quest)
 
 
 func _rebuild_bubbles() -> void:

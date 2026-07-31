@@ -1,6 +1,8 @@
 extends Control
 class_name UITemperatureForecast
 
+signal tutorial_forecast_opened
+
 const COLOR_NORMAL := Color(0.99607843, 0.80784315, 0.23921569, 1.0)
 const COLOR_COLD := Color(0.55, 0.85, 1.0, 1.0)
 ## How much brighter the segment(s) under the arrow read compared to the rest
@@ -22,19 +24,25 @@ const VISIBLE_SLOT_COUNT := 12
 ## match the pointer's current placement in the scene — if the pointer gets
 ## moved again later, update this to match.
 const POINTER_ANCHOR_X := 11.5
-
-@onready var _markers_row: Control = %MarkersRow
-@onready var _weather_icon: TextureRect = %Weather_Icon_TextureRect
-@onready var _season_and_temperature_label: Label = %SeasonAndTemp_Label
-@onready var _action_required_label: Label = %ActionRequired_Label
-
 const ICON_WARM := preload("res://assets/sprites/ui/icon_sun.png")
 const ICON_COLD := preload("res://assets/sprites/ui/icon_snowflake.png")
+const TUTORIAL_ARROW_TEXTURE := preload("res://assets/sprites/ui/2x/arrow_red_left.png")
+const GOLDEN_GLOW_SHADER := preload("res://assets/shaders/golden_glow_red_replace.gdshader")
+const TUTORIAL_ARROW_OFFSET := Vector2(24.0, -5.0)
+const TUTORIAL_ARROW_HOVER_WIDTH := 3.0
+const TUTORIAL_ARROW_HOVER_DURATION := 0.5
 
 const SEASON_WARM := "Summer"
 const SEASON_COLD := "Winter"
 const ACTION_WARM := "No fires needed"
 const ACTION_COLD := "Light up fires"
+
+@onready var _foldout_button: Button = %Button_ForecastFoldout
+@onready var _panel: Control = $MarginContainer2
+@onready var _markers_row: Control = %MarkersRow
+@onready var _weather_icon: TextureRect = %Weather_Icon_TextureRect
+@onready var _season_and_temperature_label: Label = %SeasonAndTemp_Label
+@onready var _action_required_label: Label = %ActionRequired_Label
 
 var _markers: Array[ColorRect] = []
 
@@ -43,8 +51,18 @@ var _markers: Array[ColorRect] = []
 var _summary_initialized := false
 var _last_displayed_temperature := 0
 var _last_displayed_is_cold := false
+var _is_expanded := false
+var _forecast_unlocked := false
+var _tutorial_prompt_active := false
+var _tutorial_arrow: TextureRect
+var _tutorial_arrow_hover_tween: Tween
+var _tutorial_arrow_material: ShaderMaterial
 
 func _ready() -> void:
+	_forecast_unlocked = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM)
+	_is_expanded = _forecast_unlocked
+	_foldout_button.pressed.connect(_on_foldout_pressed)
+
 	# Same dummy-template pattern as CloudHandler: the scene only has one
 	# real ColorRect (MarkerDummy, including its Header cap); it stays
 	# hidden and every visible segment is a duplicate of it, so there's a
@@ -62,13 +80,14 @@ func _ready() -> void:
 	_update_marker_colors()
 	_update_marker_positions()
 	_update_summary()
+	_update_visibility_state()
 
 func _process(_delta: float) -> void:
-	# Unlike TemperatureHandler's other consumers, this widget always has
-	# *something* to show (a neutral reading isn't "no data"), so it needs
-	# its own explicit hide rather than relying on the gated value alone.
-	visible = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM)
-	if not visible:
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM):
+		_forecast_unlocked = true
+
+	_update_visibility_state()
+	if not visible or not (_forecast_unlocked and _is_expanded):
 		return
 
 	# Both pull from TemperatureHandler every frame, which also serves to
@@ -78,6 +97,89 @@ func _process(_delta: float) -> void:
 	_update_marker_colors()
 	_update_marker_positions()
 	_update_summary()
+
+func request_tutorial_foldout_prompt() -> void:
+	if _forecast_unlocked:
+		_is_expanded = true
+		_tutorial_prompt_active = false
+		_destroy_tutorial_arrow()
+		_update_visibility_state()
+		return
+
+	_tutorial_prompt_active = true
+	_is_expanded = false
+	_show_tutorial_arrow()
+	_update_visibility_state()
+
+func clear_tutorial_foldout_prompt() -> void:
+	_tutorial_prompt_active = false
+	_destroy_tutorial_arrow()
+	_update_visibility_state()
+
+func has_unlocked_forecast() -> bool:
+	return _forecast_unlocked
+
+func is_expanded() -> bool:
+	return _is_expanded
+
+func _update_visibility_state() -> void:
+	visible = _tutorial_prompt_active or _forecast_unlocked
+	_foldout_button.visible = visible
+	_foldout_button.text = "v" if _is_expanded and _forecast_unlocked else ">"
+	_panel.visible = _forecast_unlocked and _is_expanded
+
+func _on_foldout_pressed() -> void:
+	if not _forecast_unlocked:
+		if not _tutorial_prompt_active:
+			return
+		TemperatureHandler.activate_tutorial_summer_start()
+		_forecast_unlocked = true
+		_tutorial_prompt_active = false
+		_is_expanded = true
+		_destroy_tutorial_arrow()
+		tutorial_forecast_opened.emit()
+		_update_visibility_state()
+		return
+
+	_is_expanded = not _is_expanded
+	_update_visibility_state()
+
+func _show_tutorial_arrow() -> void:
+	if is_instance_valid(_tutorial_arrow):
+		return
+
+	if _tutorial_arrow_material == null:
+		_tutorial_arrow_material = ShaderMaterial.new()
+		_tutorial_arrow_material.shader = GOLDEN_GLOW_SHADER
+
+	var arrow := TextureRect.new()
+	arrow.name = "TutorialForecastArrow"
+	arrow.texture = TUTORIAL_ARROW_TEXTURE
+	arrow.material = _tutorial_arrow_material
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrow.stretch_mode = TextureRect.STRETCH_KEEP
+	arrow.size = TUTORIAL_ARROW_TEXTURE.get_size()
+	arrow.position = TUTORIAL_ARROW_OFFSET
+	_foldout_button.add_child(arrow)
+	_tutorial_arrow = arrow
+
+	var tween := create_tween()
+	tween.set_loops()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(arrow, "position:x", TUTORIAL_ARROW_OFFSET.x + TUTORIAL_ARROW_HOVER_WIDTH, TUTORIAL_ARROW_HOVER_DURATION)
+	tween.tween_property(arrow, "position:x", TUTORIAL_ARROW_OFFSET.x, TUTORIAL_ARROW_HOVER_DURATION)
+	_tutorial_arrow_hover_tween = tween
+
+func _destroy_tutorial_arrow() -> void:
+	if _tutorial_arrow_hover_tween != null:
+		_tutorial_arrow_hover_tween.kill()
+		_tutorial_arrow_hover_tween = null
+
+	if _tutorial_arrow != null and is_instance_valid(_tutorial_arrow):
+		_tutorial_arrow.queue_free()
+	_tutorial_arrow = null
 
 ## Weather icon, "Season (temp°C)" label, and the fires-needed hint — all
 ## driven by the same live get_outdoor_temperature()/is_cold() the rest of

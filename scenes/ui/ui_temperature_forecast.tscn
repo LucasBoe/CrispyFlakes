@@ -16,6 +16,19 @@ offset_bottom = 24.0
 mouse_filter = 2
 script = ExtResource("1")
 
+[node name="Button_ForecastFoldout" type="Button" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 16)
+layout_mode = 0
+offset_left = -7.0
+offset_top = 19.0
+offset_right = 17.0
+offset_bottom = 41.0
+tooltip_text = "Weather Forecast"
+theme = ExtResource("4_rwcpq")
+text = ">"
+alignment = 2
+
 [node name="MarginContainer2" type="MarginContainer" parent="."]
 custom_minimum_size = Vector2(102, 0)
 layout_mode = 0

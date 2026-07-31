@@ -70,6 +70,7 @@ const FORECAST_DAYS_BEFORE := 3
 # overall) rather than actually showing more days.
 const FORECAST_DAYS_AFTER := 20
 const FORECAST_WINDOW_SIZE := FORECAST_DAYS_BEFORE + FORECAST_DAYS_AFTER + 1
+const TUTORIAL_SUMMER_START_DAY_INDEX := 3
 
 signal on_forecast_changed_signal()
 
@@ -84,6 +85,7 @@ var _cache_dirty := true
 
 var _daily_base_temperatures: Array[float] = []
 var _forecast_center_day_index := -1
+var _day_index_offset := 0
 
 
 func _ready() -> void:
@@ -179,10 +181,23 @@ func get_today_base_temperature() -> float:
 	return _daily_base_temperatures[FORECAST_DAYS_BEFORE]
 
 
+func activate_tutorial_summer_start() -> void:
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM, true)
+	var real_day_index := 0
+	if Global.DAY_DURATION > 0.0:
+		real_day_index = floori(Global.time_now / Global.DAY_DURATION)
+	_day_index_offset = TUTORIAL_SUMMER_START_DAY_INDEX - real_day_index
+	_daily_base_temperatures.clear()
+	_forecast_center_day_index = -1
+	_cache_dirty = true
+	_temperature_cache_by_room_id.clear()
+	_ensure_forecast()
+
+
 func _get_current_day_index() -> int:
 	if Global.DAY_DURATION <= 0.0:
-		return 0
-	return floori(Global.time_now / Global.DAY_DURATION)
+		return _day_index_offset
+	return floori(Global.time_now / Global.DAY_DURATION) + _day_index_offset
 
 
 ## Same calendar day index always maps to the same preset value — the
