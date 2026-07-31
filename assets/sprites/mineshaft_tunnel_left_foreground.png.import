@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c30mggu0fvmga"
-path="res://.godot/imported/mineshaft_foreground.png-c0da1e4df4528d85606ab8e26d7ffbcc.ctex"
+uid="uid://cul3svejwhqvn"
+path="res://.godot/imported/mineshaft_tunnel_left_foreground.png-6aa51bbcf7239d566150d420da7c7224.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/mineshaft_foreground.png"
-dest_files=["res://.godot/imported/mineshaft_foreground.png-c0da1e4df4528d85606ab8e26d7ffbcc.ctex"]
+source_file="res://assets/sprites/mineshaft_tunnel_left_foreground.png"
+dest_files=["res://.godot/imported/mineshaft_tunnel_left_foreground.png-6aa51bbcf7239d566150d420da7c7224.ctex"]
 
 [params]
 

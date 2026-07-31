@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://k4p8iqmd6qp6"]
 
 [ext_resource type="Script" uid="uid://bf8lomsgmj0df" path="res://scripts/room_mineshaft_entrance.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://b3dt8pskbrnv5" path="res://assets/sprites/mineshaft_entrance_background.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://dfpi82wjm5mf4" path="res://assets/sprites/mineshaft_entrance_right_only_background.png" id="2_background"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
-[ext_resource type="Texture2D" uid="uid://bksqrm3dab20m" path="res://assets/sprites/mineshaft_entrance_foreground.png" id="4_foreground"]
+[ext_resource type="Texture2D" uid="uid://bplk6rvtpbbqk" path="res://assets/sprites/mineshaft_entrance_right_only_foreground.png" id="4_foreground"]
 [ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="4_usqew"]
 
 [node name="Room_MineshaftEntrance" type="Node2D"]

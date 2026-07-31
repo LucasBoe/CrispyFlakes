@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://1vriun7krq3m"]
 
 [ext_resource type="Script" uid="uid://bghl0nkjbk1ar" path="res://scripts/room_mineshaft.gd" id="1_script"]
-[ext_resource type="Texture2D" uid="uid://b66k5lhtwow3l" path="res://assets/sprites/mineshaft_background.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://81ky5j6y3wsq" path="res://assets/sprites/mineshaft_tunnel_both_background.png" id="2_background"]
 [ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
 [ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="4_dk4fm"]
-[ext_resource type="Texture2D" uid="uid://c30mggu0fvmga" path="res://assets/sprites/mineshaft_foreground.png" id="4_foreground"]
+[ext_resource type="Texture2D" uid="uid://x07uq6qkkoi0" path="res://assets/sprites/mineshaft_tunnel_both_foreground.png" id="4_foreground"]
 
 [node name="Room_Mineshaft" type="Node2D"]
 texture_filter = 1

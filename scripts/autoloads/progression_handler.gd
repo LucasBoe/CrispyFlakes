@@ -22,7 +22,7 @@ const ALL_ITEM_PATHS := [
 	"res://assets/resources/progression/prog_group_beverages_IV.tres",
 	"res://assets/resources/progression/prog_group_safety_III.tres",
 	"res://assets/resources/progression/prog_group_whiskey.tres",
-	"res://assets/resources/progression/prog_group_stoves.tres",
+	"res://assets/resources/progression/prog_group_fireplace.tres",
 	"res://assets/resources/progression/prog_group_bath.tres",
 	"res://assets/resources/progression/prog_group_whiskey_bar.tres",
 	"res://assets/resources/progression/prog_group_electricity_I.tres",

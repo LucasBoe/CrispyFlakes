@@ -24,8 +24,7 @@ func loop():
 
 		var origin_room: RoomBase = plan.origin
 		var target: Vector2i = plan.target
-		var edge_offset: float = 8.0 if plan.dir == Vector2i.LEFT else 48.0
-		var dig_pos: Vector2 = origin_room.global_position + Vector2(edge_offset, 0)
+		var dig_pos: Vector2 = origin_room.get_center_floor_position()
 
 		_narrative = ["Digging out the mineshaft...", "Following the vein deeper...", "Carving through rock..."].pick_random()
 		_ensure_pickaxe()
@@ -43,6 +42,10 @@ func loop():
 
 		Building.set_room(Building.room_data_mineshaft, target.x, target.y)
 		Building.update_foreground_tiles()
+		if origin_room is RoomMineshaft:
+			(origin_room as RoomMineshaft).refresh_tunnel_layout()
+		elif origin_room is RoomMineshaftEntrance:
+			(origin_room as RoomMineshaftEntrance).refresh_entrance_layout()
 
 func _dig_at(pos: Vector2, dir: Vector2i) -> void:
 	var duration := DIG_DURATION
