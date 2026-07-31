@@ -59,6 +59,7 @@ func _ready():
 	create_button(groups, Building.room_data_bath)
 	create_button(groups, Building.room_data_infirmary)
 	create_button(groups, Building.room_data_sick_ward)
+	create_button(groups, Building.room_data_mineshaft_entrance)
 	_on_tab_changed(0)
 	room_tier_dummy.hide()
 	hover_info_room_box_root.hide()

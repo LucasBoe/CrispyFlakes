@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://dur8lhe8l4new"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_mineshaft.tscn" id="2_scene"]
+[ext_resource type="Texture2D" uid="uid://c30mggu0fvmga" path="res://assets/sprites/mineshaft_foreground.png" id="3_preview"]
+
+[resource]
+script = ExtResource("1_roomdata")
+packed_scene = ExtResource("2_scene")
+ignore_foreground_tiles = true
+ends_foreground_run = true
+money_capacity = 0
+room_name = "Mineshaft"
+room_desc = "a dug-out mineshaft tunnel"
+room_preview = ExtResource("3_preview")
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

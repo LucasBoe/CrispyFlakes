@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://d0prurmrxm0ew"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_roomdata"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_mineshaft_entrance.tscn" id="2_scene"]
+[ext_resource type="Texture2D" uid="uid://bksqrm3dab20m" path="res://assets/sprites/mineshaft_entrance_foreground.png" id="3_preview"]
+
+[resource]
+script = ExtResource("1_roomdata")
+packed_scene = ExtResource("2_scene")
+ignore_foreground_tiles = true
+ends_foreground_run = true
+money_capacity = 0
+room_name = "Mineshaft Entrance"
+placement_limit = 2
+room_desc = "station a miner here to dig for ore into the earth"
+room_preview = ExtResource("3_preview")
+construction_price = 40
+tier = 1
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

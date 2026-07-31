@@ -84,6 +84,7 @@ enum Jobs {
 	DIGGING,
 	GAMBLING_WATCHER,
 	DOCTOR,
+	MINER,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -153,6 +154,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.DOCTOR:
 			return JobDoctorBehaviour
+
+		Enum.Jobs.MINER:
+			return JobMinerBehaviour
 
 enum ZLayer {
 	NPC_IN_OUTHOUSE = -620,

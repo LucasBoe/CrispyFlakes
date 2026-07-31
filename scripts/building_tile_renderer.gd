@@ -58,15 +58,18 @@ func update(floors: Dictionary) -> void:
 	for y in floors.keys():
 		for x in list_of_room_indexes_on_floor[y]:
 			var room := floors[y][x] as RoomBase
-			var has_left: bool = check_at_indoor_room_at(x - 1, y, floors)
-			var has_right: bool = check_at_indoor_room_at(x + 1, y, floors)
+			var left_room := _get_indoor_room_at(x - 1, y, floors)
+			var right_room := _get_indoor_room_at(x + 1, y, floors)
+			var has_left: bool = left_room != null
+			var has_right: bool = right_room != null
 			var ignores_foreground_tiles := _ignores_foreground_tiles(room)
 
 			if ignores_foreground_tiles:
-				if _is_room_left_edge(room, x) and not has_left:
-					set_wall(x - 1, y, placementContext.OUTER_LEFT)
-				if _is_room_right_edge(room, x) and not has_right:
-					set_wall(x + 1, y, placementContext.OUTER_RIGHT)
+				if not _ends_foreground_run(room):
+					if _is_room_left_edge(room, x) and not has_left:
+						set_wall(x - 1, y, placementContext.OUTER_LEFT)
+					if _is_room_right_edge(room, x) and not has_right:
+						set_wall(x + 1, y, placementContext.OUTER_RIGHT)
 				continue
 
 			if not has_left:
@@ -147,11 +150,24 @@ func update(floors: Dictionary) -> void:
 func check_at_indoor_room_at(x, y, list):
 	if not list[y].has(x):
 		return false
-		
+
 	if not list[y][x]:
 		return false
-			
+
 	return not list[y][x].is_outside_room
+
+func _get_indoor_room_at(x, y, list) -> RoomBase:
+	if not list[y].has(x):
+		return null
+	var room = list[y][x]
+	if not room or room.is_outside_room:
+		return null
+	return room
+
+func _ends_foreground_run(room: RoomBase) -> bool:
+	if room == null or room.data == null:
+		return false
+	return room.data.ends_foreground_run
 
 func _is_topmost_elevator(room: RoomBase, floors: Dictionary) -> bool:
 	var above = floors.get(room.y + 1, {}).get(room.x)
@@ -160,9 +176,7 @@ func _is_topmost_elevator(room: RoomBase, floors: Dictionary) -> bool:
 func _ignores_foreground_tiles(room: RoomBase) -> bool:
 	if room == null or room.data == null:
 		return false
-	if not room.data.ignore_foreground_tiles:
-		return false
-	return room.data.width > 1 or room.data.height > 1
+	return room.data.ignore_foreground_tiles
 
 func _is_room_left_edge(room: RoomBase, x: int) -> bool:
 	return room != null and x == room.x
