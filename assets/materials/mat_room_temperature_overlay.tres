@@ -5,4 +5,13 @@
 [resource]
 resource_local_to_scene = true
 shader = ExtResource("1_shader")
+shader_parameter/room_size = Vector2(48, 48)
 shader_parameter/temperature_strength = 1.35
+shader_parameter/aura_rect_0 = Vector4(0, 0, 0, 0)
+shader_parameter/aura_color_0 = Color(1, 1, 1, 1)
+shader_parameter/aura_rect_1 = Vector4(0, 0, 0, 0)
+shader_parameter/aura_color_1 = Color(1, 1, 1, 1)
+shader_parameter/aura_rect_2 = Vector4(0, 0, 0, 0)
+shader_parameter/aura_color_2 = Color(1, 1, 1, 1)
+shader_parameter/aura_rect_3 = Vector4(0, 0, 0, 0)
+shader_parameter/aura_color_3 = Color(1, 1, 1, 1)
