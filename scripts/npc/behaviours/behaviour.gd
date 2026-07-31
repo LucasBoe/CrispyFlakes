@@ -66,13 +66,6 @@ func try_get_room_if_not_occupied(saved_data, type, ocupied):
 func _change_to_idle():
 	npc.change_job(Enum.Jobs.IDLE)
 
-func get_random_room_of_type(type):
-	var reachable = npc.Navigation.get_reachable_rooms()
-	var rooms = Building.query.all_rooms_of_type(type).filter(func(r): return r in reachable)
-	if rooms.is_empty():
-		return null
-	return rooms.pick_random()
-
 func get_least_loaded_room_of_type(type, filter_fn: Callable = Callable(), load_fn: Callable = Callable(), capacity_fn: Callable = Callable()) -> RoomBase:
 	var reachable = npc.Navigation.get_reachable_rooms()
 	var rooms = Building.query.all_rooms_of_type(type, reachable)
@@ -81,6 +74,7 @@ func get_least_loaded_room_of_type(type, filter_fn: Callable = Callable(), load_
 func get_least_loaded_room_from_list(rooms: Array, filter_fn: Callable = Callable(), load_fn: Callable = Callable(), capacity_fn: Callable = Callable()) -> RoomBase:
 	var best_room: RoomBase = null
 	var best_load_ratio := INF
+	var best_temperature := -INF
 	var best_distance := INF
 
 	for room: RoomBase in rooms:
@@ -92,11 +86,22 @@ func get_least_loaded_room_from_list(rooms: Array, filter_fn: Callable = Callabl
 		var load_value: float = float(load_fn.call(room)) if not load_fn.is_null() else 0.0
 		var capacity_value: float = maxf(1.0, float(capacity_fn.call(room))) if not capacity_fn.is_null() else 1.0
 		var load_ratio := load_value / capacity_value
+		var temperature := TemperatureHandler.get_temperature_for_room(room)
 		var distance := npc.global_position.distance_to(room.get_center_floor_position())
 
-		if load_ratio < best_load_ratio or (is_equal_approx(load_ratio, best_load_ratio) and distance < best_distance):
+		var is_better := false
+		if load_ratio < best_load_ratio:
+			is_better = true
+		elif is_equal_approx(load_ratio, best_load_ratio):
+			if temperature > best_temperature:
+				is_better = true
+			elif is_equal_approx(temperature, best_temperature) and distance < best_distance:
+				is_better = true
+
+		if is_better:
 			best_room = room
 			best_load_ratio = load_ratio
+			best_temperature = temperature
 			best_distance = distance
 
 	return best_room
