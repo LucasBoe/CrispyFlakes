@@ -16,7 +16,7 @@ const AURA_TINT := Color(1.0, 0.74, 0.38, 1.0)
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _progress_bar: TextureProgressBar = $ProgressBar
-@onready var _smoke_particles: GPUParticles2D = $SmokeParticles
+@onready var _burning_effects: Node2D = $BurningEffects
 
 const _STOVE_ON_TEXTURE = preload("res://assets/sprites/stove.png")
 const _STOVE_OFF_TEXTURE = preload("res://assets/sprites/stove_off.png")
@@ -127,9 +127,16 @@ func _refresh_visual_state() -> void:
 		_sprite.modulate = INACTIVE_MODULATE
 
 	var heating := is_heating()
-	if _smoke_particles != null:
-		_smoke_particles.emitting = _fuel_remaining > 0.0
+	_set_burning_effects_emitting(_fuel_remaining > 0.0)
 	_sync_overlay_light()
+
+
+func _set_burning_effects_emitting(active: bool) -> void:
+	if _burning_effects == null:
+		return
+	for child in _burning_effects.get_children():
+		if child is GPUParticles2D:
+			child.emitting = active
 
 
 func _sync_overlay_light() -> void:

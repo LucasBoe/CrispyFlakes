@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cstov3rm0s001"]
+[gd_scene load_steps=11 format=3 uid="uid://cstov3rm0s001"]
 
 [ext_resource type="Script" uid="uid://hjwpk84nyagd" path="res://scripts/room_stove.gd" id="1_roomscript"]
 [ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
@@ -48,6 +48,7 @@ position = Vector2(24, -24)
 texture = ExtResource("3_outline")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -90
 position = Vector2(24.5, -22)
 texture = ExtResource("4_stovetex")
 
@@ -58,7 +59,10 @@ offset_top = -46.0
 offset_right = 22.0
 offset_bottom = -41.0
 
-[node name="SmokeParticles" type="GPUParticles2D" parent="."]
+[node name="BurningEffects" type="Node2D" parent="."]
+
+[node name="SmokeParticles" type="GPUParticles2D" parent="BurningEffects"]
+z_index = -80
 material = SubResource("CanvasItemMaterial_442e5")
 position = Vector2(25, -11)
 amount = 12

@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://dp1ediy0dn4pi"]
+
+[ext_resource type="Texture2D" uid="uid://ljt7cfq62dft" path="res://assets/sprites/fire_spritesheet.png" id="1_0kfst"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_fire"]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 6
+particles_anim_v_frames = 1
+particles_anim_loop = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fire_row1"]
+atlas = ExtResource("1_0kfst")
+region = Rect2(0, 32, 192, 32)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_fire"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(0, -16, 0)
+emission_shape_scale = Vector3(1, 0, 1)
+emission_shape = 3
+emission_box_extents = Vector3(0, 0, 0)
+direction = Vector3(0, 0, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+anim_speed_min = -8.0
+anim_speed_max = -8.0
+
+[node name="SingleFlameParticles" type="GPUParticles2D"]
+z_index = 700
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_fire")
+amount = 1
+texture = SubResource("AtlasTexture_fire_row1")
+lifetime = 4.0
+process_material = SubResource("ParticleProcessMaterial_fire")
