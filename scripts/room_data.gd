@@ -3,6 +3,7 @@ class_name RoomData
 
 @export var packed_scene: PackedScene
 @export var is_outdoor: bool = false
+@export var theme: Enum.RoomTheme = Enum.RoomTheme.DEFAULT
 @export var ignore_foreground_tiles: bool = false
 @export var ends_foreground_run: bool = false
 @export var money_capacity: int = 100

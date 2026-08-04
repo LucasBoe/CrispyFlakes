@@ -55,6 +55,12 @@ enum RoomType {
 	ENTERTAINMENT,
 }
 
+enum RoomTheme {
+	DEFAULT,
+	POSH,
+	# future: MEDIEVAL_CASTLE, VAMPIRE, ...
+}
+
 enum PlacementLimit {
 	ABOVE_OR_BELOW,
 	ABOVE_GROUND,

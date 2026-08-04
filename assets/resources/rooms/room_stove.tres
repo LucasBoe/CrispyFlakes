@@ -7,6 +7,7 @@
 [resource]
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("2_roomscene")
+theme = 1
 room_name = "Stove"
 room_desc = "Keeps nearby rooms warm while fueled with wood."
 room_icon = ExtResource("3_icon")

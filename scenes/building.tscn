@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://lavxixcrcm5q"]
+[gd_scene load_steps=29 format=3 uid="uid://lavxixcrcm5q"]
 
 [ext_resource type="Script" uid="uid://ft3abdx5faf3" path="res://scripts/building.gd" id="1_building"]
 [ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="2_fg_ground"]
@@ -14,6 +14,7 @@
 [ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="9_8lqx8"]
 [ext_resource type="Texture2D" uid="uid://3d2i7pqo6kgs" path="res://assets/sprites/startup_sequence_saloon_front.png" id="12_blq7k"]
 [ext_resource type="Texture2D" uid="uid://ygi5vryaskp1" path="res://assets/sprites/ground-tile-64px.png" id="13_nm462"]
+[ext_resource type="Texture2D" uid="uid://dfg4mpmjtrm4a" path="res://assets/sprites/posh_room_foreground_tileset.png" id="14_posh_fg_tex"]
 [ext_resource type="Script" uid="uid://cpahleadvanqi" path="res://scripts/building_sign.gd" id="sign_script"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
@@ -52,6 +53,18 @@ texture_region_size = Vector2i(48, 48)
 tile_size = Vector2i(48, 48)
 sources/0 = SubResource("TileSetAtlasSource_ground")
 sources/1 = SubResource("TileSetAtlasSource_basement")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_posh_fg"]
+texture = ExtResource("14_posh_fg_tex")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_posh_fg"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("TileSetAtlasSource_posh_fg")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_roof"]
 texture = ExtResource("4_roof")
@@ -109,6 +122,12 @@ z_index = 2000
 material = ExtResource("4_g3pb6")
 position = Vector2(0, 1)
 tile_set = SubResource("TileSet_fg")
+
+[node name="PoshForegroundTiles" type="TileMapLayer" parent="."]
+z_index = 2010
+material = ExtResource("4_g3pb6")
+position = Vector2(0, 1)
+tile_set = SubResource("TileSet_posh_fg")
 
 [node name="RoofTiles" type="TileMapLayer" parent="."]
 z_index = 2100

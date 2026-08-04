@@ -2,6 +2,7 @@ extends Node2D
 
 @onready var _tiles_walls : TileMapLayer = $ForegroundTiles
 @onready var _tiles_roof : TileMapLayer = $RoofTiles
+@onready var _tiles_posh_foreground : TileMapLayer = $PoshForegroundTiles
 @onready var _roof_decorations: Node2D = $RoofDecorations
 @onready var _sign: BuildingSign = $SaloonSign
 @onready var infrastructure = $Infrastructure
@@ -69,7 +70,7 @@ const cage_data_elevator_cage := preload("res://assets/resources/infrastructure/
 func _ready():
 	query = BuildingRoomQueries.new(self)
 	navigation_helper_query = BuildingNavigationHelperQuery.new(self)
-	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof)
+	_tile_renderer = BuildingTileRenderer.new(_tiles_walls, _tiles_roof, _tiles_posh_foreground)
 	if is_instance_valid(infrastructure) and not infrastructure.on_infrastructure_changed_signal.is_connected(_on_infrastructure_changed):
 		infrastructure.on_infrastructure_changed_signal.connect(_on_infrastructure_changed)
 	_stairs_overlay = BuildingStairsOverlay.new()

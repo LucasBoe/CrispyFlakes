@@ -10,6 +10,7 @@ var is_outside_room = false
 var worker : NPCWorker = null
 var current_module = null
 var _outline_sources: Dictionary = {}
+var posh_variant: int = -1
 
 @onready var back_wall_sprite_2d = get_node_or_null("Back-wall")
 
@@ -28,6 +29,11 @@ const backwallVariants : Array = [
 	preload("res://assets/sprites/back-wall_window2.png"),
 	preload("res://assets/sprites/back-wall_window3.png"),
 ]
+const poshBackwallVariants : Array = [
+	preload("res://assets/sprites/back-wall_posh.png"),
+	preload("res://assets/sprites/back-wall_posh_pillar.png"),
+	preload("res://assets/sprites/back-wall_posh_window.png"),
+]
 
 signal on_destroy_signal
 var _room_money_sprite: Sprite2D = null
@@ -42,6 +48,9 @@ func init_room(x : int, y : int):
 	if not is_outside_room and back_wall_sprite_2d != null:
 		if is_basement:
 			back_wall_sprite_2d.texture = backwallBasement
+		elif data != null and data.theme == Enum.RoomTheme.POSH:
+			posh_variant = randi() % poshBackwallVariants.size()
+			back_wall_sprite_2d.texture = poshBackwallVariants[posh_variant]
 		else:
 			back_wall_sprite_2d.texture = backwallVariants[randi() % backwallVariants.size()]
 

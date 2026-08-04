@@ -3,6 +3,7 @@ class_name BuildingTileRenderer
 
 var _tiles_walls : TileMapLayer
 var _tiles_roof : TileMapLayer
+var _tiles_posh_foreground : TileMapLayer
 var sign_room_index: Vector2i = Vector2i(-9999, -9999)
 var roof_room_index_by_x: Dictionary = {}
 
@@ -19,14 +20,18 @@ enum roofIndexMap {
 	DOUBLE_END_HIGHER = 6,
 	OUTER_DOUBLE_LOWER = 9,
 }
+enum poshForegroundColumn { LEFT = 0, MIDDLE = 1, RIGHT = 2, MEETING = 3 }
 
-func _init(walls: TileMapLayer, roof: TileMapLayer) -> void:
+func _init(walls: TileMapLayer, roof: TileMapLayer, posh_foreground: TileMapLayer = null) -> void:
 	_tiles_walls = walls
 	_tiles_roof = roof
+	_tiles_posh_foreground = posh_foreground
 
 func update(floors: Dictionary) -> void:
 	_tiles_walls.clear()
 	_tiles_roof.clear()
+	if _tiles_posh_foreground != null:
+		_tiles_posh_foreground.clear()
 	sign_room_index = Vector2i(-9999, -9999)
 	roof_room_index_by_x.clear()
 
@@ -62,7 +67,16 @@ func update(floors: Dictionary) -> void:
 			var right_room := _get_indoor_room_at(x + 1, y, floors)
 			var has_left: bool = left_room != null
 			var has_right: bool = right_room != null
+
 			var ignores_foreground_tiles := _ignores_foreground_tiles(room)
+
+			if _is_posh(room):
+				if not ignores_foreground_tiles:
+					set_posh_foreground(x, y, poshForegroundColumn.MIDDLE)
+				if _is_room_left_edge(room, x):
+					_paint_posh_cap(x - 1, y, poshForegroundColumn.LEFT, floors)
+				if _is_room_right_edge(room, x):
+					_paint_posh_cap(x + 1, y, poshForegroundColumn.RIGHT, floors)
 
 			if ignores_foreground_tiles:
 				if not _ends_foreground_run(room):
@@ -185,6 +199,29 @@ func _is_room_right_edge(room: RoomBase, x: int) -> bool:
 	if room == null or room.data == null:
 		return false
 	return x == room.x + room.data.width - 1
+
+func _is_posh(room: RoomBase) -> bool:
+	return room != null and room.data != null and room.data.theme == Enum.RoomTheme.POSH
+
+func set_posh_foreground(x: int, y: int, variant: int) -> void:
+	if _tiles_posh_foreground == null or variant < 0:
+		return
+	_tiles_posh_foreground.set_cell(Vector2i(x, y * -1 - 1), 0, Vector2i(variant, 0))
+
+func _paint_posh_cap(x: int, y: int, column: int, floors: Dictionary) -> void:
+	if _is_posh_meeting_cell(x, y, floors):
+		set_posh_foreground(x, y, poshForegroundColumn.MEETING)
+	else:
+		set_posh_foreground(x, y, column)
+
+func _is_posh_meeting_cell(x: int, y: int, floors: Dictionary) -> bool:
+	var this_room := _get_indoor_room_at(x, y, floors)
+	if _is_posh(this_room):
+		return false
+	var left_room := _get_indoor_room_at(x - 1, y, floors)
+	var right_room := _get_indoor_room_at(x + 1, y, floors)
+	return _is_posh(left_room) and _is_room_right_edge(left_room, x - 1) \
+		and _is_posh(right_room) and _is_room_left_edge(right_room, x + 1)
 
 func set_wall(x: int, y: int, context: int = -1) -> void:
 	_tiles_walls.set_cell(Vector2i(x, y * -1 - 1), 1 if y < 0 else 0, Vector2i(context, 0))
