@@ -57,6 +57,7 @@ var is_sleeping : bool = false
 var is_brooming : bool = false
 var is_playing_piano : bool = false
 var is_running_in_place : bool = false
+var suppress_music_sway : bool = false
 var _event_position_offset := Vector2.ZERO
 var _event_rotation_offset := 0.0
 var _event_tween: Tween = null
@@ -145,7 +146,7 @@ func _process(_delta):
 		target = pee_tween(time_in_seconds)
 	elif is_puking:
 		target = puke_tween(time_in_seconds)
-	elif not is_walking and should_sway_to_musik:
+	elif not is_walking and should_sway_to_musik and not suppress_music_sway:
 		target = sway_tween(time_in_seconds - random_instance_offset)
 	else:
 		target = idle_tween(time_in_seconds)

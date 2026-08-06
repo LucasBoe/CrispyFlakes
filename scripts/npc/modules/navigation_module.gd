@@ -234,22 +234,22 @@ func refresh_target_path() -> void:
 
 	refresh_room_index()
 
-	# snap to the goal room's exact floor line, so a target sourced from a raw
-	# position (Node2D/Vector2) doesn't leave the NPC standing slightly off-grid
-	final_target.y = snappedf(final_target.y, 48.0)
-	var goal_room := _get_goal_floor_room(final_target)
-	if goal_room != null:
-		final_target.y = _get_room_floor_y_world(goal_room, goal_room.y)
+	# Preserve the actual requested end position. If older navigation would
+	# have flattened this target onto the room's floor line, plan to that
+	# flattened point first and only then add the final off-floor step.
+	var path_target := _get_flattened_navigation_target(final_target)
 
 	# workers aren't gated by the bouncer, and neither is anyone currently
 	# chasing another NPC (e.g. an escort/arrest chain shouldn't detour
 	# through a supervised door) - both can cross at the open side instead
 	var requires_bouncer := not (npc is NPCWorker) and not (target_final is NPC)
-	var new_path : Array[navigationPhase] = Building.navigation_helper_query.refresh_target_path(current_phase, global_position, final_target, requires_bouncer)
+	var new_path : Array[navigationPhase] = Building.navigation_helper_query.refresh_target_path(current_phase, global_position, path_target, requires_bouncer)
 	if new_path.is_empty():
 		UiNotifications.create_notification_dynamic("?", npc, Vector2(0, -32), no_path_icon)
 		_fail_target_path()
 		return
+	if not path_target.is_equal_approx(final_target):
+		new_path.append(walkPhase.new(final_target))
 
 	target_path = new_path
 	if target_path[0] is useStairsPhase:
@@ -642,6 +642,15 @@ func _get_room_floor_y_world(room: RoomBase, floor_y: int) -> float:
 	if room == null:
 		return floor_y * -48.0
 	return room.global_position.y - float(floor_y - room.y) * 48.0
+
+
+func _get_flattened_navigation_target(target: Vector2) -> Vector2:
+	var flattened := target
+	flattened.y = snappedf(flattened.y, 48.0)
+	var goal_room := _get_goal_floor_room(flattened)
+	if goal_room != null:
+		flattened.y = _get_room_floor_y_world(goal_room, goal_room.y)
+	return flattened
 
 
 func _draw_debug_path() -> void:

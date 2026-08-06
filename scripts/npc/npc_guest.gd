@@ -3,6 +3,7 @@ class_name NPCGuest
 
 const NPCNameLibraryScript = preload("res://scripts/npc/npc_name_library.gd")
 const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_sleep_behaviour.gd")
+const OperaGuestBehaviourScript = preload("res://scripts/npc/behaviours/opera_guest_behaviour.gd")
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 const INJURED_MOVE_SPEED_MULTIPLIER := 0.5
 
@@ -104,6 +105,7 @@ func resume_autonomous_behaviour() -> void:
 		Behaviour.set_behaviour(new_behaviour)
 
 func get_next_behaviour():
+
 	var treatment_behaviour = InjuryHandler.get_treatment_behaviour(self)
 	if treatment_behaviour != null:
 		return treatment_behaviour

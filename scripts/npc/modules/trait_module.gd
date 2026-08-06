@@ -23,6 +23,9 @@ const TRAIT_SHERLOCK := "sherlock"
 const TRAIT_NAIVE := "naive"
 const TRAIT_SAWBONES := "sawbones"
 const TRAIT_DULLARD := "dullard"
+const TRAIT_GOLDEN_THROAT := "golden_throat"
+const TRAIT_TONE_DEAF := "tone_deaf"
+const TRAIT_CATERWAULER_LEGACY := "caterwauler"
 
 var npc
 var traits: Array = []
@@ -138,6 +141,20 @@ func get_bad_treatment_recovery_chance() -> float:
 	if has_trait(TRAIT_FRAGILE):
 		return 0.3
 	return 0.6
+
+func get_opera_mood_effect(base_effect: float) -> float:
+	if has_trait(TRAIT_GOLDEN_THROAT):
+		return maxf(base_effect, 0.14)
+	if has_trait(TRAIT_TONE_DEAF) or has_trait(TRAIT_CATERWAULER_LEGACY):
+		return -maxf(base_effect, 0.08)
+	return base_effect
+
+func get_opera_mood_reason() -> String:
+	if has_trait(TRAIT_GOLDEN_THROAT):
+		return "Spellbound by the Opera"
+	if has_trait(TRAIT_TONE_DEAF) or has_trait(TRAIT_CATERWAULER_LEGACY):
+		return "Opera Screeching"
+	return "Opera"
 
 func get_hire_cost() -> int:
 	var cost: int = Pricing.WORKER_HIRE_BASE

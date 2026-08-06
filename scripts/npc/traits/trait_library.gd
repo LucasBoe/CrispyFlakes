@@ -12,6 +12,7 @@ const PAIR_FIGHT_TEMPER := "fight_temper"
 const PAIR_SALES := "sales"
 const PAIR_CRIMINAL_DETECTION := "criminal_detection"
 const PAIR_INTELLIGENCE := "intelligence"
+const PAIR_OPERA := "opera"
 
 static func get_all_traits() -> Array:
 	return [
@@ -33,6 +34,8 @@ static func get_all_traits() -> Array:
 		TraitDataScript.new("naive", PAIR_CRIMINAL_DETECTION, "Naive", "Less likely to discover criminals.", TraitDataScript.Polarity.NEGATIVE),
 		TraitDataScript.new("sawbones", PAIR_INTELLIGENCE, "Sawbones", "Treats patients more effectively.", TraitDataScript.Polarity.POSITIVE),
 		TraitDataScript.new("dullard", PAIR_INTELLIGENCE, "Dullard", "Treats patients less effectively.", TraitDataScript.Polarity.NEGATIVE),
+		TraitDataScript.new("golden_throat", PAIR_OPERA, "Golden Throat", "Opera performances greatly improve guest mood.", TraitDataScript.Polarity.POSITIVE),
+		TraitDataScript.new("tone_deaf", PAIR_OPERA, "Tone-deaf", "Opera performances sour the room and lower guest mood.", TraitDataScript.Polarity.NEGATIVE),
 	]
 
 static func roll_traits(max_count: int = 3) -> Array:
