@@ -247,18 +247,19 @@ static func _has_sheriff_targets() -> bool:
 			continue
 		if guest.Behaviour != null and guest.Behaviour.behaviour_instance is ArrestedBehaviour:
 			return true
-		if BountyHandler.get_official_bounty_for(guest) != null:
-			return true
-		if BountyHandler.get_fight_fine_for(guest) != null:
+		if ConflictResponseHandler.is_marked_for_arrest(guest):
 			return true
 
 	return false
 
 static func _can_offer_barber_surgeon_temperature_encounter() -> bool:
-	return not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM) and _is_tomorrow_cold()
+	return _has_injured_npcs() and not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM) and _is_tomorrow_cold()
 
 static func _can_offer_barber_surgeon_treatment_encounter() -> bool:
-	return not _can_offer_barber_surgeon_temperature_encounter() and not InjuryHandler.get_injured_npcs().is_empty()
+	return _has_injured_npcs() and not _can_offer_barber_surgeon_temperature_encounter()
+
+static func _has_injured_npcs() -> bool:
+	return not InjuryHandler.get_injured_npcs().is_empty()
 
 static func _is_tomorrow_cold() -> bool:
 	var forecast := TemperatureHandler.get_forecast_temperatures()

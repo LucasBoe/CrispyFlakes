@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.400"
+config/version="0.0.1-dev.401"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -35,6 +35,7 @@ StartupCoordinator="*res://scripts/startup_coordinator.gd"
 SoundPlayer="*res://scenes/autoloads/sound_player.tscn"
 JobHandler="*res://scripts/autoloads/job_handler.gd"
 DirtHandler="*res://scripts/autoloads/dirt_handler.gd"
+CleanupTargetHandler="*res://scripts/autoloads/cleanup_target_handler.gd"
 HoverHandler="*res://scripts/autoloads/hover_handler.gd"
 TutorialHandler="*res://scripts/autoloads/tutorial_handler.gd"
 LooseItemHandler="*res://scripts/autoloads/loose_item_handler.gd"
