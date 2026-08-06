@@ -12,6 +12,7 @@ extends Node
 @onready var placement_icon_below_ground = preload("res://assets/sprites/ui/2x/icon_below_ground.png")
 
 const FIREPLACE_KEEPER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_fireplace_keeper_behaviour.gd")
+const OPERA_SINGER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_opera_singer_behaviour.gd")
 
 
 enum Items {
@@ -25,6 +26,7 @@ enum Items {
 	MONEY,
 	CRATE,
 	PICKAXE,
+	COAL,
 }
 
 enum Resources {
@@ -91,6 +93,7 @@ enum Jobs {
 	GAMBLING_WATCHER,
 	DOCTOR,
 	MINER,
+	OPERA_SINGER,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -163,6 +166,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.MINER:
 			return JobMinerBehaviour
+
+		Enum.Jobs.OPERA_SINGER:
+			return OPERA_SINGER_BEHAVIOUR
 
 enum ZLayer {
 	NPC_IN_OUTHOUSE = -620,

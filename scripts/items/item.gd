@@ -117,6 +117,10 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			display_name = "Wood"
 			trade_price = 8
 
+		Enum.Items.COAL:
+			tex = load("res://assets/sprites/item_coal.png")
+			display_name = "Coal"
+
 		# SHADOW ITEMS
 		Enum.Items.DRINK:
 			offset = Vector2i(3, -2)
@@ -170,6 +174,9 @@ static func get_display_name(itemType: Enum.Items) -> String:
 
 static func is_shadow_item(itemType: int) -> bool:
 	return get_info(itemType).IsShadowItem
+
+static func is_fuel_item(itemType: int) -> bool:
+	return itemType == Enum.Items.WOOD or itemType == Enum.Items.COAL
 
 static func get_non_shadow_items() -> Array[int]:
 	var visible: Array[int] = []

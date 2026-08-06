@@ -2,7 +2,7 @@ extends RoomStove
 class_name RoomFireplace
 
 const _FIREPLACE_TEXTURE := preload("res://assets/sprites/fireplace.png")
-const STOCKPILE_TARGET_WOOD := 2
+const STOCKPILE_TARGET_FUEL := 2
 const STOCKPILE_RADIUS := 18.0
 const POKED_FIRE_DURATION := 18.0
 const POKED_BURN_MULTIPLIER := 0.35
@@ -31,41 +31,62 @@ func get_stockpile_anchor_position() -> Vector2:
 
 
 func get_stockpile_drop_position() -> Vector2:
-	var stockpiled := get_stockpiled_wood_count()
+	var stockpiled := get_stockpiled_fuel_count()
 	var offset_index := mini(stockpiled, STOCKPILE_DROP_OFFSETS.size() - 1)
 	return get_stockpile_anchor_position() + STOCKPILE_DROP_OFFSETS[offset_index]
 
 
+func get_stockpiled_fuel_count() -> int:
+	return _get_stockpiled_fuel_items().size()
+
+
 func get_stockpiled_wood_count() -> int:
-	return _get_stockpiled_wood_items().size()
+	return get_stockpiled_fuel_count()
+
+
+func has_stockpiled_fuel() -> bool:
+	return get_stockpiled_fuel_count() > 0
 
 
 func has_stockpiled_wood() -> bool:
-	return get_stockpiled_wood_count() > 0
+	return has_stockpiled_fuel()
 
 
 func needs_stockpile() -> bool:
-	return get_stockpiled_wood_count() < STOCKPILE_TARGET_WOOD
+	return get_stockpiled_fuel_count() < STOCKPILE_TARGET_FUEL
+
+
+func consume_stockpiled_fuel_type() -> int:
+	var stockpiled_fuel := _get_stockpiled_fuel_items()
+	if stockpiled_fuel.is_empty():
+		return -1
+
+	var item := stockpiled_fuel[0] as Item
+	if item == null or not is_instance_valid(item):
+		return -1
+
+	var fuel_item_type := item.itemType
+	item.destroy()
+	return fuel_item_type
+
+
+func consume_stockpiled_fuel() -> bool:
+	return consume_stockpiled_fuel_type() >= 0
 
 
 func consume_stockpiled_wood() -> bool:
-	var stockpiled_wood := _get_stockpiled_wood_items()
-	if stockpiled_wood.is_empty():
-		return false
+	return consume_stockpiled_fuel()
 
-	var item := stockpiled_wood[0] as Item
-	if item == null or not is_instance_valid(item):
-		return false
 
-	item.destroy()
-	return true
+func is_loose_fuel_stockpiled(item: Item) -> bool:
+	return item != null \
+	and is_instance_valid(item) \
+	and Item.is_fuel_item(item.itemType) \
+	and item.global_position.distance_squared_to(get_stockpile_anchor_position()) <= STOCKPILE_RADIUS * STOCKPILE_RADIUS
 
 
 func is_loose_wood_stockpiled(item: Item) -> bool:
-	return item != null \
-	and is_instance_valid(item) \
-	and item.itemType == Enum.Items.WOOD \
-	and item.global_position.distance_squared_to(get_stockpile_anchor_position()) <= STOCKPILE_RADIUS * STOCKPILE_RADIUS
+	return is_loose_fuel_stockpiled(item)
 
 
 func poke_fire() -> void:
@@ -106,19 +127,24 @@ func _get_inactive_texture() -> Texture2D:
 	return _FIREPLACE_TEXTURE
 
 
-func _get_stockpiled_wood_items() -> Array[Item]:
+func _get_stockpiled_fuel_items() -> Array[Item]:
 	var items: Array[Item] = []
-	var loose_wood_items := LooseItemHandler.loose_items.get(Enum.Items.WOOD, []) as Array
-	if loose_wood_items == null:
-		return items
+	for fuel_type in [Enum.Items.WOOD, Enum.Items.COAL]:
+		var loose_fuel_items := LooseItemHandler.loose_items.get(fuel_type, []) as Array
+		if loose_fuel_items == null:
+			continue
 
-	for candidate in loose_wood_items:
-		var item := candidate as Item
-		if item == null or not is_instance_valid(item):
-			continue
-		if not is_loose_wood_stockpiled(item):
-			continue
-		items.append(item)
+		for candidate in loose_fuel_items:
+			var item := candidate as Item
+			if item == null or not is_instance_valid(item):
+				continue
+			if not is_loose_fuel_stockpiled(item):
+				continue
+			items.append(item)
 
 	items.sort_custom(func(a: Item, b: Item): return a.global_position.x < b.global_position.x)
 	return items
+
+
+func _get_stockpiled_wood_items() -> Array[Item]:
+	return _get_stockpiled_fuel_items()

@@ -1,13 +1,15 @@
 extends Behaviour
 class_name JobStoveKeeperBehaviour
 
+const _FUEL_ITEM_TYPES := [Enum.Items.WOOD, Enum.Items.COAL]
+
 var stove: RoomStove = null
 
 static var occupied_stoves: Array = []
 
 func loop():
 	while true:
-		_narrative = ["Checking the stoves...", "Looking for cold rooms...", "Making the rounds with firewood..."].pick_random()
+		_narrative = ["Checking the stoves...", "Looking for cold rooms...", "Making the rounds with fuel..."].pick_random()
 		stove = _find_stove_needing_refuel()
 
 		if stove == null:
@@ -18,10 +20,10 @@ func loop():
 		_claim_stove(stove)
 		npc.current_job_room = stove
 
-		if not npc.Item.is_item(Enum.Items.WOOD):
-			_narrative = ["Fetching firewood...", "Looking for wood...", "Stocking up the stove..."].pick_random()
-			await fetch_item(Enum.Items.WOOD)
-			if not npc.Item.is_item(Enum.Items.WOOD):
+		if not _has_carried_fuel():
+			_narrative = ["Fetching fuel...", "Looking for wood or coal...", "Stocking up the stove..."].pick_random()
+			await _fetch_fuel()
+			if not _has_carried_fuel():
 				_release_stove()
 				await pause(2.0)
 				continue
@@ -41,8 +43,8 @@ func loop():
 			_release_stove()
 			continue
 
-		_consume_carried_wood()
-		stove.refuel()
+		var fuel_item_type := _consume_carried_fuel()
+		stove.refuel(fuel_item_type)
 		_release_stove()
 
 func stop_loop() -> BehaviourSaveData:
@@ -73,11 +75,51 @@ func _release_stove() -> void:
 	occupied_stoves.erase(stove)
 	stove = null
 
-func _consume_carried_wood() -> void:
-	if npc.Item.current_item == null:
+func _has_carried_fuel() -> bool:
+	return npc != null \
+	and npc.Item != null \
+	and npc.Item.current_item != null \
+	and Item.is_fuel_item(npc.Item.current_item.itemType)
+
+func _fetch_fuel() -> void:
+	var preferred_fuel_type := _find_best_available_fuel_type()
+	if preferred_fuel_type >= 0:
+		await fetch_item(preferred_fuel_type)
 		return
+
+	await fetch_item(Enum.Items.WOOD)
+
+func _find_best_available_fuel_type() -> int:
+	var best_type := -1
+	var best_distance := INF
+
+	for fuel_type in _FUEL_ITEM_TYPES:
+		var loose_item: Item = LooseItemHandler.get_closest_to(npc.global_position, fuel_type)
+		if loose_item != null:
+			var loose_distance := npc.global_position.distance_squared_to(loose_item.global_position)
+			if loose_distance < best_distance:
+				best_distance = loose_distance
+				best_type = fuel_type
+
+		for storage: RoomStorage in get_all_rooms_of_type_ordered_by_distance(RoomStorage):
+			if not storage.has(fuel_type):
+				continue
+
+			var storage_distance := npc.global_position.distance_squared_to(storage.get_center_floor_position())
+			if storage_distance < best_distance:
+				best_distance = storage_distance
+				best_type = fuel_type
+			break
+
+	return best_type
+
+func _consume_carried_fuel() -> int:
+	if npc.Item.current_item == null:
+		return Enum.Items.WOOD
+	var fuel_item_type := npc.Item.current_item.itemType
 	npc.Item.current_item.destroy()
 	npc.Item.current_item = null
+	return fuel_item_type
 
 static func _cleanup_occupied_stoves() -> void:
 	occupied_stoves = occupied_stoves.filter(func(c: RoomStove): return is_instance_valid(c))

@@ -2,6 +2,7 @@ extends RoomBase
 class_name RoomStove
 
 const MAX_FUEL_DURATION := 60.0
+const COAL_FUEL_DURATION := 90.0
 const EMBER_DURATION := 8.0
 const REFUEL_THRESHOLD_RATIO := 0.2
 const LOW_FUEL_VISIBILITY_RATIO := 0.25
@@ -22,6 +23,7 @@ const _STOVE_ON_TEXTURE = preload("res://assets/sprites/stove.png")
 const _STOVE_OFF_TEXTURE = preload("res://assets/sprites/stove_off.png")
 
 var _fuel_remaining := 0.0
+var _fuel_capacity := MAX_FUEL_DURATION
 var _ember_remaining := 0.0
 var _overlay_light_registered := false
 
@@ -57,23 +59,24 @@ func init_room(_x: int, _y: int) -> void:
 func get_job_capacity(job = null) -> int:
 	return get_associated_job_capacity(job)
 
-func refuel() -> void:
-	_fuel_remaining = MAX_FUEL_DURATION
+func refuel(fuel_item_type: int = Enum.Items.WOOD) -> void:
+	_fuel_capacity = _get_fuel_duration_for_item(fuel_item_type)
+	_fuel_remaining = _fuel_capacity
 	_ember_remaining = 0.0
 	_refresh_visual_state()
 	_refresh_progress_bar()
 
 func needs_refuel() -> bool:
-	return _fuel_remaining <= MAX_FUEL_DURATION * REFUEL_THRESHOLD_RATIO
+	return _fuel_remaining <= _fuel_capacity * REFUEL_THRESHOLD_RATIO
 
 func is_low_fuel() -> bool:
-	return _fuel_remaining <= MAX_FUEL_DURATION * LOW_FUEL_VISIBILITY_RATIO
+	return _fuel_remaining <= _fuel_capacity * LOW_FUEL_VISIBILITY_RATIO
 
 func is_heating() -> bool:
 	return _fuel_remaining > 0.0 or _ember_remaining > 0.0
 
 func get_fuel_ratio() -> float:
-	return clampf(_fuel_remaining / MAX_FUEL_DURATION, 0.0, 1.0)
+	return clampf(_fuel_remaining / _fuel_capacity, 0.0, 1.0)
 
 func get_fuel_seconds_remaining() -> float:
 	return _fuel_remaining
@@ -105,6 +108,11 @@ func _before_heat_update(_delta: float) -> void:
 
 func _get_fuel_burn_multiplier() -> float:
 	return 1.0
+
+func _get_fuel_duration_for_item(fuel_item_type: int) -> float:
+	if fuel_item_type == Enum.Items.COAL:
+		return COAL_FUEL_DURATION
+	return MAX_FUEL_DURATION
 
 func _get_ember_burn_multiplier() -> float:
 	return 1.0

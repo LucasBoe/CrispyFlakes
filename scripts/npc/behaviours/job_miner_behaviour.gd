@@ -3,6 +3,8 @@ class_name JobMinerBehaviour
 
 const DIG_DURATION := 48.0
 const DIG_SOUND_INTERVAL := 1.0
+const COAL_DROP_MIN := 1
+const COAL_DROP_MAX := 3
 
 var entrance: RoomMineshaftEntrance
 static var occupied_entrances = []
@@ -42,10 +44,14 @@ func loop():
 
 		Building.set_room(Building.room_data_mineshaft, target.x, target.y)
 		Building.update_foreground_tiles()
+		var new_room: RoomBase = Building.get_room_from_index(target)
+		_spawn_coal_drops(new_room)
 		if origin_room is RoomMineshaft:
 			(origin_room as RoomMineshaft).refresh_tunnel_layout()
 		elif origin_room is RoomMineshaftEntrance:
 			(origin_room as RoomMineshaftEntrance).refresh_entrance_layout()
+		if new_room is RoomMineshaft:
+			(new_room as RoomMineshaft).refresh_tunnel_layout()
 
 func _dig_at(pos: Vector2, dir: Vector2i) -> void:
 	var duration := DIG_DURATION
@@ -132,3 +138,14 @@ func _clear_pickaxe() -> void:
 		return
 	npc.Item.current_item.destroy()
 	npc.Item.current_item = null
+
+func _spawn_coal_drops(room: RoomBase) -> void:
+	if not is_instance_valid(room):
+		return
+
+	var drop_count := randi_range(COAL_DROP_MIN, COAL_DROP_MAX)
+	for _i in range(drop_count):
+		var spawn_pos: Vector2 = room.get_random_floor_position()
+		if room is RoomMineshaft:
+			spawn_pos = (room as RoomMineshaft).get_random_dug_floor_position()
+		Global.ItemSpawner.create(Enum.Items.COAL, spawn_pos)
