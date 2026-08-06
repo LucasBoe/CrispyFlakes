@@ -1,0 +1,74 @@
+[gd_scene load_steps=8 format=3 uid="uid://o0u5vop3pbje"]
+
+[ext_resource type="Script" uid="uid://0qnq12xur2r0" path="res://scripts/room_opera.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://c3igaq668wmq6" path="res://assets/sprites/room_highlight_slim_2x1.png" id="3_outline"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="5_guqdn"]
+[ext_resource type="Texture2D" uid="uid://0q8fforp5qs8" path="res://assets/sprites/music_notes.png" id="5_notes"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_notes"]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_notes"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(16, 6, 1)
+direction = Vector3(1, -0.15, 0)
+spread = 18.0
+initial_velocity_min = 10.0
+initial_velocity_max = 18.0
+gravity = Vector3(0, -6, 0)
+scale_max = 1.2
+color = Color(1, 0.717647, 0.32549, 1)
+hue_variation_min = -0.45
+hue_variation_max = 0.45
+anim_offset_max = 1.0
+
+[node name="Room_Opera" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_script")
+
+[node name="Back-wall" type="NinePatchRect" parent="."]
+z_index = -200
+texture_repeat = 2
+offset_top = -96.0
+offset_right = 144.0
+texture = ExtResource("2_backwall")
+patch_margin_left = 17
+patch_margin_top = 15
+patch_margin_right = 15
+patch_margin_bottom = 16
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Outline" type="NinePatchRect" parent="."]
+visible = false
+z_index = 4000
+custom_minimum_size = Vector2(144, 96)
+offset_top = -96.0
+offset_right = 144.0
+texture = ExtResource("3_outline")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="MusicParticles" type="GPUParticles2D" parent="."]
+z_index = 120
+material = SubResource("CanvasItemMaterial_notes")
+position = Vector2(72, -54)
+amount = 4
+texture = ExtResource("5_notes")
+lifetime = 1.5
+preprocess = 0.4
+explosiveness = 0.15
+randomness = 0.35
+process_material = SubResource("ParticleProcessMaterial_notes")
+
+[node name="Foreground" type="Sprite2D" parent="."]
+z_index = 1990
+material = ExtResource("5_guqdn")
+position = Vector2(72, -47)

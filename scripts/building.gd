@@ -41,6 +41,7 @@ const room_data_saloon := preload("res://assets/resources/rooms/room_saloon.tres
 const room_data_bar_beer := preload("res://assets/resources/rooms/room_bar_beer.tres")
 const room_data_bar_whiskey := preload("res://assets/resources/rooms/room_bar_whiskey.tres")
 const room_data_entertainment := preload("res://assets/resources/rooms/room_entertainment.tres")
+const room_data_opera := preload("res://assets/resources/rooms/room_opera.tres")
 const room_data_table := preload("res://assets/resources/rooms/room_table.tres")
 const room_data_bed := preload("res://assets/resources/rooms/room_bed.tres")
 const room_data_well := preload("res://assets/resources/rooms/room_well.tres")
