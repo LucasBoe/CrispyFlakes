@@ -156,7 +156,8 @@ func _ready() -> void:
 	add_command("exit", quit, 0, 0, "Quits the game.")
 	add_command("clear", clear, 0, 0, "Clears the text on the console.")
 	add_command("delete_history", delete_history, 0, 0, "Deletes the history of previously entered commands.")
-	add_command("help", help, 0, 0, "Displays instructions on how to use the console.")
+	add_command("help", help, ["topic"], 0, "Displays console help, or help for a command/topic like 'help debug'.")
+	add_command("debug_help", _debug_help, 0, 0, "Lists gameplay and debug-focused console commands.")
 	add_command("commands_list", commands_list, 0, 0, "Lists all commands and their descriptions.")
 	add_command("commands", commands, 0, 0, "Lists commands with no descriptions.")
 	add_command("calc", calculate, ["mathematical expression to evaluate"], 0, "Evaluates the math passed in for quick arithmetic.")
@@ -461,12 +462,19 @@ func delete_history() -> void:
 	DirAccess.remove_absolute("user://console_history.txt")
 
 
-func help() -> void:
-	rich_label.append_text("	Built in commands:
+func help(topic := "") -> void:
+	var normalized_topic := str(topic).strip_edges().to_lower()
+	if normalized_topic.is_empty():
+		rich_label.append_text("	Console help:
+		Try [color=light_green]help debug[/color] for debug-focused commands
+		Try [color=light_green]help <command>[/color] for one command's arguments and description
+		Use [color=light_green]commands[/color] for a compact list or [color=light_green]commands_list[/color] for the full registry
+	Built in commands:
 		[color=light_green]calc[/color]: Calculates a given expresion
 		[color=light_green]clear[/color]: Clears the registry view
 		[color=light_green]commands[/color]: Shows a reduced list of all the currently registered commands
 		[color=light_green]commands_list[/color]: Shows a detailed list of all the currently registered commands
+		[color=light_green]debug_help[/color]: Shows just the debug-focused commands
 		[color=light_green]delete_history[/color]: Deletes the commands history
 		[color=light_green]echo[/color]: Prints a given string to the console
 		[color=light_green]echo_error[/color]: Prints a given string as an error to the console
@@ -482,6 +490,78 @@ func help() -> void:
 		[[color=light_blue]Ctrl[/color] + [color=light_blue]Mouse Wheel[/color]] up/down to change console font size
 		[color=light_blue]~[/color] or [color=light_blue]Esc[/color] key to close the console
 		[color=light_blue]Tab[/color] key to autocomplete, [color=light_blue]Tab[/color] again to cycle between matching suggestions\n\n")
+		return
+
+	if normalized_topic == "debug":
+		_print_matching_commands("Debug commands", _get_matching_commands(func(command: String, _entry: ConsoleCommand) -> bool:
+			return _is_debug_command(command)
+		))
+		return
+
+	if console_commands.has(normalized_topic):
+		_print_command_help(normalized_topic)
+		return
+
+	var matching_commands := _get_matching_commands(func(command: String, entry: ConsoleCommand) -> bool:
+		return command.contains(normalized_topic) or entry.description.to_lower().contains(normalized_topic)
+	)
+	if matching_commands.is_empty():
+		print_error("No help found for '%s'." % topic)
+		print_info("Try 'help debug', 'commands', or 'commands_list'.")
+		return
+	_print_matching_commands("Matching commands for '%s'" % topic, matching_commands)
+
+func _debug_help() -> void:
+	help("debug")
+
+func _print_command_help(command: String) -> void:
+	var entry: ConsoleCommand = console_commands[command]
+	var arguments_string := _format_arguments(entry)
+	rich_label.append_text("	[color=light_green]%s[/color][color=gray]%s[/color]\n" % [command, arguments_string])
+	if not entry.description.is_empty():
+		rich_label.append_text("	%s\n" % entry.description)
+	if command_parameters.has(command):
+		rich_label.append_text("	Autocomplete: %s\n" % str(command_parameters[command]))
+	rich_label.append_text("\n")
+
+func _print_matching_commands(title: String, commands: Array[String]) -> void:
+	if commands.is_empty():
+		print_info("%s: none registered." % title)
+		return
+	rich_label.append_text("	%s:\n" % title)
+	for command in commands:
+		var entry: ConsoleCommand = console_commands[command]
+		rich_label.append_text("	[color=light_green]%s[/color][color=gray]%s[/color]: %s\n" % [command, _format_arguments(entry), entry.description])
+	rich_label.append_text("\n")
+
+func _get_matching_commands(predicate: Callable) -> Array[String]:
+	var commands: Array[String] = []
+	for command in console_commands:
+		var command_name := str(command)
+		var entry: ConsoleCommand = console_commands[command_name]
+		if entry.hidden:
+			continue
+		if predicate.call(command_name, entry):
+			commands.append(command_name)
+	commands.sort()
+	return commands
+
+func _is_debug_command(command: String) -> bool:
+	if command.begins_with("debug_"):
+		return true
+	if command.ends_with("_debug"):
+		return true
+	var description: String = console_commands[command].description.to_lower()
+	return description.contains("debug") or description.contains("visualization")
+
+func _format_arguments(entry: ConsoleCommand) -> String:
+	var arguments_string := ""
+	for i in range(entry.arguments.size()):
+		if i < entry.required:
+			arguments_string += "  [color=cornflower_blue]<" + entry.arguments[i] + ">[/color]"
+		else:
+			arguments_string += "  <" + entry.arguments[i] + ">"
+	return arguments_string
 
 
 func calculate(command : String) -> void:
@@ -515,13 +595,8 @@ func commands_list() -> void:
 	commands.sort()
 
 	for command in commands:
-		var arguments_string := ""
 		var description : String = console_commands[command].description
-		for i in range(console_commands[command].arguments.size()):
-			if i < console_commands[command].required:
-				arguments_string += "  [color=cornflower_blue]<" + console_commands[command].arguments[i] + ">[/color]"
-			else:
-				arguments_string += "  <" + console_commands[command].arguments[i] + ">"
+		var arguments_string := _format_arguments(console_commands[command])
 		rich_label.append_text("	[color=light_green]%s[/color][color=gray]%s[/color]:   %s\n" % [command, arguments_string, description])
 	rich_label.append_text("\n")
 
