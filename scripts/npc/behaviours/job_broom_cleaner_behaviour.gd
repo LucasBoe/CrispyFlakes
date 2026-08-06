@@ -8,16 +8,10 @@ const BED_CLEAN_DURATION := 3.0
 const OUTHOUSE_CLEAN_DURATION := 4.0
 const IDLE_WAIT_DURATION := 2.0
 const FLOOR_MESS_CLEAN_RADIUS := 16.0
-const OUTDOOR_PENALTY := 90000.0  # ~300px bias toward indoor targets
-const SPREAD_RADIUS := 100.0      # penalty radius around other cleaners' targets
 
 var closet: RoomBroomCloset
 var active_room_target: RoomBase
 var active_broom_particles: GPUParticles2D
-
-static var occupied_beds = []
-static var occupied_outhouses = []
-static var cleaner_targets: Dictionary = {}  # npc -> Vector2
 
 func start_loop():
 	closet = _find_closet()
@@ -58,12 +52,12 @@ func loop():
 			await pause(IDLE_WAIT_DURATION)
 			continue
 
-		if target is ColorRect:
+		if target is Polygon2D:
 			_narrative = ["Mopping up a puddle...", "Cleaning the floor...", "Soaking it up..."].pick_random()
 		else:
 			_narrative = ["Sweeping up the dirt...", "Getting every last bit...", "Tidying the floor..."].pick_random()
-		cleaner_targets[npc] = _target_position(target)
-		_reserve_room_target(target)
+		CleanupTargetHandler.reserve_target(npc, target)
+		active_room_target = target if (target is RoomBed or target is RoomOuthouse) else null
 		await move(_target_position(target))
 
 		if not is_instance_valid(target):
@@ -79,7 +73,7 @@ func loop():
 		if is_instance_valid(target):
 			if target is Item:
 				_clean_target(target)
-			elif target is ColorRect or target is Sprite2D:
+			elif target is Polygon2D or target is Sprite2D:
 				_clean_floor_mess_target_and_nearby(target)
 			else:
 				_clean_target(target)
@@ -87,7 +81,7 @@ func loop():
 			_release_room_target(target)
 
 func stop_loop() -> BehaviourSaveData:
-	cleaner_targets.erase(npc)
+	CleanupTargetHandler.unregister_cleaner(npc)
 	_stop_broom_effect_immediately()
 	if is_instance_valid(closet):
 		if closet.on_destroy_signal.is_connected(_change_to_idle):
@@ -166,54 +160,12 @@ func _ensure_broom() -> void:
 		npc.Item.pick_up(broom)
 
 func _find_cleanup_target():
-	var candidates: Array = []
-
-	var closest_bed := _find_dirty_bed()
-	if closest_bed != null:
-		candidates.append(closest_bed)
-	var closest_outhouse := _find_dirty_outhouse()
-	if closest_outhouse != null:
-		candidates.append(closest_outhouse)
-
-	candidates.append_array(DirtHandler.get_all_in_range(npc.global_position, 99999.0))
-	candidates.append_array(PuddleHandler.get_all_in_range(npc.global_position, 99999.0))
-
-	var closest_drink: Item = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.DRINK)
-	if closest_drink != null:
-		candidates.append(closest_drink)
-
-	if candidates.is_empty():
-		return null
-
-	candidates.sort_custom(func(a, b): return _score_candidate(a) < _score_candidate(b))
-	return candidates[0]
-
-func _score_candidate(candidate) -> float:
-	var pos := _target_position(candidate)
-	var score := pos.distance_squared_to(npc.global_position)
-
-	var room = Building.query.room_at_position(pos)
-	if room == null or room.is_outside_room:
-		score += OUTDOOR_PENALTY
-
-	var spread_sq := SPREAD_RADIUS * SPREAD_RADIUS
-	for other_npc: Node in cleaner_targets:
-		if other_npc == npc:
-			continue
-		var dist_sq := pos.distance_squared_to(cleaner_targets[other_npc])
-		if dist_sq < spread_sq:
-			score += spread_sq - dist_sq
-
-	return score
+	return CleanupTargetHandler.find_target_for(npc)
 
 func _target_position(target) -> Vector2:
 	if not is_instance_valid(target):
 		return npc.global_position
-	if target is ColorRect:
-		return target.global_position + target.size * 0.5
-	if target is RoomOuthouse or target is RoomBed:
-		return target.get_center_floor_position()
-	return target.global_position
+	return CleanupTargetHandler.get_target_position(target)
 
 func _broom_pickup_target(broom: Item) -> Vector2:
 	var target := broom.global_position
@@ -226,22 +178,26 @@ func _clean_target(target) -> void:
 	if not is_instance_valid(target):
 		return
 
+	CleanupTargetHandler.log_cleaned(target, npc)
+
 	if target is Item:
 		target.destroy()
 	elif target is RoomBed:
 		(target as RoomBed).clean_bed()
 	elif target is RoomOuthouse:
 		(target as RoomOuthouse).uses = 0
-	elif target is ColorRect:
+	elif target is Polygon2D:
 		PuddleHandler.clean_puddle(target)
 	elif target is Sprite2D:
 		DirtHandler.clean_dirt(target)
 
 func _clean_floor_mess_in_range(center: Vector2) -> void:
 	for puddle in PuddleHandler.get_all_in_range(center, FLOOR_MESS_CLEAN_RADIUS):
+		CleanupTargetHandler.log_cleaned(puddle, npc)
 		PuddleHandler.clean_puddle(puddle)
 
 	for dirt in DirtHandler.get_all_in_range(center, FLOOR_MESS_CLEAN_RADIUS):
+		CleanupTargetHandler.log_cleaned(dirt, npc)
 		DirtHandler.clean_dirt(dirt)
 
 func _clean_floor_mess_target_and_nearby(target) -> void:
@@ -260,43 +216,7 @@ func _target_clean_duration(target) -> float:
 		return OUTHOUSE_CLEAN_DURATION
 	return CLEAN_DURATION
 
-func _find_dirty_bed() -> RoomBed:
-	for bed: RoomBed in get_all_rooms_of_type_ordered_by_distance(RoomBed):
-		if bed.needs_cleaning and not occupied_beds.has(bed):
-			return bed
-	return null
-
-func _find_dirty_outhouse() -> RoomOuthouse:
-	for outhouse: RoomOuthouse in get_all_rooms_of_type_ordered_by_distance(RoomOuthouse):
-		if outhouse.is_full() and not occupied_outhouses.has(outhouse):
-			return outhouse
-	return null
-
-func _reserve_room_target(target) -> void:
-	if target is RoomBed:
-		if not occupied_beds.has(target):
-			occupied_beds.append(target)
-		target.worker = npc
-		active_room_target = target
-	elif target is RoomOuthouse:
-		if not occupied_outhouses.has(target):
-			occupied_outhouses.append(target)
-		target.worker = npc
-		active_room_target = target
-	else:
-		active_room_target = null
-
 func _release_room_target(target) -> void:
-	
-	if is_instance_valid(target):	
-		if target is RoomBed:
-			occupied_beds.erase(target)
-			if is_instance_valid(target) and target.worker == npc:
-				target.worker = null
-		elif target is RoomOuthouse:
-			occupied_outhouses.erase(target)
-			if is_instance_valid(target) and target.worker == npc:
-				target.worker = null
-
+	CleanupTargetHandler.release_target(npc, target)
 	if active_room_target == target:
 		active_room_target = null

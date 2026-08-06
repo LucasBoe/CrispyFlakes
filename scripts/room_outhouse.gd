@@ -8,8 +8,19 @@ const DEFAULT_MAX_USES := 10
 const USE_DURATION := 7.0
 
 var user : NPC
-var uses : int = 0
 var queue: Array = []
+
+var _uses: int = 0
+var uses: int:
+	get: return _uses
+	set(value):
+		var was_full := is_full()
+		_uses = value
+		var now_full := is_full()
+		if now_full and not was_full:
+			CleanupTargetHandler.register_full_outhouse(self)
+		elif was_full and not now_full:
+			CleanupTargetHandler.unregister_full_outhouse(self)
 
 func join_queue(npc: NPC) -> void:
 	if not queue.has(npc):

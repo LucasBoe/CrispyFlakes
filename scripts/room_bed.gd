@@ -125,7 +125,10 @@ func release(guest: NPCGuest):
 	var idx: int = _bed_occupants[guest]
 	_bed_occupants.erase(guest)
 	current_guests.erase(guest)
+	var was_clean := _dirty_beds.is_empty()
 	_dirty_beds.append(idx)
+	if was_clean:
+		CleanupTargetHandler.register_dirty_bed(self)
 	_refresh_visual()
 	show_guest_count_notification()
 
@@ -133,6 +136,8 @@ func clean_bed():
 	if _dirty_beds.is_empty():
 		return
 	_dirty_beds.remove_at(0)
+	if _dirty_beds.is_empty():
+		CleanupTargetHandler.unregister_dirty_bed(self)
 	_refresh_visual()
 
 func get_sleep_price() -> int:
