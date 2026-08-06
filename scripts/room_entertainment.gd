@@ -30,6 +30,11 @@ func get_mood_boost() -> float:
 		return current_module.mood_boost
 	return DEFAULT_MOOD_BOOST
 
+func get_performance_name() -> String:
+	if current_module != null and not current_module.module_name.is_empty():
+		return current_module.module_name
+	return "Act"
+
 func has_active_performance() -> bool:
 	return current_module != null and worker != null
 

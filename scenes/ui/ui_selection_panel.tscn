@@ -767,6 +767,19 @@ theme_override_constants/separation = 2
 layout_mode = 2
 stretch_mode = 5
 
+[node name="FuelSeparatorLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("22_hpv7r")
+text = "/"
+vertical_alignment = 2
+
+[node name="AltConsumedIcon" type="TextureRect" parent="MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
+visible = false
+layout_mode = 2
+stretch_mode = 5
+
 [node name="ArrowLabel" type="Label" parent="MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow"]
 layout_mode = 2
 size_flags_vertical = 3

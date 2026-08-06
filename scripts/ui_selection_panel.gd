@@ -33,6 +33,8 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var room_module_ui: UISelectionRoomModules = $MarginContainer/MarginContainer/VBoxContainer/MarginContainer
 @onready var room_recipe_row: HBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow
 @onready var room_recipe_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ConsumedIcon
+@onready var room_recipe_fuel_separator: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/FuelSeparatorLabel
+@onready var room_recipe_alt_consumed_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/AltConsumedIcon
 @onready var room_recipe_arrow: Label = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ArrowLabel
 @onready var room_recipe_produced_icon: TextureRect = $MarginContainer/MarginContainer/VBoxContainer/RoomRecipeRow/ProducedIcon
 @onready var gambling_ui: VBoxContainer = $MarginContainer/MarginContainer/VBoxContainer/GamblingUI
@@ -61,6 +63,7 @@ const ROOM_TRADING_OFFICE_SCRIPT = preload("res://scripts/room_trading_office.gd
 @onready var narrative_label: RichTextLabel = $MarginContainer/MarginContainer/VBoxContainer/NarrativeLabel
 
 const _COIN_ATLAS = preload("res://assets/sprites/coins-sprite-sheet.png")
+const _FIRE_ICON = preload("res://assets/sprites/fire_icon.png")
 const _ROOM_TILE_SIZE := 48.0
 const _NPC_SELECTION_OFFSET := Vector2(0, -12)
 const _PANEL_TARGET_GAP := 96.0
@@ -582,7 +585,7 @@ func _show_for_room(room: RoomBase):
 	elif room is RoomEntertainment:
 		var entertainment := room as RoomEntertainment
 		if entertainment.worker:
-			var module_name : String = entertainment.current_module.module_name if entertainment.current_module else "Act"
+			var module_name : String = entertainment.get_performance_name()
 			var status_text := "%s Active (%d nearby guests)" % [module_name, entertainment.count_guests_in_range()]
 			_show_status_row(status_text, Color.TRANSPARENT, entertainment.worker, entertainment.worker.character_name)
 		else:
@@ -668,7 +671,7 @@ func _show_for_room(room: RoomBase):
 	room_money_label.visible = room.data != null and room.data.money_capacity > 0
 
 	var d = room.data
-	var has_recipe = d != null and (d.produces_item or d.has_consumed_item or d.produces_money)
+	var has_recipe = _room_has_fuel_heat_recipe(room) or (d != null and (d.produces_item or d.has_consumed_item or d.produces_money))
 	room_recipe_row.visible = has_recipe
 	if has_recipe:
 		_update_recipe_row(room)
@@ -739,12 +742,12 @@ func _update_stove_status(stove: RoomStove) -> void:
 		status_text = "Cooling Down"
 		status_color = Color.DARK_GOLDENROD
 	else:
-		status_text = "Out of Wood"
+		status_text = "Out of Fuel"
 		status_color = Color.ORANGE
 
 	if stove is RoomFireplace:
 		var fireplace := stove as RoomFireplace
-		var stock_text := "%d wood nearby" % fireplace.get_stockpiled_wood_count()
+		var stock_text := "%d fuel nearby" % fireplace.get_stockpiled_fuel_count()
 		if fireplace.is_fire_poked():
 			status_text += ", poked (%ds)" % int(ceili(fireplace.get_poked_seconds_remaining()))
 		status_text += ", " + stock_text
@@ -1086,9 +1089,22 @@ func _show_bounty_board():
 	)
 
 func _update_recipe_row(room: RoomBase):
+	if _room_has_fuel_heat_recipe(room):
+		room_recipe_consumed_icon.texture = Item.get_info(Enum.Items.WOOD).Tex
+		room_recipe_alt_consumed_icon.texture = Item.get_info(Enum.Items.COAL).Tex
+		room_recipe_produced_icon.texture = _FIRE_ICON
+		room_recipe_consumed_icon.show()
+		room_recipe_fuel_separator.show()
+		room_recipe_alt_consumed_icon.show()
+		room_recipe_arrow.show()
+		room_recipe_produced_icon.show()
+		return
+
 	var d = room.data
 	if d == null:
 		return
+	room_recipe_fuel_separator.hide()
+	room_recipe_alt_consumed_icon.hide()
 	if d.produces_money and room is RoomBar:
 		var bar := room as RoomBar
 		var has_module = bar.current_module != null
@@ -1109,6 +1125,9 @@ func _update_recipe_row(room: RoomBase):
 			room_recipe_consumed_icon.texture = Item.get_info(d.consumed_item_type).Tex
 		if d.produces_item:
 			room_recipe_produced_icon.texture = Item.get_info(d.produced_item_type).Tex
+
+func _room_has_fuel_heat_recipe(room: RoomBase) -> bool:
+	return room is RoomStove or room is RoomFireplace
 
 func _on_potential_target_deleted(room):
 	if target == room:

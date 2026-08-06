@@ -41,6 +41,20 @@ custom_minimum_size = Vector2(8, 8)
 layout_mode = 2
 stretch_mode = 5
 
+[node name="FuelSeparatorLabel" type="Label" parent="HBoxContainer/VBoxContainer/Recipe"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("3_sdiyn")
+text = "/"
+vertical_alignment = 1
+
+[node name="AltConsumedIcon" type="TextureRect" parent="HBoxContainer/VBoxContainer/Recipe"]
+visible = false
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+stretch_mode = 5
+
 [node name="ArrowLabel" type="Label" parent="HBoxContainer/VBoxContainer/Recipe"]
 layout_mode = 2
 size_flags_vertical = 3

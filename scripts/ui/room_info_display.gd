@@ -3,6 +3,11 @@ class_name RoomInfoDisplay
 
 const DONE_MARKER_DONE := preload("res://assets/sprites/ui/2x/tree_done_marker_done.png")
 const DONE_MARKER_NOT_DONE := preload("res://assets/sprites/ui/2x/tree_done_marker_not_done.png")
+const _FIRE_ICON := preload("res://assets/sprites/fire_icon.png")
+const _FUEL_HEAT_RECIPE_SCENES := [
+	"res://scenes/rooms/room_stove.tscn",
+	"res://scenes/rooms/room_fireplace.tscn",
+]
 
 @onready var _name_label: Label = $NameLabel
 @onready var _desc_label: RichTextLabel = $HBoxContainer/VBoxContainer/DescLabel
@@ -11,6 +16,8 @@ const DONE_MARKER_NOT_DONE := preload("res://assets/sprites/ui/2x/tree_done_mark
 @onready var _marker: TextureRect = $HBoxContainer/MarginContainer/MarginContainer/PreviewTextureRect/Marker
 @onready var _recipe: HBoxContainer = $HBoxContainer/VBoxContainer/Recipe
 @onready var _recipe_consumed: TextureRect = $HBoxContainer/VBoxContainer/Recipe/ConsumedIcon
+@onready var _recipe_fuel_separator: Label = $HBoxContainer/VBoxContainer/Recipe/FuelSeparatorLabel
+@onready var _recipe_alt_consumed: TextureRect = $HBoxContainer/VBoxContainer/Recipe/AltConsumedIcon
 @onready var _recipe_arrow: Label = $HBoxContainer/VBoxContainer/Recipe/ArrowLabel
 @onready var _recipe_produced: TextureRect = $HBoxContainer/VBoxContainer/Recipe/ProducedIcon
 @onready var _limit_row: HBoxContainer = $HBoxContainer/VBoxContainer/PlacementLimit
@@ -32,9 +39,15 @@ func set_desc(text: String) -> void:
 	_desc_label.text = text
 
 func _show_recipe(data: BuildableData) -> void:
+	if _shows_fuel_heat_recipe(data):
+		_show_fuel_heat_recipe()
+		return
+
 	if not data is RoomData or not (data.has_consumed_item or data.produces_item or data.produces_money):
 		_recipe.hide()
 		return
+	_recipe_fuel_separator.hide()
+	_recipe_alt_consumed.hide()
 	_recipe_consumed.visible = data.has_consumed_item
 	_recipe_arrow.visible = data.has_consumed_item and (data.produces_item or data.produces_money)
 	_recipe_produced.visible = data.produces_item or data.produces_money
@@ -47,6 +60,24 @@ func _show_recipe(data: BuildableData) -> void:
 		coin_tex.atlas = preload("res://assets/sprites/coins-sprite-sheet.png")
 		coin_tex.region = Rect2(0, 0, 8, 8)
 		_recipe_produced.texture = coin_tex
+	_recipe.show()
+
+func _shows_fuel_heat_recipe(data: BuildableData) -> bool:
+	if not data is RoomData:
+		return false
+	if data.packed_scene == null:
+		return false
+	return data.packed_scene.resource_path in _FUEL_HEAT_RECIPE_SCENES
+
+func _show_fuel_heat_recipe() -> void:
+	_recipe_consumed.texture = Item.get_info(Enum.Items.WOOD).Tex
+	_recipe_alt_consumed.texture = Item.get_info(Enum.Items.COAL).Tex
+	_recipe_produced.texture = _FIRE_ICON
+	_recipe_consumed.show()
+	_recipe_fuel_separator.show()
+	_recipe_alt_consumed.show()
+	_recipe_arrow.show()
+	_recipe_produced.show()
 	_recipe.show()
 
 func _show_placement_limit(data: BuildableData) -> void:
