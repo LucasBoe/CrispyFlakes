@@ -6,6 +6,8 @@ const STATE_LABEL_FIGHT := "Fighting"
 const NAMETAG_SCENE := preload("res://scenes/npcs/npc_nametag.tscn")
 const NAMETAG_LABEL_PATH := ^"MarginContainer/MarginContainer/LabelName"
 const NAMETAG_SHOW_ZOOM_THRESHOLD := 3.0
+const CLICK_COLLISION_DEBUG_COLOR := Color(1.0, 0.65, 0.1, 0.9)
+const PRECISE_CLICK_COLLISION_DEBUG_COLOR := Color(0.25, 0.9, 1.0, 0.95)
 
 var Animator : AnimationModule;
 var Tint : TintModule
@@ -104,6 +106,25 @@ func _refresh_status_icon():
 
 func click_on():
 	print("npc click")
+
+func get_click_collision_shapes() -> Array[CollisionShape2D]:
+	var shapes: Array[CollisionShape2D] = []
+	var broad_shape := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if broad_shape != null:
+		shapes.append(broad_shape)
+	var precise_shape := get_node_or_null("PreciseHover/CollisionShape2D") as CollisionShape2D
+	if precise_shape != null:
+		shapes.append(precise_shape)
+	return shapes
+
+func set_click_collision_debug_visible(is_visible: bool) -> void:
+	for shape: CollisionShape2D in get_click_collision_shapes():
+		if shape == null:
+			continue
+		shape.visible = is_visible
+		if shape.has_method("set_enable_debug_fill"):
+			shape.set_enable_debug_fill(is_visible)
+		shape.debug_color = PRECISE_CLICK_COLLISION_DEBUG_COLOR if shape.get_parent().name == "PreciseHover" else CLICK_COLLISION_DEBUG_COLOR
 	
 func force_behaviour(new_behaviour): 
 	return Behaviour.set_behaviour(new_behaviour)

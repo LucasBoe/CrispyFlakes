@@ -81,6 +81,7 @@ func guests_per_day_rate() -> float:
 var next_guest_progression = 1.0
 const SPECIAL_ENCOUNTER_DAYS := 4.0
 var next_special_encounter_progression := 0.0
+var _debug_npc_click_collision := false
 
 signal spawned_guest_signal
 signal worker_count_changed_signal
@@ -111,8 +112,11 @@ func _ready():
 	Console.add_command("follow_test", console_follow_test)
 	Console.add_command("follow_guest", console_follow_guest_test)
 	Console.add_command("arrest_all", console_arrest_all, ["fine"], 0, "Marks all guests for arrest and adds a fine.")
+	Console.add_command("debug_npc_click_collision", _console_toggle_debug_npc_click_collision, 0, 0, "Toggles visualization of NPC click collision shapes, including precise hover capsules.")
 
 func _process(delta):
+	_sync_npc_click_collision_debug()
+
 	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
 		return
 
@@ -128,6 +132,18 @@ func _process(delta):
 			if can_spawn_special_encounter():
 				spawn_special_encounter()
 			next_special_encounter_progression = 0.0
+
+func _console_toggle_debug_npc_click_collision() -> void:
+	_debug_npc_click_collision = !_debug_npc_click_collision
+	_sync_npc_click_collision_debug()
+	Console.print_line("NPC click collision debug " + ("ON" if _debug_npc_click_collision else "OFF"))
+
+func _sync_npc_click_collision_debug() -> void:
+	for child in get_children():
+		var npc := child as NPC
+		if npc == null or not is_instance_valid(npc):
+			continue
+		npc.set_click_collision_debug_visible(_debug_npc_click_collision)
 
 func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit := false, display_name := ""):
 	if not ignore_worker_limit and not can_hire_worker():
