@@ -1,12 +1,12 @@
 [gd_scene load_steps=15 format=3 uid="uid://dexn3jgkl81oo"]
 
 [ext_resource type="Script" uid="uid://b4qtfkcvvbkj4" path="res://scripts/npc/npc_worker.gd" id="1_d0f16"]
-[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="2_dc1yn"]
-[ext_resource type="Texture2D" uid="uid://dpc0ua32ji2lj" path="res://assets/sprites/cowboy_apron.png" id="3_aq4br"]
+[ext_resource type="Shader" uid="uid://uqhd5d60vdxh" path="res://assets/shaders/npc_recolor.gdshader" id="2_dc1yn"]
 [ext_resource type="Script" uid="uid://eaddnlatdj40" path="res://scripts/npc/modules/animation_module.gd" id="3_escwn"]
 [ext_resource type="Texture2D" uid="uid://cxv10feu4gxy0" path="res://assets/sprites/weapons/weapon_springfield_allin_overlay.png" id="4_aq4br"]
 [ext_resource type="Script" uid="uid://bfwg6wuhngt7r" path="res://scripts/npc/modules/item_module.gd" id="4_dc1yn"]
-[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="4_lmhvm"]
+[ext_resource type="Texture2D" uid="uid://bu3fkvg7titd" path="res://assets/sprites/npcs/body_poses_spritesheet.png" id="4_body"]
+[ext_resource type="Texture2D" uid="uid://dnxker7rtetpk" path="res://assets/sprites/npcs/head_variants_spritesheet.png" id="4_head"]
 [ext_resource type="Script" uid="uid://t15k8bf2nj4p" path="res://scripts/npc/modules/navigation_module.gd" id="5_aq4br"]
 [ext_resource type="Script" uid="uid://uvtyfyyu1i2t" path="res://scripts/npc/modules/behaviour_module.gd" id="6_lmhvm"]
 [ext_resource type="Texture2D" uid="uid://cvan8o50kj0dl" path="res://assets/sprites/cowboy_raw_double_gun.png" id="6_rmca1"]
@@ -19,14 +19,17 @@ height = 28.0
 shader = ExtResource("2_dc1yn")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
-shader_parameter/sprite_sheet = ExtResource("4_lmhvm")
-shader_parameter/sprite_index = Vector2i(0, 0)
-shader_parameter/cell_pixel_size = Vector2(24, 16)
-shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
-shader_parameter/apron_sheet = ExtResource("3_aq4br")
-shader_parameter/use_apron = true
+shader_parameter/body_sheet = ExtResource("4_body")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("4_head")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/body_type = 0
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = true
 shader_parameter/gun_texture = ExtResource("4_aq4br")
 shader_parameter/use_gun = false
+shader_parameter/head_variant = 0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_precise"]
 radius = 6.0

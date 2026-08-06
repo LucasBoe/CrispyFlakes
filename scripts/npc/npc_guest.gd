@@ -57,8 +57,7 @@ func apply_look(custom_look = null):
 	else:
 		look_info = NPCLookInfo.new_random()
 
-	mat.set_shader_parameter("base_hue_offset", look_info.color_offsets)
-	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
+	look_info.apply_to_material(mat)
 
 func _exit_tree():
 	super._exit_tree()

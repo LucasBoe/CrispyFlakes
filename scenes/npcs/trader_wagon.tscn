@@ -8,8 +8,9 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/wheel_front.png" id="6_front_wheel"]
 [ext_resource type="Texture2D" path="res://assets/sprites/wagon.png" id="7_wagon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/item_crate.png" id="8_crate"]
-[ext_resource type="Shader" path="res://assets/shaders/npc_with_outline.gdshader" id="9_npc_shader"]
-[ext_resource type="Texture2D" path="res://assets/sprites/cowboy_upper_bodies.png" id="10_upper_body"]
+[ext_resource type="Shader" path="res://assets/shaders/npc_recolor.gdshader" id="9_npc_shader"]
+[ext_resource type="Texture2D" path="res://assets/sprites/npcs/body_poses_spritesheet.png" id="10_body"]
+[ext_resource type="Texture2D" path="res://assets/sprites/npcs/head_variants_spritesheet.png" id="10_head"]
 [ext_resource type="Texture2D" path="res://assets/sprites/cowboy_raw_ride.png" id="11_ride"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_trader_wagon"]
@@ -35,11 +36,15 @@ shader_parameter/wheel_phase = 0.0
 shader = ExtResource("9_npc_shader")
 shader_parameter/outline_color = Color(0, 0, 0, 1)
 shader_parameter/corner_pixel = false
-shader_parameter/sprite_sheet = ExtResource("10_upper_body")
-shader_parameter/sprite_index = Vector2i(0, 0)
-shader_parameter/cell_pixel_size = Vector2(24, 16)
-shader_parameter/base_hue_offset = Vector3(0.12, 0.68, 0.12)
-shader_parameter/use_apron = false
+shader_parameter/body_sheet = ExtResource("10_body")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("10_head")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/body_type = 0
+shader_parameter/body_pose = 3
+shader_parameter/show_apron_overlay = false
+shader_parameter/head_variant = 0
 
 [node name="Trader_Wagon" type="Node2D"]
 z_index = -500

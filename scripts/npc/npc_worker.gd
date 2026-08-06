@@ -51,6 +51,18 @@ func _ready():
 func get_display_name() -> String:
 	return character_name if not character_name.is_empty() else "Worker"
 
+func apply_look(custom_look = null):
+	var mat := Animator.material as ShaderMaterial
+	if mat == null:
+		return
+
+	if custom_look:
+		look_info = custom_look
+	else:
+		look_info = NPCLookInfo.new_random()
+
+	look_info.apply_to_material(mat)
+
 func _process(delta):
 	super._process(delta)
 	_regenerate_fight_energy(delta)

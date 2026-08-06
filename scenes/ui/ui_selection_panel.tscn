@@ -12,9 +12,10 @@
 [ext_resource type="Script" uid="uid://nvdw1p4kha3c" path="res://scripts/ui_selection_panel.gd" id="23_wanb0"]
 [ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="24_xsu8o"]
 [ext_resource type="Script" uid="uid://cj1w0puuageyu" path="res://scripts/ui_need_info.gd" id="25_rbvcb"]
-[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="26_7e0oe"]
+[ext_resource type="Shader" uid="uid://uqhd5d60vdxh" path="res://assets/shaders/npc_recolor.gdshader" id="26_7e0oe"]
 [ext_resource type="Script" uid="uid://cdvg4ouo30fuo" path="res://scripts/ui/bounty_element.gd" id="26_wanb0"]
-[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="27_wanb0"]
+[ext_resource type="Texture2D" uid="uid://bu3fkvg7titd" path="res://assets/sprites/npcs/body_poses_spritesheet.png" id="27_body"]
+[ext_resource type="Texture2D" uid="uid://dnxker7rtetpk" path="res://assets/sprites/npcs/head_variants_spritesheet.png" id="27_head"]
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="28_peq8b"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="29_1f2rr"]
 [ext_resource type="Script" uid="uid://bylm6fts7jdun" path="res://scripts/ui/selection_room_module_ui.gd" id="33_3qqvy"]
@@ -43,12 +44,16 @@ texture = ExtResource("9_qtqix")
 shader = ExtResource("26_7e0oe")
 shader_parameter/outline_color = Color(0, 0, 0, 0)
 shader_parameter/corner_pixel = false
-shader_parameter/sprite_sheet = ExtResource("27_wanb0")
-shader_parameter/sprite_index = Vector2i(361, 142)
-shader_parameter/cell_pixel_size = Vector2(24, 16)
-shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
-shader_parameter/use_apron = false
+shader_parameter/body_sheet = ExtResource("27_body")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("27_head")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/body_type = 0
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
 shader_parameter/use_gun = false
+shader_parameter/head_variant = 0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pris"]
 bg_color = Color(1, 0.89411765, 0.19607843, 1)

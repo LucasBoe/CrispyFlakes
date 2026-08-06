@@ -10,5 +10,4 @@ func init(info):
 	if mat != null:
 		mat = mat.duplicate() as ShaderMaterial
 		npc_texture_rect.material = mat
-		mat.set_shader_parameter("base_hue_offset", info.look.color_offsets)
-		mat.set_shader_parameter("sprite_index", Vector2(info.look.head_index.x, info.look.head_index.y))
+		info.look.apply_to_material(mat)

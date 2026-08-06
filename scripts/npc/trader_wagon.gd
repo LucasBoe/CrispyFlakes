@@ -202,8 +202,7 @@ func _setup_rider_visuals() -> void:
 	mat = rider_sprite.material as ShaderMaterial
 
 	var look_info = NPCLookInfoScript.new_random()
-	mat.set_shader_parameter("base_hue_offset", look_info.color_offsets)
-	mat.set_shader_parameter("sprite_index", Vector2(look_info.head_index.x, look_info.head_index.y))
+	look_info.apply_to_material(mat)
 
 func _get_cargo_spawn_position(offset_x: float) -> Vector2:
 	var base := crate_front.global_position

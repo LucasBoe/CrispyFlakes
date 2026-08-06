@@ -29,8 +29,7 @@ func init(p: NPCGuest, b: int, f: int = 0) -> void:
 	if mat != null and prisoner.look_info != null:
 		mat = mat.duplicate() as ShaderMaterial
 		npc_texture.material = mat
-		mat.set_shader_parameter("base_hue_offset", prisoner.look_info.color_offsets)
-		mat.set_shader_parameter("sprite_index", Vector2(prisoner.look_info.head_index.x, prisoner.look_info.head_index.y))
+		prisoner.look_info.apply_to_material(mat)
 
 	progress_bar.max_value = 1.0
 	progress_bar.value = 0.0

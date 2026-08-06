@@ -32,12 +32,21 @@ const SHIVER_ANIMATION_SPEED = 45.0
 const SHIVER_POSITION_STRENGTH = 0.5
 const SHIVER_ROTATION_STRENGTH = 0.035
 
+## npc_recolor.gdshader reads the body pose from body_sheet via the
+## "body_pose" shader parameter (see POSE_* constants below), not from
+## this node's own texture. TEX_STAND is only assigned once for its
+## 24x24 size, so the Sprite2D's mesh/UV quad is generated correctly.
 const TEX_STAND = preload("res://assets/sprites/cowboy_raw_stand.png")
-const TEX_FIGHT = preload("res://assets/sprites/cowboy_raw_fight.png")
-const TEX_CARRY = preload("res://assets/sprites/cowboy_raw_carry.png")
-const TEX_SIT   = preload("res://assets/sprites/cowboy_raw_sit.png")
-const TEX_RIDE  = preload("res://assets/sprites/cowboy_raw_ride.png")
-const TEX_PANIC = preload("res://assets/sprites/cowboy_raw_panic.png")
+
+## Matches the "body_pose" hint_enum order in npc_recolor.gdshader.
+const POSE_STANDING = 0
+const POSE_SITTING = 1
+const POSE_PANIC = 2
+const POSE_RIDING = 3
+const POSE_FIGHT = 4
+const POSE_SINGLE_GUN = 5
+const POSE_DOUBLE_GUN = 6
+const POSE_CARRY = 7
 
 var npc
 var is_sitting : bool = false
@@ -60,8 +69,12 @@ const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 static var _music_sway_sources := 0
 static var should_sway_to_musik = false
 
+var _mat: ShaderMaterial = null
+
 func _ready():
 	material = material.duplicate(true)
+	_mat = material as ShaderMaterial
+	texture = TEX_STAND
 
 	npc = get_parent() as NPC
 	if npc:
@@ -83,22 +96,26 @@ func set_running_in_place(value: bool) -> void:
 	is_running_in_place = value
 
 func _update_texture():
+	if _mat == null:
+		return
+
+	var pose := POSE_STANDING
 	if is_riding:
-		texture = TEX_RIDE
+		pose = POSE_RIDING
 	elif (npc is NPCWorker) and (NPCWorker.picked_up_npc == npc or (npc as NPCWorker)._is_falling):
-		texture = TEX_PANIC
+		pose = POSE_PANIC
 	elif npc.is_in_fight_state():
-		texture = TEX_FIGHT
+		pose = POSE_FIGHT
 	elif is_sleeping:
-		texture = TEX_STAND
+		pose = POSE_STANDING
 	elif npc.Behaviour.behaviour_instance is PanicBehaviour or _is_in_punch:
-		texture = TEX_PANIC
+		pose = POSE_PANIC
 	elif is_sitting:
-		texture = TEX_SIT
+		pose = POSE_SITTING
 	elif npc.Item.current_item != null:
-		texture = TEX_CARRY
-	else:
-		texture = TEX_STAND
+		pose = POSE_CARRY
+
+	_mat.set_shader_parameter("body_pose", pose)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 var _drag_canvas_wrapper: Node2D = null

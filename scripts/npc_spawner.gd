@@ -137,6 +137,7 @@ func spawn_new_worker(opt_spawn_position = Vector2(-320,0), ignore_worker_limit 
 	worker.character_name = display_name if display_name != "" else NPCNameLibraryScript.get_random_name()
 	worker.global_position = opt_spawn_position
 	add_child(worker)
+	worker.apply_look()
 
 	workers.append(worker)
 	worker_count_changed_signal.emit()
@@ -261,18 +262,7 @@ func hire_guest_as_worker(guest: NPCGuest) -> NPCWorker:
 
 
 	if guest.look_info != null:
-		var worker_look := NPCLookInfo.new()
-		worker_look.head_index = guest.look_info.head_index
-		worker_look.color_offsets = guest.look_info.color_offsets
-		worker.look_info = worker_look
-
-		var animation_module := worker.get_node("AnimationModule") as Sprite2D
-		var mat: ShaderMaterial = null
-		if animation_module != null:
-			mat = animation_module.material as ShaderMaterial
-		if mat != null:
-			mat.set_shader_parameter("base_hue_offset", worker_look.color_offsets)
-			mat.set_shader_parameter("sprite_index", Vector2(worker_look.head_index.x, worker_look.head_index.y))
+		worker.apply_look(guest.look_info)
 
 	on_guest_destroy(guest)
 	guest.destroy()

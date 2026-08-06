@@ -2,20 +2,25 @@
 
 [ext_resource type="Script" uid="uid://k0c5vfo46ljk" path="res://scripts/ui/prisoner_item_ui.gd" id="1_prisui"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_prisui"]
-[ext_resource type="Shader" uid="uid://bx47wl8obhro4" path="res://assets/shaders/npc_with_outline.gdshader" id="3_prisui"]
+[ext_resource type="Shader" uid="uid://uqhd5d60vdxh" path="res://assets/shaders/npc_recolor.gdshader" id="3_prisui"]
 [ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="4_prisui"]
-[ext_resource type="Texture2D" uid="uid://bgndeeqq0rmhe" path="res://assets/sprites/cowboy_upper_bodies.png" id="5_prisui"]
+[ext_resource type="Texture2D" uid="uid://bu3fkvg7titd" path="res://assets/sprites/npcs/body_poses_spritesheet.png" id="5_body"]
+[ext_resource type="Texture2D" uid="uid://dnxker7rtetpk" path="res://assets/sprites/npcs/head_variants_spritesheet.png" id="5_head"]
 [ext_resource type="FontFile" uid="uid://dyh2tre2ukk01" path="res://assets/fonts/modern_dos/ModernDOS8x8.ttf" id="6_prisui"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_prisui"]
 shader = ExtResource("3_prisui")
 shader_parameter/outline_color = Color(0, 0, 0, 0)
 shader_parameter/corner_pixel = false
-shader_parameter/sprite_sheet = ExtResource("5_prisui")
-shader_parameter/sprite_index = Vector2i(361, 142)
-shader_parameter/cell_pixel_size = Vector2(24, 16)
-shader_parameter/base_hue_offset = Vector3(0.1, -0.33, 0)
-shader_parameter/use_apron = false
+shader_parameter/body_sheet = ExtResource("5_body")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("5_head")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/body_type = 0
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
+shader_parameter/head_variant = 0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
 bg_color = Color(1, 0.89411765, 0.19607843, 1)
