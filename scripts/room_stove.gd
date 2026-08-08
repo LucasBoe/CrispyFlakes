@@ -8,7 +8,7 @@ const REFUEL_THRESHOLD_RATIO := 0.2
 const LOW_FUEL_VISIBILITY_RATIO := 0.25
 const REFUEL_DURATION := 2.5
 const FIRE_START_CHANCE_PER_SECOND := 0.001
-const HEAT_RANGE := 96.0
+const HEAT_RANGE := 120.0
 const EMBER_MODULATE := Color(0.85, 0.68, 0.52, 1.0)
 const INACTIVE_MODULATE := Color(0.8, 0.8, 0.8, 1.0)
 const AURA_TEXTURE := preload("res://assets/sprites/sun.png")
@@ -92,6 +92,14 @@ func get_floor_position() -> Vector2:
 
 func get_temperature_range() -> float:
 	return HEAT_RANGE
+
+func get_heat_band_temperatures() -> Array[float]:
+	return [
+		TemperatureHandler.PRIMARY_HEAT_TEMPERATURE,
+		TemperatureHandler.SECONDARY_HEAT_TEMPERATURE,
+		TemperatureHandler.TERTIARY_HEAT_TEMPERATURE,
+		TemperatureHandler.QUATERNARY_HEAT_TEMPERATURE,
+	]
 
 func get_temperature_strength() -> float:
 	if _fuel_remaining > 0.0:

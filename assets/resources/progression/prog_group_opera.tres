@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://qqu1e11sw7dr" path="res://assets/resources/progression/prog_group_entertainment_II.tres" id="2_dep"]
+[ext_resource type="Resource" path="res://assets/resources/rooms/room_opera.tres" id="3_opera"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_roomdata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="5_infrastructuredata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Opera"
+description = "Turn the saloon into a destination with a grand performance hall."
+unlocks_rooms = Array[ExtResource("4_roomdata")]([ExtResource("3_opera")])
+depends_on = ExtResource("2_dep")

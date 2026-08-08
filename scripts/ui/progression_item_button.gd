@@ -268,6 +268,11 @@ func _apply_preview_textures() -> void:
 			if texture != null:
 				preview_textures.append(texture)
 				preview_built_states.append(ProgressionHandler.is_content_built(data))
+		for data in _item.get_unlocked_cages():
+			var texture: Texture =data.get_display_icon()
+			if texture != null:
+				preview_textures.append(texture)
+				preview_built_states.append(ProgressionHandler.is_content_built(data))
 
 	for i in range(_preview_slots.size()):
 		if i < preview_textures.size():

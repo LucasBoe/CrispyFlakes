@@ -8,7 +8,7 @@
 script = ExtResource("1_roomdata")
 packed_scene = ExtResource("2_roomscene")
 room_name = "Fireplace"
-room_desc = "Radiates warmth like a stove, but built into the room."
+room_desc = "Radiates warmth to nearby rooms, but over a smaller area than a stove."
 room_preview = ExtResource("2_qgldc")
 construction_price = 10
 tier = 6

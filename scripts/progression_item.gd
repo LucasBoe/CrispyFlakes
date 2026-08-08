@@ -18,6 +18,7 @@ enum ProgressionFlag {
 ## Optional: group contents that become buildable when this item is unlocked
 @export var unlocks_rooms: Array[RoomData] = []
 @export var unlocks_infrastructure_list: Array[InfrastructureData] = []
+@export var unlocks_cages: Array[CageData] = []
 
 ## Optional: main parent item used for the visual tree edge and as a prerequisite
 @export var depends_on: ProgressionItem
@@ -31,6 +32,9 @@ func get_unlocked_rooms() -> Array[RoomData]:
 func get_unlocked_infrastructure() -> Array[InfrastructureData]:
 	return unlocks_infrastructure_list
 
+func get_unlocked_cages() -> Array[CageData]:
+	return unlocks_cages
+
 func get_required_items() -> Array[ProgressionItem]:
 	var items: Array[ProgressionItem] = []
 	if depends_on != null:
@@ -41,7 +45,7 @@ func get_required_items() -> Array[ProgressionItem]:
 	return items
 
 func get_content_count() -> int:
-	return get_unlocked_rooms().size() + get_unlocked_infrastructure().size()
+	return get_unlocked_rooms().size() + get_unlocked_infrastructure().size() + get_unlocked_cages().size()
 
 func has_content() -> bool:
 	return get_content_count() > 0

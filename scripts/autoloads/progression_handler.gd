@@ -8,6 +8,7 @@ signal item_completed_signal(item: ProgressionItem)
 const ALL_ITEM_PATHS := [
 	"res://assets/resources/progression/prog_group_starter.tres",
 	"res://assets/resources/progression/prog_group_infrastructure_I.tres",
+	"res://assets/resources/progression/prog_group_mining.tres",
 	"res://assets/resources/progression/prog_group_beverages_I.tres",
 	"res://assets/resources/progression/prog_group_infrastructure_II.tres",
 	"res://assets/resources/progression/prog_group_beverages_II.tres",
@@ -16,6 +17,7 @@ const ALL_ITEM_PATHS := [
 	"res://assets/resources/progression/prog_group_infrastructure_III.tres",
 	"res://assets/resources/progression/prog_group_entertainment_I.tres",
 	"res://assets/resources/progression/prog_group_entertainment_II.tres",
+	"res://assets/resources/progression/prog_group_opera.tres",
 	"res://assets/resources/progression/prog_group_infrastructure_IV.tres",
 	"res://assets/resources/progression/prog_group_infrastructure_V.tres",
 	"res://assets/resources/progression/prog_group_beverages_III.tres",
@@ -23,21 +25,26 @@ const ALL_ITEM_PATHS := [
 	"res://assets/resources/progression/prog_group_safety_III.tres",
 	"res://assets/resources/progression/prog_group_whiskey.tres",
 	"res://assets/resources/progression/prog_group_fireplace.tres",
+	"res://assets/resources/progression/prog_group_stove.tres",
 	"res://assets/resources/progression/prog_group_bath.tres",
 	"res://assets/resources/progression/prog_group_whiskey_bar.tres",
 	"res://assets/resources/progression/prog_group_electricity_I.tres",
+	"res://assets/resources/progression/prog_group_elevator.tres",
 ]
 
 var _all_items: Array[ProgressionItem] = []
 var _unlocked_flags: Dictionary = {}
 var _unlocked_rooms: Array[RoomData] = []
 var _unlocked_infrastructure: Array[InfrastructureData] = []
+var _unlocked_cages: Array[CageData] = []
 var _unlocked_items: Array[ProgressionItem] = []
 var _completed_items: Array[ProgressionItem] = []
 var _items_by_room: Dictionary = {}
 var _items_by_infrastructure: Dictionary = {}
+var _items_by_cage: Dictionary = {}
 var _built_room_history: Dictionary = {}
 var _built_infrastructure_history: Dictionary = {}
+var _built_cage_history: Dictionary = {}
 var _default_groups_unlocked := false
 
 func _ready() -> void:
@@ -102,12 +109,19 @@ func get_item_for_room(room: RoomData) -> ProgressionItem:
 func get_item_for_infrastructure(data: InfrastructureData) -> ProgressionItem:
 	return _items_by_infrastructure.get(data, null)
 
+func get_item_for_cage(data: CageData) -> ProgressionItem:
+	return _items_by_cage.get(data, null)
+
 func is_room_build_unlocked(room: RoomData) -> bool:
 	var item := get_item_for_room(room)
 	return true if item == null else is_item_unlocked(item)
 
 func is_infrastructure_build_unlocked(data: InfrastructureData) -> bool:
 	var item := get_item_for_infrastructure(data)
+	return true if item == null else is_item_unlocked(item)
+
+func is_cage_build_unlocked(data: CageData) -> bool:
+	var item := get_item_for_cage(data)
 	return true if item == null else is_item_unlocked(item)
 
 func get_missing_requirements(item: ProgressionItem) -> Array[ProgressionItem]:
@@ -132,6 +146,9 @@ func get_item_completed_content_count(item: ProgressionItem) -> int:
 	for data in item.get_unlocked_infrastructure():
 		if _built_infrastructure_history.get(data, false):
 			count += 1
+	for data in item.get_unlocked_cages():
+		if _built_cage_history.get(data, false):
+			count += 1
 	return count
 
 func is_content_built(data) -> bool:
@@ -139,6 +156,8 @@ func is_content_built(data) -> bool:
 		return _built_room_history.get(data, false)
 	if data is InfrastructureData:
 		return _built_infrastructure_history.get(data, false)
+	if data is CageData:
+		return _built_cage_history.get(data, false)
 	return false
 
 func get_completed_item_count() -> int:
@@ -156,11 +175,14 @@ func _build_items() -> void:
 func _rebuild_maps() -> void:
 	_items_by_room.clear()
 	_items_by_infrastructure.clear()
+	_items_by_cage.clear()
 	for item in _all_items:
 		for room in item.get_unlocked_rooms():
 			_items_by_room[room] = item
 		for data in item.get_unlocked_infrastructure():
 			_items_by_infrastructure[data] = item
+		for data in item.get_unlocked_cages():
+			_items_by_cage[data] = item
 
 func _record_existing_buildables() -> void:
 	if not is_instance_valid(Building):
@@ -175,6 +197,9 @@ func _record_existing_buildables() -> void:
 	for data in _items_by_infrastructure.keys():
 		if Building.infrastructure.count_cells_by_data(data) > 0:
 			_built_infrastructure_history[data] = true
+	for data in _items_by_cage.keys():
+		if ElevatorHandler.count_cages_by_data(data) > 0:
+			_built_cage_history[data] = true
 
 func _on_room_created(room: RoomBase) -> void:
 	if room == null or room.data == null:
@@ -188,6 +213,9 @@ func _on_infrastructure_changed(_layer_name: StringName) -> void:
 	for data in _items_by_infrastructure.keys():
 		if Building.infrastructure.count_cells_by_data(data) > 0:
 			_built_infrastructure_history[data] = true
+	for data in _items_by_cage.keys():
+		if ElevatorHandler.count_cages_by_data(data) > 0:
+			_built_cage_history[data] = true
 	_refresh_progression_states()
 
 func _refresh_progression_states() -> void:
@@ -223,6 +251,9 @@ func _unlock_item(item: ProgressionItem) -> void:
 	for data in item.get_unlocked_infrastructure():
 		if not _unlocked_infrastructure.has(data):
 			_unlocked_infrastructure.append(data)
+	for data in item.get_unlocked_cages():
+		if not _unlocked_cages.has(data):
+			_unlocked_cages.append(data)
 	for flag in item.unlocks_flags:
 		if flag != ProgressionItem.ProgressionFlag.NONE and not _unlocked_flags.get(flag, false):
 			_unlocked_flags[flag] = true

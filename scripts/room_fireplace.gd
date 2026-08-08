@@ -2,6 +2,7 @@ extends RoomStove
 class_name RoomFireplace
 
 const _FIREPLACE_TEXTURE := preload("res://assets/sprites/fireplace.png")
+const FIREPLACE_HEAT_RANGE := 72.0
 const STOCKPILE_TARGET_FUEL := 2
 const STOCKPILE_RADIUS := 18.0
 const POKED_FIRE_DURATION := 18.0
@@ -24,6 +25,17 @@ func init_room(_x: int, _y: int) -> void:
 
 func get_heat_source_debug_name() -> String:
 	return "fireplace"
+
+
+func get_temperature_range() -> float:
+	return FIREPLACE_HEAT_RANGE
+
+
+func get_heat_band_temperatures() -> Array[float]:
+	return [
+		TemperatureHandler.PRIMARY_HEAT_TEMPERATURE,
+		TemperatureHandler.SECONDARY_HEAT_TEMPERATURE,
+	]
 
 
 func get_stockpile_anchor_position() -> Vector2:

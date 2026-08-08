@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=8 format=3]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://b7tvrokg5djuy" path="res://assets/resources/rooms/room_elevator.tres" id="2_elevator_shaft"]
+[ext_resource type="Resource" uid="uid://pxak3j8dyb4e" path="res://assets/resources/infrastructure/cage_data_elevator_cage.tres" id="3_elevator_cage"]
+[ext_resource type="Resource" uid="uid://b53dqrb3jphnc" path="res://assets/resources/progression/prog_group_electricity_I.tres" id="4_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="5_roomdata"]
+[ext_resource type="Script" uid="uid://b5ihq78pkfoel" path="res://scripts/cage_data.gd" id="6_cagedata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="7_infrastructuredata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Elevators"
+description = "Build powered elevator shafts and cages so people can travel between floors."
+unlocks_rooms = Array[ExtResource("5_roomdata")]([ExtResource("2_elevator_shaft")])
+unlocks_cages = Array[ExtResource("6_cagedata")]([ExtResource("3_elevator_cage")])
+depends_on = ExtResource("4_dep")

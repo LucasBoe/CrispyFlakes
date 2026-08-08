@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ProgressionItem" load_steps=6 format=3]
+
+[ext_resource type="Script" uid="uid://bmdgxclh807nf" path="res://scripts/progression_item.gd" id="1_script"]
+[ext_resource type="Resource" uid="uid://d0prurmrxm0ew" path="res://assets/resources/rooms/room_mineshaft_entrance.tres" id="2_mineshaft_entrance"]
+[ext_resource type="Resource" uid="uid://bd54mqikuaypd" path="res://assets/resources/progression/prog_group_infrastructure_I.tres" id="3_dep"]
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="4_roomdata"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="5_infrastructuredata"]
+
+[resource]
+script = ExtResource("1_script")
+display_name = "Mining"
+description = "Open a mineshaft entrance so workers can dig out tunnels and bring up coal."
+unlocks_rooms = Array[ExtResource("4_roomdata")]([ExtResource("2_mineshaft_entrance")])
+depends_on = ExtResource("3_dep")

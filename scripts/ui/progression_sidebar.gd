@@ -67,6 +67,8 @@ func _apply_room_sections(item: ProgressionItem) -> void:
 		all_content.append(room)
 	for data in item.get_unlocked_infrastructure():
 		all_content.append(data)
+	for data in item.get_unlocked_cages():
+		all_content.append(data)
 
 	_ensure_entry_count(all_content.size())
 	for i in range(_entry_sections.size()):

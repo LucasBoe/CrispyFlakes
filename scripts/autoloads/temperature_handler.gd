@@ -31,6 +31,7 @@ const TEMPERATURE_CACHE_INTERVAL := 0.25
 const PRIMARY_HEAT_TEMPERATURE := 26.0
 const SECONDARY_HEAT_TEMPERATURE := 16.0
 const TERTIARY_HEAT_TEMPERATURE := 12.0
+const QUATERNARY_HEAT_TEMPERATURE := 9.0
 const DEBUG_COLD_REFERENCE_TEMPERATURE := -12.0
 const DEBUG_WARM_REFERENCE_TEMPERATURE := PRIMARY_HEAT_TEMPERATURE
 
@@ -394,24 +395,42 @@ func _rebuild_temperature_cache() -> void:
 		if source_room == null or source_room.is_outside_room:
 			continue
 
-		_apply_stove_heat_bands(source_room)
+		_apply_heat_bands(source, source_room)
 
 
-func _apply_stove_heat_bands(source_room: RoomBase) -> void:
+func _apply_heat_bands(source, source_room: RoomBase) -> void:
 	if source_room == null or source_room.data == null:
 		return
 
-	var primary_rooms: Array[RoomBase] = [source_room]
-	_append_unique_rooms(primary_rooms, _get_same_level_adjacent_rooms(source_room))
-	_apply_heat_to_rooms(primary_rooms, PRIMARY_HEAT_TEMPERATURE)
+	var temperatures := _get_heat_band_temperatures(source)
+	if temperatures.is_empty():
+		return
 
-	var secondary_rooms := _get_adjacent_indoor_rooms_for_group(primary_rooms, _to_room_id_lookup(primary_rooms))
-	_apply_heat_to_rooms(secondary_rooms, SECONDARY_HEAT_TEMPERATURE)
+	var frontier: Array[RoomBase] = [source_room]
+	_append_unique_rooms(frontier, _get_same_level_adjacent_rooms(source_room))
+	_apply_heat_to_rooms(frontier, temperatures[0])
 
-	var blocked_room_ids := _to_room_id_lookup(primary_rooms)
-	blocked_room_ids.merge(_to_room_id_lookup(secondary_rooms), true)
-	var tertiary_rooms := _get_adjacent_indoor_rooms_for_group(secondary_rooms, blocked_room_ids)
-	_apply_heat_to_rooms(tertiary_rooms, TERTIARY_HEAT_TEMPERATURE)
+	var blocked_room_ids := _to_room_id_lookup(frontier)
+	for i in range(1, temperatures.size()):
+		frontier = _get_adjacent_indoor_rooms_for_group(frontier, blocked_room_ids)
+		if frontier.is_empty():
+			return
+		_apply_heat_to_rooms(frontier, temperatures[i])
+		blocked_room_ids.merge(_to_room_id_lookup(frontier), true)
+
+
+func _get_heat_band_temperatures(source) -> Array[float]:
+	var temperatures: Array[float] = []
+	if source != null and is_instance_valid(source) and source.has_method("get_heat_band_temperatures"):
+		for value in source.get_heat_band_temperatures():
+			temperatures.append(float(value))
+	if temperatures.is_empty():
+		temperatures = [
+			PRIMARY_HEAT_TEMPERATURE,
+			SECONDARY_HEAT_TEMPERATURE,
+			TERTIARY_HEAT_TEMPERATURE,
+		]
+	return temperatures
 
 
 func _apply_heat_to_rooms(rooms: Array[RoomBase], temperature: float) -> void:

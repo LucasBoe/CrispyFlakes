@@ -145,6 +145,8 @@ func _on_progression_item_unlocked(item: ProgressionItem) -> void:
 	if not item.get_required_items().is_empty():
 		for room in item.get_unlocked_rooms():
 			_new_unlock_data[room] = true
+		for data in item.get_unlocked_cages():
+			_new_unlock_data[data] = true
 
 	_on_buildables_changed(item)
 
@@ -258,6 +260,8 @@ func _is_data_unlocked(data) -> bool:
 		return ProgressionHandler.is_infrastructure_build_unlocked(data)
 	if data is RoomData:
 		return ProgressionHandler.is_room_build_unlocked(data)
+	if data is CageData:
+		return ProgressionHandler.is_cage_build_unlocked(data)
 	return true
 
 func _get_unlock_text(data) -> String:
@@ -266,6 +270,8 @@ func _get_unlock_text(data) -> String:
 		item = ProgressionHandler.get_item_for_infrastructure(data)
 	elif data is RoomData:
 		item = ProgressionHandler.get_item_for_room(data)
+	elif data is CageData:
+		item = ProgressionHandler.get_item_for_cage(data)
 
 	if item != null:
 		var missing := ProgressionHandler.get_missing_requirements(item)
