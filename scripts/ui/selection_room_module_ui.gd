@@ -232,7 +232,7 @@ func _on_buy_pressed() -> void:
 	# Wait for animation, then update room visuals
 	var purchased = _selected_module
 	var world_pos = _current_room.get_center_position() if is_instance_valid(_current_room) else global_position
-	await ResourceHandler.spend_animated(effective_price, world_pos)
+	await ResourceHandler.spend_animated(effective_price, world_pos, "Room Module Purchase")
 
 	for module in group.get_children():
 		if module == purchased:

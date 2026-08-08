@@ -148,7 +148,7 @@ func _set_startup_money(amount: int) -> void:
 	var current_money := int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0))
 	var delta := amount - current_money
 	ResourceHandler.resources[Enum.Resources.MONEY] = amount
-	ResourceHandler.money_transaction_history.clear()
+	ResourceHandler.reset_money_tracking()
 	ResourceHandler.on_resource_changed_signal.emit(Enum.Resources.MONEY, amount, delta)
 	ResourceHandler.on_money_changed_signal.emit()
 

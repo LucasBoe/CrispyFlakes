@@ -111,8 +111,8 @@ func _collect_bounty(prisoner: NPCGuest):
 	var fine: int = BountyHandler.npc_fight_fines.get(prisoner, 0)
 	var payout := bounty + fine
 	if payout > 0:
-		ResourceHandler.add_animated(Enum.Resources.MONEY, payout, npc.global_position + Vector2(0, 12))
-		ResourceHandler.change_money(payout)
+		ResourceHandler.add_animated(Enum.Resources.MONEY, payout, npc.global_position + Vector2(0, 12), Vector2i(-9999, -9999), "Sheriff Bounty Collection")
+		ResourceHandler.change_money(payout, "Sheriff Bounty Collection")
 	if prisoner.look_info != null:
 		BountyHandler.npc_bounties.erase(prisoner.look_info)
 	BountyHandler.clear_fine(prisoner)

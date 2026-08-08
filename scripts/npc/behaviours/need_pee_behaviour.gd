@@ -203,7 +203,7 @@ func _finish_relief(room: RoomBase = null, reason: String = "", mood: float = 0.
 	npc.needs_to_pee = 0.0
 
 	if room != null and room.get_service_price() > 0:
-		ResourceHandler.add_animated(Enum.Resources.MONEY, room.get_service_price(), room.get_center_position(), Vector2i(room.x, room.y))
+		ResourceHandler.add_animated(Enum.Resources.MONEY, room.get_service_price(), room.get_center_position(), Vector2i(room.x, room.y), "Toilet Service")
 
 	if not is_zero_approx(mood):
 		add_mood(mood, reason)

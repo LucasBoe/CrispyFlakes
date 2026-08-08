@@ -23,7 +23,8 @@ func _on_money_changed():
 	var total_money = ResourceHandler.resources[Enum.Resources.MONEY]
 
 	var added_money = 0.0
-	for change in ResourceHandler.money_transaction_history.values():
+	for entry in ResourceHandler.money_transaction_history:
+		var change := float(entry.get("change", 0.0))
 		if change < 0:
 			continue
 		added_money += change

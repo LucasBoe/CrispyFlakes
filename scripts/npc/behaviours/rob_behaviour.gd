@@ -60,7 +60,7 @@ func loop():
 	if stolen > 0:
 		var money_item := Global.ItemSpawner.create(Enum.Items.MONEY, npc.global_position).set_money_amount(stolen)
 		npc.Item.pick_up(money_item)
-		ResourceHandler.notify_stolen(stolen)
+		ResourceHandler.notify_stolen(stolen, "Robbery")
 		(npc as NPCGuest).stolen_amount = stolen
 		UiNotifications.create_notification_dynamic("$%d stolen!" % stolen, npc, Vector2(0, -40), UiNotifications.ICON_MINUS_3)
 	if npc.has_meta("horse"):

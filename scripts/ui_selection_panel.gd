@@ -1342,7 +1342,7 @@ func _bind_guest_hire_button(guest: NPCGuest):
 		hire_guest_button.disabled = true
 		var worker := Global.NPCSpawner.hire_guest_as_worker(guest)
 		if is_instance_valid(worker):
-			ResourceHandler.change_money(-cost)
+			ResourceHandler.change_money(-cost, "Hire Worker")
 			manually_select(worker)
 		else:
 			_bind_guest_hire_button(guest)

@@ -204,11 +204,11 @@ func _on_order_now_pressed() -> void:
 		return
 
 	_order_now_button.disabled = true
-	await ResourceHandler.spend_animated(total_cost, _room.get_center_position())
+	await ResourceHandler.spend_animated(total_cost, _room.get_center_position(), "Trading Office Order")
 	if _room == null or not is_instance_valid(_room):
 		return
 	if not _room.place_order(_draft_amounts):
-		ResourceHandler.change_money(total_cost)
+		ResourceHandler.change_money(total_cost, "Trading Office Refund")
 		var btn_center = _order_now_button.global_position + _order_now_button.size / 2
 		UiNotifications.create_notification_ui("needs worker", btn_center, null, Color.ORANGE)
 		_refresh()

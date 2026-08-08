@@ -399,6 +399,6 @@ func _apply_choice_money_delta(choice: Dictionary) -> void:
 		return
 	var effect_position := _target.global_position + Vector2(0, -20)
 	if money_delta > 0:
-		ResourceHandler.add_animated(Enum.Resources.MONEY, money_delta, effect_position)
+		ResourceHandler.add_animated(Enum.Resources.MONEY, money_delta, effect_position, Vector2i(-9999, -9999), "Special Encounter")
 	else:
-		ResourceHandler.spend_animated(abs(money_delta), effect_position)
+		ResourceHandler.spend_animated(abs(money_delta), effect_position, "Special Encounter")

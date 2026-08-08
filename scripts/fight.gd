@@ -234,7 +234,7 @@ func _return_guest_stolen_money(guest: NPCGuest, log_prefix: String = "[Fight] R
 		if is_instance_valid(carried):
 			carried.destroy()
 	var room := Building.query.room_at_floor_position(guest.global_position) as RoomBase
-	ResourceHandler.add_animated_money_to_room_or_floor(guest.stolen_amount, guest.global_position, room)
+	ResourceHandler.add_animated_money_to_room_or_floor(guest.stolen_amount, guest.global_position, room, "Recovered Stolen Money")
 	print("%s guest=%s amount=%d" % [log_prefix, guest.name, guest.stolen_amount])
 	guest.stolen_amount = 0
 

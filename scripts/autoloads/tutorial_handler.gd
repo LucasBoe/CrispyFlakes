@@ -213,9 +213,9 @@ func claim_quest_reward(quest: TutorialQuest, reward_source_position = null) -> 
 		return
 	if quest.reward_money > 0:
 		if reward_source_position is Vector2:
-			ResourceHandler.add_animated(Enum.Resources.MONEY, quest.reward_money, reward_source_position)
+			ResourceHandler.add_animated(Enum.Resources.MONEY, quest.reward_money, reward_source_position, Vector2i(-9999, -9999), "Tutorial Reward")
 		else:
-			ResourceHandler.change_money(quest.reward_money)
+			ResourceHandler.change_money(quest.reward_money, "Tutorial Reward")
 	for effect: Callable in quest.reward_effects:
 		if effect.is_valid():
 			effect.call()

@@ -353,7 +353,7 @@ func _input(event):
 				Camera.add_shake(2.0, 0.08)
 
 			stop_building()
-			ResourceHandler.change_resource(Enum.Resources.MONEY, -active_data.construction_price)
+			ResourceHandler.change_resource(Enum.Resources.MONEY, -active_data.construction_price, "Construction")
 			if shift_held:
 				match repeat_mode:
 					BuildMode.ROOM:

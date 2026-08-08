@@ -48,7 +48,7 @@ func loop():
 				drinks_available -= .25
 
 				var sale_price := roundi(bar.get_sale_price() * npc.Traits.get_sale_multiplier())
-				ResourceHandler.add_animated(Enum.Resources.MONEY, sale_price, bar.get_center_position(), Vector2i(bar.x, bar.y))
+				ResourceHandler.add_animated(Enum.Resources.MONEY, sale_price, bar.get_center_position(), Vector2i(bar.x, bar.y), "Bar Sales")
 			else:
 				_narrative = "Waiting for orders..."
 				await pause(1)
