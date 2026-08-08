@@ -31,12 +31,21 @@ func _ready():
 	ResourceHandler.on_animate_resource_spend_signal.connect(animate_resource_spend)
 	coin_anim_routine()
 
-func animate_resource_add(resource, amount, global_pos, duration):
-	var max = min(amount, 1000)
-	for i in max:
+func animate_resource_add(resource, amount, global_pos, duration, source: String = ""):
+	var coin_count = int(min(amount, 1000))
+	if coin_count <= 0:
+		if amount != 0:
+			ResourceHandler.change_resource(resource, amount, source)
+		return
+	var base_share = int(amount) / coin_count
+	var remainder = int(amount) - base_share * coin_count
+	for i in coin_count:
 		var anim = ActiveAnimation.new()
 		anim.Origin = global_pos
 		anim.Duration = duration * PHASE_2_DURATION
+		anim.ResourceType = resource
+		anim.Source = source
+		anim.Value = base_share + (1 if i < remainder else 0)
 
 		var instance = coin_dummy.duplicate()
 		add_child(instance)
@@ -115,6 +124,7 @@ func _process(_delta):
 	for a in finished:
 		actively_animated.erase(a)
 		a.Sprite.queue_free()
+		ResourceHandler.change_resource(a.ResourceType, a.Value, a.Source)
 		var remaining = actively_animated.size() + coin_queue.size()
 		var t = clampf(float(remaining) / PITCH_BATCH_THRESHOLD, 0.0, 1.0)
 		coin_pitch_target = maxf(coin_pitch_target, lerp(PITCH_TARGET_SMALL, PITCH_TARGET_LARGE, t))
@@ -150,3 +160,6 @@ class ActiveAnimation:
 	var TimeStart: float
 	var TimeEnd: float
 	var Duration: float
+	var ResourceType
+	var Value: int
+	var Source: String = ""
