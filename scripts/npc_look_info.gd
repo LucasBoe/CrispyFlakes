@@ -35,12 +35,88 @@ var channel_brightness_random : PackedFloat32Array
 # per-category design constants defined in the shader itself.
 var random_channel : PackedInt32Array
 
+const SPAWN_BODY_TYPE_MIN := 1
+const SPAWN_BODY_TYPE_MAX := 4
+
+## Guest count a type needs before its average mood is fully trusted as a
+## spawn-weight signal (see _pick_mood_weighted_spawn_body_type()). Below
+## this, the signal is blended toward neutral so one lone happy/miserable
+## guest can't swing the whole type's future spawn rate.
+const MOOD_WEIGHT_SAMPLE_CONFIDENCE := 8.0
+
 static func new_random() -> NPCLookInfo:
+	return _new_random_with_body_type(_pick_mood_weighted_spawn_body_type())
+
+## Freshly spawned guests skew toward whichever type is currently doing
+## well ("word gets around") - each candidate type's spawn weight scales
+## with its live guests' average mood (see NPCSpawner.get_guest_type_stats()),
+## blended toward neutral for types with few guests so a single outlier
+## guest can't dominate the weighting.
+static func _pick_mood_weighted_spawn_body_type() -> int:
+	var stats: Dictionary = {}
+	if Global.NPCSpawner != null:
+		stats = Global.NPCSpawner.get_guest_type_stats()
+
+	var candidates: Array[int] = []
+	var weights: Array[float] = []
+	var total_weight := 0.0
+	for candidate_type in range(SPAWN_BODY_TYPE_MIN, SPAWN_BODY_TYPE_MAX + 1):
+		var blended_mood := 0.5
+		if stats.has(candidate_type):
+			var entry: Dictionary = stats[candidate_type]
+			var confidence: float = clampf(float(entry.count) / MOOD_WEIGHT_SAMPLE_CONFIDENCE, 0.0, 1.0)
+			blended_mood = lerpf(0.5, entry.avg_mood, confidence)
+		var weight: float = lerpf(0.5, 1.5, blended_mood)
+		candidates.append(candidate_type)
+		weights.append(weight)
+		total_weight += weight
+
+	if total_weight <= 0.0:
+		return candidates.pick_random()
+
+	var roll := randf() * total_weight
+	for i in candidates.size():
+		roll -= weights[i]
+		if roll <= 0.0:
+			return candidates[i]
+
+	return candidates[candidates.size() - 1]
+
+## Body type is picked weighted by each archetype's bounty_weight (see
+## NPCArchetype.bounty_weight) instead of the uniform range new_random()
+## uses, so bounties skew toward whichever types are configured as more
+## "wanted" (e.g. mostly outlaws) rather than any of the 4 common types
+## equally.
+static func new_random_bounty() -> NPCLookInfo:
+	return _new_random_with_body_type(_pick_weighted_bounty_body_type())
+
+static func _pick_weighted_bounty_body_type() -> int:
+	var candidate_count: int = NPCArchetypeLibrary.PATHS.size()
+	var total_weight := 0.0
+	var weights: Array[float] = []
+	for candidate_type in candidate_count:
+		var archetype = NPCArchetypeLibrary.get_archetype(candidate_type)
+		var weight: float = archetype.bounty_weight
+		weights.append(weight)
+		total_weight += weight
+
+	if total_weight <= 0.0:
+		return randi_range(0, candidate_count - 1)
+
+	var roll := randf() * total_weight
+	for candidate_type in weights.size():
+		roll -= weights[candidate_type]
+		if roll <= 0.0:
+			return candidate_type
+
+	return weights.size() - 1
+
+static func _new_random_with_body_type(new_body_type: int) -> NPCLookInfo:
 	var look = NPCLookInfo.new()
 	look.head_index = Vector2i(randi_range(0, 16), randi_range(0, 9))
 	look.color_offsets = Vector3(randf(), randf_range(0.5, 0.833333), randf_range(-0.2, 0.5))
 
-	look.body_type = randi_range(1, 4)
+	look.body_type = new_body_type
 	look.head_variant = randi_range(0, 7)
 	look.channel_hue_random = PackedFloat32Array()
 	look.channel_brightness_random = PackedFloat32Array()

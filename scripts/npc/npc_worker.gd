@@ -60,6 +60,10 @@ func apply_look(custom_look = null):
 		look_info = custom_look
 	else:
 		look_info = NPCLookInfo.new_random()
+		# See NPCGuest.apply_look() - only re-roll for a brand-new look;
+		# a custom_look (e.g. promotion) already carries copied traits.
+		if Traits != null:
+			Traits.roll_random_traits(NPCArchetypeLibrary.get_archetype_for_look(look_info))
 
 	look_info.apply_to_material(mat)
 

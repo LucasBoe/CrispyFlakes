@@ -33,12 +33,12 @@ var traits: Array = []
 func _init(owner) -> void:
 	npc = owner
 
-func ensure_traits() -> void:
+func ensure_traits(archetype = null) -> void:
 	if traits.is_empty():
-		roll_random_traits()
+		roll_random_traits(archetype)
 
-func roll_random_traits() -> void:
-	traits = TraitLibraryScript.roll_traits(MAX_RANDOM_TRAIT_COUNT)
+func roll_random_traits(archetype = null) -> void:
+	traits = TraitLibraryScript.roll_traits(MAX_RANDOM_TRAIT_COUNT, archetype)
 
 func copy_from(other) -> void:
 	traits.clear()

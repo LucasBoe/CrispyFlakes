@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=3 format=3 uid="uid://ct2y5eweffr85"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://0rkqp05o65wq" path="res://assets/sprites/npcs/npc_type_source_investor.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Investor"
+icon = ExtResource("2_icon")
+flavor_text = "Investors hate dirt and having to stand while they drink. A sharp gamble or a clean room keeps them happy."
+service_weights = {
+"cleaning": 2.0,
+"drinking": 1.0,
+"gambling": 2.0,
+"sleep": 1.0
+}
+drink_weights = {
+"WATER_BUCKET": 0.7,
+"WISKEY_BOX": 1.5
+}
+mood_sensitivity = 1.4
+dirt_production = 0.4
+bounty_weight = 0.5
+no_seat_mood_penalty = 0.3
+boosted_positive_traits = Array[int]([14, 16])
+boosted_negative_traits = Array[int]([5, 11])

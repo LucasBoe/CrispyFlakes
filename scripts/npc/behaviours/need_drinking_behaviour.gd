@@ -9,10 +9,14 @@ static func get_probability_by_needs(needs : NeedsModule):
 
 func loop():
 	_narrative = ["Thirsty...", "Parched...", "Craving a drink..."].pick_random()
+	var archetype = NPCArchetypeLibrary.get_archetype_for_look(npc.look_info if npc != null else null)
 	bar = get_least_loaded_room_of_type(
 		RoomBar,
 		Callable(),
-		func(candidate: RoomBar): return candidate.drink_requests.size()
+		# Divide apparent load by drink preference so a bar serving this
+		# NPC's favored drink looks less crowded and gets picked over an
+		# equally-loaded bar serving something it doesn't care for.
+		func(candidate: RoomBar): return candidate.drink_requests.size() / archetype.get_drink_weight(candidate.drink_type)
 	)
 
 	if not bar:
@@ -66,6 +70,8 @@ func loop():
 			await move(get_guest_allowed_random_floor_position(npc.Needs.drunkenness.strength))
 			if stopped:
 				return
+			if archetype.no_seat_mood_penalty > 0.0:
+				add_mood(-archetype.no_seat_mood_penalty, "No Seat")
 
 		CowboyTalk.talk(["I needed that.", "Hits the spot.", "Mighty fine.", "Ahh."].pick_random(), npc)
 

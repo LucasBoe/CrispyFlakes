@@ -39,6 +39,15 @@ func restore_previous_behaviour() -> Behaviour:
 	var data = previous_data
 	return set_behaviour(data.type, data)
 
+## Behaviour -> service id, for weighting against the NPC's archetype
+## (see NPCArchetype.service_weights).
+var SERVICE_ID_BY_BEHAVIOUR := {
+	NeedDrinkingBehaviour: "drinking",
+	NeedCleaningBehaviour: "cleaning",
+	NEED_GAMBLING_BEHAVIOUR: "gambling",
+	NEED_SNAKE_OIL_BEHAVIOUR: "snake_oil",
+}
+
 func get_behaviour_from_available_rooms(all_rooms):
 	var all = []
 
@@ -56,6 +65,28 @@ func get_behaviour_from_available_rooms(all_rooms):
 		all.append(NEED_SNAKE_OIL_BEHAVIOUR)
 
 	if all.size() > 0:
-		return all.pick_random()
-		
+		return _pick_weighted_behaviour(all)
+
 	return IdleBehaviour
+
+func _pick_weighted_behaviour(candidates: Array):
+	var archetype = NPCArchetypeLibrary.get_archetype_for_look(npc.look_info if npc != null else null)
+
+	var total_weight := 0.0
+	var weights: Array[float] = []
+	for candidate in candidates:
+		var service_id: String = SERVICE_ID_BY_BEHAVIOUR.get(candidate, "")
+		var weight: float = archetype.get_service_weight(service_id) if service_id != "" else 1.0
+		weights.append(weight)
+		total_weight += weight
+
+	if total_weight <= 0.0:
+		return candidates.pick_random()
+
+	var roll := randf() * total_weight
+	for i in candidates.size():
+		roll -= weights[i]
+		if roll <= 0.0:
+			return candidates[i]
+
+	return candidates[candidates.size() - 1]

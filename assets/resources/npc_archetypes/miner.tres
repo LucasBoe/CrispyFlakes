@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=3 format=3 uid="uid://ca31oikqfddgb"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dsdmyu7yu44vl" path="res://assets/sprites/npcs/npc_type_source_miner.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Miner"
+icon = ExtResource("2_icon")
+flavor_text = "Miners stumble in exhausted from the shafts, craving sleep and a stiff drink - a little dirt never bothered them."
+service_weights = {
+"cleaning": 0.25,
+"drinking": 1.0,
+"gambling": 0.5,
+"sleep": 2.0
+}
+drink_weights = {
+"BEER_BARREL": 1.4,
+"WATER_BUCKET": 0.7,
+"WISKEY_BOX": 1.2
+}
+mood_sensitivity = 0.4
+dirt_production = 2.5
+bounty_weight = 0.5
+boosted_positive_traits = Array[int]([0, 8])
+boosted_negative_traits = Array[int]([3, 13])

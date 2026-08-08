@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=3 format=3 uid="uid://cqujbv4l7s3ci"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bipbw26qs3ijm" path="res://assets/sprites/npcs/npc_type_source_settler.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Settler"
+icon = ExtResource("2_icon")
+flavor_text = "Settlers keep to themselves, sipping water and steering well clear of the gambling tables."
+service_weights = {
+"cleaning": 1.0,
+"drinking": 1.0,
+"gambling": 0.0,
+"sleep": 1.0
+}
+drink_weights = {
+"BEER_BARREL": 0.0,
+"WATER_BUCKET": 1.0,
+"WISKEY_BOX": 0.0
+}
+bounty_weight = 0.5
+boosted_positive_traits = Array[int]([18, 4])
+boosted_negative_traits = Array[int]([7, 19])

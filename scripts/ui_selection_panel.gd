@@ -86,6 +86,7 @@ var _connection_line: PixelLine = null
 var _npc_base_description: String = ""
 var _npc_narrative_text: String = ""
 var _trait_container: VBoxContainer = null
+var _type_container: VBoxContainer = null
 var _mood_log_size: int = -1
 var _is_mood_log_expanded := true
 var _equipment_container: VBoxContainer = null
@@ -256,6 +257,10 @@ func _clear_instances():
 		_trait_container.queue_free()
 	_trait_container = null
 
+	if is_instance_valid(_type_container):
+		_type_container.queue_free()
+	_type_container = null
+
 	room_money_label.hide()
 	room_recipe_row.hide()
 	room_module_ui.hide()
@@ -385,6 +390,7 @@ func _show_for_guest(guest: NPCGuest):
 	_npc_base_description = "This guest will stay around as long as he is satisfied with your saloons services."
 	describtion_label.text = _npc_base_description
 	describtion_label.show()
+	_rebuild_type_ui(guest)
 	_rebuild_traits_ui(guest)
 	room_delete_button.hide()
 
@@ -429,7 +435,8 @@ func _rebuild_traits_ui(npc: NPC) -> void:
 	var container := VBoxContainer.new()
 	container.add_theme_constant_override("separation", 2)
 	parent.add_child(container)
-	parent.move_child(container, describtion_label.get_index() + 1)
+	var anchor: Control = _type_container if is_instance_valid(_type_container) else describtion_label
+	parent.move_child(container, anchor.get_index() + 1)
 	_trait_container = container
 
 	var title := status_icon_label_dummy.duplicate() as Label
@@ -440,9 +447,80 @@ func _rebuild_traits_ui(npc: NPC) -> void:
 	for data in npc.Traits.traits:
 		container.add_child(_create_trait_row(data))
 
+func _rebuild_type_ui(npc: NPC) -> void:
+	if is_instance_valid(_type_container):
+		_type_container.queue_free()
+	_type_container = null
+
+	if npc.look_info == null:
+		return
+
+	var archetype = NPCArchetypeLibrary.get_archetype(npc.look_info.body_type)
+	if archetype.flavor_text.is_empty():
+		return
+
+	var parent: VBoxContainer = need_ui_dummy.get_parent()
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	parent.add_child(container)
+	parent.move_child(container, describtion_label.get_index() + 1)
+	_type_container = container
+
+#	var title := status_icon_label_dummy.duplicate() as Label
+#	title.text = "Type"
+#	title.show()
+#	container.add_child(title)
+
+	container.add_child(_create_type_row(archetype))
+
+func _create_type_row(archetype) -> Control:
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.3, 0.3, 0.32, 0.24)
+	style.content_margin_left = 4
+	style.content_margin_top = 2
+	style.content_margin_right = 4
+	style.content_margin_bottom = 2
+	panel.add_theme_stylebox_override("panel", style)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 4)
+	panel.add_child(row)
+
+	if archetype.icon != null:
+		var icon_rect := TextureRect.new()
+		icon_rect.texture = archetype.icon
+		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+		row.add_child(icon_rect)
+
+	var text_box := VBoxContainer.new()
+	text_box.add_theme_constant_override("separation", 0)
+	text_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(text_box)
+
+	var name_label := status_icon_label_dummy.duplicate() as Label
+	name_label.text = archetype.display_name
+	name_label.add_theme_color_override("font_color", Color(0.85, 0.8, 0.65))
+	name_label.show()
+	text_box.add_child(name_label)
+
+	var desc_label := Label.new()
+	desc_label.theme = status_icon_label_dummy.theme
+	desc_label.text = archetype.flavor_text
+	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	desc_label.add_theme_color_override("font_color", Color(0.9, 0.86, 0.77, 0.9))
+	text_box.add_child(desc_label)
+
+	return panel
+
 func _position_worker_fight_response_row() -> void:
 	var parent := worker_fight_response_row.get_parent()
-	var anchor: Control = _trait_container if is_instance_valid(_trait_container) else describtion_label
+	var anchor: Control = describtion_label
+	if is_instance_valid(_trait_container):
+		anchor = _trait_container
+	elif is_instance_valid(_type_container):
+		anchor = _type_container
 	parent.move_child(worker_fight_response_row, anchor.get_index() + 1)
 
 func _create_trait_row(data) -> Control:

@@ -17,6 +17,27 @@ var guests = []
 var workers = []
 var special_npcs = []
 
+## Live guest count + average mood per NPCLookInfo.body_type, keyed by
+## the int body_type: {count: int, avg_mood: float}.
+func get_guest_type_stats() -> Dictionary:
+	var stats: Dictionary = {}
+	for guest: NPCGuest in get_live_guests():
+		if not guest.counts_towards_guest_total() or guest.look_info == null:
+			continue
+		var body_type: int = guest.look_info.body_type
+		if not stats.has(body_type):
+			stats[body_type] = {"count": 0, "_mood_total": 0.0}
+		stats[body_type].count += 1
+		if guest.Needs != null:
+			stats[body_type]._mood_total += guest.Needs.mood.strength
+
+	for body_type in stats.keys():
+		var entry: Dictionary = stats[body_type]
+		entry["avg_mood"] = entry._mood_total / entry.count if entry.count > 0 else 1.0
+		entry.erase("_mood_total")
+
+	return stats
+
 func get_average_mood() -> float:
 	var total := 0.0
 	var count := 0

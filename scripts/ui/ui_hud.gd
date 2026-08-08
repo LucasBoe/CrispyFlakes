@@ -1,9 +1,11 @@
 extends Control
 
+const GUEST_TYPE_FALLBACK_ICON := preload("res://assets/sprites/cowboy_raw_stand.png")
+
 @onready var label_workers: Label = %Label_Workers
 @onready var label_idles: Label = %Label_Idles
 @onready var button_idles: Button = %Button_Idles
-@onready var button_highlight: Button = $VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer/Button
+@onready var button_highlight: Button = %Button_Highlight
 @onready var label_guest_amount: Label = %Label_GuestAmount
 @onready var progression_bar: ProgressBar = %ProgressBar_GuestProgression
 @onready var label_guest_rate: Label = %Label_GuestRate
@@ -11,10 +13,13 @@ extends Control
 @onready var button_mood_foldout: Button = %Button_MoodFoldout
 @onready var mood_affector_container : MarginContainer = $VBoxContainer/MarginContainer2
 @onready var mood_affectors: VBoxContainer = %MoodAffectors
+@onready var guest_type_row_container: HBoxContainer = %HBoxContainer_GuestTypes
+@onready var guest_type_template_row: VBoxContainer = %GuestType_VBoxContainer
 
 var _highlights_active: bool = false
 var _is_mood_breakdown_expanded := false
 var _mood_affectors_signature := ""
+var _guest_type_signature: Array = []
 
 func _ready() -> void:
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
@@ -29,6 +34,7 @@ func _ready() -> void:
 	button_mood_foldout.pressed.connect(_on_mood_foldout_pressed)
 	FeatureGateHandler.feature_changed_signal.connect(_on_feature_changed)
 	visible = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
+	guest_type_template_row.hide()
 	_on_jobs_changed()
 	_update_mood_breakdown_visibility()
 
@@ -109,14 +115,15 @@ func _process(_delta: float) -> void:
 		label_guest_rate.text = ""
 	_update_avg_mood(guest_count)
 	_update_mood_breakdown(guest_count)
+	_update_guest_type_breakdown(guest_count)
 
 func _update_avg_mood(guest_count: int) -> void:
 	if guest_count == 0:
-		label_avg_mood.text = "Mood: -"
+		label_avg_mood.text = "Avg. Mood: -"
 		label_avg_mood.remove_theme_color_override("font_color")
 		return
 	var avg := Global.NPCSpawner.get_average_mood()
-	label_avg_mood.text = "Mood: %d%%" % roundi(avg * 100)
+	label_avg_mood.text = "Avg. Mood: %d%%" % roundi(avg * 100)
 	label_avg_mood.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg))
 
 func _update_mood_breakdown(guest_count: int) -> void:
@@ -208,3 +215,67 @@ func _on_mood_foldout_pressed() -> void:
 		return
 	_is_mood_breakdown_expanded = not _is_mood_breakdown_expanded
 	_update_mood_breakdown_visibility()
+
+## Static row of icon+count+mood per guest body_type, always visible (no
+## foldout) - mirrors UIItemsController's template-row-duplication
+## pattern (scripts/ui/ui_items_controller.gd).
+func _update_guest_type_breakdown(guest_count: int) -> void:
+	if guest_count == 0:
+		_guest_type_signature = []
+		_apply_guest_type_stats({})
+		return
+
+	var stats := Global.NPCSpawner.get_guest_type_stats()
+	var signature := _build_guest_type_signature(stats)
+	if signature == _guest_type_signature:
+		return
+	_guest_type_signature = signature
+	_apply_guest_type_stats(stats)
+
+func _build_guest_type_signature(stats: Dictionary) -> Array:
+	var body_types: Array = stats.keys()
+	body_types.sort()
+	var signature: Array = []
+	for body_type in body_types:
+		var entry: Dictionary = stats[body_type]
+		signature.append("%d:%d:%.2f" % [body_type, entry.count, entry.avg_mood])
+	return signature
+
+func _apply_guest_type_stats(stats: Dictionary) -> void:
+	_clear_guest_type_rows()
+
+	var body_types: Array = stats.keys()
+	body_types.sort()
+
+	if body_types.is_empty():
+		guest_type_template_row.hide()
+		return
+
+	for i in body_types.size():
+		var row := guest_type_template_row if i == 0 else guest_type_template_row.duplicate() as VBoxContainer
+		if i > 0:
+			guest_type_row_container.add_child(row)
+
+		var body_type: int = body_types[i]
+		var entry: Dictionary = stats[body_type]
+		var amount: int = entry.count
+		var avg_mood: float = entry.avg_mood
+		var archetype = NPCArchetypeLibrary.get_archetype(body_type)
+
+		var amount_label := row.get_node("Amount_Label") as Label
+		var icon_rect := row.get_node("Icon_TextureRect") as TextureRect
+		var mood_label := row.get_node("Mood_Label") as Label
+		amount_label.text = str(amount)
+		icon_rect.texture = archetype.icon if archetype.icon != null else GUEST_TYPE_FALLBACK_ICON
+		mood_label.text = "%d%%" % roundi(avg_mood * 100)
+		mood_label.add_theme_color_override("font_color", Color.GREEN.lerp(Color.RED, 1.0 - avg_mood))
+		row.tooltip_text = "%s x%d, Mood %d%%" % [archetype.display_name, amount, roundi(avg_mood * 100)]
+		row.show()
+
+func _clear_guest_type_rows() -> void:
+	for i in range(guest_type_row_container.get_child_count() - 1, -1, -1):
+		var child := guest_type_row_container.get_child(i)
+		if child == guest_type_template_row:
+			continue
+		guest_type_row_container.remove_child(child)
+		child.queue_free()

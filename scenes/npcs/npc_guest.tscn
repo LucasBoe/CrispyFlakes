@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b82qlyorfhc7q"]
+[gd_scene load_steps=20 format=3 uid="uid://b82qlyorfhc7q"]
 
 [ext_resource type="Script" uid="uid://b8lmv61nr3bf1" path="res://scripts/npc/npc_guest.gd" id="1_sa74h"]
 [ext_resource type="Shader" uid="uid://uqhd5d60vdxh" path="res://assets/shaders/npc_recolor.gdshader" id="2_cyq43"]
@@ -28,11 +28,51 @@ shader_parameter/cell_pixel_size = Vector2i(24, 24)
 shader_parameter/head_sheet = ExtResource("3_head")
 shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
 shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
 shader_parameter/body_type = 0
 shader_parameter/body_pose = 0
 shader_parameter/show_apron_overlay = false
-shader_parameter/use_gun = false
-shader_parameter/head_variant = 0
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_p1iho"]
 particle_flag_disable_z = true
@@ -107,8 +147,10 @@ script = ExtResource("7_prewa")
 script = ExtResource("19_status")
 
 [node name="PreciseHover" type="Area2D" parent="."]
+visible = false
 monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PreciseHover"]
+visible = false
 position = Vector2(0, -12)
 shape = SubResource("CapsuleShape2D_precise")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bfgo4p1ebvy10"]
+[gd_scene load_steps=10 format=3 uid="uid://bfgo4p1ebvy10"]
 
 [ext_resource type="Script" uid="uid://ddruyucmwsqiv" path="res://scripts/ui/ui_hud.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="2_hp2bi"]
@@ -7,6 +7,8 @@
 [ext_resource type="Texture2D" uid="uid://58h0pnvjimqn" path="res://assets/sprites/ui/icon_looking_glass.png" id="5_hyh2g"]
 [ext_resource type="Texture2D" uid="uid://pstb0wurhta1" path="res://assets/sprites/ui/icon_idle_workers.png" id="6_w7s6a"]
 [ext_resource type="Texture2D" uid="uid://h2bx1qlji6a4" path="res://assets/sprites/ui/2x/ui_rect_base_open_left_top.png" id="7_4u7l7"]
+[ext_resource type="Material" uid="uid://qe3h81d6f7he" path="res://assets/materials/mat_ui_outline_white.tres" id="8_outline"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="9_fallback_icon"]
 
 [node name="UIHUD" type="Control"]
 layout_mode = 3
@@ -62,7 +64,7 @@ texture = ExtResource("3_u8xgv")
 
 [node name="MarginContainer_Content" type="MarginContainer" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 32
+theme_override_constants/margin_left = 6
 theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 6
@@ -72,18 +74,24 @@ layout_mode = 2
 
 [node name="VBoxContainer_Workers" type="VBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = -2
+theme_override_constants/separation = 0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
+layout_mode = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_bottom = -4
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer"]
 layout_mode = 2
 
-[node name="Label_Workers" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer"]
+[node name="Label_Workers" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("4_xap66")
 text = "Workers: 0"
 
-[node name="Button" type="Button" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer"]
+[node name="Button_Highlight" type="Button" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(23, 23)
 layout_mode = 2
 theme = ExtResource("4_xap66")
@@ -92,13 +100,66 @@ icon = ExtResource("5_hyh2g")
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
 layout_mode = 2
 
-[node name="Label_Idles" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
+[node name="Button_Idles" type="Button" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer2"]
+unique_name_in_owner = true
+self_modulate = Color(1, 0.7, 0, 1)
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme = ExtResource("4_xap66")
+text = "0"
+alignment = 2
+
+[node name="TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer2/Button_Idles"]
+layout_mode = 1
+offset_left = 3.0
+offset_top = 6.0
+offset_right = 18.0
+offset_bottom = 28.0
+texture = ExtResource("6_w7s6a")
+stretch_mode = 3
+
+[node name="Label_Idles" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/HBoxContainer2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("4_xap66")
 theme_override_colors/font_color = Color(1, 0.65, 0, 1)
 text = "No Idles"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Label_GuestAmount" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("4_xap66")
+text = "Guests: 11"
+
+[node name="ProgressBar_GuestProgression" type="ProgressBar" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("4_xap66")
+max_value = 1.0
+show_percentage = false
+
+[node name="Label_GuestRate" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme = ExtResource("4_xap66")
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "+3 / M"
 
 [node name="Control" type="Control" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
 layout_mode = 2
@@ -112,27 +173,6 @@ theme_override_constants/margin_left = 24
 theme_override_constants/margin_top = -8
 theme_override_constants/margin_right = -4
 
-[node name="Button_Idles" type="Button" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/Control/MarginContainer"]
-unique_name_in_owner = true
-visible = false
-self_modulate = Color(1, 0.7, 0, 1)
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-theme = ExtResource("4_xap66")
-text = "0"
-alignment = 2
-
-[node name="TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/Control/MarginContainer/Button_Idles"]
-layout_mode = 1
-offset_left = 3.0
-offset_top = 6.0
-offset_right = 18.0
-offset_bottom = 28.0
-texture = ExtResource("6_w7s6a")
-stretch_mode = 3
-
 [node name="VSeparator" type="VSeparator" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer"]
 layout_mode = 2
 
@@ -140,25 +180,33 @@ layout_mode = 2
 layout_mode = 2
 theme_override_constants/separation = 2
 
-[node name="Label_GuestAmount" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2"]
+[node name="HBoxContainer_GuestTypes" type="HBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2"]
 unique_name_in_owner = true
 layout_mode = 2
-theme = ExtResource("4_xap66")
-text = "Guests: 11"
+theme_override_constants/separation = 4
 
-[node name="ProgressBar_GuestProgression" type="ProgressBar" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2"]
+[node name="GuestType_VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2/HBoxContainer_GuestTypes"]
 unique_name_in_owner = true
 layout_mode = 2
-theme = ExtResource("4_xap66")
-max_value = 1.0
-show_percentage = false
 
-[node name="Label_GuestRate" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2"]
-unique_name_in_owner = true
+[node name="Amount_Label" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2/HBoxContainer_GuestTypes/GuestType_VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("4_xap66")
-theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
-text = "+3 / M"
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Icon_TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2/HBoxContainer_GuestTypes/GuestType_VBoxContainer"]
+material = ExtResource("8_outline")
+layout_mode = 2
+texture = ExtResource("9_fallback_icon")
+
+[node name="Mood_Label" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2/HBoxContainer_GuestTypes/GuestType_VBoxContainer"]
+layout_mode = 2
+theme = ExtResource("4_xap66")
+theme_override_font_sizes/font_size = 11
+text = "0%"
+horizontal_alignment = 1
 
 [node name="VBoxContainer_Mood" type="VBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers2"]
 layout_mode = 2

@@ -158,7 +158,7 @@ func _set_startup_money(amount: int) -> void:
 
 func spawn_bounties(count: int) -> void:
 	for i in count:
-		var look = NPCLookInfo.new_random()
+		var look = NPCLookInfo.new_random_bounty()
 		var bounty: int = randi_range(1, 5) * 10
 		BountyHandler.create_bounty(look, bounty)
 

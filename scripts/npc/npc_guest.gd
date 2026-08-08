@@ -57,6 +57,13 @@ func apply_look(custom_look = null):
 		look_info = custom_look
 	else:
 		look_info = NPCLookInfo.new_random()
+		# Traits are already rolled by Traits.ensure_traits() in NPC._ready(),
+		# before look_info (and body_type) exists, so re-roll now that the
+		# archetype is actually known. Only for brand-new looks - a
+		# custom_look (promotion, restored bounty, etc.) already carries its
+		# own traits via Traits.copy_from() elsewhere.
+		if Traits != null:
+			Traits.roll_random_traits(NPCArchetypeLibrary.get_archetype_for_look(look_info))
 
 	look_info.apply_to_material(mat)
 
@@ -134,7 +141,8 @@ func get_next_behaviour():
 		FightHandler.create_or_join_drunk_fight(self)
 		return null
 
-	if (1.0 - Needs.Energy.strength) > randf():
+	var sleep_weight: float = NPCArchetypeLibrary.get_archetype_for_look(look_info).get_service_weight("sleep")
+	if (1.0 - Needs.Energy.strength) * sleep_weight > randf():
 		return NeedSleepBehaviourScript
 
 	if needs_to_pee >= PEE_TRIGGER_THRESHOLD:
@@ -164,7 +172,9 @@ func try_drop_dirt():
 	if not dirt.get_child(0).visible:
 		return
 
-	if randf() > Balancing.GUEST_DIRT_SPAWN_CHANCE:
+	var archetype = NPCArchetypeLibrary.get_archetype_for_look(look_info)
+	var chance: float = Balancing.GUEST_DIRT_SPAWN_CHANCE * archetype.dirt_production
+	if randf() > chance:
 		return
 
 	DirtHandler.create_dirt_at(global_position)

@@ -38,10 +38,23 @@ static func get_all_traits() -> Array:
 		TraitDataScript.new("tone_deaf", PAIR_OPERA, "Tone-deaf", "Opera performances sour the room and lower guest mood.", TraitDataScript.Polarity.NEGATIVE),
 	]
 
-static func roll_traits(max_count: int = 3) -> Array:
+static func roll_traits(max_count: int = 3, archetype = null) -> Array:
 	var available := get_all_traits()
 	var target_count := randi_range(0, min(max_count, available.size()))
-	available.shuffle()
+
+	if archetype != null:
+		# Weighted random ordering (exponential-key trick): each trait
+		# gets a random key scaled by its archetype weight, then we sort
+		# descending - higher-weighted traits are more likely, but not
+		# guaranteed, to end up near the front.
+		var keyed: Array = []
+		for data in available:
+			var weight: float = maxf(archetype.get_trait_weight(data.id), 0.0001)
+			keyed.append([pow(randf(), 1.0 / weight), data])
+		keyed.sort_custom(func(a, b): return a[0] > b[0])
+		available = keyed.map(func(pair): return pair[1])
+	else:
+		available.shuffle()
 
 	var picked: Array = []
 	var blocked_pairs := {}

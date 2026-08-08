@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=3 format=3 uid="uid://bat4boxixprkb"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bfylgsvadmoeb" path="res://assets/sprites/npcs/npc_type_source_outlaw.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Outlaw"
+icon = ExtResource("2_icon")
+flavor_text = "Outlaws drink hard, gamble harder, and couldn't care less about a clean floor or a bed."
+service_weights = {
+"cleaning": 0.5,
+"drinking": 2.0,
+"gambling": 2.0,
+"sleep": 0.0
+}
+drink_weights = {
+"WATER_BUCKET": 0.3,
+"WISKEY_BOX": 1.8
+}
+mood_sensitivity = 0.6
+bounty_weight = 10.0
+boosted_positive_traits = Array[int]([10, 2])
+boosted_negative_traits = Array[int]([15, 7])

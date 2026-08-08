@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=3 format=3 uid="uid://grtoqu1w4nrw"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://bjmehjr4gjmor" path="res://assets/sprites/npcs/npc_type_source_cowboy.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Cowboy"
+icon = ExtResource("2_icon")
+flavor_text = "Cowboys love a stiff whiskey and a good game of cards, and can't stand sitting still too long. Baths are for city folk."
+service_weights = {
+"cleaning": 0.0,
+"drinking": 2.0,
+"gambling": 3.0,
+"sleep": 0.5
+}
+drink_weights = {
+"BEER_BARREL": 1.0,
+"WATER_BUCKET": 0.1,
+"WISKEY_BOX": 1.0
+}
+mood_sensitivity = 0.85
+bounty_weight = 3.0
+boosted_positive_traits = Array[int]([0, 8, 17])
+boosted_negative_traits = Array[int]([5, 19, 3])

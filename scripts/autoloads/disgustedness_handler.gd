@@ -18,7 +18,9 @@ func _status_update_loop() -> void:
 			var guest: NPCGuest = guests[i]
 			if guest.Status == null:
 				continue
-			var disgusted := DirtHandler.get_all_in_range(guest.global_position, 48).size() >= DIRT_THRESHOLD
+			var mood_sensitivity: float = NPCArchetypeLibrary.get_archetype_for_look(guest.look_info).mood_sensitivity
+			var threshold: int = maxi(1, roundi(DIRT_THRESHOLD * mood_sensitivity))
+			var disgusted := DirtHandler.get_all_in_range(guest.global_position, 48).size() >= threshold
 			if disgusted:
 				guest.Status.set_status(Enum.NpcStatus.DISGUSTED)
 			else:
@@ -31,4 +33,5 @@ func _mood_penalty_loop() -> void:
 		for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
 			if guest.Status == null or not guest.Status.has_status(Enum.NpcStatus.DISGUSTED):
 				continue
-			guest.add_mood(-MOOD_LOSS, "Disgusted by dirt")
+			var mood_sensitivity: float = NPCArchetypeLibrary.get_archetype_for_look(guest.look_info).mood_sensitivity
+			guest.add_mood(-MOOD_LOSS * mood_sensitivity, "Disgusted by dirt")

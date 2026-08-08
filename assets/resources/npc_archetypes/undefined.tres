@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="NPCArchetype" load_steps=2 format=3 uid="uid://dpqwfgnumuvh1"]
+
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Undefined"
+flavor_text = "Nobody's quite sure what this one likes."
+bounty_weight = 0.5
