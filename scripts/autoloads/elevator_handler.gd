@@ -16,6 +16,7 @@ var _shafts_rebuilt_pending := false
 func _ready() -> void:
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
 	GlobalEventHandler.on_room_deleted_signal.connect(_on_room_deleted)
+	ElectricityHandler.state_changed.connect(_on_electricity_state_changed)
 	Console.add_command("debug_elevator", _console_toggle_debug_elevator, 0, 0, "Toggles shapes-only debug drawing of elevator shafts, cage state, queues, and requests.")
 	Console.add_command("place_cage", _console_place_cage, ["x", "y"], 2, "Places an elevator cage on the shaft at room (x,y). Stand-in for a proper build-menu placement flow.")
 	Console.add_command("remove_cage", _console_remove_cage, ["x", "y"], 2, "Removes the elevator cage currently at room (x,y).")
@@ -37,9 +38,11 @@ func get_reachable_floors(room) -> Array:
 	if controller == null:
 		result = [room.y]
 	else:
-		for r in controller.rooms:
-			if is_instance_valid(r):
-				result.append(r.y)
+		result.append(room.y)
+		if controller.is_powered():
+			for r in controller.rooms:
+				if is_instance_valid(r) and r.y != room.y:
+					result.append(r.y)
 	debug_log("get_reachable_floors room=(%d,%d) controller=%s result=%s" % [
 		room.x, room.y, str(controller), str(result)
 	])
@@ -147,6 +150,13 @@ func cancel_trip(request: ElevatorRideRequest) -> void:
 	if controller != null:
 		controller.cancel_trip(request)
 
+func shaft_is_powered(room) -> bool:
+	var controller = _controller_by_room.get(room, null)
+	return controller != null and controller.is_powered()
+
+func get_controller_for_room(room):
+	return _controller_by_room.get(room, null)
+
 func rebuild_shafts() -> void: # one-shot full scan, only used as the initial-load bootstrap - room add/remove is incremental below
 	debug_log("rebuild_shafts start")
 	for controller in _controllers:
@@ -239,6 +249,11 @@ func _request_shafts_rebuilt() -> void:
 func _flush_shafts_rebuilt() -> void:
 	_shafts_rebuilt_pending = false
 	shafts_rebuilt.emit()
+
+func _on_electricity_state_changed() -> void:
+	for controller in _controllers:
+		controller.request_cage_runs()
+	_request_shafts_rebuilt()
 
 func _find_controller_with_room_at(x: int, y: int):
 	for controller in _controllers:

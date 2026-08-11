@@ -34,6 +34,9 @@ func set_generating(value: bool) -> void:
 func is_generating() -> bool:
 	return _is_generating
 
+func get_electricity_production_amount() -> int:
+	return 1 if _is_generating else 0
+
 func get_provided_infrastructure_layers() -> Array[StringName]:
 	if _is_generating:
 		return [ELECTRICITY_LAYER]

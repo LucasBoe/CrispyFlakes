@@ -2,6 +2,7 @@ extends RoomBase
 class_name RoomElevator
 
 const QUEUE_SPACING := 10.0
+const ELECTRICITY_LAYER := BuildingInfrastructure.ELECTRICITY_LAYER
 
 var queue_up: Array[NPC] = []
 var queue_down: Array[NPC] = []
@@ -31,3 +32,15 @@ func get_queue_position(npc: NPC, direction: int) -> Vector2:
 
 func _queue_for_direction(direction: int) -> Array:
 	return queue_up if direction > 0 else queue_down
+
+func uses_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == ELECTRICITY_LAYER and ElectricityHandler.room_is_powered(self)
+
+func wants_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == ELECTRICITY_LAYER
+
+func requires_infrastructure_layer(layer_name: StringName) -> bool:
+	return layer_name == ELECTRICITY_LAYER
+
+func get_electricity_consumption_amount() -> int:
+	return 1

@@ -151,6 +151,9 @@ tile_set = SubResource("TileSet_pipe")
 z_index = -40
 tile_set = SubResource("TileSet_electricity")
 
+[node name="ElectricityRoomOverlays" type="Node2D" parent="Infrastructure"]
+z_index = 1900
+
 [node name="StoveTiles" type="TileMapLayer" parent="Infrastructure"]
 
 [node name="SaloonSign" type="Node2D" parent="."]

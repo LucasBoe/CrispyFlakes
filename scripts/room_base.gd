@@ -225,6 +225,12 @@ func wants_infrastructure_layer(_layer_name: StringName) -> bool:
 func requires_infrastructure_layer(_layer_name: StringName) -> bool:
 	return false
 
+func get_electricity_production_amount() -> int:
+	return 0
+
+func get_electricity_consumption_amount() -> int:
+	return 0
+
 func refresh_infrastructure_visuals() -> void:
 	if is_instance_valid(Building.infrastructure):
 		Building.infrastructure.refresh_visuals()

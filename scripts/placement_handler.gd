@@ -46,6 +46,8 @@ func start_building_infrastructure(data, check = null):
 	_prepare_highlights(data.width * data.height)
 	if data.layer_name == BuildingInfrastructure.WATER_LAYER:
 		Building.infrastructure.show_water_info()
+	if data.layer_name == BuildingInfrastructure.ELECTRICITY_LAYER:
+		Building.infrastructure.show_electricity_info()
 	Global.UI.selection.block_context_menu(self)
 
 func start_building_cage(data : CageData, check = null):
@@ -63,6 +65,8 @@ func stop_building():
 	build_mode = BuildMode.NONE
 	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.WATER_LAYER:
 		Building.infrastructure.hide_water_info()
+	if infrastructure_data != null and infrastructure_data.layer_name == BuildingInfrastructure.ELECTRICITY_LAYER:
+		Building.infrastructure.hide_electricity_info()
 	if building_data == Building.room_data_stairs or building_data == Building.room_data_elevator:
 		Building.hide_stairs_info()
 	building_data = null

@@ -45,6 +45,16 @@ func remove_cage(cage: ElevatorCage) -> void:
 	cages.erase(cage)
 	ElevatorHandler.debug_log("shaft remove_cage cages=%d" % cages.size())
 
+func is_powered() -> bool:
+	if rooms.is_empty():
+		return false
+	return ElectricityHandler.room_is_powered(rooms[0])
+
+func request_cage_runs() -> void:
+	for cage: ElevatorCage in cages:
+		if is_instance_valid(cage):
+			cage.request_run()
+
 func get_current_floor_y() -> int: # used to decide which split segment a cage belongs to
 	return cages[0].current_floor_y if not cages.is_empty() else (rooms[0].y if not rooms.is_empty() else 0)
 
@@ -65,8 +75,7 @@ func request_trip(npc: NPC, from_room, to_room) -> ElevatorRideRequest:
 	if cages.is_empty():
 		ElevatorHandler.debug_log("WARNING: shaft has no cage placed on it - this request (and any others) will never be serviced until one is placed")
 	# wake every idle cage - whichever gets there first claims it (see ElevatorCage._run_cycle)
-	for cage in cages:
-		cage.request_run()
+	request_cage_runs()
 	return request
 
 # Called when the requesting NPC's navigation gets interrupted before the ride happened

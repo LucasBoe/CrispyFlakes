@@ -205,6 +205,8 @@ func _floor_has_stop_demand(floor_y: int, dir: int) -> bool:
 	for request in boarded_requests.values():
 		if is_instance_valid(request.to_room) and request.to_room.y == floor_y:
 			return true # exits are direction-agnostic
+	if not controller.is_powered():
+		return false
 	for request in controller.pending_requests:
 		if request.from_room.y == floor_y and request.direction == dir:
 			return true
@@ -219,12 +221,16 @@ func _has_demand_ahead(dir: int) -> bool:
 	for request in boarded_requests.values():
 		if is_instance_valid(request.to_room) and signi(request.to_room.y - current_floor_y) == dir:
 			return true
+	if not controller.is_powered():
+		return false
 	for request in controller.pending_requests:
 		if signi(request.from_room.y - current_floor_y) == dir:
 			return true
 	return false
 
 func _pick_initial_direction() -> int:
+	if not controller.is_powered():
+		return 0
 	var best_direction: int = 0
 	var best_distance: int = -1
 	for request in controller.pending_requests:
@@ -276,6 +282,8 @@ func _finish_exit(npc: NPC, room, remaining: Array) -> void:
 	remaining[0] -= 1
 
 func _board_passengers(room) -> void:
+	if not controller.is_powered():
+		return
 	var boarding: Array = []
 	for request in controller.pending_requests:
 		if request.from_room == room and request.direction == direction:

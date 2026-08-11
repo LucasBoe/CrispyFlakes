@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=43 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -8,9 +8,12 @@
 [ext_resource type="Texture2D" uid="uid://c1i86518h6wtr" path="res://assets/sprites/ui/item_wood.png" id="8_jj3vu"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="12_gejso"]
+[ext_resource type="Texture2D" uid="uid://buatf1542uho8" path="res://assets/sprites/ui/electricity_ui_base.png" id="13_wvm38"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
 [ext_resource type="Script" uid="uid://csi4jmuuj6kjc" path="res://scripts/ui_holder.gd" id="15_3fppy"]
 [ext_resource type="Texture2D" uid="uid://bg7qwhqk3njmo" path="res://assets/sprites/ui/2x/panel_background.png" id="16_wvm38"]
+[ext_resource type="Script" uid="uid://dpjubuoq5jok4" path="res://scripts/ui/ui_electricity_info.gd" id="17_electricity"]
+[ext_resource type="Shader" uid="uid://cknnpbv61i5a0" path="res://assets/shaders/ui_electricity_meter.gdshader" id="18_meter_shader"]
 [ext_resource type="PackedScene" uid="uid://bfgo4p1ebvy10" path="res://scenes/ui/ui_hud.tscn" id="19_q3hll"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
 [ext_resource type="AudioStream" uid="uid://b7gbjvrqoyka" path="res://assets/audio/ambient/wind_crickets_ambient.wav" id="23_4o78i"]
@@ -27,6 +30,16 @@
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
 [ext_resource type="PackedScene" uid="uid://bpc6f1w275m04" path="res://scenes/ui/ui_temperature_forecast.tscn" id="ui_temperature_forecast"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_electricity_meter"]
+shader = ExtResource("18_meter_shader")
+shader_parameter/fill_ratio = 0.590000028025
+shader_parameter/fill_color_ratio = 1.0
+shader_parameter/blink_enabled = false
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/empty_fill_color = Color(0.2, 0.2, 0.2, 1)
+shader_parameter/low_fill_color = Color(0.86, 0.2, 0.18, 1)
+shader_parameter/high_fill_color = Color(0.25, 0.95, 0.32, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q3hll"]
 
@@ -233,6 +246,58 @@ grow_vertical = 2
 texture = ExtResource("38_wm4va")
 expand_mode = 2
 stretch_mode = 4
+
+[node name="UIElectricity" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("17_electricity")
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIElectricity"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 320
+theme_override_constants/margin_top = 6
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIElectricity/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ElectricityDisplayTexture" type="TextureRect" parent="UI/UIElectricity/MarginContainer/HBoxContainer"]
+material = SubResource("ShaderMaterial_electricity_meter")
+layout_mode = 2
+texture = ExtResource("13_wvm38")
+stretch_mode = 2
+
+[node name="Labels" type="VBoxContainer" parent="UI/UIElectricity/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+theme_override_constants/separation = -1
+
+[node name="SummaryLabel" type="Label" parent="UI/UIElectricity/MarginContainer/HBoxContainer/Labels"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "0% - no consumers"
+
+[node name="ProducersLabel" type="Label" parent="UI/UIElectricity/MarginContainer/HBoxContainer/Labels"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "+ 0 producers"
+
+[node name="ConsumersLabel" type="Label" parent="UI/UIElectricity/MarginContainer/HBoxContainer/Labels"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "- 0 consumers"
 
 [node name="UIDialogue" type="Control" parent="UI"]
 unique_name_in_owner = true

@@ -1,0 +1,47 @@
+[gd_scene load_steps=8 format=3 uid="uid://nyyr82347woh"]
+
+[ext_resource type="Script" uid="uid://8mea88f5pytn" path="res://scripts/electricity_sparkle_particles.gd" id="1_script"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sparkle"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_sparkle"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 0.7, 0.7490196, 0.79268044, 0.34460118, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_sparkle"]
+gradient = SubResource("Gradient_sparkle")
+
+[sub_resource type="Curve" id="Curve_cnx67"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -3.1698916, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_w5tw7"]
+curve = SubResource("Curve_cnx67")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparkle"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(2, 0, 0)
+direction = Vector3(0, -1, 0)
+spread = 28.0
+initial_velocity_min = 6.0
+initial_velocity_max = 14.0
+gravity = Vector3(0, 15, 0)
+linear_accel_min = -1.0
+linear_accel_max = 1.0
+scale_max = 1.8
+scale_curve = SubResource("CurveTexture_w5tw7")
+color_initial_ramp = SubResource("GradientTexture1D_sparkle")
+
+[node name="ElectricitySparkleParticles" type="GPUParticles2D"]
+z_index = 1910
+texture_filter = 1
+material = SubResource("CanvasItemMaterial_sparkle")
+emitting = false
+lifetime = 2.0
+one_shot = true
+explosiveness = 1.0
+randomness = 0.55
+process_material = SubResource("ParticleProcessMaterial_sparkle")
+script = ExtResource("1_script")

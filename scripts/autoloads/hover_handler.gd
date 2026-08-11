@@ -77,12 +77,16 @@ func change_hover(new_hover):
 
 	if is_instance_valid(previously_hovered) and previously_hovered is RoomWaterTower:
 		Building.infrastructure.hide_water_info()
+	if _should_show_electricity_info(previously_hovered):
+		Building.infrastructure.hide_electricity_info()
 
 	if is_instance_valid(previously_hovered):
 		_set_outline(previously_hovered, false)
 
 	if is_instance_valid(currently_hovered) and currently_hovered is RoomWaterTower:
 		Building.infrastructure.show_water_info()
+	if _should_show_electricity_info(currently_hovered):
+		Building.infrastructure.show_electricity_info()
 
 	if is_instance_valid(currently_hovered):
 		_set_outline(currently_hovered, true)
@@ -98,6 +102,17 @@ func _set_outline(node, state) -> void:
 
 	if node != null and node.has_method("set_outline"):
 		node.set_outline(state)
+
+func _should_show_electricity_info(node) -> bool:
+	if node == null or not is_instance_valid(node):
+		return false
+	var room := node as RoomBase
+	if room == null:
+		return false
+	return room.get_electricity_production_amount() > 0 \
+		or room.get_electricity_consumption_amount() > 0 \
+		or room.wants_infrastructure_layer(BuildingInfrastructure.ELECTRICITY_LAYER) \
+		or room.requires_infrastructure_layer(BuildingInfrastructure.ELECTRICITY_LAYER)
 
 func _unhandled_input(event):
 	if event.is_action_pressed("click"):

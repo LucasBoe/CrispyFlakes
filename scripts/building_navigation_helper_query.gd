@@ -191,11 +191,14 @@ func _valid_connectors_of(floor_info: floorInfo) -> Array:
 # elevator not merged into its shaft yet). Recompute reachable floors for
 # every known elevator connector now that shafts are actually up to date.
 func _on_elevator_shafts_rebuilt() -> void:
-	_prune_invalid_connectors()
-	for connector in _connectors.keys():
-		if connector is RoomElevator:
-			_connectors[connector] = _get_reachable_floors(connector)
+	_rebuild_all_rows()
 	_mirror_all_connectors()
+
+func _rebuild_all_rows() -> void:
+	_floors.clear()
+	_connectors.clear()
+	for floor in Building.floors.keys():
+		_rebuild_row(floor)
 
 # Stairs/elevators are only discovered while scanning the row they physically
 # sit on, so a floorInfo one level up never sees the connector that would let

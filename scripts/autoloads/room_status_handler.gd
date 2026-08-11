@@ -5,6 +5,7 @@ var enabled: bool = true
 
 const REFRESH_RATE = 1.0
 const _NO_WATER_ICON := preload("res://assets/sprites/ui/icon_no_water.png")
+const _NO_ELECTRICITY_ICON := preload("res://assets/sprites/ui/no-electricity_icon_small.png")
 
 func _init():
 	GlobalEventHandler.on_room_created_signal.connect(_on_room_created)
@@ -14,6 +15,7 @@ func _ready():
 	notification_loop()
 	
 func _on_room_created(room : RoomBase):
+	var should_track := false
 	
 	await get_tree().process_frame
 
@@ -24,18 +26,23 @@ func _on_room_created(room : RoomBase):
 		return
 
 	if room is RoomWaterTower or room is RoomToilet:
-		rooms.append(room)
-		return
+		should_track = true
 
-	if not room.associated_job:
-		return
+	if room.get_electricity_consumption_amount() > 0 \
+	or room.wants_infrastructure_layer(&"electricity") \
+	or room.requires_infrastructure_layer(&"electricity"):
+		should_track = true
+
+	if room.associated_job:
+		should_track = true
 
 	#only when people need to be arested
 	if room is RoomPrison\
 	and JobPrisonBehaviour.count_people_that_need_arrestment() == 0:
 		return
-		
-	rooms.append(room)
+
+	if should_track and not rooms.has(room):
+		rooms.append(room)
 	
 func _on_room_deleted(room : RoomBase):
 	if rooms.has(room):
@@ -48,9 +55,14 @@ func notification_loop():
 		else:
 			for r : RoomBase in rooms:
 				var water_alert := _get_water_shortage_color(r)
+				var electricity_alert := _get_electricity_shortage_color(r)
 				if water_alert != Color.TRANSPARENT:
 					var is_critical := r.requires_infrastructure_layer(&"water")
 					notify(r, "no water" if is_critical else "", water_alert, _NO_WATER_ICON if is_critical else null, is_critical)
+					await pause(REFRESH_RATE / rooms.size() - .01)
+				elif electricity_alert != Color.TRANSPARENT:
+					var needs_power := r.requires_infrastructure_layer(&"electricity")
+					notify(r, "no electricity" if needs_power else "", electricity_alert, _NO_ELECTRICITY_ICON if needs_power else null, needs_power)
 					await pause(REFRESH_RATE / rooms.size() - .01)
 				elif r is RoomWaterTower:
 					if not (r as RoomWaterTower).has_water() and not r.worker:
@@ -94,7 +106,7 @@ func notification_loop():
 					if not (r as RoomStove).is_heating() and not r.worker:
 						notify(r, "no worker", Color.ORANGE)
 						await pause(REFRESH_RATE / rooms.size() - .01)
-				elif not r.worker:
+				elif r.associated_job != null and not r.worker:
 					notify(r, "no worker", Color.ORANGE)
 					await pause(REFRESH_RATE / rooms.size() - .01)
 				await pause(0)
@@ -106,6 +118,28 @@ func _get_water_shortage_color(room: RoomBase) -> Color:
 	if tower == null or tower.has_water():
 		return Color.TRANSPARENT
 	return Color.ORANGE if room.requires_infrastructure_layer(&"water") else Color.YELLOW
+
+func _get_electricity_shortage_color(room: RoomBase) -> Color:
+	if room == null:
+		return Color.TRANSPARENT
+	if not room.wants_infrastructure_layer(&"electricity") and not room.requires_infrastructure_layer(&"electricity") and room.get_electricity_consumption_amount() <= 0:
+		return Color.TRANSPARENT
+	if _room_has_effective_electricity(room):
+		return Color.TRANSPARENT
+	return Color.ORANGE if room.requires_infrastructure_layer(&"electricity") else Color.YELLOW
+
+func _room_has_effective_electricity(room: RoomBase) -> bool:
+	if room == null:
+		return false
+	if ElectricityHandler.room_is_powered(room):
+		return true
+	if room is RoomElevator:
+		var controller = ElevatorHandler.get_controller_for_room(room)
+		if controller != null:
+			for shaft_room in controller.rooms:
+				if is_instance_valid(shaft_room) and ElectricityHandler.room_is_powered(shaft_room):
+					return true
+	return false
 
 func notify(room : RoomBase, text, color, icon = null, show_notification: bool = true):
 	if show_notification:

@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="InfrastructureData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="InfrastructureData" load_steps=3 format=3 uid="uid://cyyq4uphihkle"]
 
-[ext_resource type="Script" path="res://scripts/infrastructure_data.gd" id="1_data"]
-[ext_resource type="Texture2D" path="res://assets/sprites/electricity_overlay_sheet.png" id="2_overlay"]
+[ext_resource type="Script" uid="uid://blvt75kji286p" path="res://scripts/infrastructure_data.gd" id="1_data"]
+[ext_resource type="Texture2D" uid="uid://cf7dq6xsem110" path="res://assets/sprites/electricity_overlay_1x_connected.png" id="2_overlay"]
 
 [resource]
 script = ExtResource("1_data")
