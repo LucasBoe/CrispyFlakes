@@ -20,6 +20,7 @@ drink_weights = {
 "WISKEY_BOX": 1.0
 }
 mood_sensitivity = 0.85
+horse_arrival_chance = 1.0
 bounty_weight = 3.0
 boosted_positive_traits = Array[int]([0, 8, 17])
 boosted_negative_traits = Array[int]([5, 19, 3])

@@ -1,6 +1,6 @@
-class_name WeaponInstance
+class_name EquipmentInstance
 
-var data  # WeaponData
+var data: EquipmentData
 var equipped_by = null  # NPCWorker or null
 
 func is_available() -> bool:

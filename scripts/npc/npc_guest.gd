@@ -6,6 +6,9 @@ const NeedSleepBehaviourScript = preload("res://scripts/npc/behaviours/need_slee
 const OperaGuestBehaviourScript = preload("res://scripts/npc/behaviours/opera_guest_behaviour.gd")
 const RobBehaviour = preload("res://scripts/npc/behaviours/rob_behaviour.gd")
 const INJURED_MOVE_SPEED_MULTIPLIER := 0.5
+const HORSE_MOOD_TICK_SECONDS := 10.0
+const HORSE_TIED_MOOD_GAIN := 0.05
+const HORSE_LOOSE_MOOD_LOSS := 0.05
 
 var manual_behaviour = false
 var character_name = ""
@@ -44,6 +47,7 @@ func _ready():
 	if character_name.is_empty():
 		character_name = NPCNameLibraryScript.get_random_name()
 	_refresh_nametag()
+	_horse_mood_loop()
 
 func get_display_name() -> String:
 	return character_name if not character_name.is_empty() else "Guest"
@@ -212,6 +216,21 @@ func add_mood(amount: float, reason: String = ""):
 		notify(UiNotifications.ICON_PLUS_2)
 	else:
 		notify(UiNotifications.ICON_PLUS_1)
+
+func _horse_mood_loop() -> void:
+	while is_inside_tree():
+		await get_tree().create_timer(HORSE_MOOD_TICK_SECONDS).timeout
+		if not is_inside_tree() or Needs == null:
+			continue
+
+		var horse := get_meta("horse", null) as HorseNPC
+		if not is_instance_valid(horse) or is_on_horse():
+			continue
+
+		if is_instance_valid(horse.tied_post):
+			add_mood(HORSE_TIED_MOOD_GAIN, "Horse Tied")
+		else:
+			add_mood(-HORSE_LOOSE_MOOD_LOSS, "Loose Horse")
 
 func notify(tex):
 	UiNotifications.create_npc_notification(self, tex)
