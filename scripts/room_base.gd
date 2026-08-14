@@ -200,12 +200,17 @@ func get_associated_job_capacity(job = null) -> int:
 func get_service_price() -> int:
 	return 0
 
+func has_valid_worker() -> bool:
+	if worker != null and not is_instance_valid(worker):
+		worker = null
+	return worker != null
+
 func get_assigned_worker_count(job = null) -> int:
 	if job == null:
 		job = associated_job
 	if associated_job == null or job != associated_job:
 		return 0
-	return 1 if worker != null else 0
+	return 1 if has_valid_worker() else 0
 
 func can_accept_worker(job = null) -> bool:
 	if job == null:

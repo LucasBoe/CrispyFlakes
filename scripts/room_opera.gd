@@ -132,10 +132,10 @@ func get_performance_name() -> String:
 	return "Opera Singer"
 
 func has_active_performance() -> bool:
-	return worker != null
+	return has_valid_worker()
 
 func entertain_guests() -> int:
-	if Global.NPCSpawner == null:
+	if not has_active_performance() or Global.NPCSpawner == null:
 		return 0
 
 	var mood_effect := get_mood_boost()
@@ -146,6 +146,8 @@ func entertain_guests() -> int:
 
 	var affected_guest_count := 0
 	for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+		if not _is_guest_in_range(guest):
+			continue
 		guest.add_mood(mood_effect, reason)
 		affected_guest_count += 1
 
@@ -155,9 +157,7 @@ func _is_guest_in_range(guest: NPCGuest) -> bool:
 	if not is_instance_valid(guest):
 		return false
 
-	var guest_room_index: Vector2i = Building.round_room_index_from_global_position(guest.global_position)
-	var center_x: int = x + 1
-	return guest_room_index.y == y and absi(guest_room_index.x - center_x) <= PERFORMANCE_RANGE
+	return Building.query.room_at_floor_position(guest.global_position) == self
 
 func _get_foreground_texture() -> Texture2D:
 	if _foreground_texture != null:

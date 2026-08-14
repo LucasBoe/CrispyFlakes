@@ -22,13 +22,15 @@ func loop():
 	_piano_sound = SoundPlayer.play_piano_loop(room.global_position)
 	room.set_guests_swaying(true)
 
-	while true:
+	while is_instance_valid(room) and room.worker == npc and not stopped:
 		var duration := room.get_performance_interval()
 
 		await progress(duration)
 
-		if not is_instance_valid(room):
-			return
+		if not is_instance_valid(room) or room.worker != npc or stopped:
+			if AnimationModule.debug_performance_enabled:
+				DebugLog.info("[Performance]", npc, "entertainment loop break", "room", room, "room_worker", room.worker if is_instance_valid(room) else null, "stopped", stopped)
+			break
 
 		room.set_guests_swaying(true)
 		var boosted_guest_count := room.entertain_guests()
@@ -44,6 +46,8 @@ func loop():
 			#await pause(1)
 
 func stop_loop() -> BehaviourSaveData:
+	if AnimationModule.debug_performance_enabled:
+		DebugLog.info("[Performance]", npc, "entertainment stop_loop", "room", room, "room_worker", room.worker if is_instance_valid(room) else null)
 	npc.Animator.is_playing_piano = false
 	if is_instance_valid(_piano_sound):
 		_piano_sound.queue_free()

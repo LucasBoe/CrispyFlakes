@@ -14,6 +14,7 @@ func _ready() -> void:
 	Console.add_command("place_guest_for_performance", _place_guest_for_performance, ["guest_index", "room_type", "placement"], 3, "Moves the indexed live guest into the target performance room. placement: 'self' or 'adjacent'.")
 	Console.add_command("force_performance_sway", _force_performance_sway, ["room_type", "on_off"], 2, "Forces the target entertainment/opera room's sway flag on or off for headless testing.")
 	Console.add_command("assert_guest_swaying", _assert_guest_swaying, ["guest_index", "expected"], 2, "Fails unless the indexed live guest is currently swaying to music (true/false).")
+	Console.add_command("guest_performance_state", _guest_performance_state, ["guest_index"], 1, "Prints the indexed live guest's current room plus per-performance-room active/in-range/swaying state.")
 
 func _assert_room_count(room_type : String, expected : String) -> void:
 	if not expected.is_valid_int():
@@ -71,7 +72,7 @@ func _place_guest_for_performance(guest_index : String, room_type : String, plac
 		_fail("place_guest_for_performance: no performance room found for '%s'." % room_type)
 		return
 
-	var target_room := room
+	var target_room: RoomBase = room
 	var normalized_placement := placement.strip_edges().to_lower()
 	if normalized_placement == "adjacent":
 		target_room = _find_same_level_adjacent_room(room)
@@ -90,12 +91,14 @@ func _place_guest_for_performance(guest_index : String, room_type : String, plac
 	guest.global_position = target_room.get_center_floor_position()
 	if guest.Animator != null:
 		guest.Animator.direction = Vector2.ZERO
-	Console.print_line("Placed guest %s into %s for %s (%s)." % [
+	Console.print_line("Placed guest %s into %s for %s (%s) at %s." % [
 		guest.get_display_name(),
 		_room_type_key(target_room),
 		_room_type_key(room),
 		normalized_placement,
+		str(guest.global_position),
 	])
+	_guest_performance_state(guest_index)
 
 func _force_performance_sway(room_type : String, on_off : String) -> void:
 	var room := _find_performance_room(room_type)
@@ -130,9 +133,21 @@ func _assert_guest_swaying(guest_index : String, expected : String) -> void:
 
 	var actual := guest.Animator != null and guest.Animator.is_swaying_to_music()
 	if actual == expected_value:
-		Console.print_line("PASS: guest_swaying[%d] == %s" % [int(guest_index), str(expected_value)])
+		Console.print_line("PASS: guest_swaying[%d] == %s | %s" % [int(guest_index), str(expected_value), _get_guest_performance_debug_snapshot(guest)])
 	else:
-		_fail("FAIL: guest_swaying[%d] == %s, expected %s" % [int(guest_index), str(actual), str(expected_value)])
+		_fail("FAIL: guest_swaying[%d] == %s, expected %s | %s" % [int(guest_index), str(actual), str(expected_value), _get_guest_performance_debug_snapshot(guest)])
+
+func _guest_performance_state(guest_index : String) -> void:
+	if not guest_index.is_valid_int():
+		_fail("guest_performance_state: '%s' is not a valid guest index." % guest_index)
+		return
+
+	var guest := _get_guest_by_index(int(guest_index))
+	if guest == null:
+		_fail("guest_performance_state: no live guest at index %s." % guest_index)
+		return
+
+	Console.print_line(_get_guest_performance_debug_snapshot(guest))
 
 func _check(label : String, actual : int, expected : int) -> void:
 	if actual == expected:
@@ -184,3 +199,44 @@ func _room_type_key(room : RoomBase) -> String:
 	if file_name.begins_with("room_"):
 		file_name = file_name.substr(5)
 	return file_name
+
+func _get_guest_performance_debug_snapshot(guest: NPCGuest) -> String:
+	if guest == null or not is_instance_valid(guest):
+		return "guest=<invalid>"
+
+	var guest_room := Building.query.room_at_floor_position(guest.global_position) as RoomBase
+	var guest_room_label := _debug_room_label(guest_room)
+	var swaying := guest.Animator != null and guest.Animator.is_swaying_to_music()
+	var source_count := AnimationModule.get_music_sway_source_count()
+
+	var room_states: Array[String] = []
+	var seen_room_ids := {}
+	for candidate: RoomEntertainment in Building.query.all_rooms_of_type(RoomEntertainment):
+		if candidate == null or not is_instance_valid(candidate):
+			continue
+		var room_id := candidate.get_instance_id()
+		if seen_room_ids.has(room_id):
+			continue
+		seen_room_ids[room_id] = true
+		room_states.append("%s active=%s sway=%s in_range=%s" % [
+			_debug_room_label(candidate),
+			str(candidate.has_active_performance()),
+			str(candidate._guests_swaying_enabled),
+			str(candidate.is_guest_in_performance_range(guest)),
+		])
+
+	return "guest=%s pos=%s room=%s swaying=%s sources=%d rooms=[%s]" % [
+		guest.get_display_name(),
+		str(guest.global_position),
+		guest_room_label,
+		str(swaying),
+		source_count,
+		"; ".join(room_states),
+	]
+
+func _debug_room_label(room: RoomBase) -> String:
+	if room == null:
+		return "<none>"
+	if not is_instance_valid(room):
+		return "<stale>"
+	return "%s(%d,%d)" % [_room_type_key(room), room.x, room.y]

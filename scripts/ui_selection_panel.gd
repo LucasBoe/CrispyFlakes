@@ -68,6 +68,7 @@ const _ROOM_TILE_SIZE := 48.0
 const _NPC_SELECTION_OFFSET := Vector2(0, -12)
 const _PANEL_TARGET_GAP := 96.0
 const _PANEL_SCREEN_MARGIN := 8.0
+const _PIANO_RANGE_HIGHLIGHT_COLOR := Color(0.4, 1.0, 0.65, 0.75)
 
 var target = null
 var needs = null
@@ -105,6 +106,8 @@ var _bound_arrest_guest = null
 var _bound_arrest_state: String = ""
 var _bound_worker_conflict = null
 var _bound_worker_conflict_state: String = ""
+var _selected_room_effect_highlights: Array = []
+var _selected_room_effect_signature: String = ""
 
 func _ready():
 	super._ready()
@@ -227,6 +230,7 @@ func _on_click_hovered_node_signal(node):
 	show()
 	_update_floating_panel_position()
 	call_deferred("_update_floating_panel_position")
+	_refresh_selected_room_effect_highlights()
 
 func _clear_instances():
 	if is_instance_valid(status_icon_row):
@@ -303,6 +307,7 @@ func _clear_instances():
 	gambling_active_state.hide()
 	gambling_summary_state.hide()
 	_gambling_signature = ""
+	_clear_selected_room_effect_highlights()
 
 	_connection_line.hide()
 
@@ -645,6 +650,7 @@ func _show_for_room(room: RoomBase):
 
 	selected_room_highlight_instance = RoomHighlighter.request_rect(room, Color.WHITE, 2, RoomHighlighter.Priority.SELECTION)
 	room.set_outline(true, self)
+	_refresh_selected_room_effect_highlights()
 
 	var description = room.data.room_desc if room.data != null else ""
 	describtion_label.visible = description != ""
@@ -1215,8 +1221,46 @@ func _clear_selected_room_outline() -> void:
 	if is_instance_valid(target) and target is RoomBase:
 		target.set_outline(false, self)
 
+func _clear_selected_room_effect_highlights() -> void:
+	for highlight in _selected_room_effect_highlights:
+		if is_instance_valid(highlight):
+			RoomHighlighter.dispose(highlight)
+	_selected_room_effect_highlights.clear()
+	_selected_room_effect_signature = ""
+
+func _refresh_selected_room_effect_highlights() -> void:
+	if not is_instance_valid(target) or target is not RoomEntertainment:
+		_clear_selected_room_effect_highlights()
+		return
+
+	var entertainment := target as RoomEntertainment
+	if entertainment.current_module == null or entertainment.current_module.module_name != "Piano":
+		_clear_selected_room_effect_highlights()
+		return
+
+	var affected_rooms := entertainment.get_adjacent_performance_rooms()
+	var signature_parts := PackedStringArray()
+	for room in affected_rooms:
+		if room == null or not is_instance_valid(room):
+			continue
+		signature_parts.append("%d" % room.get_instance_id())
+	signature_parts.sort()
+	var next_signature := "|".join(signature_parts)
+	if next_signature == _selected_room_effect_signature:
+		return
+
+	_clear_selected_room_effect_highlights()
+	_selected_room_effect_signature = next_signature
+	for room in affected_rooms:
+		if room == null or not is_instance_valid(room):
+			continue
+		_selected_room_effect_highlights.append(
+			RoomHighlighter.request_rect(room, _PIANO_RANGE_HIGHLIGHT_COLOR, 1, RoomHighlighter.Priority.SELECTION)
+		)
+
 func do_hide():
 	_clear_selected_room_outline()
+	_clear_selected_room_effect_highlights()
 	target = null
 	_manual_follow_offset = Vector2.ZERO
 	_follow_side = 0
@@ -1548,6 +1592,9 @@ func _process(delta):
 
 	if target is RoomStorageBase and is_instance_valid(_storage_items_container):
 		_refresh_storage_items(target)
+
+	if target is RoomBase:
+		_refresh_selected_room_effect_highlights()
 
 	if target is NPC:
 		var entries = _get_status_icon_entries(target)
