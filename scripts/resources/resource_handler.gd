@@ -20,7 +20,29 @@ func _register_console_commands() -> void:
 		return
 	Console.add_command("money_breakdown", _console_print_money_breakdown, 0, 0, "Debug: prints tracked money income and expenses with percentages to the dev console and Godot output.")
 	Console.add_command("debug_money_breakdown", _console_print_money_breakdown, 0, 0, "Debug: prints tracked money income and expenses with percentages to the dev console and Godot output.")
-	
+	Console.add_command("money", _console_print_money, 0, 0, "Prints the current free money pool.")
+	Console.add_command("add_money", _console_add_money, ["amount"], 1, "Adds (or, with a negative amount, removes) money from the free pool.")
+	Console.add_command("set_money", _console_set_money, ["amount"], 1, "Sets the free money pool to an exact amount.")
+
+func _console_print_money() -> void:
+	Console.print_line("money = %d" % int(resources.get(Enum.Resources.MONEY, 0)))
+
+func _console_add_money(amount : String) -> void:
+	if not amount.is_valid_int():
+		Console.print_error("'%s' is not a valid integer amount." % amount)
+		return
+	change_money(int(amount), "console")
+	_console_print_money()
+
+func _console_set_money(amount : String) -> void:
+	if not amount.is_valid_int():
+		Console.print_error("'%s' is not a valid integer amount." % amount)
+		return
+	var target := int(amount)
+	var current := int(resources.get(Enum.Resources.MONEY, 0))
+	change_money(target - current, "console")
+	_console_print_money()
+
 func reset_money_tracking() -> void:
 	money_transaction_history.clear()
 	money_source_totals.clear()

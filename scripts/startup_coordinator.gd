@@ -25,6 +25,7 @@ var _served_startup_guests: Array[NPCGuest] = []
 
 
 func _ready() -> void:
+	Console.add_command("skip_tutorial", request_skip_tutorial, 0, 0, "Skips the opening tutorial sequence, same as the settings button.")
 	_prepare_startup_content()
 
 func _process(_delta: float) -> void:

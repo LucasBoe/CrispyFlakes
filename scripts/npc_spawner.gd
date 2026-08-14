@@ -134,6 +134,45 @@ func _ready():
 	Console.add_command("follow_guest", console_follow_guest_test)
 	Console.add_command("arrest_all", console_arrest_all, ["fine"], 0, "Marks all guests for arrest and adds a fine.")
 	Console.add_command("debug_npc_click_collision", _console_toggle_debug_npc_click_collision, 0, 0, "Toggles visualization of NPC click collision shapes, including precise hover capsules.")
+	Console.add_command("worker_count", _console_worker_count, ["job"], 0, "Prints the number of live workers, optionally filtered by job name (e.g. 'bar').")
+	Console.add_command("guest_count", _console_guest_count, 0, 0, "Prints the number of live guests.")
+	Console.add_command("list_workers", _console_list_workers, 0, 0, "Lists every live worker as 'name job (x,y)'.")
+	Console.add_command("list_guests", _console_list_guests, 0, 0, "Lists every live guest as 'name (x,y)'.")
+
+func _console_worker_count(job : String) -> void:
+	var normalized_job := job.strip_edges().to_upper()
+	var count := 0
+	for worker : NPCWorker in get_live_workers():
+		if normalized_job.is_empty() or Enum.Jobs.keys()[worker.current_job] == normalized_job:
+			count += 1
+	if normalized_job.is_empty():
+		Console.print_line("worker_count = %d" % count)
+	else:
+		Console.print_line("worker_count %s = %d" % [normalized_job, count])
+
+func _console_guest_count() -> void:
+	Console.print_line("guest_count = %d" % get_live_guests().size())
+
+func _console_list_workers() -> void:
+	var live_workers := get_live_workers()
+	Console.print_line("workers: %d" % live_workers.size())
+	for worker : NPCWorker in live_workers:
+		Console.print_line("  %s %s (%d,%d)" % [
+			worker.get_display_name(),
+			Enum.Jobs.keys()[worker.current_job],
+			int(worker.global_position.x),
+			int(worker.global_position.y),
+		])
+
+func _console_list_guests() -> void:
+	var live_guests := get_live_guests()
+	Console.print_line("guests: %d" % live_guests.size())
+	for guest : NPCGuest in live_guests:
+		Console.print_line("  %s (%d,%d)" % [
+			guest.get_display_name(),
+			int(guest.global_position.x),
+			int(guest.global_position.y),
+		])
 
 func _process(delta):
 	_sync_npc_click_collision_debug()

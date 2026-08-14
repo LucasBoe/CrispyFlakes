@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.417"
+config/version="0.0.1-dev.418"
 run/main_scene="uid://ybtnclmbmffe"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
@@ -71,6 +71,7 @@ DisgustednessHandler="*res://scripts/autoloads/disgustedness_handler.gd"
 ElectricityHandler="*res://scripts/autoloads/electricity_handler.gd"
 ElevatorHandler="*res://scripts/autoloads/elevator_handler.gd"
 FeatureGateHandler="*res://scripts/autoloads/feature_gate_handler.gd"
+HeadlessTestHandler="*res://scripts/autoloads/headless_test_handler.gd"
 
 [display]
 

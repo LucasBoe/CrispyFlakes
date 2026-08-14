@@ -30,6 +30,14 @@ func get_requested_time() -> int:
 func _ready() -> void:
 	if not AlarmHandler.on_alarm_started_signal.is_connected(_on_alarm_started):
 		AlarmHandler.on_alarm_started_signal.connect(_on_alarm_started)
+	Console.add_command("set_time", console_set_time, ["scale"], 1, "Sets the game time scale (0 = paused, 1 = normal, up to %d = fastest). Useful to fast-forward headless tests." % FASTEST_TIME)
+
+func console_set_time(scale : String) -> void:
+	if not scale.is_valid_int():
+		Console.print_error("'%s' is not a valid integer time scale." % scale)
+		return
+	set_time(int(scale))
+	Console.print_line("Time scale set to %d." % _requested_time)
 
 func _apply_time() -> void:
 	var time = 0 if not _pause_locks.is_empty() else _requested_time

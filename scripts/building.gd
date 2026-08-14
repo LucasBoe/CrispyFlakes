@@ -33,6 +33,7 @@ const room_data_broken := preload("res://assets/resources/rooms/room_broken.tres
 const room_data_stairs := preload("res://assets/resources/rooms/room_stairs.tres")
 const room_data_elevator := preload("res://assets/resources/rooms/room_elevator.tres")
 const room_data_brewery := preload("res://assets/resources/rooms/room_brewery.tres")
+const room_data_kitchen := preload("res://assets/resources/rooms/room_kitchen.tres")
 const room_data_storage := preload("res://assets/resources/rooms/room_storage.tres")
 const room_data_bath := preload("res://assets/resources/rooms/room_bath.tres")
 const room_data_toilet := preload("res://assets/resources/rooms/room_toilet.tres")
@@ -82,6 +83,89 @@ func _ready():
 	Console.add_command("debug_nav_path", _console_toggle_debug_nav_path, 0, 0, "Toggles debug drawing of the phase-graph path between a clicked point and the cursor.")
 	Console.add_command("debug_nav_selected", _console_toggle_debug_nav_selected, 0, 0, "Toggles debug drawing of the currently-selected NPC's live navigation path.")
 	Console.add_command("debug_zlayer", _console_toggle_debug_zlayer, 0, 0, "Toggles a colored marker + console line on every NPC z-layer swap (lime = swapped indoor, orange = swapped outside).")
+	Console.add_command("debug_performance", _console_toggle_debug_performance, 0, 0, "Toggles entertainment/opera debug logging for worker cleanup, sway state, and global music-source counts.")
+	Console.add_command("performance_state", _console_dump_performance_state, 0, 0, "Prints current entertainment/opera room state plus the global music sway counter.")
+	Console.add_command("build_room", _console_build_room, ["room_type", "x", "y"], 3, "Places a room directly at (x,y), bypassing cost and normal placement validation. Stand-in for the build menu (e.g. 'build_room bar 2 0').")
+	Console.add_command("remove_room", _console_remove_room, ["x", "y"], 2, "Removes whatever room is at (x,y), replacing it with an empty room.")
+	Console.add_command("place_pipe", _console_place_pipe, ["x", "y"], 2, "Places a water pipe infrastructure tile at (x,y). Still enforces the normal network/support placement rules.")
+	Console.add_command("place_electricity", _console_place_electricity, ["x", "y"], 2, "Places an electricity infrastructure tile at (x,y). Still enforces the normal placement rules.")
+	Console.add_command("room_count", _console_room_count, ["room_type"], 1, "Prints how many rooms of the given type (e.g. 'bar') are currently placed.")
+	Console.add_command("list_rooms", _console_list_rooms, 0, 0, "Lists every placed room as 'type (x,y)'.")
+
+func _console_build_room(room_type : String, x : String, y : String) -> void:
+	if not (x.is_valid_int() and y.is_valid_int()):
+		Console.print_error("(x,y) must be integers, got (%s,%s)." % [x, y])
+		return
+	var path := "res://assets/resources/rooms/room_%s.tres" % room_type.strip_edges().to_lower()
+	if not ResourceLoader.exists(path):
+		Console.print_error("Unknown room type '%s' (expected a resource at %s)." % [room_type, path])
+		return
+	var data := load(path) as RoomData
+	if data == null:
+		Console.print_error("Failed to load room data at '%s'." % path)
+		return
+	set_room(data, int(x), int(y))
+	Console.print_line("Placed '%s' at (%s,%s)." % [room_type, x, y])
+
+func _console_remove_room(x : String, y : String) -> void:
+	if not (x.is_valid_int() and y.is_valid_int()):
+		Console.print_error("(x,y) must be integers, got (%s,%s)." % [x, y])
+		return
+	var room := get_room_from_index(Vector2i(int(x), int(y))) as RoomBase
+	if room == null:
+		Console.print_error("No room at (%s,%s)." % [x, y])
+		return
+	replace_with_empty(room)
+	Console.print_line("Removed room at (%s,%s)." % [x, y])
+
+func _console_place_pipe(x : String, y : String) -> void:
+	if not (x.is_valid_int() and y.is_valid_int()):
+		Console.print_error("(x,y) must be integers, got (%s,%s)." % [x, y])
+		return
+	if infrastructure.place(infrastructure_data_water_pipe, Vector2i(int(x), int(y))):
+		Console.print_line("Placed water pipe at (%s,%s)." % [x, y])
+	else:
+		Console.print_error("Could not place water pipe at (%s,%s) (needs an adjacent network/provider and support below)." % [x, y])
+
+func _console_place_electricity(x : String, y : String) -> void:
+	if not (x.is_valid_int() and y.is_valid_int()):
+		Console.print_error("(x,y) must be integers, got (%s,%s)." % [x, y])
+		return
+	if infrastructure.place(infrastructure_data_electricity, Vector2i(int(x), int(y))):
+		Console.print_line("Placed electricity tile at (%s,%s)." % [x, y])
+	else:
+		Console.print_error("Could not place electricity tile at (%s,%s)." % [x, y])
+
+func _console_room_count(room_type : String) -> void:
+	var normalized := room_type.strip_edges().to_lower()
+	var count := 0
+	for y in floors:
+		for x in floors[y]:
+			var room := floors[y][x] as RoomBase
+			if room != null and _console_room_type_key(room) == normalized:
+				count += 1
+	Console.print_line("room_count %s = %d" % [normalized, count])
+
+func _console_list_rooms() -> void:
+	var lines : Array[String] = []
+	for y in floors:
+		for x in floors[y]:
+			var room := floors[y][x] as RoomBase
+			if room == null:
+				continue
+			lines.append("%s (%d,%d)" % [_console_room_type_key(room), room.x, room.y])
+	lines.sort()
+	Console.print_line("rooms: %d" % lines.size())
+	for line in lines:
+		Console.print_line("  " + line)
+
+func _console_room_type_key(room : RoomBase) -> String:
+	if room.data == null:
+		return "?"
+	var file_name := room.data.resource_path.get_file().get_basename()
+	if file_name.begins_with("room_"):
+		file_name = file_name.substr(5)
+	return file_name
 
 func _process(_delta: float) -> void:
 	if _debug_nav_floors:
@@ -132,6 +216,43 @@ func _console_toggle_debug_nav_selected() -> void:
 func _console_toggle_debug_zlayer() -> void:
 	NavigationModule.debug_zlayer_swaps = !NavigationModule.debug_zlayer_swaps
 	Console.print_line("Z-layer swap debug draw " + ("ON" if NavigationModule.debug_zlayer_swaps else "OFF"))
+
+func _console_toggle_debug_performance() -> void:
+	AnimationModule.set_performance_debug_enabled(not AnimationModule.debug_performance_enabled)
+	Console.print_line("Performance debug " + ("ON" if AnimationModule.debug_performance_enabled else "OFF"))
+	_console_dump_performance_state()
+
+func _console_dump_performance_state() -> void:
+	var swaying_guests := 0
+	var total_guests := 0
+	if Global.NPCSpawner != null:
+		for guest: NPCGuest in Global.NPCSpawner.get_live_guests():
+			if not is_instance_valid(guest):
+				continue
+			total_guests += 1
+			if guest.Animator != null and guest.Animator.is_swaying_to_music():
+				swaying_guests += 1
+
+	Console.print_line("[Performance] sway_sources=%d active=%s swaying_guests=%d/%d" % [
+		AnimationModule.get_music_sway_source_count(),
+		str(AnimationModule.should_sway_to_musik),
+		swaying_guests,
+		total_guests,
+	])
+
+	if not is_instance_valid(query):
+		return
+
+	var seen_room_ids := {}
+	for candidate in query.all_rooms_of_type(RoomEntertainment):
+		var room := candidate as RoomEntertainment
+		if room == null or not is_instance_valid(room):
+			continue
+		var room_id := room.get_instance_id()
+		if seen_room_ids.has(room_id):
+			continue
+		seen_room_ids[room_id] = true
+		Console.print_line(room.get_performance_debug_snapshot())
 
 func set_room(data: RoomData, x: int, y: int, auto_initialize = true):
 	var scene = data.packed_scene

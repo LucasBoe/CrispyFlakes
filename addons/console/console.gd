@@ -40,6 +40,11 @@ var console_history := []
 var console_history_index := 0
 var was_paused_already := false
 
+## True once startup detected --console-cmd/--console-script args. While true, every
+## console print (info/warning/error/plain) is mirrored to stdout via print_rich, so
+## a headless test run has something to assert against without opening the console UI.
+var _cmdline_mode := false
+
 ## Usage: Console.add_command("command_name", <function to call>, <number of arguments or array of argument names>, <required number of arguments>, "Help description")
 func add_command(command_name : String, function : Callable, arguments = [], required: int = 0, description : String = "") -> void:
 	if (arguments is int):
@@ -168,6 +173,17 @@ func _ready() -> void:
 	add_command("pause", pause, 0, 0, "Pauses node processing.")
 	add_command("unpause", unpause, 0, 0, "Unpauses node processing.")
 	add_command("exec", exec, 1, 1, "Execute a script.")
+	add_command("seed", console_seed, ["value"], 1, "Seeds the global RNG (affects randi/randf/pick_random/etc.) for reproducible test scenarios.")
+
+	_run_cmdline_commands()
+
+
+func console_seed(value : String) -> void:
+	if not value.is_valid_int():
+		print_error("'%s' is not a valid integer seed." % value)
+		return
+	seed(int(value))
+	print_line("Global RNG seeded with %s." % value)
 
 
 func _input(event : InputEvent) -> void:
@@ -362,7 +378,7 @@ func print_line(text : Variant, print_godot := false) -> void:
 	else:
 		rich_label.append_text(text)
 		rich_label.append_text("\n")
-		if (print_godot):
+		if (print_godot or _cmdline_mode):
 			print_rich(text.dedent())
 
 
@@ -412,36 +428,94 @@ func _on_text_entered(new_text : String) -> void:
 
 	if not new_text.strip_edges().is_empty():
 		add_input_history(new_text)
-		print_line("[i]> " + new_text + "[/i]")
-		var text_split := parse_line_input(new_text)
-		var text_command := text_split[0]
+		execute_line(new_text)
 
-		if console_commands.has(text_command):
-			var arguments := text_split.slice(1)
-			var console_command : ConsoleCommand = console_commands[text_command]
 
-			# calc is a especial command that needs special treatment
-			if (text_command.match("calc")):
-				var expression := ""
-				for word in arguments:
-					expression += word
-				console_command.function.callv([expression])
-				return
+## Parses and runs a single console command line, exactly as if it had been typed
+## into the console UI (minus the history/scroll bookkeeping). Safe to call headless
+## (e.g. from _run_cmdline_commands) since it does not touch the UI controls.
+func execute_line(new_text : String) -> void:
+	print_line("[i]> " + new_text + "[/i]")
+	var text_split := parse_line_input(new_text)
+	var text_command := text_split[0]
 
-			if (arguments.size() < console_command.required):
-				print_error("Too few arguments! Required < %d >" % console_command.required)
-				return
-			elif (arguments.size() > console_command.arguments.size()):
-				arguments.resize(console_command.arguments.size())
+	if console_commands.has(text_command):
+		var arguments := text_split.slice(1)
+		var console_command : ConsoleCommand = console_commands[text_command]
 
-			# Functions fail to call if passed the incorrect number of arguments, so fill out with blank strings.
-			while (arguments.size() < console_command.arguments.size()):
-				arguments.append("")
+		# calc is a especial command that needs special treatment
+		if (text_command.match("calc")):
+			var expression := ""
+			for word in arguments:
+				expression += word
+			console_command.function.callv([expression])
+			return
 
-			console_command.function.callv(arguments)
-		else:
-			console_unknown_command.emit(text_command)
-			print_error("Command not found.")
+		if (arguments.size() < console_command.required):
+			print_error("Too few arguments! Required < %d >" % console_command.required)
+			return
+		elif (arguments.size() > console_command.arguments.size()):
+			arguments.resize(console_command.arguments.size())
+
+		# Functions fail to call if passed the incorrect number of arguments, so fill out with blank strings.
+		while (arguments.size() < console_command.arguments.size()):
+			arguments.append("")
+
+		console_command.function.callv(arguments)
+	else:
+		console_unknown_command.emit(text_command)
+		print_error("Command not found.")
+
+
+## Headless test hook: reads commands passed on the command line so a test runner
+## can drive the game without the interactive console UI, e.g.:
+##   godot --headless --console-cmd="skip_tutorial" --console-cmd="fire_workers_of_room bar" --console-quit
+## Also accepts --console-script=<path> pointing at a file with one command per line
+## (relative "res://"/"user://" paths and absolute filesystem paths are both supported).
+func _run_cmdline_commands() -> void:
+	var args := OS.get_cmdline_user_args()
+	var commands : PackedStringArray = []
+	var should_quit := false
+	for arg in args:
+		if arg.begins_with("--console-cmd="):
+			commands.append(arg.substr("--console-cmd=".length()))
+		elif arg.begins_with("--console-script="):
+			commands.append_array(_read_command_script(arg.substr("--console-script=".length())))
+		elif arg == "--console-quit":
+			should_quit = true
+
+	if commands.is_empty():
+		return
+
+	_cmdline_mode = true
+	_await_and_run_cmdline_commands(commands, should_quit)
+
+
+func _read_command_script(path : String) -> PackedStringArray:
+	var lines : PackedStringArray = []
+	var file := FileAccess.open(path, FileAccess.READ)
+	if not file:
+		push_error("Console: could not open command script '%s'." % path)
+		return lines
+	while not file.eof_reached():
+		var line := file.get_line()
+		if not line.strip_edges().is_empty():
+			lines.append(line)
+	return lines
+
+
+func _await_and_run_cmdline_commands(commands : PackedStringArray, should_quit : bool) -> void:
+	# Other autoloads and the main scene register their own console commands in their
+	# own _ready(), which may run after this one, so wait a couple of frames first.
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	for line in commands:
+		execute_line(line)
+		await get_tree().process_frame
+
+	if should_quit:
+		get_tree().quit()
 
 
 func _on_line_edit_text_changed(new_text : String) -> void:

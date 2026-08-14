@@ -146,6 +146,39 @@ Recent changes since setup have concentrated around:
 - Verified Godot executable: `/Applications/Godot.app/Contents/MacOS/Godot`
 - Verified Godot version: `4.5.stable.official.876b29033`
 
+### Running dev-console commands headlessly (for automated tests)
+The dev console (`addons/console/console.gd`, autoload `Console`) can run commands from the command line, without opening the console UI, so a headless run can drive the game and assert on the result.
+
+- Pass commands with repeated `--console-cmd="<command line>"` args, e.g.:
+  `Godot --headless -- --console-cmd="skip_tutorial" --console-cmd="fire_workers_of_room bar" --console-quit`
+- **The `--` separator before the console flags is required** — without it, Godot does not hand the args to `OS.get_cmdline_user_args()` and the commands are silently ignored.
+- `--console-script=<path>` runs every non-empty line of a file as a command instead (accepts `res://`, `user://`, or absolute filesystem paths); combine with `--console-cmd` freely, script lines run after individual `--console-cmd` args.
+- `--console-quit` calls `get_tree().quit()` once every queued command has run; omit it to keep the game open (e.g. when driving further tests through the live console).
+- Commands run a couple of frames after startup so other autoloads/the main scene have finished registering their own commands in `_ready()`, but they still run **during** the opening tutorial gating — send `skip_tutorial` first if the test needs build menus, jobs, etc. unlocked.
+- While cmdline commands are active, all console output (`Console.print_line/print_error/print_warning/print_info`) is mirrored to stdout via `print_rich`, regardless of each call's own `print_godot` argument, so assertions can grep process output.
+- Add new test-only commands the same way any other system registers one: `Console.add_command("name", callable, [args], required, "description")` from that system's own `_ready()`. See `fire_workers_of_room` in `scripts/autoloads/job_handler.gd` and `skip_tutorial` in `scripts/startup_coordinator.gd` for examples.
+
+#### Test-oriented console commands
+Beyond the normal gameplay/debug commands (`commands_list` prints all of them), these exist specifically to script headless scenarios:
+
+| Command | Purpose |
+| --- | --- |
+| `skip_tutorial` | Skips the opening tutorial gating so build menus/jobs are immediately usable. |
+| `set_time <scale>` | Sets `TimeHandler` time scale (0 paused, 1 normal, up to 9 fastest) to fast-forward. |
+| `seed <value>` | Seeds the global RNG for reproducible spawns/encounters/loot. |
+| `money` / `add_money <amount>` / `set_money <amount>` | Reads or directly sets the free money pool, bypassing the early-game grind. |
+| `build_room <room_type> <x> <y>` | Places a room directly (e.g. `build_room bar 2 0`), bypassing cost and normal placement validation. |
+| `remove_room <x> <y>` | Replaces whatever room is at (x,y) with an empty room. |
+| `place_pipe <x> <y>` / `place_electricity <x> <y>` | Places infrastructure tiles; still enforces the normal network/support placement rules. |
+| `room_count <room_type>` / `list_rooms` | Reports placed rooms by type, or lists every placed room with position. |
+| `worker_count [job]` / `guest_count` | Reports live worker (optionally filtered by job name) or guest counts. |
+| `list_workers` / `list_guests` | Lists live workers/guests with name, job, and position. |
+| `assign_job <worker_name> <x> <y>` | Assigns the named worker to the job of the room at (x,y), same as dragging them onto it. |
+| `fire_workers_of_room <room_type>` | Fires every worker currently assigned to rooms of the given type. |
+| `assert_room_count <room_type> <expected>` / `assert_worker_count <expected> [job]` / `assert_guest_count <expected>` / `assert_money <expected>` | Print `PASS`/`FAIL` and, on failure, `quit(1)` immediately — use these as the final assertions in a `--console-cmd` chain so a CI runner gets a real non-zero exit code. |
+
+Worker names passed to `assign_job` should be quoted if they contain spaces (the console parser already supports `"..."` quoting).
+
 ## Shaders
 
 ### Outline shader (`assets/shaders/outline_size.gdshader`)
