@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" load_steps=4 format=3]
+
+[ext_resource type="Script" uid="uid://b4ks8252hqmtr" path="res://scripts/items/equipment_data.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://3coy65byddqr" path="res://assets/sprites/item_pickaxe.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://don2nkjf17saw" path="res://assets/sprites/item_pickaxe_heavy.png" id="3"]
+
+[resource]
+script = ExtResource("1")
+equipment_name = "Pickaxe"
+icon = ExtResource("2")
+carried_item_type = 9
+carried_item_override = ExtResource("3")
+work_duration_multiplier = 0.7

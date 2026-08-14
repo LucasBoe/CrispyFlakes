@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://simple_save.json"
-const SAVE_VERSION := 4
+const SAVE_VERSION := 5
 
 func _ready() -> void:
 	Console.add_command("save", console_save, 0, 0, "Saves placed rooms plus worker and guest positions.")
@@ -16,6 +16,7 @@ func console_save() -> void:
 	var workers := _serialize_workers()
 	var guests := _serialize_guests()
 	var cages := _serialize_cages()
+	var equipment := _serialize_equipment()
 	var payload := {
 		"version": SAVE_VERSION,
 		"rooms": rooms,
@@ -26,6 +27,7 @@ func console_save() -> void:
 		"workers": workers,
 		"guests": guests,
 		"cages": cages,
+		"equipment": equipment,
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -34,7 +36,7 @@ func console_save() -> void:
 		return
 
 	file.store_string(JSON.stringify(payload, "\t"))
-	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages to %s." % [
+	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages, %d equipment to %s." % [
 		rooms.size(),
 		water_pipes.size(),
 		electricity_tiles.size(),
@@ -43,6 +45,7 @@ func console_save() -> void:
 		workers.size(),
 		guests.size(),
 		cages.size(),
+		equipment.size(),
 		ProjectSettings.globalize_path(SAVE_PATH),
 	])
 
@@ -72,7 +75,8 @@ func console_load() -> void:
 	var worker_count := _get_array(save_data, "workers").size()
 	var guest_count := _get_array(save_data, "guests").size()
 	var cage_count := _get_array(save_data, "cages").size()
-	Console.print_line("Loaded %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages from %s." % [
+	var equipment_count := _get_array(save_data, "equipment").size()
+	Console.print_line("Loaded %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages, %d equipment from %s." % [
 		room_count,
 		pipe_count,
 		electricity_count,
@@ -81,6 +85,7 @@ func console_load() -> void:
 		worker_count,
 		guest_count,
 		cage_count,
+		equipment_count,
 		ProjectSettings.globalize_path(SAVE_PATH),
 	])
 
@@ -104,6 +109,7 @@ func _apply_save(save_data: Dictionary) -> void:
 	_restore_loose_items(_get_array(save_data, "loose_items"))
 	_restore_workers(_get_array(save_data, "workers"))
 	_restore_guests(_get_array(save_data, "guests"))
+	_restore_equipment(_get_array(save_data, "equipment"))
 
 	await get_tree().process_frame
 
@@ -347,6 +353,20 @@ func _restore_loose_items(entries: Array) -> void:
 		Global.ItemSpawner.items.append(item)
 		LooseItemHandler.register_loose_item_instance(item)
 
+func _serialize_equipment() -> Array[Dictionary]:
+	var equipment: Array[Dictionary] = []
+	for inst: EquipmentInstance in EquipmentInventory.instances:
+		if inst.data == null or inst.data.resource_path.is_empty():
+			continue
+		var entry := {
+			"resource_path": inst.data.resource_path,
+		}
+		var equipped_worker := inst.equipped_by as NPCWorker
+		if is_instance_valid(equipped_worker):
+			entry["equipped_by"] = equipped_worker.character_name
+		equipment.append(entry)
+	return equipment
+
 func _restore_workers(entries: Array) -> void:
 	if Global.NPCSpawner == null:
 		return
@@ -384,6 +404,37 @@ func _restore_cages(entries: Array) -> void:
 			continue
 		var entry := entry_variant as Dictionary
 		ElevatorHandler.place_cage(int(entry.get("x", 0)), int(entry.get("y", 0)))
+
+func _restore_equipment(entries: Array) -> void:
+	EquipmentInventory.instances.clear()
+	if entries.is_empty():
+		return
+
+	var workers_by_name: Dictionary = {}
+	if Global.NPCSpawner != null:
+		for worker: NPCWorker in Global.NPCSpawner.get_live_workers():
+			workers_by_name[worker.character_name] = worker
+
+	for entry_variant in entries:
+		if entry_variant is not Dictionary:
+			continue
+
+		var entry := entry_variant as Dictionary
+		var resource_path := String(entry.get("resource_path", ""))
+		if resource_path.is_empty():
+			continue
+
+		var data := load(resource_path) as EquipmentData
+		if data == null:
+			Console.print_warning("Skipped missing equipment resource: %s" % resource_path)
+			continue
+
+		var inst := EquipmentInstance.new()
+		inst.data = data
+		var owner_name := String(entry.get("equipped_by", ""))
+		if not owner_name.is_empty() and workers_by_name.has(owner_name):
+			inst.equipped_by = workers_by_name[owner_name]
+		EquipmentInventory.instances.append(inst)
 
 func _restore_worker_assignment(worker: NPCWorker, job: int, job_room: RoomBase) -> void:
 	worker.current_job = job

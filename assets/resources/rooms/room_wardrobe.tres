@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="RoomData" load_steps=4 format=3 uid="uid://bqx3wardrobe1"]
+
+[ext_resource type="Script" uid="uid://cxphvsfo6076a" path="res://scripts/room_data.gd" id="1_wrdrb"]
+[ext_resource type="PackedScene" uid="uid://c8nvbjrhkq2yx" path="res://scenes/rooms/room_wardrobe.tscn" id="2_wrdrb"]
+[ext_resource type="Texture2D" uid="uid://1ltfcckx3ecl" path="res://assets/sprites/room_wardrobe_preview.png" id="3_wrdrb"]
+
+[resource]
+script = ExtResource("1_wrdrb")
+packed_scene = ExtResource("2_wrdrb")
+money_capacity = 0
+room_name = "Wardrobe"
+room_desc = "a decorative wardrobe for storing clothes"
+room_preview = ExtResource("3_wrdrb")
+construction_price = 15
+tier = 1
+metadata/_custom_type_script = "uid://cxphvsfo6076a"

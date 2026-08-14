@@ -1,13 +1,10 @@
 class_name WeaponData
-extends Resource
+extends EquipmentData
 
-@export var weapon_name: String = ""
 @export var range_rooms: int = 1
 @export var accuracy: float = 0.5
 @export var fire_rate: int = 0
 @export var single_handed: bool = true
-@export var sprite: Texture2D
-@export var equiped_overlay_texture : Texture2D
 
 func get_fire_rate_label() -> String:
 	match fire_rate:

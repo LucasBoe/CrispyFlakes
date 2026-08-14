@@ -196,10 +196,6 @@ enum Need {
 	ENERGY,
 }
 
-enum EquipmentSlot {
-	WEAPON,
-}
-
 enum FireRate {
 	SLOW,
 	MEDIUM,

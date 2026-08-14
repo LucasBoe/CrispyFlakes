@@ -1324,12 +1324,28 @@ func _rebuild_equipment_ui(npc: NPC) -> void:
 		_equipment_container.queue_free()
 	_equipment_container = null
 
-	return
-
-func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> void:
-	var inv: Node = get_node("/root/WeaponInventory")
-	if inv == null:
+	if not (npc is NPCWorker):
 		return
+
+	var parent: VBoxContainer = need_ui_dummy.get_parent()
+	var container := VBoxContainer.new()
+	container.add_theme_constant_override("separation", 2)
+	parent.add_child(container)
+	var anchor: Control = describtion_label
+	if is_instance_valid(_trait_container):
+		anchor = _trait_container
+	elif is_instance_valid(_type_container):
+		anchor = _type_container
+	parent.move_child(container, anchor.get_index() + 1)
+	_equipment_container = container
+
+	_add_equipment_row(container, npc as NPCWorker)
+
+func _add_equipment_row(container: VBoxContainer, worker: NPCWorker) -> void:
+	var header := status_icon_label_dummy.duplicate() as Label
+	header.text = "Equipment (%d/%d owned)" % [EquipmentInventory.instances.size(), EquipmentInventory.get_capacity()]
+	header.show()
+	container.add_child(header)
 
 	var row := HBoxContainer.new()
 	container.add_child(row)
@@ -1344,45 +1360,90 @@ func _add_weapon_inventory_row(container: VBoxContainer, worker: NPCWorker) -> v
 	opt.theme = hire_guest_button.theme
 	opt.add_item("None")
 
-	var current_inst = inv.get_equipped_by(worker)
+	var current_inst: EquipmentInstance = worker.Equipment.get_equipped_instance()
 
-	for inst in inv.instances:
-		var entry_label: String = inst.data.weapon_name
-		if inst == current_inst:
+	# entries[i] backs option index i+1 ("None" is index 0)
+	var entries: Array[Dictionary] = []
+
+	# Owned instances of the same equipment type collapse into one row.
+	var owned_groups: Dictionary = {}  # EquipmentData -> Array[EquipmentInstance]
+	var owned_order: Array[EquipmentData] = []
+	for inst: EquipmentInstance in EquipmentInventory.instances:
+		if not owned_groups.has(inst.data):
+			owned_groups[inst.data] = []
+			owned_order.append(inst.data)
+		owned_groups[inst.data].append(inst)
+
+	for data: EquipmentData in owned_order:
+		var group: Array = owned_groups[data]
+		var entry_label: String = data.equipment_name
+		if group.size() > 1:
+			entry_label += " (%d)" % group.size()
+		if group.has(current_inst):
 			entry_label += " *"
-		elif not inst.is_available():
-			entry_label += " (%s)" % inst.equipped_by.character_name
-		var icon: Texture2D = inst.data.sprite
-		if icon != null:
-			opt.add_icon_item(icon, entry_label)
+		elif group.all(func(i): return not i.is_available()):
+			entry_label += " (in use)"
+		var display_icon: Texture2D = data.get_display_icon()
+		if display_icon != null:
+			opt.add_icon_item(display_icon, entry_label)
 		else:
 			opt.add_item(entry_label)
+		entries.append({"kind": "owned_group", "value": group})
+
+	var can_acquire := EquipmentInventory.can_acquire()
+	for data: EquipmentData in EquipmentInventory.get_catalog():
+		if owned_groups.has(data):
+			continue
+		var entry_label: String = data.equipment_name + " (new)"
+		var display_icon: Texture2D = data.get_display_icon()
+		if display_icon != null:
+			opt.add_icon_item(display_icon, entry_label)
+		else:
+			opt.add_item(entry_label)
+		opt.set_item_disabled(opt.item_count - 1, not can_acquire)
+		entries.append({"kind": "catalog", "value": data})
 
 	if current_inst != null:
-		var idx: int = inv.instances.find(current_inst)
-		if idx >= 0:
-			opt.selected = idx + 1
+		for i in entries.size():
+			var entry: Dictionary = entries[i]
+			if entry.kind == "owned_group" and (entry.value as Array).has(current_inst):
+				opt.selected = i + 1
+				break
 
 	opt.item_selected.connect(func(idx: int):
 		if not is_instance_valid(worker):
 			return
-		var inv2: Node = get_node("/root/WeaponInventory")
-		if inv2 == null:
-			return
 		if idx == 0:
-			inv2.unequip(worker)
+			worker.Equipment.unequip()
 		else:
-			inv2.equip(worker, inv2.instances[idx - 1])
+			var entry: Dictionary = entries[idx - 1]
+			if entry.kind == "owned_group":
+				var group: Array = entry.value
+				var chosen: EquipmentInstance = current_inst if group.has(current_inst) else null
+				if chosen == null:
+					for inst: EquipmentInstance in group:
+						if inst.is_available():
+							chosen = inst
+							break
+				if chosen == null:
+					chosen = group[0]
+				worker.Equipment.equip(chosen)
+			else:
+				var new_inst := EquipmentInventory.try_acquire(entry.value)
+				if new_inst != null:
+					worker.Equipment.equip(new_inst)
 		_rebuild_equipment_ui(worker)
 	)
 	row.add_child(opt)
 
-	# Compact stats line for the equipped weapon
+	# Compact stats line for the equipped item
 	if current_inst != null:
-		var stats_lbl := status_icon_label_dummy.duplicate() as Label
-		stats_lbl.text = "  " + current_inst.data.get_compact_stats()
-		stats_lbl.show()
-		container.add_child(stats_lbl)
+		var stats: String = current_inst.data.get_compact_stats()
+		if not stats.is_empty():
+			var stats_lbl := status_icon_label_dummy.duplicate() as Label
+			stats_lbl.text = "  " + stats
+			stats_lbl.show()
+			container.add_child(stats_lbl)
 
 func _bind_guest_hire_button(guest: NPCGuest):
 	if not is_instance_valid(guest):

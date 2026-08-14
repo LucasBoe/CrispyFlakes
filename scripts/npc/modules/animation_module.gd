@@ -69,6 +69,7 @@ var _is_in_punch = false
 const RIDE_BODY_OFFSET = Vector2(0, -8)  # NPC sits above horse
 static var _music_sway_sources := 0
 static var should_sway_to_musik = false
+static var debug_performance_enabled := false
 
 var _mat: ShaderMaterial = null
 
@@ -100,11 +101,15 @@ func _update_texture():
 	if _mat == null:
 		return
 
+	var equipped_weapon: WeaponData = npc.Equipment.get_equipped_weapon() if npc.Equipment else null
+
 	var pose := POSE_STANDING
 	if is_riding:
 		pose = POSE_RIDING
 	elif (npc is NPCWorker) and (NPCWorker.picked_up_npc == npc or (npc as NPCWorker)._is_falling):
 		pose = POSE_PANIC
+	elif npc.is_in_fight_state() and equipped_weapon != null:
+		pose = POSE_SINGLE_GUN if equipped_weapon.single_handed else POSE_DOUBLE_GUN
 	elif npc.is_in_fight_state():
 		pose = POSE_FIGHT
 	elif is_sleeping:
@@ -117,6 +122,11 @@ func _update_texture():
 		pose = POSE_CARRY
 
 	_mat.set_shader_parameter("body_pose", pose)
+
+	var has_overlay: bool = equipped_weapon != null and equipped_weapon.equiped_overlay_texture != null
+	_mat.set_shader_parameter("use_gun", has_overlay)
+	if has_overlay:
+		_mat.set_shader_parameter("gun_texture", equipped_weapon.equiped_overlay_texture)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 var _drag_canvas_wrapper: Node2D = null
@@ -146,7 +156,7 @@ func _process(_delta):
 		target = pee_tween(time_in_seconds)
 	elif is_puking:
 		target = puke_tween(time_in_seconds)
-	elif not is_walking and should_sway_to_musik and not suppress_music_sway:
+	elif not is_walking and _should_sway_to_music():
 		target = sway_tween(time_in_seconds - random_instance_offset)
 	else:
 		target = idle_tween(time_in_seconds)
@@ -245,6 +255,27 @@ func puke_tween(time_in_seconds):
 func sway_tween(time_in_seconds):
 	var rot = sin(time_in_seconds * SWAY_ANIMATION_SPEED) * SWAY_ROTATION_STRENGTH
 	return TweenTargetData.new(Vector2.ZERO, rot, Vector2(x_orientation, 1.0))
+
+func is_swaying_to_music() -> bool:
+	return direction.length() <= 0.0 and _should_sway_to_music()
+
+func _should_sway_to_music() -> bool:
+	if suppress_music_sway or _music_sway_sources <= 0:
+		return false
+	if npc == null or npc is not NPCGuest:
+		return false
+	if not is_instance_valid(Building) or Building.query == null:
+		return false
+
+	var guest := npc as NPCGuest
+	for candidate: RoomEntertainment in Building.query.all_rooms_of_type(RoomEntertainment):
+		if candidate == null or not is_instance_valid(candidate):
+			continue
+		if not candidate.has_active_performance():
+			continue
+		if candidate.is_guest_in_performance_range(guest):
+			return true
+	return false
 
 ## Small, fast, additive jitter layered on top of whatever base animation is
 ## playing (idle, walk, carry, ...) rather than replacing it — packed as
@@ -403,12 +434,27 @@ func _debug_log_z_change(previous_local_z: int, previous_effective_z: int) -> vo
 	)
 
 static func set_music_sway_enabled(value: bool) -> void:
+	var previous_sources := _music_sway_sources
 	if value:
 		_music_sway_sources += 1
 	else:
 		_music_sway_sources = maxi(0, _music_sway_sources - 1)
 
 	should_sway_to_musik = _music_sway_sources > 0
+	if debug_performance_enabled:
+		DebugLog.info(
+			"[Performance]",
+			"music_sway",
+			"enabled", value,
+			"sources", "%d -> %d" % [previous_sources, _music_sway_sources],
+			"active", should_sway_to_musik
+		)
+
+static func set_performance_debug_enabled(value: bool) -> void:
+	debug_performance_enabled = value
+
+static func get_music_sway_source_count() -> int:
+	return _music_sway_sources
 
 class TweenTargetData:
 	@export var position : Vector2

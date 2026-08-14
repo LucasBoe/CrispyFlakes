@@ -56,6 +56,12 @@ const MELEE_ATTACK_SPEED: float = 0.8
 const MELEE_ATTACK_SPEED_VARIATION: float = 0.12
 const MELEE_DAMAGE_DELAY: float = 0.25
 const MELEE_DAMAGE: float = 0.12
+const RANGED_FIRE_RATE_INTERVAL := {
+	Enum.FireRate.FAST: 0.5,
+	Enum.FireRate.MEDIUM: 0.8,
+	Enum.FireRate.SLOW: 1.2,
+}
+const RANGED_DAMAGE_MULTIPLIER: float = 1.75
 const MELEE_ARRIVE_THRESHOLD: float = 2.0
 const INJURY_INSTEAD_OF_KO_CHANCE: float = 0.8
 const INJURY_MIN_SURVIVE_ENERGY: float = 0.08
@@ -348,16 +354,34 @@ func _try_attack(attacker: NPC, target: NPC) -> void:
 		if is_zero_approx(attack_direction):
 			attack_direction = float(attacker.Animator.x_orientation)
 		attacker.Animator.play_fight_punch(attack_direction)
+
+	if not _roll_ranged_hit(attacker):
+		return
+
 	pending_attacks[attacker] = {
 		"target": target,
 		"damage": _get_attack_damage(attacker, target),
 		"apply_time": Global.time_now + MELEE_DAMAGE_DELAY,
 	}
 
+func _roll_ranged_hit(attacker: NPC) -> bool:
+	var weapon := attacker.Equipment.get_equipped_weapon() if attacker.Equipment else null
+	if weapon == null:
+		return true
+	var chance := clampf(weapon.accuracy * attacker.Traits.get_ranged_accuracy_multiplier(), 0.0, 1.0)
+	return randf() < chance
+
 func _get_attack_interval(attacker: NPC) -> float:
 	if not attack_intervals.has(attacker):
-		attack_intervals[attacker] = maxf(0.35, MELEE_ATTACK_SPEED + randf_range(-MELEE_ATTACK_SPEED_VARIATION, MELEE_ATTACK_SPEED_VARIATION))
+		var base_speed := _get_base_attack_speed(attacker)
+		attack_intervals[attacker] = maxf(0.2, base_speed + randf_range(-MELEE_ATTACK_SPEED_VARIATION, MELEE_ATTACK_SPEED_VARIATION))
 	return float(attack_intervals[attacker])
+
+func _get_base_attack_speed(attacker: NPC) -> float:
+	var weapon := attacker.Equipment.get_equipped_weapon() if attacker.Equipment else null
+	if weapon == null:
+		return MELEE_ATTACK_SPEED
+	return RANGED_FIRE_RATE_INTERVAL.get(weapon.fire_rate, MELEE_ATTACK_SPEED)
 
 func _apply_pending_attacks(active_participants: Array) -> void:
 	for attacker in pending_attacks.keys().duplicate():
@@ -420,7 +444,11 @@ func _can_apply_pending_attack(attacker: NPC, target: NPC, active_participants: 
 func _get_attack_damage(attacker: NPC, target: NPC) -> float:
 	var outgoing = attacker.Traits.get_melee_damage_multiplier()
 	var incoming = target.Traits.get_incoming_damage_multiplier()
-	return MELEE_DAMAGE * outgoing * incoming
+	var base_damage := MELEE_DAMAGE
+	var weapon := attacker.Equipment.get_equipped_weapon() if attacker.Equipment else null
+	if weapon != null:
+		base_damage *= RANGED_DAMAGE_MULTIPLIER
+	return base_damage * outgoing * incoming
 
 func _play_hit_impact(attacker: NPC, target: NPC) -> void:
 	SoundPlayer.play_punch(attacker.global_position)

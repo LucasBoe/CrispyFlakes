@@ -153,9 +153,12 @@ func get_move_speed_multiplier() -> float:
 	return Traits.get_move_speed_multiplier()
 
 func get_work_duration_multiplier() -> float:
-	if Traits == null:
-		return 1.0
-	return Traits.get_work_duration_multiplier()
+	var multiplier := 1.0
+	if Traits != null:
+		multiplier *= Traits.get_work_duration_multiplier()
+	if Equipment != null:
+		multiplier *= Equipment.get_work_duration_multiplier()
+	return multiplier
 
 func restore_energy() -> void:
 	energy = get_max_energy()

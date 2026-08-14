@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://c8nvbjrhkq2yx"]
+
+[ext_resource type="Script" path="res://scripts/room_wardrobe.gd" id="1_wrdrb"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_wrdrb"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_wrdrb"]
+[ext_resource type="Texture2D" uid="uid://8vdyvqtr61ja" path="res://assets/sprites/rooms/wardrobe.png" id="4_wrdrb"]
+
+[node name="Room_Wardrobe" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_wrdrb")
+
+[node name="Back-wall" type="Sprite2D" parent="."]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("2_wrdrb")
+
+[node name="Outline" type="Sprite2D" parent="."]
+visible = false
+z_index = 4000
+position = Vector2(24, -24)
+texture = ExtResource("3_wrdrb")
+
+[node name="Wardrobe" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(24, -15)
+texture = ExtResource("4_wrdrb")

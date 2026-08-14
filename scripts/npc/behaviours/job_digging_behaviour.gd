@@ -51,8 +51,7 @@ func loop():
 			return
 
 func _dig_room() -> void:
-	var duration := _get_progress_duration(DIG_DURATION)
-	var elapsed := 0.0
+	var dig_progress := 0.0
 	var sound_elapsed := DIG_SOUND_INTERVAL
 	var start_pos: Vector2 = room.get_dig_start_position()
 	var end_pos: Vector2 = room.get_dig_end_position()
@@ -61,15 +60,18 @@ func _dig_room() -> void:
 	npc.Navigation.is_moving = true
 	npc.Animator.direction = room.get_dig_animation_direction()
 
-	while elapsed < duration:
+	while dig_progress < 1.0:
 		if stopped or not is_instance_valid(room):
 			npc.Navigation.is_moving = false
 			return
-		elapsed += npc.get_process_delta_time()
-		sound_elapsed += npc.get_process_delta_time()
-		var progress: float = minf(elapsed / duration, 1.0)
-		npc.global_position = start_pos.lerp(end_pos, progress)
-		room.set_dig_progress(progress)
+		# Recomputed every frame so a mid-dig equipment swap changes pace immediately.
+		var duration := _get_progress_duration(DIG_DURATION)
+		var delta := npc.get_process_delta_time()
+		dig_progress = minf(dig_progress + delta / duration, 1.0)
+		sound_elapsed += delta
+		npc.global_position = start_pos.lerp(end_pos, dig_progress)
+		room.set_dig_progress(dig_progress)
+		_refresh_pickaxe_visual()
 		if sound_elapsed >= DIG_SOUND_INTERVAL:
 			SoundPlayer.play_digging(npc.global_position)
 			sound_elapsed = 0.0
@@ -193,12 +195,22 @@ func _release_room() -> void:
 func _ensure_pickaxe() -> void:
 	if not is_instance_valid(npc) or npc.Item == null:
 		return
-	if npc.Item.is_item(Enum.Items.PICKAXE):
+	if not npc.Item.is_item(Enum.Items.PICKAXE):
+		if npc.Item.current_item != null:
+			npc.Item.drop_current()
+		var pickaxe := Global.ItemSpawner.create(Enum.Items.PICKAXE, npc.global_position)
+		npc.Item.pick_up(pickaxe)
+	_refresh_pickaxe_visual()
+
+func _refresh_pickaxe_visual() -> void:
+	var item: Item = npc.Item.current_item
+	if item == null:
 		return
-	if npc.Item.current_item != null:
-		npc.Item.drop_current()
-	var pickaxe := Global.ItemSpawner.create(Enum.Items.PICKAXE, npc.global_position)
-	npc.Item.pick_up(pickaxe)
+	var equipped := npc.Equipment.get_equipped_data() if npc.Equipment else null
+	if equipped != null and equipped.carried_item_override != null and equipped.carried_item_type == Enum.Items.PICKAXE:
+		item.apply_texture(equipped.carried_item_override, 0, 0, 1)
+	else:
+		item.refresh_texture()
 
 func _clear_pickaxe() -> void:
 	if not is_instance_valid(npc) or npc.Item == null:
