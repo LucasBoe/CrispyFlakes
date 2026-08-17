@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Saloon Tycoon"
-config/version="0.0.1-dev.419"
-run/main_scene="uid://ybtnclmbmffe"
+config/version="0.0.1-dev.420"
+run/main_scene="res://scenes/mainscene.tscn"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="uid://dxau8vfqtewbb"
 config/macos_native_icon="uid://dxau8vfqtewbb"
@@ -85,7 +85,7 @@ window/stretch/aspect="keep_height"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/debugdraw2d/plugin.cfg")
+enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/debugdraw2d/plugin.cfg", "res://addons/quick_play_mainmenu/plugin.cfg")
 
 [input]
 

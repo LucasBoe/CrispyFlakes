@@ -6,6 +6,8 @@ const TUTORIAL_DOT_SELECTED = preload("res://assets/sprites/ui/2x/tutorial_dot_s
 const TUTORIAL_DOT_GLOW = preload("res://assets/sprites/ui/2x/tutorial_dot_glow.png")
 const TODO_CHECKED = preload("res://assets/sprites/ui/tutorial_todo_checked.png")
 const TODO_UNCHECKED = preload("res://assets/sprites/ui/tutorial_todo_unchecked.png")
+const TODO_STAR_CHECKED = preload("res://assets/sprites/ui/tutorial_todo_star_checked.png")
+const TODO_STAR_UNCHECKED = preload("res://assets/sprites/ui/tutorial_todo_star_unchecked.png")
 const REVEALED_MARKER_TEXTURE = preload("res://assets/sprites/ui/exclamation_mark.png")
 const GOLDEN_GLOW_SHADER = preload("res://assets/shaders/golden_glow_red_replace.gdshader")
 const REWARD_TINT = Color(1.0, 0.92, 0.25, 1.0)
@@ -293,11 +295,11 @@ func _refresh_selected_section_content() -> void:
 
 
 func _get_task_icon_texture(quest) -> Texture2D:
-	if quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
-		return TODO_CHECKED
-	if quest.is_done:
-		return TODO_CHECKED
-	return TODO_UNCHECKED
+	var is_campaign_goal: bool = ScenarioHandler.get_registered_quest_keys().has(quest.section_title)
+	var checked: bool = quest.phase == TutorialHandler.TutorialPhase.COMPLETED or quest.is_done
+	if is_campaign_goal:
+		return TODO_STAR_CHECKED if checked else TODO_STAR_UNCHECKED
+	return TODO_CHECKED if checked else TODO_UNCHECKED
 
 
 func _get_display_hints(quest) -> Array[String]:
@@ -472,9 +474,11 @@ func _get_bubble_dot_texture(section_title: String, quest) -> Texture2D:
 	return TUTORIAL_DOT_OFF
 
 func _get_bubble_state_icon_texture(quest) -> Texture2D:
-	if quest.phase == TutorialHandler.TutorialPhase.COMPLETED:
-		return TODO_CHECKED
-	return TODO_UNCHECKED
+	var is_campaign_goal: bool = ScenarioHandler.get_registered_quest_keys().has(quest.section_title)
+	var checked: bool = quest.phase == TutorialHandler.TutorialPhase.COMPLETED
+	if is_campaign_goal:
+		return TODO_STAR_CHECKED if checked else TODO_STAR_UNCHECKED
+	return TODO_CHECKED if checked else TODO_UNCHECKED
 
 func _get_bubble_state_icon_modulate(section_title: String, quest) -> Color:
 	if _should_glow_bubble(section_title, quest):

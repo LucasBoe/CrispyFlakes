@@ -384,6 +384,12 @@ func _input(event):
 				previous_notification = UiNotifications.create_notification_static("not enough money", mouse, null,  Color.ORANGE)
 				print("not enough money")
 
+	var needed_highlight_count: int = active_data.width * active_data.height
+	if highlights.size() != needed_highlight_count or highlights.any(func(h): return not is_instance_valid(h)):
+		_prepare_highlights(needed_highlight_count)
+	if highlights.size() != needed_highlight_count:
+		return
+
 	var h_color = Color.GREEN if can_place else Color.YELLOW if has_valid_target else Color.RED
 	var idx = 0
 	for row in active_data.height:

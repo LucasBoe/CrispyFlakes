@@ -1,11 +1,26 @@
 extends Node
 
 const SAVE_PATH := "user://simple_save.json"
-const SAVE_VERSION := 5
+const SAVE_VERSION := 6
+
+var _pending_load := false
 
 func _ready() -> void:
 	Console.add_command("save", console_save, 0, 0, "Saves placed rooms plus worker and guest positions.")
 	Console.add_command("load", console_load, 0, 0, "Loads the simple room and NPC save file.")
+
+func has_save() -> bool:
+	return FileAccess.file_exists(SAVE_PATH)
+
+func flag_pending_load() -> void:
+	_pending_load = true
+
+func has_pending_load() -> bool:
+	return _pending_load
+
+func load_pending() -> void:
+	_pending_load = false
+	console_load()
 
 func console_save() -> void:
 	var rooms := _serialize_rooms()
@@ -17,6 +32,7 @@ func console_save() -> void:
 	var guests := _serialize_guests()
 	var cages := _serialize_cages()
 	var equipment := _serialize_equipment()
+	var scenario := _serialize_scenario()
 	var payload := {
 		"version": SAVE_VERSION,
 		"rooms": rooms,
@@ -28,6 +44,13 @@ func console_save() -> void:
 		"guests": guests,
 		"cages": cages,
 		"equipment": equipment,
+		"resources": _serialize_resources(),
+		"money_free_pool": MoneyHandler.free_pool,
+		"money_location_money": _serialize_money_locations(),
+		"scenario_id": scenario.get("scenario_id", ""),
+		"scenario_goal_progress": scenario.get("scenario_goal_progress", {}),
+		"scenario_win_state": scenario.get("scenario_win_state", ScenarioHandler.WinState.NONE),
+		"scenario_fired_beats": scenario.get("scenario_fired_beats", []),
 	}
 
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
@@ -90,6 +113,9 @@ func console_load() -> void:
 	])
 
 func _apply_save(save_data: Dictionary) -> void:
+	if int(save_data.get("version", 0)) < SAVE_VERSION:
+		save_data = _backfill_save_data(save_data)
+
 	TimeHandler.push_pause_lock(self)
 	var previous_auto_spawn: bool = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
 	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, false)
@@ -117,6 +143,12 @@ func _apply_save(save_data: Dictionary) -> void:
 	# room-created signals emitted during _restore_rooms above, which ElevatorHandler handles
 	# deferred (see elevator_handler.gd), so waiting for the process_frame above first is required.
 	_restore_cages(_get_array(save_data, "cages"))
+
+	_restore_resources(save_data.get("resources", {}))
+	_restore_money_locations(_get_array(save_data, "money_location_money"))
+	MoneyHandler.free_pool = float(save_data.get("money_free_pool", MoneyHandler.free_pool))
+	MoneyHandler.on_money_changed_signal.emit()
+	_apply_scenario_restore(save_data)
 
 	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, previous_auto_spawn)
 	TimeHandler.pop_pause_lock(self)
@@ -717,3 +749,109 @@ func _sort_storage_entries(a: Dictionary, b: Dictionary) -> bool:
 		if ax != bx:
 			return ax < bx
 	return int(a.get("slot", 0)) < int(b.get("slot", 0))
+
+func _serialize_resources() -> Dictionary:
+	var result := {}
+	for key in ResourceHandler.resources.keys():
+		result[str(int(key))] = ResourceHandler.resources[key]
+	return result
+
+func _restore_resources(data_variant) -> void:
+	if data_variant is not Dictionary:
+		return
+	var data := data_variant as Dictionary
+	for key in data.keys():
+		var resource_id := int(key)
+		if resource_id < 0 or resource_id >= Enum.Resources.keys().size():
+			continue
+		ResourceHandler.resources[resource_id] = data[key]
+
+func _serialize_money_locations() -> Array[Dictionary]:
+	var entries: Array[Dictionary] = []
+	for loc: Vector2i in MoneyHandler.location_money.keys():
+		entries.append({
+			"x": loc.x,
+			"y": loc.y,
+			"amount": MoneyHandler.location_money[loc],
+		})
+	entries.sort_custom(func(a: Dictionary, b: Dictionary): return _sort_grid_entries(a, b))
+	return entries
+
+func _restore_money_locations(entries: Array) -> void:
+	MoneyHandler.location_money.clear()
+	for entry_variant in entries:
+		if entry_variant is not Dictionary:
+			continue
+		var entry := entry_variant as Dictionary
+		var loc := Vector2i(int(entry.get("x", 0)), int(entry.get("y", 0)))
+		MoneyHandler.location_money[loc] = float(entry.get("amount", 0.0))
+
+func _serialize_scenario() -> Dictionary:
+	if ScenarioHandler.current_scenario == null:
+		return {
+			"scenario_id": "",
+			"scenario_goal_progress": {},
+			"scenario_win_state": ScenarioHandler.WinState.NONE,
+			"scenario_fired_beats": [],
+		}
+
+	var goal_progress := {}
+	for key in ScenarioHandler.get_registered_quest_keys():
+		var quest := TutorialHandler.get_quest(key)
+		if quest == null:
+			goal_progress[key] = {"phase": TutorialHandler.TutorialPhase.DONE, "metadata": {}}
+			continue
+		goal_progress[key] = {"phase": quest.phase, "metadata": quest.metadata}
+
+	return {
+		"scenario_id": ScenarioHandler.current_scenario.scenario_id,
+		"scenario_goal_progress": goal_progress,
+		"scenario_win_state": ScenarioHandler.win_state,
+		"scenario_fired_beats": ScenarioHandler.get_fired_beat_ids(),
+	}
+
+func _apply_scenario_restore(save_data: Dictionary) -> void:
+	var scenario_id := String(save_data.get("scenario_id", ""))
+	if scenario_id.is_empty():
+		ScenarioHandler.current_scenario = null
+		ScenarioHandler.win_state = ScenarioHandler.WinState.NONE
+		return
+
+	var scenario := ScenarioHandler.get_scenario(scenario_id)
+	if scenario == null:
+		Console.print_warning("Skipped missing scenario: %s" % scenario_id)
+		return
+
+	var saved_win_state := int(save_data.get("scenario_win_state", ScenarioHandler.WinState.NONE))
+	ScenarioHandler.resume_scenario(scenario, saved_win_state)
+
+	var goal_progress_variant = save_data.get("scenario_goal_progress", {})
+	var goal_progress: Dictionary = goal_progress_variant if goal_progress_variant is Dictionary else {}
+
+	if scenario is CampaignScenarioData:
+		for goal: ScenarioGoalDefinition in (scenario as CampaignScenarioData).goal_definitions:
+			TutorialHandler.create_quest(goal.key, goal.text, [], goal.reward_money, goal.reward_text, TutorialHandler.TutorialPhase.ACTIVE)
+			var entry_variant = goal_progress.get(goal.key, null)
+			if entry_variant is Dictionary:
+				var entry := entry_variant as Dictionary
+				TutorialHandler.restore_quest_state(goal.key, int(entry.get("phase", TutorialHandler.TutorialPhase.ACTIVE)), entry.get("metadata", {}))
+
+	for beat_id in _get_array(save_data, "scenario_fired_beats"):
+		ScenarioHandler.mark_beat_fired(str(beat_id))
+
+func _backfill_save_data(save_data: Dictionary) -> Dictionary:
+	if not save_data.has("scenario_id"):
+		save_data["scenario_id"] = ""
+	if not save_data.has("scenario_goal_progress"):
+		save_data["scenario_goal_progress"] = {}
+	if not save_data.has("scenario_win_state"):
+		save_data["scenario_win_state"] = ScenarioHandler.WinState.NONE
+	if not save_data.has("scenario_fired_beats"):
+		save_data["scenario_fired_beats"] = []
+	if not save_data.has("resources"):
+		save_data["resources"] = {}
+	if not save_data.has("money_free_pool"):
+		save_data["money_free_pool"] = MoneyHandler.free_pool
+	if not save_data.has("money_location_money"):
+		save_data["money_location_money"] = []
+	return save_data

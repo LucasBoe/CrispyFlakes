@@ -8,6 +8,21 @@ var free_pool: float = 100.0
 
 signal on_money_changed_signal
 
+# Sets starting money for a fresh run, resetting both money stores together -
+# the one authoritative place ResourceHandler.resources[MONEY] and
+# MoneyHandler's own pools get reset in lockstep.
+func set_starting_money(amount: int) -> void:
+	var current_money := int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0))
+	var delta := amount - current_money
+	ResourceHandler.resources[Enum.Resources.MONEY] = amount
+	ResourceHandler.reset_money_tracking()
+	ResourceHandler.on_resource_changed_signal.emit(Enum.Resources.MONEY, amount, delta)
+	ResourceHandler.on_money_changed_signal.emit()
+
+	free_pool = amount
+	location_money.clear()
+	on_money_changed_signal.emit()
+
 # Returns total money capacity from all currently live rooms.
 func total_capacity() -> float:
 	if not is_instance_valid(Building):

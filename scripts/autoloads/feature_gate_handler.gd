@@ -79,6 +79,9 @@ func _ready() -> void:
 		"Turns a specific feature gate ON."
 	)
 
+func get_feature_name(feature: Feature) -> String:
+	return _NAMES.get(feature, "")
+
 func is_enabled(feature: Feature) -> bool:
 	if _overrides.has(feature):
 		return _overrides[feature]

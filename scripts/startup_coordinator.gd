@@ -26,13 +26,24 @@ var _served_startup_guests: Array[NPCGuest] = []
 
 func _ready() -> void:
 	Console.add_command("skip_tutorial", request_skip_tutorial, 0, 0, "Skips the opening tutorial sequence, same as the settings button.")
-	_prepare_startup_content()
 
-func _process(_delta: float) -> void:
+func begin() -> void:
 	if done:
 		return
 	done = true
 
+	if ScenarioHandler.pending_scenario != null:
+		# A scenario applies its own layout/unlocks/money via start_scenario,
+		# so _prepare_startup_content() (which unconditionally calls
+		# setup_building()) is skipped here - calling both would instantiate
+		# the default room layout twice, since Building.set_room() doesn't
+		# free whatever was previously occupying a floor slot.
+		var scenario := ScenarioHandler.pending_scenario
+		ScenarioHandler.pending_scenario = null
+		ScenarioHandler.start_scenario(scenario)
+		return
+
+	_prepare_startup_content()
 	await _run_startup_sequence()
 
 func _run_startup_sequence() -> void:
@@ -146,16 +157,7 @@ func _prepare_startup_content() -> void:
 
 
 func _set_startup_money(amount: int) -> void:
-	var current_money := int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0))
-	var delta := amount - current_money
-	ResourceHandler.resources[Enum.Resources.MONEY] = amount
-	ResourceHandler.reset_money_tracking()
-	ResourceHandler.on_resource_changed_signal.emit(Enum.Resources.MONEY, amount, delta)
-	ResourceHandler.on_money_changed_signal.emit()
-
-	MoneyHandler.free_pool = amount
-	MoneyHandler.location_money.clear()
-	MoneyHandler.on_money_changed_signal.emit()
+	MoneyHandler.set_starting_money(amount)
 
 func spawn_bounties(count: int) -> void:
 	for i in count:

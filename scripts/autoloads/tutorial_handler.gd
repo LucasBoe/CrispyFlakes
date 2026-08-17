@@ -239,6 +239,19 @@ func set_quest_reward_effects(quest: TutorialQuest, effects: Array[Callable]) ->
 	quest.reward_effects = effects.duplicate()
 
 
+func restore_quest_state(key: String, phase: int, metadata: Dictionary) -> TutorialQuest:
+	if phase == TutorialPhase.DONE:
+		return null
+
+	var quest := _create_or_update_quest(key)
+	quest.phase = phase
+	quest.is_started = phase != TutorialPhase.HIDDEN and phase != TutorialPhase.REVEALED
+	quest.is_done = phase == TutorialPhase.COMPLETED
+	quest.metadata = metadata.duplicate()
+	_notify_quests_changed()
+	return quest
+
+
 func mark_quest_done(quest: TutorialQuest) -> void:
 	if not has_quest(quest):
 		return

@@ -25,6 +25,10 @@ const UI_ITEMS_CONTROLLER := preload("res://scripts/ui/ui_items_controller.gd")
 func _init():
 	Global.UI = self
 
+func _exit_tree() -> void:
+	if Global.UI == self:
+		Global.UI = null
+
 func _ready() -> void:
 	ui_items.hide()
 

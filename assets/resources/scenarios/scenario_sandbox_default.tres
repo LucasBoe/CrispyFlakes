@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="ScenarioData" load_steps=2 format=3]
+
+[ext_resource type="Script" uid="uid://co6mfgpjjlcfn" path="res://scripts/scenario/scenario_data.gd" id="1_script"]
+
+[resource]
+script = ExtResource("1_script")
+scenario_id = "scenario_sandbox_default"
+display_name = "Sandbox"
+description = "Configure your own starting conditions and build freely, no scripted tutorial or goals."
+starting_money = 30
+use_default_starting_layout = true
+starting_bounty_count = 3
+starting_worker_count = 1
+starting_guest_count = 0
+use_default_unlocks = true
+feature_overrides = {
+2: true
+}
+robber_spawn_chance = 0.1
+is_campaign = false
+show_basic_controls_ui = true

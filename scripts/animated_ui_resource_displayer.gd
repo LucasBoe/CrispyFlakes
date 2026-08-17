@@ -87,6 +87,8 @@ func coin_anim_routine():
 
 
 func animate_resource_spend(amount: int, world_target: Vector2, duration: float) -> void:
+	if Global.UI == null or Global.UI.money == null:
+		return
 	var camera := Camera
 	var label_pos = Global.UI.money.get_label_relative_position(camera)
 	for i in mini(amount, 5):
@@ -107,6 +109,9 @@ func animate_resource_spend(amount: int, world_target: Vector2, duration: float)
 		tween.tween_callback(instance.queue_free)
 
 func _process(_delta):
+	if Global.UI == null or Global.UI.money == null:
+		return
+
 	var camera := Camera
 	var target = Global.UI.money.get_label_relative_position(camera)
 	var finished: Array = []

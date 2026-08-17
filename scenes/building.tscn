@@ -202,6 +202,7 @@ position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_sign")
 
 [node name="OutsideOverlay" type="Node2D" parent="."]
+visible = false
 z_index = 2000
 
 [node name="Sprite2D" type="Sprite2D" parent="OutsideOverlay"]

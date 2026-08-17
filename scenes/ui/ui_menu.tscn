@@ -27,6 +27,8 @@
 [ext_resource type="Texture2D" uid="uid://boj5r54nynmtc" path="res://assets/sprites/ui/2x/glow_overlay_button_passive.png" id="57_glow"]
 [ext_resource type="Shader" uid="uid://ckfr2rh63xyc3" path="res://assets/shaders/golden_glow_overlay.gdshader" id="58_glow_shader"]
 [ext_resource type="PackedScene" uid="uid://dvvhr8rvm7o6s" path="res://scenes/ui/room_info_display.tscn" id="room_info_display"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_scenario_info.tscn" id="60_scenario"]
+[ext_resource type="Texture2D" uid="uid://58h0pnvjimqn" path="res://assets/sprites/ui/icon_looking_glass.png" id="61_scenario"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_build_button_glow"]
 shader = ExtResource("58_glow_shader")
@@ -352,6 +354,10 @@ text = "Skip Tutorial"
 visible = false
 layout_mode = 2
 
+[node name="UIScenarioInfo" parent="MarginContainer" instance=ExtResource("60_scenario")]
+visible = false
+layout_mode = 2
+
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 3
@@ -359,7 +365,7 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -112.0
+offset_left = -148.0
 offset_top = -41.0
 offset_right = -8.0
 offset_bottom = -9.0
@@ -413,4 +419,11 @@ custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 theme = ExtResource("22_hpv7r")
 icon = ExtResource("31_pj0ys")
+icon_alignment = 1
+
+[node name="Button_Scenario" type="Button" parent="HBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+icon = ExtResource("61_scenario")
 icon_alignment = 1

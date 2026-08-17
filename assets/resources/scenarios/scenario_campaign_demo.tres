@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="CampaignScenarioData" load_steps=5 format=3]
+
+[ext_resource type="Script" uid="uid://c1bcmbdjs5emn" path="res://scripts/scenario/campaign_scenario_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://jfkukhhybxtl" path="res://scripts/scenario/scenario_goal_definition.gd" id="2_goal_script"]
+[ext_resource type="Script" uid="uid://q3qovhlsh1tq" path="res://scripts/scenario/campaign_demo_story_beats.gd" id="3_beats"]
+[ext_resource type="Script" uid="uid://ps2maes6sjr0" path="res://scripts/scenario/campaign_demo_conditions.gd" id="4_conditions"]
+
+[sub_resource type="Resource" id="Resource_goal1"]
+script = ExtResource("2_goal_script")
+key = "earn_money_goal"
+title = "Fill the Coffers"
+text = "Grow your saloon's takings to $150."
+description = "Grow your saloon's takings to $150."
+reward_money = 20
+reward_text = "$20 Bonus"
+is_required_for_win = true
+
+[resource]
+script = ExtResource("1_script")
+scenario_id = "scenario_campaign_demo"
+display_name = "The First Saloon"
+description = "A short demo campaign: build up your saloon and prove it can turn a profit."
+starting_money = 30
+use_default_starting_layout = true
+starting_bounty_count = 1
+starting_worker_count = 1
+starting_guest_count = 0
+use_default_unlocks = true
+feature_overrides = {
+2: true
+}
+robber_spawn_chance = 0.1
+is_campaign = true
+goal_definitions = Array[ExtResource("2_goal_script")]([SubResource("Resource_goal1")])
+story_beat_script = ExtResource("3_beats")
+conditions_script = ExtResource("4_conditions")

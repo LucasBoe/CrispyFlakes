@@ -1,0 +1,84 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" uid="uid://oxn4sdja53xs" path="res://scripts/ui/main_menu.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_theme"]
+[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="3_font"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_sandbox_config.tscn" id="4_sandbox_config"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0.08627451, 0.078431375, 0.08235294, 1)
+
+[node name="MainMenuScene" type="CanvasLayer"]
+layer = 5
+
+[node name="UIMainMenu" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Background" type="Panel" parent="UIMainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+
+[node name="CenterContainer" type="CenterContainer" parent="UIMainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIMainMenu/CenterContainer"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TitleLabel" type="Label" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_font")
+theme_override_font_sizes/font_size = 22
+text = "Saloon Tycoon"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Continue"
+
+[node name="NewGameButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "New Game"
+
+[node name="SandboxButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Sandbox"
+
+[node name="CampaignButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Campaign"
+
+[node name="SandboxConfig" parent="UIMainMenu" instance=ExtResource("4_sandbox_config")]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

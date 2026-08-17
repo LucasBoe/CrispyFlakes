@@ -10,7 +10,7 @@ const guestScene : PackedScene = preload("res://scenes/npcs/npc_guest.tscn")
 const sheriffScene : PackedScene = preload("res://scenes/npcs/npc_sheriff.tscn")
 const specialNPCScene : PackedScene = preload("res://scenes/npcs/npc_special.tscn")
 const traderWagonScene : PackedScene = preload("res://scenes/npcs/trader_wagon.tscn")
-const ROBBER_SPAWN_CHANCE := 0.1
+var robber_spawn_chance: float = 0.1
 var CONSOLE_SPAWN_ADJECTIVES := PackedStringArray(["drunk", "horse", "fight", "robber", "injured"])
 
 var guests = []
@@ -354,7 +354,7 @@ func spawn_new_guest():
 	add_child(guest)
 
 	#robber stuff
-	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.ROBBER_SPAWN) and randf() < ROBBER_SPAWN_CHANCE:
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.ROBBER_SPAWN) and randf() < robber_spawn_chance:
 		guest.is_robber = true
 
 	# bounty stuff

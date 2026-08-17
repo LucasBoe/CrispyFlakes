@@ -4,10 +4,12 @@ class_name MenuUIHandler
 @onready var build_tab = $MarginContainer/UIBuild
 @onready var settings_tab = $MarginContainer/UISettings
 @onready var progression_tab = $MarginContainer/UIProgressionTree
+@onready var scenario_tab = $MarginContainer/UIScenarioInfo
 
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
 @onready var progression_button = $HBoxContainer/Button_Progression
+@onready var scenario_button = $HBoxContainer/Button_Scenario
 @onready var _progression_glow_icon: TextureRect = $HBoxContainer/Button_Progression/GlowIcon
 
 var visible_tab = null
@@ -22,6 +24,7 @@ func _ready():
 	bind_slot(build_button, build_tab)
 	bind_slot(progression_button, progression_tab)
 	bind_slot(settings_button, settings_tab)
+	bind_slot(scenario_button, scenario_tab)
 	set_tab(null)
 
 	_progression_glow_material = _progression_glow_icon.material as ShaderMaterial
@@ -29,9 +32,11 @@ func _ready():
 	_refresh_menu_gating()
 	_refresh_progression_shader_time()
 	_hide_progression_glow_overlay()
+	_refresh_scenario_button_visibility()
 
 func _process(_delta: float) -> void:
 	_refresh_progression_shader_time()
+	_refresh_scenario_button_visibility()
 
 func _on_ui_close():
 	set_tab(null)
@@ -97,6 +102,16 @@ func _refresh_menu_gating() -> void:
 				visible_tab = null
 
 	_refresh_progression_button_glow()
+
+func _refresh_scenario_button_visibility() -> void:
+	if scenario_button == null:
+		return
+	var has_scenario: bool = ScenarioHandler.get_current_scenario() != null
+	if scenario_button.visible == has_scenario:
+		return
+	scenario_button.visible = has_scenario and _is_tab_available(scenario_tab)
+	if not has_scenario and visible_tab == scenario_tab:
+		set_tab(null)
 
 func _is_tab_available(tab) -> bool:
 	if tab == null:
