@@ -13,6 +13,43 @@ uniform sampler2D cloud_tex_4 : filter_nearest;
 uniform float cloud_speed : hint_range(0.001, 0.1) = 0.015;
 uniform float cloud_scale : hint_range(0.1, 10.0) = 1.0;
 uniform vec2 reference_resolution = vec2(640.0, 360.0);
+// Vertical band (SCREEN_UV.y, 0 = top of screen, 1 = bottom) that procedural
+// clouds spawn within. cloud_y_pos_min is the top-most reachable position,
+// cloud_y_pos_max is the bottom-most.
+uniform float cloud_y_pos_min : hint_range(0.0, 1.0) = 0.04;
+uniform float cloud_y_pos_max : hint_range(0.0, 1.0) = 0.44;
+// Extra simple push on top of the fixed quintile quota above: 0 leaves the
+// quota's placement untouched, higher values pull every cloud further
+// toward the bottom of the band (toward cloud_y_pos_max) on top of whichever
+// quintile it already landed in.
+uniform float cloud_y_pos_bottom_bias : hint_range(0.0, 1.0) = 0.0;
+
+// Cloud recoloring — tints each cloud sprite from the current sky colors
+// instead of only using its baked-in shading, so clouds read as lit by the
+// sky rather than always showing the same painted colors. Three independent
+// toggles, each one rule from the spec:
+//   1) how much to recolor, by time of day
+//   2) which sky colors to pick per cloud pixel, by pixel brightness
+//   3) how to shift that pick per cloud, by the cloud's vertical position
+uniform bool cloud_recolor_daynight_enabled = true;
+uniform bool cloud_recolor_gradient_enabled = true;
+uniform bool cloud_recolor_vertical_offset_enabled = true;
+// Overall multiplier on rule 1's day/night recolor curve (0%/50%/100% at
+// noon/midnight/swap) — scales all four keyframes uniformly, so 1.0 is the
+// curve as authored and e.g. 0.5 halves the recolor strength everywhere.
+uniform float cloud_recolor_daynight_strength_multiplier : hint_range(0.0, 2.0) = 1.0;
+// How far a cloud's y position (in the same 0..1 SCREEN_UV space as the
+// `data` layout below) can push the brightness sampled for rule 2. A cloud
+// sitting at cloud_recolor_vertical_reference_y gets no offset.
+uniform float cloud_recolor_vertical_offset_strength : hint_range(0.0, 2.0) = 1.0;
+uniform float cloud_recolor_vertical_reference_y : hint_range(0.0, 1.0) = 0.24;
+// The cloud sprites' painted shading only spans a narrow, high slice of the
+// 0..1 luminance range (measured ~0.76..0.94 across cloud_1..5.png), so raw
+// luminance would only ever pick colors from the bright end of the
+// top/bottom gradient. These stretch that measured range back out to a full
+// 0..1 spread before it's used as the brightness/gradient factor below.
+uniform float cloud_brightness_range_min : hint_range(0.0, 1.0) = 0.757;
+uniform float cloud_brightness_range_max : hint_range(0.0, 1.0) = 0.940;
 
 uniform sampler2D sun_tex : filter_nearest;
 uniform sampler2D moon_tex : filter_nearest;
@@ -91,6 +128,33 @@ float noise1(float x) {
 	return mix(hash1(i), hash1(i + 1.0), smoothstep(0.0, 1.0, f));
 }
 
+// Rule 1: how strongly clouds get recolored from the sky, by time of day.
+// 0% at peak daytime (noon), 50% at peak nighttime (midnight), 100% at the
+// 50/50 day-night swap points (sunrise/sunset) — piecewise-linear between
+// those four key times, same style as sky_top()/sky_bottom() above.
+float cloud_recolor_daynight_strength(float t) {
+	float strength;
+	if (t < 6.0)       strength = mix(0.5, 1.0, t / 6.0);
+	else if (t < 12.0) strength = mix(1.0, 0.0, (t - 6.0) / 6.0);
+	else if (t < 18.0) strength = mix(0.0, 1.0, (t - 12.0) / 6.0);
+	else               strength = mix(1.0, 0.5, (t - 18.0) / 6.0);
+	return strength * cloud_recolor_daynight_strength_multiplier;
+}
+
+// Assigns cloud index i (of 20) to a vertical quintile by a fixed quota,
+// bottom-most quintile first: 10 clouds in the bottom 20% of the band, 6 in
+// the next 20%, then 2, then 1, then 1 in the topmost 20%. Returns the
+// quintile's [low, high) normalized range (0 = top of band, 1 = bottom);
+// hash-jittering within that range is left to the caller so clouds in the
+// same quintile aren't all stacked at the exact same height.
+vec2 cloud_y_pos_quintile_range(int i) {
+	if (i < 10) return vec2(0.8, 1.0); // bottom 20%: 10 clouds (50%)
+	if (i < 16) return vec2(0.6, 0.8); // next 20%: 6 clouds (30%)
+	if (i < 18) return vec2(0.4, 0.6); // next 20%: 2 clouds (10%)
+	if (i < 19) return vec2(0.2, 0.4); // next 20%: 1 cloud (5%)
+	              return vec2(0.0, 0.2); // top 20%: 1 cloud (5%)
+}
+
 vec3 sun_color(float tod) {
 	float t = clamp(tod, 6.0, 18.0);
 	if (t <= 8.0)  return mix(sun_color_horizon.rgb, sun_color_morning.rgb, smoothstep(6.0, 8.0, t));
@@ -102,9 +166,13 @@ vec3 sun_color(float tod) {
 void fragment() {
 	float a = SCREEN_UV.y * 1.5;
 	vec4 bottom_col = sky_bottom(time_of_day);
-	vec4 col = mix(sky_top(time_of_day), bottom_col, a);
-	float sky_lum = dot(bottom_col.rgb, vec3(0.299, 0.587, 0.114));
-	float cloud_tint_strength = pow(1.0 - sky_lum, 2.0);
+	vec4 top_col = sky_top(time_of_day);
+	vec4 col = mix(top_col, bottom_col, a);
+
+	// Rule 1 is time-based only, so it's computed once per frame rather
+	// than per cloud pixel. Disabling this checkbox turns recoloring off
+	// entirely, same as the other two toggles.
+	float cloud_recolor_amount = cloud_recolor_daynight_enabled ? cloud_recolor_daynight_strength(time_of_day) : 0.0;
 
 	float screen_aspect = (1.0 / SCREEN_PIXEL_SIZE.x) / (1.0 / SCREEN_PIXEL_SIZE.y);
 
@@ -192,24 +260,21 @@ void fragment() {
 		}
 	}
 
-	// 8 cloud instances across the sky using all 5 textures
-	// layout: [x_start_offset, y_pos, speed_multiplier, tex_index]
-	float data[32] = float[32](
-		0.00, 0.20, 1.00, 0.0,
-		0.20, 0.08, 0.75, 1.0,
-		0.45, 0.32, 1.20, 2.0,
-		0.60, 0.12, 0.90, 3.0,
-		0.10, 0.44, 0.60, 4.0,
-		0.75, 0.24, 1.10, 1.0,
-		0.35, 0.04, 0.85, 2.0,
-		0.85, 0.36, 1.30, 0.0
-	);
-
-	for (int i = 0; i < 8; i++) {
-		float x_off = data[i * 4 + 0];
-		float y_pos = data[i * 4 + 1];
-		float spd   = data[i * 4 + 2];
-		int   tex   = int(data[i * 4 + 3]);
+	// 20 cloud instances across the sky, procedurally placed per-index
+	// (rather than hand-authored) so the count can scale without listing
+	// every instance by hand. Vertical placement follows a fixed quota by
+	// quintile (see cloud_y_pos_quintile_range) rather than a continuous
+	// random skew, so the bottom-heavy distribution is exact regardless of
+	// how the per-cloud hash rolls land.
+	for (int i = 0; i < 20; i++) {
+		float fi = float(i);
+		float x_off = hash1(fi * 12.9898 + 1.0);
+		vec2 y_quintile = cloud_y_pos_quintile_range(i);
+		float y_norm = mix(y_quintile.x, y_quintile.y, hash1(fi * 78.233 + 3.0));
+		y_norm = mix(y_norm, 1.0, cloud_y_pos_bottom_bias);
+		float y_pos = mix(cloud_y_pos_min, cloud_y_pos_max, y_norm);
+		float spd = mix(0.6, 1.3, hash1(fi * 37.719 + 5.0));
+		int tex = int(hash1(fi * 91.345 + 7.0) * 5.0);
 
 		vec2 ts = cloud_tex_size(tex);
 		// w: texture pixels → screen UV x using reference resolution
@@ -227,7 +292,35 @@ void fragment() {
 
 		if (lx >= 0.0 && lx <= 1.0 && ly >= 0.0 && ly <= 1.0) {
 			vec4 cloud_c = sample_cloud(tex, vec2(lx, ly));
-			vec3 tinted = mix(cloud_c.rgb, cloud_c.rgb * bottom_col.rgb, cloud_tint_strength);
+			vec3 tinted = cloud_c.rgb;
+
+			if (cloud_recolor_amount > 0.0) {
+				float brightness = dot(cloud_c.rgb, vec3(0.299, 0.587, 0.114));
+				brightness = clamp((brightness - cloud_brightness_range_min) / (cloud_brightness_range_max - cloud_brightness_range_min), 0.0, 1.0);
+
+				// Rule 3: shift which brightness bucket a cloud pixel falls
+				// into based on the cloud's own vertical placement — clouds
+				// lower on screen (higher y_pos) lean toward the bottom-sky
+				// pick, clouds higher up lean toward the top-sky pick.
+				if (cloud_recolor_vertical_offset_enabled) {
+					float vertical_bias = (y_pos - cloud_recolor_vertical_reference_y) * cloud_recolor_vertical_offset_strength;
+					brightness = clamp(brightness + vertical_bias, 0.0, 1.0);
+				}
+
+				vec3 gradient_color;
+				if (cloud_recolor_gradient_enabled) {
+					// Rule 2: brightest cloud pixels -> sky bottom color,
+					// darkest -> sky top color, mid tones interpolated.
+					gradient_color = mix(top_col.rgb, bottom_col.rgb, brightness);
+				} else {
+					// Gradient off: fall back to a single flat 50/50
+					// top/bottom tint applied uniformly across the cloud.
+					gradient_color = mix(top_col.rgb, bottom_col.rgb, 0.5);
+				}
+
+				tinted = mix(cloud_c.rgb, gradient_color, cloud_recolor_amount);
+			}
+
 			col.rgb = mix(col.rgb, tinted, cloud_c.a);
 		}
 	}

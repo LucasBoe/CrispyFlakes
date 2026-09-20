@@ -1,27 +1,2427 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=141 format=4 uid="uid://bk3hult8me1pa"]
 
 [ext_resource type="Script" uid="uid://oxn4sdja53xs" path="res://scripts/ui/main_menu.gd" id="1_script"]
-[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_theme"]
-[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="3_font"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_sandbox_config.tscn" id="4_sandbox_config"]
+[ext_resource type="PackedScene" uid="uid://dqvdijncopw3g" path="res://scenes/ui/ui_sandbox_config.tscn" id="4_sandbox_config"]
+[ext_resource type="PackedScene" uid="uid://diaqw2e340vyf" path="res://scenes/main/montain_builder.tscn" id="13_1ppaw"]
+[ext_resource type="Script" uid="uid://4mfjj7lipy46" path="res://scripts/ui/menu_patron_idle_animation.gd" id="13_patron_idle"]
+[ext_resource type="Material" uid="uid://7fea54qisjif" path="res://assets/shaders/sky_tint_mat.tres" id="13_skytint"]
+[ext_resource type="Texture2D" uid="uid://dfwyooj7vyi8t" path="res://assets/sprites/basement_junk.png" id="35_1ksko"]
+[ext_resource type="Texture2D" uid="uid://c3guoc5ftaynl" path="res://assets/sprites/back-wall_bouncer.png" id="36_67x5l"]
+[ext_resource type="Texture2D" uid="uid://codtykqhxr46i" path="res://assets/sprites/room_saloon_custom_foreground.png" id="38_2fuxy"]
+[ext_resource type="Texture2D" uid="uid://dd4fvhmwnhva3" path="res://assets/sprites/room_trade_office.png" id="47_4gted"]
+[ext_resource type="Texture2D" uid="uid://bav26pirkhx3d" path="res://assets/sprites/stove.png" id="47_ur4h7"]
+[ext_resource type="Texture2D" uid="uid://5nessqnhc72x" path="res://assets/sprites/room_bath.png" id="48_2fuxy"]
+[ext_resource type="Script" uid="uid://b6cs2l3qck28x" path="res://scripts/ui/menu_patron_patrol_animation.gd" id="73_rf67s"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="75_13die"]
+[ext_resource type="PackedScene" uid="uid://cpwdkfo68aqbq" path="res://scenes/ui/main_menu_divider.tscn" id="75_ur4h7"]
+[ext_resource type="Texture2D" uid="uid://c7s4vpka8n2nq" path="res://assets/sprites/ui/2x/main_menu/main_menu_selection_marker.png" id="76_2fuxy"]
+[ext_resource type="Texture2D" uid="uid://btwy6266qlv0q" path="res://assets/sprites/saloon_preview_simple.png" id="81_1ppaw"]
+[ext_resource type="Material" uid="uid://dl1l1sxt5gau1" path="res://assets/shaders/outline_sky_tint_mat.tres" id="82_8yyxk"]
+[ext_resource type="Script" uid="uid://cpahleadvanqi" path="res://scripts/building_sign.gd" id="82_romvc"]
+[ext_resource type="Texture2D" uid="uid://buvkmkplqvxha" path="res://assets/sprites/ui/2x/logo_gate.png" id="83_ls525"]
+[ext_resource type="Texture2D" uid="uid://b63y0nx1eubg1" path="res://assets/sprites/npcs/npc_type_source_farmer.png" id="83_romvc"]
+[ext_resource type="PackedScene" uid="uid://yc1tsqqnfjm2" path="res://scenes/ui/ui_campaign_selection.tscn" id="88_ls525"]
+[ext_resource type="Theme" uid="uid://cyyj3dstmuttt" path="res://assets/sprites/ui/2x/main_menu/main_menu_button_theme.tres" id="menu_button_theme"]
+[ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="ml_chandelier_tex"]
+[ext_resource type="Texture2D" uid="uid://wwgx7vloef3h" path="res://assets/sprites/fire_glow_overlay.png" id="ml_fire_tex"]
+[ext_resource type="Script" uid="uid://dniuig7gxodrv" path="res://scripts/ui/menu_light_input.gd" id="ml_input_script"]
+[ext_resource type="Script" uid="uid://b2livuqfgp0xq" path="res://scripts/ui/menu_light_overlay.gd" id="ml_overlay_script"]
+[ext_resource type="Script" uid="uid://dq3vs3bf2usjs" path="res://scripts/ui/main_menu_world.gd" id="world_1_backdrop"]
+[ext_resource type="Shader" uid="uid://qa66dukaogw5" path="res://assets/shaders/sky.gdshader" id="world_1_j7yis"]
+[ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="world_2_kqloo"]
+[ext_resource type="Texture2D" uid="uid://dx5t8rbpen24y" path="res://assets/sprites/clouds/cloud_2.png" id="world_3_bhnou"]
+[ext_resource type="Texture2D" uid="uid://itmvfg300knf" path="res://assets/sprites/clouds/cloud_3.png" id="world_4_j4h7c"]
+[ext_resource type="Texture2D" uid="uid://cgw120akkva1t" path="res://assets/sprites/clouds/cloud_4.png" id="world_5_6pumf"]
+[ext_resource type="Texture2D" uid="uid://blqyd6t0fki15" path="res://assets/sprites/clouds/cloud_5.png" id="world_6_amlhg"]
+[ext_resource type="Texture2D" uid="uid://ce7kfhlakajks" path="res://assets/sprites/moon.png" id="world_7_5l76v"]
+[ext_resource type="Texture2D" uid="uid://wva6u4gr6diu" path="res://assets/sprites/snow2.png" id="world_8_ijhmc"]
+[ext_resource type="Texture2D" uid="uid://bun3rond8c5d5" path="res://assets/sprites/sun.png" id="world_9_f85wh"]
+[ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="world_10_7dtya"]
+[ext_resource type="Texture2D" uid="uid://creqk7ma6nxlt" path="res://assets/sprites/spawn_gate.png" id="world_13_ps1ie"]
+[ext_resource type="Texture2D" uid="uid://2ssy3qx153d6" path="res://assets/sprites/foliage/rock_a.png" id="world_14_wtxsb"]
+[ext_resource type="Texture2D" uid="uid://dfrq32ud33gh7" path="res://assets/sprites/foliage/cactus_a.png" id="world_15_kq34p"]
+[ext_resource type="Texture2D" uid="uid://bhmw02dpr27i0" path="res://assets/sprites/foliage/rock_b.png" id="world_16_m1yrh"]
+[ext_resource type="Texture2D" uid="uid://cnnv1tej16tqv" path="res://assets/sprites/foliage/rock_c.png" id="world_17_1nhs7"]
+[ext_resource type="Texture2D" uid="uid://b3qc7gpkp7124" path="res://assets/sprites/foliage/bush_a.png" id="world_18_cfq6y"]
+[ext_resource type="Texture2D" uid="uid://drxp0dhy41dfe" path="res://assets/sprites/foliage/bush_b.png" id="world_19_oejvp"]
+[ext_resource type="Texture2D" uid="uid://cadgme2j6i348" path="res://assets/sprites/foliage/tumble_wheet.png" id="world_20_ot6mh"]
+[ext_resource type="Texture2D" uid="uid://d4bas2v685fg6" path="res://assets/sprites/foliage/cactus_b.png" id="world_21_74iyv"]
+[ext_resource type="Texture2D" uid="uid://ccafgrdp462nj" path="res://assets/sprites/back-wall_basement.png" id="world_22_3h8ym"]
+[ext_resource type="Texture2D" uid="uid://cvwkl1j0qqhh5" path="res://assets/sprites/prison.png" id="world_24_b8kwk"]
+[ext_resource type="Texture2D" uid="uid://g86mtqvngs42" path="res://assets/sprites/room_gambling_background_overlay.png" id="world_25_pfkp6"]
+[ext_resource type="Texture2D" uid="uid://dge7w3r65t5up" path="res://assets/sprites/table_stool.png" id="world_26_ywxkc"]
+[ext_resource type="Texture2D" uid="uid://brr4qqp1t0j38" path="res://assets/sprites/table.png" id="world_27_untqu"]
+[ext_resource type="Texture2D" uid="uid://d0w0e0rjbqtvm" path="res://assets/sprites/destillery.png" id="world_28_47hq7"]
+[ext_resource type="Texture2D" uid="uid://ftv45kuneih7" path="res://assets/sprites/storage-shelf.png" id="world_29_x6hvx"]
+[ext_resource type="Texture2D" uid="uid://b43jvnq8dk4k" path="res://assets/sprites/item_barrel.png" id="world_30_a78hn"]
+[ext_resource type="Texture2D" uid="uid://blbki7kxxkslm" path="res://assets/sprites/item_wiskey_crate.png" id="world_31_5nn4n"]
+[ext_resource type="Texture2D" uid="uid://bubq3w74l5vcg" path="res://assets/sprites/ceiling_lamp.png" id="world_32_112q2"]
+[ext_resource type="Texture2D" uid="uid://bcp8mqhaxchfi" path="res://assets/sprites/stairs_variants.png" id="world_33_ccsd2"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="world_34_d5t6u"]
+[ext_resource type="Texture2D" uid="uid://q7yevu135f3d" path="res://assets/sprites/bench.png" id="world_36_qn8lr"]
+[ext_resource type="Texture2D" uid="uid://c2p628d3mlnml" path="res://assets/sprites/table_big.png" id="world_37_1u5ro"]
+[ext_resource type="Texture2D" uid="uid://j1u2035m3wb4" path="res://assets/sprites/fireplace.png" id="world_38_54yhy"]
+[ext_resource type="Texture2D" uid="uid://d3dxpn3qrk6ox" path="res://assets/sprites/progressbar/under.png" id="world_39_f2lri"]
+[ext_resource type="Texture2D" uid="uid://bvusfbh02tyaq" path="res://assets/sprites/progressbar/bar.png" id="world_40_e10pa"]
+[ext_resource type="Texture2D" uid="uid://dgsnjdewqwawh" path="res://assets/sprites/progressbar/fill.png" id="world_41_sdnkf"]
+[ext_resource type="Texture2D" uid="uid://ljt7cfq62dft" path="res://assets/sprites/fire_spritesheet.png" id="world_42_1jsss"]
+[ext_resource type="Texture2D" uid="uid://0q8fforp5qs8" path="res://assets/sprites/music_notes.png" id="world_43_ny8h4"]
+[ext_resource type="Texture2D" uid="uid://b0kd2v4qy4nn6" path="res://assets/sprites/piano.png" id="world_44_ly0ox"]
+[ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="world_47_xvwvd"]
+[ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="world_48_jwc64"]
+[ext_resource type="Texture2D" uid="uid://cil3pe0hiys2k" path="res://assets/sprites/watertower.png" id="world_50_3sbqh"]
+[ext_resource type="Texture2D" uid="uid://b6rjcdrtjxyot" path="res://assets/sprites/horse_pole.png" id="world_51_ud884"]
+[ext_resource type="Texture2D" uid="uid://dksaqrpf4lcv" path="res://assets/sprites/stable.png" id="world_52_sn7fg"]
+[ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="world_53_r1t36"]
+[ext_resource type="Texture2D" uid="uid://bx26803iwlrp3" path="res://assets/sprites/outhouse_sheet.png" id="world_54_v0xou"]
+[ext_resource type="Texture2D" uid="uid://sgv0figrsmxa" path="res://assets/sprites/building_foreground_ground-floor.png" id="world_55_k0ebe"]
+[ext_resource type="Texture2D" uid="uid://buimdm2huxpi1" path="res://assets/sprites/building_foreground_basement.png" id="world_56_dlmbo"]
+[ext_resource type="Texture2D" uid="uid://dfg4mpmjtrm4a" path="res://assets/sprites/posh_room_foreground_tileset.png" id="world_57_sb4x7"]
+[ext_resource type="Texture2D" uid="uid://begutabd81kjc" path="res://assets/sprites/roof-tileset.png" id="world_58_hhtid"]
+[ext_resource type="Material" uid="uid://cjkrt8sogbyn5" path="res://assets/shaders/water_sytem.tres" id="world_59_ggjq2"]
+[ext_resource type="Texture2D" uid="uid://d34cfrcpujwvt" path="res://assets/sprites/water_pipe_tiles.png" id="world_60_ctplq"]
+[ext_resource type="Texture2D" uid="uid://mnstaeaidwpa" path="res://assets/sprites/electricity_overlay_sheet.png" id="world_61_bjs6i"]
+[ext_resource type="Texture2D" uid="uid://cmsgfl6oavk5a" path="res://assets/sprites/roof_sign_sign.png" id="world_62_26yjj"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="world_63_frfft"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="world_64_dylnb"]
+[ext_resource type="Texture2D" uid="uid://3d2i7pqo6kgs" path="res://assets/sprites/startup_sequence_saloon_front.png" id="world_65_tdg6g"]
+[ext_resource type="Texture2D" uid="uid://ygi5vryaskp1" path="res://assets/sprites/ground-tile-64px.png" id="world_66_nm2fs"]
+[ext_resource type="Shader" uid="uid://uqhd5d60vdxh" path="res://assets/shaders/npc_recolor.gdshader" id="world_67_bebie"]
+[ext_resource type="Texture2D" uid="uid://bu3fkvg7titd" path="res://assets/sprites/npcs/body_poses_spritesheet.png" id="world_68_82sur"]
+[ext_resource type="Texture2D" uid="uid://dnxker7rtetpk" path="res://assets/sprites/npcs/head_variants_spritesheet.png" id="world_69_yhb0j"]
+[ext_resource type="Texture2D" uid="uid://bs3coyua5hvng" path="res://assets/sprites/cowboy_raw_stand.png" id="world_70_peqmw"]
+[ext_resource type="Texture2D" uid="uid://bttekhntsc1x3" path="res://assets/sprites/stove_pipe.png" id="world_71_s28n7"]
+[ext_resource type="Texture2D" uid="uid://cbvmwy15nrwsv" path="res://assets/sprites/particle_cloud_sheet.png" id="world_72_gj7g5"]
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_sbbqa"]
+shader = ExtResource("world_1_j7yis")
+shader_parameter/dawn_top = Color(0.55, 0.7, 0.95, 1)
+shader_parameter/dawn_bottom = Color(0.98, 0.75, 0.55, 1)
+shader_parameter/sunrise_top = Color(0.75, 0.65, 0.9, 1)
+shader_parameter/sunrise_bottom = Color(1, 0.55, 0.3, 1)
+shader_parameter/morning_top = Color(0.65, 0.82, 1, 1)
+shader_parameter/morning_bottom = Color(0.95, 0.82, 0.65, 1)
+shader_parameter/midday_top = Color(0.8, 0.9, 1, 1)
+shader_parameter/midday_bottom = Color(0.27, 0.51, 0.71, 1)
+shader_parameter/afternoon_top = Color(0.7, 0.85, 1, 1)
+shader_parameter/afternoon_bottom = Color(0.9, 0.72, 0.5, 1)
+shader_parameter/golden_top = Color(0.8352941, 0.69803923, 0.68235296, 1)
+shader_parameter/golden_bottom = Color(1, 0.60784316, 0.21960784, 1)
+shader_parameter/sunset_top = Color(0.45, 0.35, 0.7, 1)
+shader_parameter/sunset_bottom = Color(1, 0.4, 0.2, 1)
+shader_parameter/dusk_top = Color(0.12, 0.22, 0.45, 1)
+shader_parameter/dusk_bottom = Color(0.4, 0.28, 0.35, 1)
+shader_parameter/night_blue_top = Color(0.02, 0.08, 0.18, 1)
+shader_parameter/night_blue_bottom = Color(0.05, 0.16, 0.28, 1)
+shader_parameter/night_teal_top = Color(0, 0.1, 0.14, 1)
+shader_parameter/night_teal_bottom = Color(0.19279349, 0.10144586, 0.26111385, 1)
+shader_parameter/time_of_day = 18.9110008982725
+shader_parameter/cloud_tex_0 = ExtResource("world_2_kqloo")
+shader_parameter/cloud_tex_1 = ExtResource("world_3_bhnou")
+shader_parameter/cloud_tex_2 = ExtResource("world_4_j4h7c")
+shader_parameter/cloud_tex_3 = ExtResource("world_5_6pumf")
+shader_parameter/cloud_tex_4 = ExtResource("world_6_amlhg")
+shader_parameter/cloud_speed = 0.010000000475
+shader_parameter/cloud_scale = 1.00000004424012
+shader_parameter/reference_resolution = Vector2(966.0377, 360)
+shader_parameter/cloud_y_pos_min = 0.04
+shader_parameter/cloud_y_pos_max = 0.50000002375
+shader_parameter/cloud_y_pos_bottom_bias = 0.30000001192093
+shader_parameter/cloud_recolor_daynight_enabled = true
+shader_parameter/cloud_recolor_gradient_enabled = true
+shader_parameter/cloud_recolor_vertical_offset_enabled = true
+shader_parameter/cloud_recolor_daynight_strength_multiplier = 0.90000004275
+shader_parameter/cloud_recolor_vertical_offset_strength = 1.50000007125
+shader_parameter/cloud_recolor_vertical_reference_y = 0.24
+shader_parameter/cloud_brightness_range_min = 0.70000003325
+shader_parameter/cloud_brightness_range_max = 1.0
+shader_parameter/sun_tex = ExtResource("world_9_f85wh")
+shader_parameter/moon_tex = ExtResource("world_7_5l76v")
+shader_parameter/celestial_scale = 1.3
+shader_parameter/arc_center_y = 0.59
+shader_parameter/arc_radius_x = -0.340383
+shader_parameter/arc_radius_y = 0.45
+shader_parameter/sun_horizon_size = 1.6000000285
+shader_parameter/sun_size_start = 0.0
+shader_parameter/sun_size_end = 1.0
+shader_parameter/sun_aura_cutoff = 0.666000031635
+shader_parameter/sun_aura_elevation = 0.35
+shader_parameter/sun_color_horizon = Color(1, 0.92, 0.7, 1)
+shader_parameter/sun_color_morning = Color(1, 0.95, 0.78, 1)
+shader_parameter/sun_color_noon = Color(1, 0.89411765, 0.6431373, 1)
+shader_parameter/moon_alpha_min = 0.10000000475
+shader_parameter/moon_alpha_max = 0.6000000285
+shader_parameter/weather_tint_enabled = false
+shader_parameter/weather_tint_color = Color(0.11549999, 0.41240835, 0.55, 1)
+shader_parameter/weather_tint_strength_before = 1.0
+shader_parameter/weather_tint_strength_after = 0.50000002375
+shader_parameter/snow_enabled = false
+shader_parameter/snow_tex = ExtResource("world_8_ijhmc")
+shader_parameter/snow_amount = 1.0
+shader_parameter/snow_speed = 0.10000000312006
+shader_parameter/snow_scale = 1.00000004424012
+shader_parameter/snow_wind_strength = 0.5
+
+[sub_resource type="Animation" id="world_Animation_affbb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="world_Animation_wwugl"]
+resource_name = "sway"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.03333333, 0.23333333, 0.6, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 1, 0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="world_AnimationLibrary_bgj18"]
+_data = {
+&"RESET": SubResource("world_Animation_affbb"),
+&"sway": SubResource("world_Animation_wwugl")
+}
+
+[sub_resource type="Animation" id="world_Animation_bgj18"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="world_Animation_d3gqt"]
+resource_name = "sway"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.5, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 1, 0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="world_AnimationLibrary_ut3y5"]
+_data = {
+&"RESET": SubResource("world_Animation_bgj18"),
+&"sway": SubResource("world_Animation_d3gqt")
+}
+
+[sub_resource type="Resource" id="ml_input_basementlamp"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("world_9_f85wh")
+position = Vector2(24, -34)
+scale = Vector2(1.5, 1.5)
+tint = Color(1, 0.85, 0.55, 1)
+
+[sub_resource type="Resource" id="ml_input_chandelier"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("ml_chandelier_tex")
+position = Vector2(48, -48)
+
+[sub_resource type="Resource" id="ml_input_tablelamp"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("world_9_f85wh")
+position = Vector2(122.5, -77.5)
+scale = Vector2(1.5, 1.5)
+tint = Color(1, 0.85, 0.55, 1)
+
+[sub_resource type="Resource" id="ml_input_fireplace"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("world_9_f85wh")
+position = Vector2(24, -14)
+
+[sub_resource type="CanvasItemMaterial" id="world_CanvasItemMaterial_fire"]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 6
+particles_anim_v_frames = 1
+particles_anim_loop = true
+
+[sub_resource type="AtlasTexture" id="world_AtlasTexture_fire_row1"]
+atlas = ExtResource("world_42_1jsss")
+region = Rect2(0, 0, 192, 32)
+
+[sub_resource type="ParticleProcessMaterial" id="world_ParticleProcessMaterial_fire"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(0, -16, 0)
+emission_shape_scale = Vector3(1, 0, 1)
+emission_shape = 3
+emission_box_extents = Vector3(0, 0, 0)
+direction = Vector3(0, 0, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+anim_speed_min = -8.0
+anim_speed_max = -8.0
+
+[sub_resource type="CanvasItemMaterial" id="world_CanvasItemMaterial_notes"]
+particles_animation = true
+particles_anim_h_frames = 3
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="ParticleProcessMaterial" id="world_ParticleProcessMaterial_notes"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(3, 4, 1)
+direction = Vector3(1, -0.15, 0)
+spread = 18.0
+initial_velocity_min = 10.0
+initial_velocity_max = 18.0
+gravity = Vector3(0, -6, 0)
+scale_max = 1.2
+color = Color(1, 0.717647, 0.32549, 1)
+hue_variation_min = -0.45
+hue_variation_max = 0.45
+anim_offset_max = 1.0
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_ground"]
+texture = ExtResource("world_55_k0ebe")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+11:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_basement"]
+texture = ExtResource("world_56_dlmbo")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+11:0/0 = 0
+
+[sub_resource type="TileSet" id="world_TileSet_fg"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("world_TileSetAtlasSource_ground")
+sources/1 = SubResource("world_TileSetAtlasSource_basement")
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_posh_fg"]
+texture = ExtResource("world_57_sb4x7")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+
+[sub_resource type="TileSet" id="world_TileSet_posh_fg"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("world_TileSetAtlasSource_posh_fg")
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_roof"]
+texture = ExtResource("world_58_hhtid")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+5:0/size_in_atlas = Vector2i(3, 1)
+5:0/0 = 0
+
+[sub_resource type="TileSet" id="world_TileSet_roof"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("world_TileSetAtlasSource_roof")
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_pipe"]
+texture = ExtResource("world_60_ctplq")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="world_TileSet_pipe"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("world_TileSetAtlasSource_pipe")
+
+[sub_resource type="TileSetAtlasSource" id="world_TileSetAtlasSource_electricity"]
+texture = ExtResource("world_61_bjs6i")
+texture_region_size = Vector2i(48, 48)
+0:0/0 = 0
+1:0/0 = 0
+
+[sub_resource type="TileSet" id="world_TileSet_electricity"]
+tile_size = Vector2i(48, 48)
+sources/0 = SubResource("world_TileSetAtlasSource_electricity")
+
+[sub_resource type="Resource" id="ml_input_patronflame"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("ml_fire_tex")
+offset = Vector2(0, -12)
+scale = Vector2(0.7, 0.7)
+tint = Color(1, 0.288, 0.11, 1)
+follow = NodePath("../Patron10")
+
+[sub_resource type="Resource" id="ml_input_torch"]
+script = ExtResource("ml_input_script")
+texture = ExtResource("ml_fire_tex")
+position = Vector2(73, 0)
+scale = Vector2(0.8, 0.8)
+tint = Color(1, 0.288, 0.11, 1)
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_pmtf5"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
+shader_parameter/body_type = 1
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = true
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_rjimt"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 2
+shader_parameter/use_gun = false
+shader_parameter/body_type = 2
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_sy3rv"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 1
+shader_parameter/use_gun = false
+shader_parameter/body_type = 3
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = true
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rf67s"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 1
+shader_parameter/use_gun = false
+shader_parameter/body_type = 4
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_762r7"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
+shader_parameter/body_type = 3
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_imapp"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 1
+shader_parameter/use_gun = false
+shader_parameter/body_type = 1
+shader_parameter/body_pose = 1
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_124hq"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 2
+shader_parameter/use_gun = false
+shader_parameter/body_type = 2
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_7qlbq"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 1
+shader_parameter/use_gun = false
+shader_parameter/body_type = 1
+shader_parameter/body_pose = 7
+shader_parameter/show_apron_overlay = true
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_y12ky"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
+shader_parameter/body_type = 4
+shader_parameter/body_pose = 2
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_o4jxc"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
+shader_parameter/body_type = 6
+shader_parameter/body_pose = 1
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_l68lp"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 1
+shader_parameter/use_gun = false
+shader_parameter/body_type = 1
+shader_parameter/body_pose = 0
+shader_parameter/show_apron_overlay = true
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="ShaderMaterial" id="world_ShaderMaterial_tdmyw"]
+shader = ExtResource("world_67_bebie")
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false
+shader_parameter/body_sheet = ExtResource("world_68_82sur")
+shader_parameter/cell_pixel_size = Vector2i(24, 24)
+shader_parameter/head_sheet = ExtResource("world_69_yhb0j")
+shader_parameter/head_cell_pixel_size = Vector2i(24, 24)
+shader_parameter/show_head_overlay = true
+shader_parameter/head_variant = 0
+shader_parameter/use_gun = false
+shader_parameter/body_type = 2
+shader_parameter/body_pose = 7
+shader_parameter/show_apron_overlay = false
+shader_parameter/debug_recolor = false
+shader_parameter/match_threshold = 0.04
+shader_parameter/green_saturation = 0.75
+shader_parameter/green_value_min = 0.25
+shader_parameter/green_value_max = 0.95
+shader_parameter/channel_hue_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/channel_brightness_random = PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/hue_shift_recolor = true
+shader_parameter/hue_shift_match_threshold = 0.04
+shader_parameter/solo_category = 0
+shader_parameter/skin_hue_shift_range = 0.04
+shader_parameter/skin_brightness_range = 0.06
+shader_parameter/skin_random_channel = 0
+shader_parameter/hair_hue_shift_range = 0.08
+shader_parameter/hair_brightness_range = 0.08
+shader_parameter/hair_random_channel = 1
+shader_parameter/leather_hue_shift_range = 0.02
+shader_parameter/leather_brightness_range = 0.05
+shader_parameter/leather_random_channel = 2
+shader_parameter/wool_hue_shift_range = 0.15
+shader_parameter/wool_brightness_range = 0.12
+shader_parameter/wool_random_channel = 3
+shader_parameter/black_leather_hue_shift_range = 0.02
+shader_parameter/black_leather_brightness_range = 0.05
+shader_parameter/black_leather_random_channel = 4
+shader_parameter/linen_hue_shift_range = 0.15
+shader_parameter/linen_brightness_range = 0.12
+shader_parameter/linen_random_channel = 5
+shader_parameter/jeans_hue_shift_range = 0.5
+shader_parameter/jeans_brightness_range = 0.2
+shader_parameter/jeans_random_channel = 6
+shader_parameter/decoration_hue_shift_range = 0.5
+shader_parameter/decoration_brightness_range = 0.2
+shader_parameter/decoration_random_channel = 7
+shader_parameter/belt_buckle_hue_shift_range = 0.03
+shader_parameter/belt_buckle_brightness_range = 0.08
+shader_parameter/belt_buckle_random_channel = 8
+shader_parameter/suit_hue_shift_range = 0.15
+shader_parameter/suit_brightness_range = 0.12
+shader_parameter/suit_random_channel = 9
+
+[sub_resource type="CanvasItemMaterial" id="world_CanvasItemMaterial_smoke"]
+particles_animation = true
+particles_anim_h_frames = 9
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="CurveTexture" id="CurveTexture_qsohf"]
+
+[sub_resource type="ParticleProcessMaterial" id="world_ParticleProcessMaterial_jypvp"]
+lifetime_randomness = 0.5
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(7, 0, 0)
+direction = Vector3(0, -1, 0)
+spread = 28.0
+initial_velocity_min = 2.0
+initial_velocity_max = 7.0
+angular_velocity_min = -15.0
+angular_velocity_max = 15.0
+gravity = Vector3(4, -5, 0)
+color = Color(0.95, 0.84, 0.74, 0.5)
+alpha_curve = SubResource("CurveTexture_qsohf")
+anim_speed_min = 0.45
+anim_speed_max = 0.75
+
+[sub_resource type="CanvasItemMaterial" id="world_CanvasItemMaterial_jrpa7"]
+blend_mode = 1
+particles_animation = true
+particles_anim_h_frames = 6
+particles_anim_v_frames = 4
+particles_anim_loop = true
+
+[sub_resource type="ParticleProcessMaterial" id="world_ParticleProcessMaterial_r6nqp"]
+particle_flag_disable_z = true
+emission_shape_offset = Vector3(0, -16, 0)
+emission_shape_scale = Vector3(1, 0, 1)
+emission_shape = 3
+emission_box_extents = Vector3(24, 0, 0)
+direction = Vector3(0, 0, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+anim_speed_min = -2.0
+anim_speed_max = -2.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l3yaw"]
+size = Vector2(48, 12)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
 bg_color = Color(0.08627451, 0.078431375, 0.08235294, 1)
 
-[node name="MainMenuScene" type="CanvasLayer"]
+[node name="MainMenuScene" type="Node2D"]
+texture_filter = 1
+script = ExtResource("world_1_backdrop")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(130.642, -128)
+zoom = Vector2(1.1357143, 1.1357143)
+
+[node name="Environment" type="Node2D" parent="."]
+texture_filter = 1
+
+[node name="NewSky" type="Sprite2D" parent="Environment"]
+z_index = -4096
+material = SubResource("world_ShaderMaterial_sbbqa")
+position = Vector2(207, -15)
+scale = Vector2(200, 200)
+texture = ExtResource("world_10_7dtya")
+
+[node name="Ground" type="NinePatchRect" parent="Environment"]
+z_index = -2000
+texture_filter = 1
+texture_repeat = 2
+material = ExtResource("13_skytint")
+custom_minimum_size = Vector2(4096, 2048)
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -1024.0
+offset_right = 1024.0
+offset_bottom = 320.0
+grow_horizontal = 2
+texture = ExtResource("world_66_nm2fs")
+region_rect = Rect2(0, 0, 10240, 64)
+patch_margin_top = 48
+axis_stretch_horizontal = 1
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"slice": "",
+"source": "res://assets/sprites/ground-tile-64px.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "1a66c4b0236c1a2385aed43fbce46e23"
+
+[node name="MontainBuilder" parent="Environment" instance=ExtResource("13_1ppaw")]
+
+[node name="Gate" type="Sprite2D" parent="Environment"]
+material = ExtResource("13_skytint")
+position = Vector2(238, -17)
+texture = ExtResource("world_13_ps1ie")
+
+[node name="Decoration" type="Node2D" parent="Environment"]
+
+[node name="Backgound" type="Node2D" parent="Environment/Decoration"]
+z_index = -400
+
+[node name="RockA" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-449, -10)
+texture = ExtResource("world_14_wtxsb")
+
+[node name="CactusA" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-455, -19)
+texture = ExtResource("world_15_kq34p")
+
+[node name="RockB" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-296, -4)
+texture = ExtResource("world_16_m1yrh")
+
+[node name="RockC" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-460, -3)
+texture = ExtResource("world_17_1nhs7")
+
+[node name="BushA" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(310, -9)
+texture = ExtResource("world_18_cfq6y")
+hframes = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Backgound/BushA"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_bgj18")
+}
+
+[node name="BushA3" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-151, -9)
+texture = ExtResource("world_18_cfq6y")
+hframes = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Backgound/BushA3"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_bgj18")
+}
+
+[node name="RockB2" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(316, -4)
+texture = ExtResource("world_16_m1yrh")
+
+[node name="RockB3" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-113, -4)
+texture = ExtResource("world_16_m1yrh")
+
+[node name="RockC2" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(383, -3)
+texture = ExtResource("world_17_1nhs7")
+
+[node name="RockC3" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-157, -3)
+texture = ExtResource("world_17_1nhs7")
+
+[node name="BushB3" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(73, -7)
+texture = ExtResource("world_19_oejvp")
+hframes = 3
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Backgound/BushB3"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_ut3y5")
+}
+
+[node name="BushB4" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+z_index = -400
+material = ExtResource("13_skytint")
+position = Vector2(-591, -7)
+texture = ExtResource("world_19_oejvp")
+hframes = 3
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Backgound/BushB4"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_ut3y5")
+}
+
+[node name="RockC4" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+material = ExtResource("13_skytint")
+position = Vector2(185, -3)
+texture = ExtResource("world_17_1nhs7")
+
+[node name="TumbleWheet" type="Sprite2D" parent="Environment/Decoration/Backgound"]
+visible = false
+material = ExtResource("13_skytint")
+position = Vector2(0, -6)
+texture = ExtResource("world_20_ot6mh")
+
+[node name="Foreground" type="Node2D" parent="Environment/Decoration"]
+z_index = 10
+
+[node name="CactusB" type="Sprite2D" parent="Environment/Decoration/Foreground"]
+material = ExtResource("13_skytint")
+position = Vector2(275, -13)
+texture = ExtResource("world_21_74iyv")
+
+[node name="BushB" type="Sprite2D" parent="Environment/Decoration/Foreground"]
+material = ExtResource("13_skytint")
+position = Vector2(349, -7)
+texture = ExtResource("world_19_oejvp")
+hframes = 3
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Foreground/BushB"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_ut3y5")
+}
+
+[node name="BushA3" type="Sprite2D" parent="Environment/Decoration/Foreground"]
+material = ExtResource("13_skytint")
+position = Vector2(-562, -9)
+texture = ExtResource("world_18_cfq6y")
+hframes = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Decoration/Foreground/BushA3"]
+libraries = {
+&"": SubResource("world_AnimationLibrary_bgj18")
+}
+
+[node name="RockB" type="Sprite2D" parent="Environment/Decoration/Foreground"]
+material = ExtResource("13_skytint")
+position = Vector2(-566, -4)
+texture = ExtResource("world_16_m1yrh")
+
+[node name="Building" type="Node2D" parent="."]
+
+[node name="Rooms" type="Node2D" parent="Building"]
+
+[node name="Basement" type="Node2D" parent="Building/Rooms"]
+
+[node name="Prison" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(-144, 48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Prison"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="Bath" type="Sprite2D" parent="Building/Rooms/Basement/Prison"]
+z_index = -100
+position = Vector2(24, -23)
+texture = ExtResource("world_24_b8kwk")
+offset = Vector2(0.5, 0.5)
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="Gambling" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(-96, 48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="WallOverlay" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_25_pfkp6")
+
+[node name="TableStool" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+position = Vector2(10, -3.5)
+texture = ExtResource("world_26_ywxkc")
+
+[node name="TableStool2" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+position = Vector2(38, -3.5)
+texture = ExtResource("world_26_ywxkc")
+
+[node name="TableStool3" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+position = Vector2(21, -3.5)
+texture = ExtResource("world_26_ywxkc")
+
+[node name="Table" type="Sprite2D" parent="Building/Rooms/Basement/Gambling"]
+position = Vector2(25, -5.5)
+texture = ExtResource("world_27_untqu")
+
+[node name="Destillery" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(-48, 48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Destillery"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Basement/Destillery"]
+
+[node name="Destiller" type="Node2D" parent="Building/Rooms/Basement/Destillery/ModulesRoot"]
+
+[node name="Default" type="Sprite2D" parent="Building/Rooms/Basement/Destillery/ModulesRoot/Destiller"]
+z_index = -100
+position = Vector2(21, -19.5)
+texture = ExtResource("world_28_47hq7")
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="Storage" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(0, 48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="Shelf" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -100
+position = Vector2(24, -18)
+texture = ExtResource("world_29_x6hvx")
+
+[node name="ItemBarrel" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(10, -7)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel2" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(19, -7)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel3" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(28, -7)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel4" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(37, -7)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemWiskeyCrate" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(10, -19)
+texture = ExtResource("world_31_5nn4n")
+
+[node name="ItemWiskeyCrate2" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(19, -19)
+texture = ExtResource("world_31_5nn4n")
+
+[node name="ItemWiskeyCrate3" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(28, -19)
+texture = ExtResource("world_31_5nn4n")
+
+[node name="ItemWiskeyCrate4" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(37, -19)
+texture = ExtResource("world_31_5nn4n")
+
+[node name="ItemBarrel5" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(10, -31)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel6" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(19, -31)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel7" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(28, -31)
+texture = ExtResource("world_30_a78hn")
+
+[node name="ItemBarrel8" type="Sprite2D" parent="Building/Rooms/Basement/Storage"]
+z_index = -90
+position = Vector2(37, -31)
+texture = ExtResource("world_30_a78hn")
+
+[node name="Empty" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(48, 48)
+
+[node name="LightOverlay" type="Node2D" parent="Building/Rooms/Basement/Empty"]
+script = ExtResource("ml_overlay_script")
+lights = Array[ExtResource("ml_input_script")]([SubResource("ml_input_basementlamp")])
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Empty"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="CeilingLamp" type="Sprite2D" parent="Building/Rooms/Basement/Empty"]
+z_index = -50
+position = Vector2(24, -38)
+texture = ExtResource("world_32_112q2")
+
+[node name="Stairs" type="Node2D" parent="Building/Rooms/Basement"]
+texture_filter = 1
+position = Vector2(96, 48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/Basement/Stairs"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_22_3h8ym")
+
+[node name="Stairs" type="Sprite2D" parent="Building/Rooms/Basement/Stairs"]
+z_index = -100
+position = Vector2(-24, -48)
+texture = ExtResource("world_33_ccsd2")
+region_enabled = true
+region_rect = Rect2(144, 0, 48, 96)
+
+[node name="Bath2" type="Sprite2D" parent="Building/Rooms/Basement"]
+z_index = -100
+position = Vector2(120.5, 26.5)
+texture = ExtResource("35_1ksko")
+offset = Vector2(0.5, 0.5)
+region_rect = Rect2(0, 48, 48, 48)
+
+[node name="GroundFloor" type="Node2D" parent="Building/Rooms"]
+
+[node name="Empty" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+position = Vector2(-144, 0)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/GroundFloor/Empty"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("36_67x5l")
+
+[node name="BarBeer" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+position = Vector2(-96, 0)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/GroundFloor/BarBeer"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Drink" type="Sprite2D" parent="Building/Rooms/GroundFloor/BarBeer"]
+z_index = -10
+position = Vector2(24, -17)
+texture = ExtResource("world_47_xvwvd")
+
+[node name="Table" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+position = Vector2(-48, 0)
+
+[node name="LightOverlay" type="Node2D" parent="Building/Rooms/GroundFloor/Table"]
+script = ExtResource("ml_overlay_script")
+room_tiles = Vector2i(3, 2)
+lights = Array[ExtResource("ml_input_script")]([SubResource("ml_input_chandelier"), SubResource("ml_input_tablelamp")])
+
+[node name="Back-wall" type="NinePatchRect" parent="Building/Rooms/GroundFloor/Table"]
+z_index = -200
+texture_repeat = 2
+offset_top = -96.0
+offset_right = 144.0
+texture = ExtResource("world_34_d5t6u")
+patch_margin_left = 17
+patch_margin_top = 15
+patch_margin_right = 15
+patch_margin_bottom = 16
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="Foreground" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table"]
+z_index = 4000
+position = Vector2(48, -47)
+texture = ExtResource("38_2fuxy")
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/GroundFloor/Table"]
+
+[node name="Tables" type="Node2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot"]
+
+[node name="TableSmall" type="Node2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables"]
+
+[node name="Stool" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(27, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool2" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(10, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool3" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(37, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Table" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableSmall"]
+z_index = -10
+position = Vector2(24, -6)
+texture = ExtResource("world_27_untqu")
+offset = Vector2(-0.5, 0.5)
+
+[node name="TableBig" type="Node2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables"]
+visible = false
+
+[node name="Stool" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(8, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool2" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(41, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Bench" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(24, 0)
+texture = ExtResource("world_36_qn8lr")
+offset = Vector2(0, -3.5)
+
+[node name="Table" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table/ModulesRoot/Tables/TableBig"]
+z_index = -10
+position = Vector2(24, -6)
+texture = ExtResource("world_37_1u5ro")
+offset = Vector2(0, 0.5)
+
+[node name="CeilingLamp" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table"]
+z_index = -50
+position = Vector2(122.5, -81.5)
+texture = ExtResource("world_32_112q2")
+
+[node name="Table2" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/GroundFloor/Table2"]
+
+[node name="Tables" type="Node2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot"]
+
+[node name="TableSmall" type="Node2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables"]
+
+[node name="Stool" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(27, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool2" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(10, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool3" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableSmall"]
+z_index = -100
+position = Vector2(37, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Table" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableSmall"]
+z_index = -10
+position = Vector2(24, -6)
+texture = ExtResource("world_27_untqu")
+offset = Vector2(-0.5, 0.5)
+
+[node name="TableBig" type="Node2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables"]
+visible = false
+
+[node name="Stool" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(8, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Stool2" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(41, 0)
+texture = ExtResource("world_26_ywxkc")
+offset = Vector2(-0.5, -3.5)
+
+[node name="Bench" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableBig"]
+z_index = -100
+position = Vector2(24, 0)
+texture = ExtResource("world_36_qn8lr")
+offset = Vector2(0, -3.5)
+
+[node name="Table" type="Sprite2D" parent="Building/Rooms/GroundFloor/Table2/ModulesRoot/Tables/TableBig"]
+z_index = -10
+position = Vector2(24, -6)
+texture = ExtResource("world_37_1u5ro")
+offset = Vector2(0, 0.5)
+
+[node name="Stairs" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+position = Vector2(48, 0)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/GroundFloor/Stairs"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Stairs" type="Sprite2D" parent="Building/Rooms/GroundFloor/Stairs"]
+z_index = -100
+position = Vector2(24, -48)
+texture = ExtResource("world_33_ccsd2")
+region_enabled = true
+region_rect = Rect2(192, 0, 48, 96)
+
+[node name="Fireplace" type="Node2D" parent="Building/Rooms/GroundFloor"]
+texture_filter = 1
+position = Vector2(96, 0)
+
+[node name="LightOverlay" type="Node2D" parent="Building/Rooms/GroundFloor/Fireplace"]
+script = ExtResource("ml_overlay_script")
+lights = Array[ExtResource("ml_input_script")]([SubResource("ml_input_fireplace")])
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/GroundFloor/Fireplace"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Sprite2D" type="Sprite2D" parent="Building/Rooms/GroundFloor/Fireplace"]
+z_index = -90
+position = Vector2(25, -11)
+texture = ExtResource("world_38_54yhy")
+
+[node name="ProgressBar" type="TextureProgressBar" parent="Building/Rooms/GroundFloor/Fireplace"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -6.0
+offset_top = -46.0
+offset_right = 22.0
+offset_bottom = -41.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(14, 2.5)
+mouse_filter = 2
+texture_under = ExtResource("world_39_f2lri")
+texture_over = ExtResource("world_40_e10pa")
+texture_progress = ExtResource("world_41_sdnkf")
+texture_progress_offset = Vector2(1, 1)
+tint_under = Color(0, 0, 0.32549, 0.490196)
+tint_progress = Color(0.211765, 1, 1, 1)
+
+[node name="BurningEffects" type="Node2D" parent="Building/Rooms/GroundFloor/Fireplace"]
+
+[node name="FlameParticles" type="GPUParticles2D" parent="Building/Rooms/GroundFloor/Fireplace/BurningEffects"]
+z_index = -80
+texture_filter = 1
+material = SubResource("world_CanvasItemMaterial_fire")
+position = Vector2(24.5, -4)
+amount = 1
+texture = SubResource("world_AtlasTexture_fire_row1")
+lifetime = 4.0
+process_material = SubResource("world_ParticleProcessMaterial_fire")
+
+[node name="FirstFloor" type="Node2D" parent="Building/Rooms"]
+
+[node name="Entertainment" type="Node2D" parent="Building/Rooms/FirstFloor"]
+texture_filter = 1
+position = Vector2(-96, -48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/FirstFloor/Entertainment"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="MusicParticles" type="GPUParticles2D" parent="Building/Rooms/FirstFloor/Entertainment"]
+z_index = 120
+material = SubResource("world_CanvasItemMaterial_notes")
+position = Vector2(24, -24)
+amount = 2
+texture = ExtResource("world_43_ny8h4")
+lifetime = 1.5
+preprocess = 0.4
+explosiveness = 0.15
+randomness = 0.35
+process_material = SubResource("world_ParticleProcessMaterial_notes")
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/FirstFloor/Entertainment"]
+
+[node name="Acts" type="Node2D" parent="Building/Rooms/FirstFloor/Entertainment/ModulesRoot"]
+
+[node name="Piano" type="Sprite2D" parent="Building/Rooms/FirstFloor/Entertainment/ModulesRoot/Acts"]
+z_index = -10
+position = Vector2(33, -8.5)
+scale = Vector2(-1, 1)
+texture = ExtResource("world_44_ly0ox")
+
+[node name="Stairs" type="Node2D" parent="Building/Rooms/FirstFloor"]
+texture_filter = 1
+position = Vector2(48, -48)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/FirstFloor/Stairs"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="SecondFloor" type="Node2D" parent="Building/Rooms"]
+
+[node name="Storage" type="Node2D" parent="Building/Rooms/SecondFloor"]
+texture_filter = 1
+position = Vector2(-96, -96)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/SecondFloor/Storage"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Office" type="Sprite2D" parent="Building/Rooms/SecondFloor/Storage"]
+z_index = -200
+position = Vector2(24.5, -15)
+texture = ExtResource("47_4gted")
+
+[node name="Brewery" type="Node2D" parent="Building/Rooms/SecondFloor"]
+texture_filter = 1
+position = Vector2(-48, -96)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/SecondFloor/Brewery"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Bath" type="Sprite2D" parent="Building/Rooms/SecondFloor/Brewery"]
+position = Vector2(34, -19)
+texture = ExtResource("47_ur4h7")
+
+[node name="BarWhiskey" type="Node2D" parent="Building/Rooms/SecondFloor"]
+texture_filter = 1
+position = Vector2(0, -96)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/SecondFloor/BarWhiskey"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="Drink" type="Sprite2D" parent="Building/Rooms/SecondFloor/BarWhiskey"]
+z_index = -10
+position = Vector2(24, -17.5)
+texture = ExtResource("48_2fuxy")
+
+[node name="Entertainment" type="Node2D" parent="Building/Rooms/SecondFloor"]
+texture_filter = 1
+position = Vector2(48, -96)
+
+[node name="Back-wall" type="Sprite2D" parent="Building/Rooms/SecondFloor/Entertainment"]
+z_index = -200
+position = Vector2(24, -23)
+texture = ExtResource("world_34_d5t6u")
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/SecondFloor/Entertainment"]
+
+[node name="Acts" type="Node2D" parent="Building/Rooms/SecondFloor/Entertainment/ModulesRoot"]
+
+[node name="Exterior" type="Node2D" parent="Building/Rooms"]
+
+[node name="WaterTower" type="Node2D" parent="Building/Rooms/Exterior"]
+texture_filter = 1
+material = ExtResource("world_48_jwc64")
+position = Vector2(-240, 0)
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/WaterTower"]
+
+[node name="Tower" type="Node2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot"]
+
+[node name="Basic" type="Node2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower"]
+
+[node name="WaterTower" type="Sprite2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic"]
+z_index = -200
+material = ExtResource("world_48_jwc64")
+position = Vector2(24, 1)
+texture = ExtResource("world_50_3sbqh")
+offset = Vector2(0, -47.5)
+
+[node name="ColorRectBackground" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic/WaterTower"]
+z_index = -150
+offset_left = -12.0
+offset_top = -84.0
+offset_right = 12.0
+offset_bottom = -58.0
+mouse_filter = 2
+color = Color(0.22745098, 0.105882354, 0.10980392, 1)
+
+[node name="ColorRectFill" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic/WaterTower"]
+z_index = -100
+offset_left = -12.0
+offset_top = -80.0
+offset_right = 12.0
+offset_bottom = -58.0
+mouse_filter = 2
+color = Color(0.34553567, 0.56236464, 0.962522, 1)
+
+[node name="HorsePost" type="Node2D" parent="Building/Rooms/Exterior"]
+texture_filter = 1
+position = Vector2(-192, 0)
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/HorsePost"]
+
+[node name="Structure" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot"]
+
+[node name="Fence" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure"]
+visible = false
+
+[node name="Pole" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence"]
+z_index = -100
+material = ExtResource("world_48_jwc64")
+position = Vector2(24, -8)
+texture = ExtResource("world_51_ud884")
+offset = Vector2(0.5, -0.5)
+
+[node name="Slots" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence"]
+
+[node name="SlotLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
+position = Vector2(14, 0)
+
+[node name="SlotCenter" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
+position = Vector2(24, 0)
+
+[node name="SlotRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
+position = Vector2(34, 0)
+
+[node name="Stable" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure"]
+
+[node name="StableSprite" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable"]
+z_index = -100
+material = ExtResource("world_48_jwc64")
+position = Vector2(24, 0)
+texture = ExtResource("world_52_sn7fg")
+offset = Vector2(0.5, -21)
+
+[node name="Slots" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable"]
+
+[node name="SlotFarLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(6, 0)
+
+[node name="SlotLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(14, 0)
+
+[node name="SlotCenter" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(24, 0)
+
+[node name="SlotRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(34, 0)
+
+[node name="SlotFarRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
+position = Vector2(42, 0)
+
+[node name="Horse" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost"]
+z_index = -50
+material = ExtResource("world_48_jwc64")
+position = Vector2(30, -9)
+texture = ExtResource("world_53_r1t36")
+script = ExtResource("13_patron_idle")
+
+[node name="Outhouse" type="Node2D" parent="Building/Rooms/Exterior"]
+texture_filter = 1
+material = ExtResource("world_48_jwc64")
+position = Vector2(144, 0)
+
+[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/Outhouse"]
+
+[node name="Bucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot"]
+
+[node name="SmallBucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket"]
+
+[node name="Outhouse" type="Sprite2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket/SmallBucket"]
+z_index = -600
+material = ExtResource("world_48_jwc64")
+position = Vector2(24, -1)
+texture = ExtResource("world_54_v0xou")
+offset = Vector2(0, -16.5)
+hframes = 4
+frame = 2
+
+[node name="BigBucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket"]
+visible = false
+
+[node name="ForegroundTiles" type="TileMapLayer" parent="Building"]
+z_index = 2000
+material = ExtResource("13_skytint")
+position = Vector2(0, 1)
+tile_map_data = PackedByteArray("AAD8////AAAAAAAAAAD9////AAABAAAAAAD+////AAAEAAAAAAABAP//AAAEAAAAAAADAP//AAAGAAAAAAACAP//AAAIAAAAAAD9//7/AAAAAAAAAAD+//7/AAABAAAAAAACAP7/AAAGAAAAAAABAP7/AAAIAAAAAAD9//3/AAAAAAAAAAD+//3/AAABAAAAAAD///3/AAAEAAAAAAAAAP3/AAAEAAAAAAACAP3/AAAGAAAAAAABAP3/AAAIAAAAAAD8/wAAAQAAAAAAAAD9/wAAAQABAAAAAAD+/wAAAQAEAAAAAAD//wAAAQAEAAAAAAAAAAAAAQAEAAAAAAABAAAAAQAEAAAAAAADAAAAAQAGAAAAAAACAAAAAQAIAAAAAAA=")
+tile_set = SubResource("world_TileSet_fg")
+
+[node name="PoshForegroundTiles" type="TileMapLayer" parent="Building"]
+z_index = 2010
+material = ExtResource("13_skytint")
+position = Vector2(0, 1)
+tile_set = SubResource("world_TileSet_posh_fg")
+
+[node name="RoofTiles" type="TileMapLayer" parent="Building"]
+z_index = 2100
+material = ExtResource("13_skytint")
+position = Vector2(0, -23)
+tile_map_data = PackedByteArray("AAD8////AAAAAAAAAAD9////AAABAAAAAAD9//3/AAAAAAAAAAD///3/AAAFAAAAAAACAP3/AAAEAAAAAAABAP3/AAADAAAAAAADAP//AAAEAAAAAAACAP//AAACAAAAAAA=")
+tile_set = SubResource("world_TileSet_roof")
+
+[node name="RoofDecorations" type="Node2D" parent="Building"]
+z_index = 2150
+
+[node name="Infrastructure" type="Node2D" parent="Building"]
+
+[node name="WaterPipeTiles" type="TileMapLayer" parent="Building/Infrastructure"]
+z_index = -190
+material = ExtResource("world_59_ggjq2")
+tile_map_data = PackedByteArray("AAABAP//AAACAAAAAAA=")
+tile_set = SubResource("world_TileSet_pipe")
+
+[node name="ElectricityTiles" type="TileMapLayer" parent="Building/Infrastructure"]
+z_index = -40
+tile_set = SubResource("world_TileSet_electricity")
+
+[node name="ElectricityRoomOverlays" type="Node2D" parent="Building/Infrastructure"]
+z_index = 1900
+
+[node name="StoveTiles" type="TileMapLayer" parent="Building/Infrastructure"]
+
+[node name="SaloonSign" type="Node2D" parent="Building"]
+z_index = 2200
+position = Vector2(-24, -143)
+
+[node name="Sprite2D" type="NinePatchRect" parent="Building/SaloonSign"]
+texture_filter = 1
+texture_repeat = 2
+material = ExtResource("13_skytint")
+custom_minimum_size = Vector2(64, 24)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -24.0
+offset_right = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("world_62_26yjj")
+patch_margin_left = 16
+patch_margin_right = 16
+axis_stretch_horizontal = 2
+
+[node name="Label" type="Label" parent="Building/SaloonSign"]
+texture_filter = 1
+offset_left = -24.0
+offset_top = -17.0
+offset_right = 24.0
+offset_bottom = 3.0
+theme = ExtResource("world_63_frfft")
+theme_override_colors/font_color = Color(0.15686275, 0.078431375, 0.003921569, 0.6627451)
+theme_override_fonts/font = ExtResource("world_64_dylnb")
+theme_override_font_sizes/font_size = 6
+text = "SALOON"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OutsideOverlay" type="Node2D" parent="Building"]
+visible = false
+z_index = 2000
+
+[node name="Sprite2D" type="Sprite2D" parent="Building/OutsideOverlay"]
+material = ExtResource("13_skytint")
+position = Vector2(-24, -20.5)
+texture = ExtResource("world_65_tdg6g")
+
+[node name="Ground" type="NinePatchRect" parent="Building/OutsideOverlay"]
+texture_filter = 1
+texture_repeat = 2
+material = ExtResource("13_skytint")
+custom_minimum_size = Vector2(256, 96)
+offset_left = -144.0
+offset_right = 112.0
+offset_bottom = 96.0
+texture = ExtResource("world_66_nm2fs")
+draw_center = false
+region_rect = Rect2(0, 0, 64, 64)
+patch_margin_top = 32
+axis_stretch_horizontal = 1
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"slice": "",
+"source": "res://assets/sprites/ground-tile-64px.aseprite"
+}
+metadata/_aseprite_wizard_source_file_hash_ = "1a66c4b0236c1a2385aed43fbce46e23"
+metadata/_edit_use_anchors_ = true
+
+[node name="Patrons" type="Node2D" parent="Building"]
+
+[node name="LightOverlay" type="Node2D" parent="Building/Patrons"]
+position = Vector2(-96, -96)
+script = ExtResource("ml_overlay_script")
+room_tiles = Vector2i(4, 1)
+lights = Array[ExtResource("ml_input_script")]([SubResource("ml_input_patronflame"), SubResource("ml_input_torch")])
+
+[node name="Patron01" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_pmtf5")
+position = Vector2(-131, 0)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron02" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_rjimt")
+position = Vector2(-111, 0)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+flip_h = true
+script = ExtResource("13_patron_idle")
+
+[node name="Patron03" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_sy3rv")
+position = Vector2(-80, 0)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron04" type="Sprite2D" parent="Building/Patrons" node_paths=PackedStringArray("point_a", "point_b")]
+z_index = -10
+material = SubResource("ShaderMaterial_rf67s")
+position = Vector2(11, 0)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("73_rf67s")
+point_a = NodePath("Marker2D")
+point_b = NodePath("Marker2D2")
+move_speed = 15.0
+pause_seconds = 10.0
+
+[node name="Marker2D" type="Marker2D" parent="Building/Patrons/Patron04"]
+
+[node name="Marker2D2" type="Marker2D" parent="Building/Patrons/Patron04"]
+position = Vector2(-85, 0)
+
+[node name="Patron05" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_762r7")
+position = Vector2(23, 0)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron06" type="Sprite2D" parent="Building/Patrons"]
+material = SubResource("world_ShaderMaterial_762r7")
+position = Vector2(-77, -48)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron07" type="Sprite2D" parent="Building/Patrons"]
+material = SubResource("world_ShaderMaterial_imapp")
+position = Vector2(-86, 46)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron08" type="Sprite2D" parent="Building/Patrons"]
+material = SubResource("world_ShaderMaterial_124hq")
+position = Vector2(-59, 46)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+flip_h = true
+script = ExtResource("13_patron_idle")
+
+[node name="Patron09" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_7qlbq")
+position = Vector2(-70, -96)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron11" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_7qlbq")
+position = Vector2(69, -96)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Sprite2D" type="Sprite2D" parent="Building/Patrons/Patron11"]
+position = Vector2(1.5, -9.5)
+texture = ExtResource("world_30_a78hn")
+
+[node name="Patron10" type="Sprite2D" parent="Building/Patrons" node_paths=PackedStringArray("point_a", "point_b")]
+z_index = -20
+material = SubResource("world_ShaderMaterial_y12ky")
+position = Vector2(18, -96)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("73_rf67s")
+point_a = NodePath("Marker2D")
+point_b = NodePath("Marker2D2")
+move_speed = 20.0
+pause_seconds = 0.0
+
+[node name="PatronFlames" type="GPUParticles2D" parent="Building/Patrons/Patron10"]
+z_index = 100
+texture_filter = 1
+material = SubResource("world_CanvasItemMaterial_fire")
+amount = 1
+texture = SubResource("world_AtlasTexture_fire_row1")
+lifetime = 4.0
+local_coords = true
+process_material = SubResource("world_ParticleProcessMaterial_fire")
+
+[node name="Marker2D" type="Marker2D" parent="Building/Patrons/Patron10"]
+position = Vector2(-50, 0)
+
+[node name="Marker2D2" type="Marker2D" parent="Building/Patrons/Patron10"]
+position = Vector2(15, 0)
+
+[node name="Patron12" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_o4jxc")
+position = Vector2(-75, 48)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron13" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_l68lp")
+position = Vector2(-39, 48)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+script = ExtResource("13_patron_idle")
+
+[node name="Patron14" type="Sprite2D" parent="Building/Patrons"]
+z_index = -20
+material = SubResource("world_ShaderMaterial_tdmyw")
+position = Vector2(70, 48)
+texture = ExtResource("world_70_peqmw")
+offset = Vector2(0, -12)
+flip_h = true
+script = ExtResource("13_patron_idle")
+
+[node name="Effects" type="Node2D" parent="Building"]
+
+[node name="BuildingRoofStovePipe" type="Node2D" parent="Building/Effects"]
+z_index = 2150
+position = Vector2(-24, -141)
+
+[node name="PipeSprite" type="Sprite2D" parent="Building/Effects/BuildingRoofStovePipe"]
+z_index = -1000
+position = Vector2(-5, -17)
+texture = ExtResource("world_71_s28n7")
+centered = false
+
+[node name="SmokeOrigin" type="Marker2D" parent="Building/Effects/BuildingRoofStovePipe"]
+position = Vector2(0, -17)
+
+[node name="Node2D2" type="Node2D" parent="Building/Effects"]
+z_index = 2150
+position = Vector2(-16, -163)
+
+[node name="PipeSprite" type="Sprite2D" parent="Building/Effects/Node2D2"]
+z_index = -1000
+position = Vector2(-5, -17)
+texture = ExtResource("world_71_s28n7")
+centered = false
+
+[node name="SmokeOrigin" type="Marker2D" parent="Building/Effects/Node2D2"]
+position = Vector2(0, -17)
+
+[node name="Node2D" type="Node2D" parent="Building/Effects"]
+z_index = 2150
+position = Vector2(120, -48)
+
+[node name="PipeSprite" type="Sprite2D" parent="Building/Effects/Node2D"]
+z_index = -1000
+position = Vector2(-5, -17)
+texture = ExtResource("world_71_s28n7")
+centered = false
+
+[node name="SmokeOrigin" type="Marker2D" parent="Building/Effects/Node2D"]
+position = Vector2(0, -17)
+
+[node name="GPUParticles2D2" type="GPUParticles2D" parent="Building/Effects"]
+z_index = 2140
+texture_filter = 1
+material = SubResource("world_CanvasItemMaterial_smoke")
+position = Vector2(-16, -180)
+amount = 16
+texture = ExtResource("world_72_gj7g5")
+lifetime = 5.0
+preprocess = 3.0
+process_material = SubResource("world_ParticleProcessMaterial_jypvp")
+
+[node name="GPUParticles2D3" type="GPUParticles2D" parent="Building/Effects"]
+z_index = 2140
+texture_filter = 1
+material = SubResource("world_CanvasItemMaterial_smoke")
+position = Vector2(120, -65)
+amount = 16
+texture = ExtResource("world_72_gj7g5")
+lifetime = 5.0
+preprocess = 3.0
+process_material = SubResource("world_ParticleProcessMaterial_jypvp")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="Building/Effects"]
+z_index = 700
+texture_filter = 1
+material = SubResource("world_CanvasItemMaterial_jrpa7")
+position = Vector2(-23, -96)
+texture = ExtResource("world_42_1jsss")
+lifetime = 4.0
+preprocess = 4.0
+process_material = SubResource("world_ParticleProcessMaterial_r6nqp")
+
+[node name="CampaignPreview" type="Node2D" parent="."]
+position = Vector2(-624, 0)
+
+[node name="Saloon" type="Sprite2D" parent="CampaignPreview"]
+z_index = -3000
+material = ExtResource("13_skytint")
+position = Vector2(0, -34.5)
+texture = ExtResource("81_1ppaw")
+
+[node name="SaloonSign" type="Node2D" parent="CampaignPreview/Saloon"]
+z_index = 2200
+position = Vector2(-7, -11.5)
+script = ExtResource("82_romvc")
+
+[node name="Sprite2D" type="NinePatchRect" parent="CampaignPreview/Saloon/SaloonSign"]
+texture_filter = 1
+texture_repeat = 2
+material = ExtResource("13_skytint")
+custom_minimum_size = Vector2(64, 24)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -24.0
+offset_right = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("world_62_26yjj")
+patch_margin_left = 16
+patch_margin_right = 16
+axis_stretch_horizontal = 2
+
+[node name="Label" type="Label" parent="CampaignPreview/Saloon/SaloonSign"]
+texture_filter = 1
+offset_left = -24.0
+offset_top = -17.0
+offset_right = 39.0
+offset_bottom = 3.0
+theme = ExtResource("world_63_frfft")
+theme_override_colors/font_color = Color(0.15686275, 0.078431375, 0.003921569, 0.6627451)
+theme_override_fonts/font = ExtResource("world_64_dylnb")
+theme_override_font_sizes/font_size = 8
+text = "My Saloon"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Area2D" type="Area2D" parent="CampaignPreview/Saloon/SaloonSign"]
+position = Vector2(0, -12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CampaignPreview/Saloon/SaloonSign/Area2D"]
+shape = SubResource("RectangleShape2D_l3yaw")
+
+[node name="HBoxContainerGuests" type="HBoxContainer" parent="CampaignPreview"]
+offset_left = -224.0
+offset_top = -32.0
+offset_right = -184.0
+offset_bottom = 8.0
+alignment = 2
+
+[node name="Guest" type="TextureRect" parent="CampaignPreview/HBoxContainerGuests"]
+material = ExtResource("82_8yyxk")
+layout_mode = 2
+texture = ExtResource("83_romvc")
+stretch_mode = 5
+
+[node name="UI" type="CanvasLayer" parent="."]
 layer = 5
 
-[node name="UIMainMenu" type="Control" parent="."]
+[node name="UIMainMenu" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_theme")
+theme = ExtResource("world_63_frfft")
 script = ExtResource("1_script")
 
-[node name="Background" type="Panel" parent="UIMainMenu"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/UIMainMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Spacer" type="Control" parent="UI/UIMainMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+
+[node name="Content" type="Control" parent="UI/UIMainMenu/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="Panel" parent="UI/UIMainMenu/HBoxContainer/Content"]
+modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,55 +2430,163 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_background")
 
-[node name="CenterContainer" type="CenterContainer" parent="UIMainMenu"]
+[node name="CenterContainer" type="MarginContainer" parent="UI/UIMainMenu/HBoxContainer/Content"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UIMainMenu/CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
+theme = ExtResource("menu_button_theme")
 theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+[node name="TextureRect" type="TextureRect" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_font")
-theme_override_font_sizes/font_size = 22
+texture = ExtResource("83_ls525")
+stretch_mode = 5
+
+[node name="TitleLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9607843, 0.6392157, 0.2, 1)
+theme_override_fonts/font = ExtResource("world_64_dylnb")
+theme_override_font_sizes/font_size = 11
 text = "Saloon Tycoon"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+[node name="Spacer" type="Control" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="ContinueButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
+[node name="ContinueButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
-text = "Continue"
+text = "CONTINUE"
 
-[node name="NewGameButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-text = "New Game"
-
-[node name="SandboxButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-text = "Sandbox"
-
-[node name="CampaignButton" type="Button" parent="UIMainMenu/CenterContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-text = "Campaign"
-
-[node name="SandboxConfig" parent="UIMainMenu" instance=ExtResource("4_sandbox_config")]
-visible = false
+[node name="SaveGameInfoLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/ContinueButton"]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.6862745, 0.105882354, 1)
+theme_override_fonts/font = ExtResource("75_13die")
+theme_override_font_sizes/font_size = 11
+text = "Sierra Verde - 26.01.2026"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="NewGameButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "NEW GAME"
+
+[node name="TutorialButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "TUTORIAL"
+
+[node name="SandboxButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "SANDBOX"
+
+[node name="CampaignButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "CAMPAIGN"
+
+[node name="QuitButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "QUIT GAME"
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_top = -8
+
+[node name="MainMenuDivider" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer" instance=ExtResource("75_ur4h7")]
+layout_mode = 2
+
+[node name="SelectedButtonMarker" type="Control" parent="UI/UIMainMenu/HBoxContainer/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(112, 32)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -58.0
+offset_top = -130.0
+offset_right = 54.0
+offset_bottom = -98.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="MainMenuDivider" parent="UI/UIMainMenu/HBoxContainer/Content/SelectedButtonMarker" instance=ExtResource("75_ur4h7")]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -55.5
+offset_right = 55.5
+offset_bottom = 5.0
+grow_horizontal = 2
+
+[node name="SelectedButtonArrow" type="TextureRect" parent="UI/UIMainMenu/HBoxContainer/Content/SelectedButtonMarker"]
+unique_name_in_owner = true
+editor_description = "SelectedButtonArrow"
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -5.0
+offset_right = 8.0
+offset_bottom = 5.0
+grow_vertical = 2
+texture = ExtResource("76_2fuxy")
+stretch_mode = 3
+
+[node name="MainMenuDivider2" parent="UI/UIMainMenu/HBoxContainer/Content/SelectedButtonMarker" instance=ExtResource("75_ur4h7")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -55.5
+offset_top = -5.0
+offset_right = 55.5
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SandboxConfig" parent="UI/UIMainMenu" instance=ExtResource("4_sandbox_config")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="CampaignSelection" parent="UI/UIMainMenu" instance=ExtResource("88_ls525")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

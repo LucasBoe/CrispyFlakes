@@ -17,9 +17,10 @@ extends Resource
 ## Purely descriptive - the actual behavior comes from the weights below.
 @export_multiline var flavor_text: String = ""
 
-## Multiplicative weight per service id, used when picking which
-## available service/behaviour an NPC pursues. Missing keys default to
-## 1.0. Known ids: "drinking", "cleaning", "gambling", "snake_oil",
+## Multiplicative weight per service id, used both when picking which
+## available service/behaviour an NPC pursues and when scaling mood
+## changes caused by that service. Missing keys default to 1.0. Known
+## ids: "drinking", "soup", "cleaning", "gambling", "snake_oil",
 ## "sleep".
 @export var service_weights: Dictionary = {}
 
@@ -102,6 +103,9 @@ const TRAIT_ID_STRINGS := {
 
 func get_service_weight(service_id: String) -> float:
 	return service_weights.get(service_id, 1.0)
+
+func scale_service_mood(amount: float, service_id: String) -> float:
+	return amount * get_service_weight(service_id)
 
 func get_drink_weight(item_id: int) -> float:
 	var key: String = Enum.Items.keys()[item_id]

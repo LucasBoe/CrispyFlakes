@@ -2,7 +2,7 @@ extends Node2D
 
 @onready var sky = $Sky
 @onready var clouds = $CloudHandler
-@onready var mountains = [$Montains, $Montains2]
+@onready var montain_builder = $MontainBuilder
 @onready var fullscreen_darken = $FulllscreenDarkenRect
 
 const _FULLSCREEN_DARKEN_SHOW_ALPHA := 1.0
@@ -13,9 +13,6 @@ const _FULLSCREEN_DARKEN_SHOW_ALPHA := 1.0
 const WEATHER_FADE_COLD_TEMPERATURE := -6.0
 const WEATHER_FADE_WARM_TEMPERATURE := 3.0
 
-var mointain_lerp = Vector2(.33, .1)
-
-var mountains_default_posisitions = []
 var _fullscreen_darken_from_alpha := 0.0
 var _fullscreen_darken_target_alpha := 0.0
 var _fullscreen_darken_fade_start_usec := 0
@@ -28,8 +25,6 @@ var _max_weather_tint_strength_after := 0.0
 var _max_snow_amount := 0.0
 
 func _ready():
-	for i in mountains:
-		mountains_default_posisitions.append(i.global_position)
 	_setup_world_tint()
 	fullscreen_darken.modulate.a = 0.0
 	fullscreen_darken.hide()
@@ -73,12 +68,7 @@ func _process(_delta):
 	sky.scale = Vector2(1000.0, inv_zoom.y)
 	clouds.global_position = cam_pos
 	clouds.scale = inv_zoom
-
-	for i in mountains.size():
-		var mountain = mountains[i]
-		var default_position = mountains_default_posisitions[i]
-		mountain.global_position = Vector2(lerp(default_position.x, cam_pos.x, mointain_lerp.x), lerp(default_position.y, cam_pos.y, mointain_lerp.y))
-		mountain.scale = Vector2(lerp(1.0, inv_zoom.x, mointain_lerp.x), lerp(1.0, inv_zoom.y, mointain_lerp.y))
+	montain_builder.apply_parallax(cam_pos, Camera.zoom)
 
 func _update_weather_from_temperature() -> void:
 	var outdoor_temperature := TemperatureHandler.get_outdoor_temperature()

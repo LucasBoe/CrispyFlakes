@@ -17,5 +17,6 @@ feature_overrides = {
 2: true
 }
 robber_spawn_chance = 0.1
+guest_spawn_base_rate = 2.0
 is_campaign = false
 show_basic_controls_ui = true

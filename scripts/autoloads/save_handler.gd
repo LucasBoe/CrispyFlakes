@@ -117,7 +117,6 @@ func _apply_save(save_data: Dictionary) -> void:
 		save_data = _backfill_save_data(save_data)
 
 	TimeHandler.push_pause_lock(self)
-	var previous_auto_spawn: bool = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
 	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, false)
 
 	_clear_active_fights()
@@ -150,7 +149,7 @@ func _apply_save(save_data: Dictionary) -> void:
 	MoneyHandler.on_money_changed_signal.emit()
 	_apply_scenario_restore(save_data)
 
-	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, previous_auto_spawn)
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, true)
 	TimeHandler.pop_pause_lock(self)
 
 func _serialize_rooms() -> Array[Dictionary]:
@@ -815,6 +814,7 @@ func _apply_scenario_restore(save_data: Dictionary) -> void:
 	if scenario_id.is_empty():
 		ScenarioHandler.current_scenario = null
 		ScenarioHandler.win_state = ScenarioHandler.WinState.NONE
+		Balancing.GUEST_SPAWN_BASE_RATE = Balancing.GUEST_SPAWN_BASE_RATE_DEFAULT
 		return
 
 	var scenario := ScenarioHandler.get_scenario(scenario_id)

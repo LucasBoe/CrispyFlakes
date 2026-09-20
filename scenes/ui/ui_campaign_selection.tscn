@@ -1,0 +1,299 @@
+[gd_scene load_steps=19 format=3 uid="uid://yc1tsqqnfjm2"]
+
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="1_70p4j"]
+[ext_resource type="Script" uid="uid://b2yfx4b0dkcey" path="res://scripts/ui/campaign_selection.gd" id="2_so30t"]
+[ext_resource type="Texture2D" uid="uid://dix6jkj1n52dh" path="res://assets/sprites/ui/2x/paper_on_wood_rect_hd.png" id="3_cea2d"]
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="3_feytp"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_vetq6"]
+[ext_resource type="Texture2D" uid="uid://dsvsmgdx2kjbw" path="res://assets/sprites/ui/2x/star_difficulty_full.png" id="5_feytp"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="6_7jo4i"]
+[ext_resource type="Texture2D" uid="uid://bgfvgdudam5ny" path="res://assets/sprites/ui/2x/star_difficulty_half.png" id="6_vetq6"]
+[ext_resource type="Texture2D" uid="uid://13fb4slbkmvw" path="res://assets/sprites/ui/2x/tree_filled_button.png" id="7_4o2m2"]
+[ext_resource type="Texture2D" uid="uid://bsi3ah428w8li" path="res://assets/sprites/ui/2x/star_difficulty_empty.png" id="7_alf0d"]
+[ext_resource type="Texture2D" uid="uid://bipbw26qs3ijm" path="res://assets/sprites/npcs/npc_type_source_settler.png" id="10_7jo4i"]
+[ext_resource type="Texture2D" uid="uid://b63y0nx1eubg1" path="res://assets/sprites/npcs/npc_type_source_farmer.png" id="11_4o2m2"]
+[ext_resource type="Texture2D" uid="uid://bfylgsvadmoeb" path="res://assets/sprites/npcs/npc_type_source_outlaw.png" id="12_ymd7r"]
+[ext_resource type="Texture2D" uid="uid://0rkqp05o65wq" path="res://assets/sprites/npcs/npc_type_source_investor.png" id="13_4o2m2"]
+[ext_resource type="Texture2D" uid="uid://cfjnntc5pridd" path="res://assets/sprites/ui/icon_injured.png" id="14_ymd7r"]
+[ext_resource type="Texture2D" uid="uid://ccudedp2r2ik6" path="res://assets/sprites/ui/icon_robbert.png" id="15_6npdk"]
+[ext_resource type="Texture2D" uid="uid://dj8pbycfmryyj" path="res://assets/sprites/ui/icon_cold.png" id="16_i4kb3"]
+
+[sub_resource type="ShaderMaterial" id="CampaignShaderMaterial_start_gold"]
+resource_local_to_scene = true
+shader = ExtResource("6_7jo4i")
+shader_parameter/wave_color = Color(1, 0, 0, 1)
+shader_parameter/is_unlocked = true
+shader_parameter/is_active = false
+shader_parameter/ui_time = 0.0
+
+[node name="CampaignSelection" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_70p4j")
+script = ExtResource("2_so30t")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.035, 0.045, 0.09, 0)
+
+[node name="Panel" type="Control" parent="."]
+custom_minimum_size = Vector2(640, 472)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -236.0
+offset_right = 320.0
+offset_bottom = 236.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 24
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="MapContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Background" type="NinePatchRect" parent="MarginContainer/HBoxContainer/MapContainer"]
+layout_mode = 2
+texture = ExtResource("3_cea2d")
+patch_margin_left = 31
+patch_margin_top = 28
+patch_margin_right = 39
+patch_margin_bottom = 30
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="ListMargin" type="MarginContainer" parent="MarginContainer/HBoxContainer/MapContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="ScenarioList" type="VBoxContainer" parent="MarginContainer/HBoxContainer/MapContainer/ListMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="DetailsContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+size_flags_stretch_ratio = 2.0
+theme_override_constants/margin_left = 24
+
+[node name="Background" type="NinePatchRect" parent="MarginContainer/HBoxContainer/DetailsContainer"]
+layout_mode = 2
+texture = ExtResource("3_feytp")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Margin" type="MarginContainer" parent="MarginContainer/HBoxContainer/DetailsContainer"]
+layout_mode = 2
+theme_type_variation = &"SandboxPadding"
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 24
+
+[node name="Layout" type="VBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin"]
+layout_mode = 2
+theme_type_variation = &"SandboxLayout"
+
+[node name="Header" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout"]
+layout_mode = 2
+theme_type_variation = &"SandboxFooter"
+alignment = 2
+
+[node name="Name" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Header"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.9607843, 0.6392157, 0.2, 1)
+theme_override_fonts/font = ExtResource("4_vetq6")
+theme_override_font_sizes/font_size = 8
+text = "Red Mesa"
+vertical_alignment = 2
+
+[node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BackButton" type="Button" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 28)
+layout_mode = 2
+size_flags_vertical = 8
+text = "Back"
+
+[node name="StartButton" type="Button" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 26)
+layout_mode = 2
+size_flags_vertical = 8
+theme_type_variation = &"StartButton"
+text = "Start"
+
+[node name="GoldPlate" type="NinePatchRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Header/StartButton"]
+show_behind_parent = true
+material = SubResource("CampaignShaderMaterial_start_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_4o2m2")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+
+[node name="Body" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Details" type="VBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 6
+
+[node name="Subtitle" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details"]
+visible = false
+layout_mode = 2
+text = "Diamond of the west"
+
+[node name="HBoxContainerDifficulty" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details"]
+layout_mode = 2
+
+[node name="Difficulty" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Difficulty"
+horizontal_alignment = 2
+
+[node name="StarsHBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_feytp")
+
+[node name="TextureRect2" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_feytp")
+
+[node name="TextureRect3" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("5_feytp")
+
+[node name="TextureRect4" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("6_vetq6")
+
+[node name="TextureRect5" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerDifficulty/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("7_alf0d")
+
+[node name="HBoxContainerGuestTypes" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details"]
+layout_mode = 2
+
+[node name="Guests" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Guests"
+horizontal_alignment = 2
+
+[node name="StarsHBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("10_7jo4i")
+
+[node name="TextureRect2" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("11_4o2m2")
+
+[node name="TextureRect3" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("12_ymd7r")
+
+[node name="TextureRect4" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("13_4o2m2")
+
+[node name="TextureRect5" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerGuestTypes/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("11_4o2m2")
+
+[node name="HBoxContainerFeatures" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details"]
+layout_mode = 2
+
+[node name="Guests" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerFeatures"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+text = "Features"
+horizontal_alignment = 2
+
+[node name="StarsHBoxContainer" type="HBoxContainer" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerFeatures"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerFeatures/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("14_ymd7r")
+stretch_mode = 5
+
+[node name="TextureRect3" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerFeatures/StarsHBoxContainer"]
+layout_mode = 2
+texture = ExtResource("16_i4kb3")
+stretch_mode = 5
+
+[node name="TextureRect2" type="TextureRect" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/HBoxContainerFeatures/StarsHBoxContainer"]
+modulate = Color(1, 1, 1, 0.34117648)
+layout_mode = 2
+texture = ExtResource("15_6npdk")
+stretch_mode = 5
+
+[node name="Description" type="Label" parent="MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Gold has been discovered in Red Mesa, drawing prospectors and investors alike.
+Some emerge from the mines caked in dirt, others seek culture and opportunity.
+Can you satisfy both?"
+autowrap_mode = 2

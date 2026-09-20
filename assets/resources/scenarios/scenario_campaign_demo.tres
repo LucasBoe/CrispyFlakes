@@ -1,9 +1,15 @@
-[gd_resource type="Resource" script_class="CampaignScenarioData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="CampaignScenarioData" load_steps=11 format=3]
 
 [ext_resource type="Script" uid="uid://c1bcmbdjs5emn" path="res://scripts/scenario/campaign_scenario_data.gd" id="1_script"]
 [ext_resource type="Script" uid="uid://jfkukhhybxtl" path="res://scripts/scenario/scenario_goal_definition.gd" id="2_goal_script"]
 [ext_resource type="Script" uid="uid://q3qovhlsh1tq" path="res://scripts/scenario/campaign_demo_story_beats.gd" id="3_beats"]
 [ext_resource type="Script" uid="uid://ps2maes6sjr0" path="res://scripts/scenario/campaign_demo_conditions.gd" id="4_conditions"]
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="5_archetype_script"]
+[ext_resource type="Resource" uid="uid://cqujbv4l7s3ci" path="res://assets/resources/npc_archetypes/settler.tres" id="6_settler"]
+[ext_resource type="Resource" uid="uid://deqxfuedyyxvn" path="res://assets/resources/npc_archetypes/farmer.tres" id="7_farmer"]
+[ext_resource type="Resource" uid="uid://grtoqu1w4nrw" path="res://assets/resources/npc_archetypes/cowboy.tres" id="8_cowboy"]
+[ext_resource type="Resource" uid="uid://ct2y5eweffr85" path="res://assets/resources/npc_archetypes/investor.tres" id="9_investor"]
+[ext_resource type="Resource" uid="uid://bat4boxixprkb" path="res://assets/resources/npc_archetypes/outlaw.tres" id="10_outlaw"]
 
 [sub_resource type="Resource" id="Resource_goal1"]
 script = ExtResource("2_goal_script")
@@ -30,7 +36,10 @@ feature_overrides = {
 2: true
 }
 robber_spawn_chance = 0.1
+guest_spawn_base_rate = 2.0
 is_campaign = true
+allowed_npc_archetypes = Array[ExtResource("5_archetype_script")]([ExtResource("6_settler"), ExtResource("7_farmer"), ExtResource("8_cowboy"), ExtResource("9_investor"), ExtResource("10_outlaw")])
+preview_guest_counts = PackedInt32Array(3, 2, 2, 1, 1)
 goal_definitions = Array[ExtResource("2_goal_script")]([SubResource("Resource_goal1")])
 story_beat_script = ExtResource("3_beats")
 conditions_script = ExtResource("4_conditions")

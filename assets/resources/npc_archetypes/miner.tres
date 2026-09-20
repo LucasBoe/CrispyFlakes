@@ -7,12 +7,13 @@
 script = ExtResource("1")
 display_name = "Miner"
 icon = ExtResource("2_icon")
-flavor_text = "Miners stumble in exhausted from the shafts, craving sleep and a stiff drink - a little dirt never bothered them."
+flavor_text = "Miners stumble in exhausted from the shafts, craving food, sleep and a stiff drink - a little dirt never bothered them."
 service_weights = {
 "cleaning": 0.25,
 "drinking": 1.0,
 "gambling": 0.5,
-"sleep": 2.0
+"sleep": 2.0,
+"soup": 2.0
 }
 drink_weights = {
 "BEER_BARREL": 1.4,

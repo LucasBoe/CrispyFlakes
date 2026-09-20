@@ -39,7 +39,12 @@ uniform vec4 night_blue_bottom : source_color = vec4(0.05, 0.16, 0.28, 1.0);
 
 // Blue green night
 uniform vec4 night_teal_top    : source_color = vec4(0.00, 0.10, 0.14, 1.0);
-uniform vec4 night_teal_bottom : source_color = vec4(0.02, 0.22, 0.18, 1.0);
+// Overridden to a purple on both NewSky materials (environment.tscn,
+// mainmenuscene.tscn) rather than the greenish teal this include originally
+// shipped — anything using the include's raw default (e.g. sky_tint_mat.tres,
+// shared by every non-mountain background decoration with no override of its
+// own) needs that same tuning, so the default is now the tuned value.
+uniform vec4 night_teal_bottom : source_color = vec4(0.19279349, 0.10144586, 0.26111385, 1.0);
 
 vec4 sky_top(float t) {
 	if (t < 5.0)  return mix(night_teal_top,  dawn_top,        t / 5.0);

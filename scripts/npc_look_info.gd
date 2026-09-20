@@ -35,14 +35,20 @@ var channel_brightness_random : PackedFloat32Array
 # per-category design constants defined in the shader itself.
 var random_channel : PackedInt32Array
 
-const SPAWN_BODY_TYPE_MIN := 1
-const SPAWN_BODY_TYPE_MAX := 4
+## Normal guest spawn pool. Includes Outlaws, but excludes non-guest /
+## special-purpose body types like Default, Miner, and Undefined.
+const SPAWN_BODY_TYPES := [1, 2, 3, 4, 5]
 
-## Guest count a type needs before its average mood is fully trusted as a
+## Mood entries a type needs before its average mood is fully trusted as a
 ## spawn-weight signal (see _pick_mood_weighted_spawn_body_type()). Below
-## this, the signal is blended toward neutral so one lone happy/miserable
-## guest can't swing the whole type's future spawn rate.
-const MOOD_WEIGHT_SAMPLE_CONFIDENCE := 8.0
+## this, the signal is blended toward neutral so one or two isolated mood
+## events can't swing the whole type's future spawn rate.
+const MOOD_WEIGHT_SAMPLE_CONFIDENCE := 3.0
+
+## Mood is converted into a spawn multiplier symmetrically around neutral
+## mood 0.5, so happier archetypes meaningfully gain odds while unhappy
+## ones lose them.
+const MOOD_WEIGHT_EXPONENT := 3.0
 
 static func new_random() -> NPCLookInfo:
 	return _new_random_with_body_type(_pick_mood_weighted_spawn_body_type())
@@ -50,37 +56,60 @@ static func new_random() -> NPCLookInfo:
 ## Freshly spawned guests skew toward whichever type is currently doing
 ## well ("word gets around") - each candidate type's spawn weight scales
 ## with its live guests' average mood (see NPCSpawner.get_guest_type_stats()),
-## blended toward neutral for types with few guests so a single outlier
-## guest can't dominate the weighting.
+## blended toward neutral until enough actual mood events have been logged
+## for that type.
 static func _pick_mood_weighted_spawn_body_type() -> int:
-	var stats: Dictionary = {}
-	if Global.NPCSpawner != null:
-		stats = Global.NPCSpawner.get_guest_type_stats()
-
-	var candidates: Array[int] = []
-	var weights: Array[float] = []
+	var weights := get_spawn_weights()
+	var candidates: Array = weights.keys()
 	var total_weight := 0.0
-	for candidate_type in range(SPAWN_BODY_TYPE_MIN, SPAWN_BODY_TYPE_MAX + 1):
-		var blended_mood := 0.5
-		if stats.has(candidate_type):
-			var entry: Dictionary = stats[candidate_type]
-			var confidence: float = clampf(float(entry.count) / MOOD_WEIGHT_SAMPLE_CONFIDENCE, 0.0, 1.0)
-			blended_mood = lerpf(0.5, entry.avg_mood, confidence)
-		var weight: float = lerpf(0.5, 1.5, blended_mood)
-		candidates.append(candidate_type)
-		weights.append(weight)
+	for weight: float in weights.values():
 		total_weight += weight
 
 	if total_weight <= 0.0:
 		return candidates.pick_random()
 
 	var roll := randf() * total_weight
-	for i in candidates.size():
-		roll -= weights[i]
+	for candidate_type: int in candidates:
+		roll -= weights[candidate_type]
 		if roll <= 0.0:
-			return candidates[i]
+			return candidate_type
 
 	return candidates[candidates.size() - 1]
+
+## Raw, un-normalized spawn weight per candidate body_type - see
+## _pick_mood_weighted_spawn_body_type() for how these are rolled.
+static func get_spawn_weights() -> Dictionary:
+	var stats: Dictionary = {}
+	if Global.NPCSpawner != null:
+		stats = Global.NPCSpawner.get_guest_type_stats()
+
+	var allowed_types := SPAWN_BODY_TYPES.filter(func(t): return ScenarioHandler.is_archetype_allowed(t))
+	if allowed_types.is_empty():
+		allowed_types = SPAWN_BODY_TYPES
+
+	var weights: Dictionary = {}
+	for candidate_type in allowed_types:
+		var blended_mood := 0.5
+		if stats.has(candidate_type):
+			var entry: Dictionary = stats[candidate_type]
+			var confidence: float = clampf(float(entry.get("mood_entry_count", 0)) / MOOD_WEIGHT_SAMPLE_CONFIDENCE, 0.0, 1.0)
+			blended_mood = lerpf(0.5, entry.avg_mood, confidence)
+		weights[candidate_type] = pow(2.0, (blended_mood - 0.5) * MOOD_WEIGHT_EXPONENT)
+	return weights
+
+## Normalized 0-100 spawn chance per candidate body_type, for UI display
+## (see UIHUD's spawn-odds foldout). Mirrors get_spawn_weights() without
+## rolling, so it reflects the current odds without consuming randomness.
+static func get_spawn_chance_percentages() -> Dictionary:
+	var weights := get_spawn_weights()
+	var total_weight := 0.0
+	for weight: float in weights.values():
+		total_weight += weight
+
+	var percentages: Dictionary = {}
+	for candidate_type in weights.keys():
+		percentages[candidate_type] = (weights[candidate_type] / total_weight * 100.0) if total_weight > 0.0 else 0.0
+	return percentages
 
 ## Body type is picked weighted by each archetype's bounty_weight (see
 ## NPCArchetype.bounty_weight) instead of the uniform range new_random()
@@ -96,7 +125,7 @@ static func _pick_weighted_bounty_body_type() -> int:
 	var weights: Array[float] = []
 	for candidate_type in candidate_count:
 		var archetype = NPCArchetypeLibrary.get_archetype(candidate_type)
-		var weight: float = archetype.bounty_weight
+		var weight: float = archetype.bounty_weight if ScenarioHandler.is_archetype_allowed(candidate_type) else 0.0
 		weights.append(weight)
 		total_weight += weight
 

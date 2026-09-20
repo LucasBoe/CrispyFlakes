@@ -1,7 +1,8 @@
 extends Node
 class_name Balancing
 
-static var GUEST_SPAWN_BASE_RATE = 2
+const GUEST_SPAWN_BASE_RATE_DEFAULT := 2.0
+static var GUEST_SPAWN_BASE_RATE = GUEST_SPAWN_BASE_RATE_DEFAULT # scenarios override this (ScenarioData.guest_spawn_base_rate)
 static var GUEST_SPAWN_CURRENT_GUEST_COUNT_EFFECT = 0.1 # for each current guest, x new guests spawn per minute
 static var GUEST_SPAWN_MOOD_EFFECT_STRENGTH = 0.9 # (base rate + count effect) * ((1.0 - 0.5) + (x * 0.5) - x = 0 > no effect x > full multiplication (e.g. 25% mood > only 25% of guests spawn)
 

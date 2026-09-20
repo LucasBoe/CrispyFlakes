@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://ybtnclmbmffe"]
+[gd_scene load_steps=45 format=3 uid="uid://ybtnclmbmffe"]
 
 [ext_resource type="PackedScene" uid="uid://c6di3nl2jy3i" path="res://scenes/ui/ui_pause.tscn" id="2_0o2or"]
 [ext_resource type="PackedScene" uid="uid://rge7opbckgs4" path="res://scenes/ui/ui_tutorial.tscn" id="3_jj3vu"]
@@ -26,10 +26,10 @@
 [ext_resource type="Script" uid="uid://diiavhcourmhg" path="res://scripts/main_scene.gd" id="main_scene_script"]
 [ext_resource type="PackedScene" uid="uid://brd7wfwl3sv5n" path="res://scenes/main/environment.tscn" id="packed_world"]
 [ext_resource type="PackedScene" uid="uid://d06nvgemi5ivv" path="res://scenes/ui/ui_selection_panel.tscn" id="sel_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_campaign_won.tscn" id="ui_campaign_won"]
 [ext_resource type="PackedScene" uid="uid://cxmmoxjdg3rho" path="res://scenes/ui/ui_controls.tscn" id="ui_controls"]
 [ext_resource type="PackedScene" uid="uid://b7x6p4y77lcp8" path="res://scenes/ui/ui_encounter.tscn" id="ui_encounter"]
 [ext_resource type="PackedScene" uid="uid://ldop7rnr2opr" path="res://scenes/ui/ui_fullscreen.tscn" id="ui_fullscreen"]
-[ext_resource type="PackedScene" path="res://scenes/ui/ui_campaign_won.tscn" id="ui_campaign_won"]
 [ext_resource type="PackedScene" uid="uid://848oy1tnfobv" path="res://scenes/ui/ui_menu.tscn" id="ui_menu"]
 [ext_resource type="PackedScene" uid="uid://bpc6f1w275m04" path="res://scenes/ui/ui_temperature_forecast.tscn" id="ui_temperature_forecast"]
 

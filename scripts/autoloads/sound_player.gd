@@ -8,6 +8,7 @@ const _ALARM_COOLDOWN_MS := 2000
 
 @onready var _mouse_click_down: CustomAudioStreamPlayer = $MouseClickDown
 @onready var _mouse_click_up: CustomAudioStreamPlayer = $MouseClickUp
+@onready var _ui_hover: CustomAudioStreamPlayer = $UiHover
 @onready var _construction_placed: CustomAudioStreamPlayer = $ConstructionPlaced
 @onready var _coin: CustomAudioStreamPlayer = $Coin
 @onready var _treasure: CustomAudioStreamPlayer = $Treasure
@@ -156,6 +157,10 @@ func play_ui_click_down(_value = null) -> void:
 
 func play_ui_click_up(_value = null) -> void:
 	_mouse_click_up.play_random_pitch()
+
+func play_ui_hover(_value = null) -> void:
+	_ui_hover.stop()
+	_ui_hover.play()
 
 func play_construction_placed() -> void:
 	_construction_placed.play_random_pitch()

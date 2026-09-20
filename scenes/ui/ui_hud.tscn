@@ -161,6 +161,23 @@ theme = ExtResource("4_xap66")
 theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
 text = "+3 / M"
 
+[node name="HBoxContainer_SpawnChance" type="HBoxContainer" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Label_SpawnChance" type="Label" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer/HBoxContainer_SpawnChance"]
+layout_mode = 2
+theme = ExtResource("4_xap66")
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+text = "Spawn Odds"
+
+[node name="Button_SpawnChanceFoldout" type="Button" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers/MarginContainer2/VBoxContainer/HBoxContainer_SpawnChance"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+theme = ExtResource("4_xap66")
+text = ">"
+
 [node name="Control" type="Control" parent="VBoxContainer/MarginContainer/MarginContainer_Content/HBoxContainer/VBoxContainer_Workers"]
 layout_mode = 2
 
@@ -256,3 +273,55 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_constants/separation = 0
+
+[node name="MarginContainer3" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = -1
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="MarginContainer_Background" type="MarginContainer" parent="VBoxContainer/MarginContainer3"]
+layout_mode = 2
+theme_override_constants/margin_left = -8
+theme_override_constants/margin_top = -4
+theme_override_constants/margin_bottom = -8
+
+[node name="NinePatchRect" type="NinePatchRect" parent="VBoxContainer/MarginContainer3/MarginContainer_Background"]
+layout_mode = 2
+texture = ExtResource("7_4u7l7")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="SpawnChanceRows" type="VBoxContainer" parent="VBoxContainer/MarginContainer3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 0
+
+[node name="SpawnChanceRow_HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer3/SpawnChanceRows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon_TextureRect" type="TextureRect" parent="VBoxContainer/MarginContainer3/SpawnChanceRows/SpawnChanceRow_HBoxContainer"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("9_fallback_icon")
+stretch_mode = 5
+
+[node name="Name_Label" type="Label" parent="VBoxContainer/MarginContainer3/SpawnChanceRows/SpawnChanceRow_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("4_xap66")
+theme_override_font_sizes/font_size = 11
+text = "Cowboy"
+
+[node name="Percent_Label" type="Label" parent="VBoxContainer/MarginContainer3/SpawnChanceRows/SpawnChanceRow_HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("4_xap66")
+theme_override_font_sizes/font_size = 11
+text = "25%"
+horizontal_alignment = 2

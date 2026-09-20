@@ -33,3 +33,12 @@ static func get_archetype_for_look(look_info):
 	if look_info == null:
 		return get_archetype(0)
 	return get_archetype(look_info.body_type)
+
+## Reverse lookup for ScenarioData.allowed_npc_archetypes, which stores
+## archetype resources rather than raw body_type ints. Returns -1 if the
+## archetype isn't a registered one.
+static func get_body_type_for_archetype(archetype) -> int:
+	if _cache.is_empty():
+		for path in PATHS:
+			_cache.append(load(path))
+	return _cache.find(archetype)

@@ -43,6 +43,7 @@ func begin() -> void:
 		ScenarioHandler.start_scenario(scenario)
 		return
 
+	Balancing.GUEST_SPAWN_BASE_RATE = Balancing.GUEST_SPAWN_BASE_RATE_DEFAULT
 	_prepare_startup_content()
 	await _run_startup_sequence()
 

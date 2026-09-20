@@ -1,8 +1,26 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=15 format=3 uid="uid://dqvdijncopw3g"]
 
 [ext_resource type="Script" uid="uid://crt3bmkiubckt" path="res://scripts/ui/sandbox_config_menu.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_theme"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="3_bg"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_acqap"]
+[ext_resource type="Texture2D" uid="uid://13fb4slbkmvw" path="res://assets/sprites/ui/2x/tree_filled_button.png" id="4_start_plate"]
+[ext_resource type="PackedScene" uid="uid://cpwdkfo68aqbq" path="res://scenes/ui/main_menu_divider.tscn" id="5_8j2yy"]
+[ext_resource type="Shader" uid="uid://bgwatcd37wmpg" path="res://assets/shaders/progression_state.gdshader" id="5_gold_shader"]
+[ext_resource type="Texture2D" uid="uid://bjmehjr4gjmor" path="res://assets/sprites/npcs/npc_type_source_cowboy.png" id="6_cowboy"]
+[ext_resource type="Texture2D" uid="uid://0rkqp05o65wq" path="res://assets/sprites/npcs/npc_type_source_investor.png" id="7_investor"]
+[ext_resource type="Texture2D" uid="uid://b63y0nx1eubg1" path="res://assets/sprites/npcs/npc_type_source_farmer.png" id="8_farmer"]
+[ext_resource type="Texture2D" uid="uid://bipbw26qs3ijm" path="res://assets/sprites/npcs/npc_type_source_settler.png" id="9_settler"]
+[ext_resource type="Texture2D" uid="uid://bfylgsvadmoeb" path="res://assets/sprites/npcs/npc_type_source_outlaw.png" id="10_outlaw"]
+[ext_resource type="Texture2D" uid="uid://dsdmyu7yu44vl" path="res://assets/sprites/npcs/npc_type_source_miner.png" id="11_miner"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_start_gold"]
+resource_local_to_scene = true
+shader = ExtResource("5_gold_shader")
+shader_parameter/wave_color = Color(1, 0, 0, 1)
+shader_parameter/is_unlocked = true
+shader_parameter/is_active = false
+shader_parameter/ui_time = 0.0
 
 [node name="SandboxConfig" type="Control"]
 layout_mode = 3
@@ -12,20 +30,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_theme")
-mouse_filter = 1
 script = ExtResource("1_script")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -130.0
-offset_right = 100.0
-offset_bottom = 130.0
+offset_left = -320.0
+offset_top = -236.0
+offset_right = 320.0
+offset_bottom = 236.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -39,132 +57,495 @@ patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_type_variation = &"SandboxPadding"
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer/MarginContainer"]
+[node name="HBoxContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 4
-columns = 2
+theme_type_variation = &"SandboxLayout"
 
-[node name="HeaderLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="Title" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
+theme_type_variation = &"SandboxCardContent"
+
+[node name="Space" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer/Title"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="HeaderLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/Title"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
+theme_override_fonts/font = ExtResource("4_acqap")
+theme_override_font_sizes/font_size = 8
 text = "Sandbox Setup"
 horizontal_alignment = 1
 
-[node name="HeaderSpacer" type="Control" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="MainMenuDivider" parent="MarginContainer/MarginContainer/HBoxContainer" instance=ExtResource("5_8j2yy")]
 layout_mode = 2
 
-[node name="MoneyLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="SettingsColumns" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
+theme_type_variation = &"SandboxSettingsColumns"
+theme_override_constants/separation = 24
+
+[node name="StartingConditions" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SandboxSection"
+
+[node name="Heading" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions"]
+layout_mode = 2
+theme_type_variation = &"SandboxSectionPanel"
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
+text = "Starting Conditions"
+
+[node name="Fields" type="GridContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions"]
+layout_mode = 2
+theme_type_variation = &"SandboxStartingGrid"
+columns = 2
+
+[node name="MoneyLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Starting Money"
 
-[node name="MoneySpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="MoneySpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 8
 max_value = 100000.0
 step = 10.0
 value = 30.0
+prefix = "$"
 
-[node name="BountyLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="BountyLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Starting Bounties"
 
-[node name="BountySpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="BountySpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 8
 max_value = 20.0
-step = 1.0
 value = 3.0
 
-[node name="WorkerLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="WorkerLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Starting Workers"
 
-[node name="WorkerSpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="WorkerSpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 8
 max_value = 20.0
-step = 1.0
 value = 1.0
 
-[node name="GuestLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="GuestLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Starting Guests"
 
-[node name="GuestSpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="GuestSpinBox" type="SpinBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/StartingConditions/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 26)
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 8
 max_value = 20.0
-step = 1.0
-value = 0.0
 
-[node name="RobberLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="WorldRules" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SandboxSection"
+
+[node name="Heading" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules"]
+layout_mode = 2
+theme_type_variation = &"SandboxSectionPanel"
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
+text = "World Rules"
+
+[node name="Fields" type="GridContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules"]
+layout_mode = 2
+theme_type_variation = &"SandboxRulesGrid"
+columns = 2
+
+[node name="RobberLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Robber Spawn"
 
-[node name="RobberCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="RobberCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
+size_flags_horizontal = 0
 button_pressed = true
 
-[node name="RobberChanceLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="RobberChanceLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_theme")
 text = "Robber Chance"
 
-[node name="RobberSlider" type="HSlider" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="RobberSliderRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+custom_minimum_size = Vector2(146, 18)
 layout_mode = 2
-min_value = 0.0
+theme_type_variation = &"SandboxSliderRow"
+
+[node name="RobberSlider" type="HSlider" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields/RobberSliderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 18)
+layout_mode = 2
+size_flags_horizontal = 3
 max_value = 1.0
 step = 0.01
 value = 0.1
 
-[node name="GuestAutoSpawnLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="RobberChanceValue" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields/RobberSliderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "10%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="GuestAutoSpawnLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Guest Auto-Spawn"
 
-[node name="GuestAutoSpawnCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="GuestAutoSpawnCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
+size_flags_horizontal = 0
 button_pressed = true
 
-[node name="InjuryLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="InjuryLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Injury System"
 
-[node name="InjuryCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="InjuryCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
+size_flags_horizontal = 0
 button_pressed = true
 
-[node name="TemperatureLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="TemperatureLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Temperature System"
 
-[node name="TemperatureCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="TemperatureCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
-button_pressed = false
+size_flags_horizontal = 0
 
-[node name="SpecialEncountersLabel" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="SpecialEncountersLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Special Encounters"
 
-[node name="SpecialEncountersCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="SpecialEncountersCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
+size_flags_horizontal = 0
 button_pressed = true
 
-[node name="ButtonRowSpacer" type="Control" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="GuestTypes" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SandboxSection"
+
+[node name="Heading" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes"]
+layout_mode = 2
+theme_type_variation = &"SandboxSectionPanel"
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/Heading"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
+text = "Guest Types"
+
+[node name="ArchetypesRow" type="GridContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"SandboxGuestGrid"
+columns = 3
+
+[node name="CowboyCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/CowboyCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/CowboyCard/Content"]
+custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 
-[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/GridContainer"]
+[node name="CowboyPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/CowboyCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("6_cowboy")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeCowboyCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/CowboyCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Cowboy"
+
+[node name="InvestorCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/InvestorCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/InvestorCard/Content"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="InvestorPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/InvestorCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("7_investor")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeInvestorCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/InvestorCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Investor"
+
+[node name="FarmerCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/FarmerCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/FarmerCard/Content"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="FarmerPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/FarmerCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("8_farmer")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeFarmerCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/FarmerCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Farmer"
+
+[node name="SettlerCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/SettlerCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/SettlerCard/Content"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="SettlerPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/SettlerCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("9_settler")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeSettlerCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/SettlerCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Settler"
+
+[node name="OutlawCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/OutlawCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/OutlawCard/Content"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="OutlawPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/OutlawCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("10_outlaw")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeOutlawCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/OutlawCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Outlaw"
+
+[node name="MinerCard" type="PanelContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ArchetypeCard"
+
+[node name="Content" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/MinerCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"SandboxCardContent"
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/MinerCard/Content"]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="MinerPortrait" type="TextureRect" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/MinerCard/Content/CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+texture = ExtResource("11_miner")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="ArchetypeMinerCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/GuestTypes/ArchetypesRow/MinerCard/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+button_pressed = true
+text = "Miner"
+
+[node name="FooterSpace" type="Control" parent="MarginContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ButtonRow" type="HBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"SandboxFooter"
 alignment = 2
-theme_override_constants/separation = 4
 
-[node name="BackButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/ButtonRow"]
+[node name="BackButton" type="Button" parent="MarginContainer/MarginContainer/HBoxContainer/ButtonRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 28)
 layout_mode = 2
 text = "Back"
 
-[node name="StartButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/ButtonRow"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MarginContainer/HBoxContainer/ButtonRow"]
+show_behind_parent = true
 layout_mode = 2
+theme_override_constants/margin_top = -1
+theme_override_constants/margin_bottom = 3
+
+[node name="StartButton" type="Button" parent="MarginContainer/MarginContainer/HBoxContainer/ButtonRow/MarginContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 26)
+layout_mode = 2
+theme_type_variation = &"StartButton"
 text = "Start"
+
+[node name="GoldPlate" type="NinePatchRect" parent="MarginContainer/MarginContainer/HBoxContainer/ButtonRow/MarginContainer/StartButton"]
+unique_name_in_owner = true
+show_behind_parent = true
+material = SubResource("ShaderMaterial_start_gold")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_start_plate")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4

@@ -15,11 +15,17 @@ const GUEST_TYPE_FALLBACK_ICON := preload("res://assets/sprites/cowboy_raw_stand
 @onready var mood_affectors: VBoxContainer = %MoodAffectors
 @onready var guest_type_row_container: HBoxContainer = %HBoxContainer_GuestTypes
 @onready var guest_type_template_row: VBoxContainer = %GuestType_VBoxContainer
+@onready var button_spawn_chance_foldout: Button = %Button_SpawnChanceFoldout
+@onready var spawn_chance_panel: MarginContainer = $VBoxContainer/MarginContainer3
+@onready var spawn_chance_row_container: VBoxContainer = %SpawnChanceRows
+@onready var spawn_chance_template_row: HBoxContainer = %SpawnChanceRow_HBoxContainer
 
 var _highlights_active: bool = false
 var _is_mood_breakdown_expanded := false
 var _mood_affectors_signature := ""
 var _guest_type_signature: Array = []
+var _is_spawn_chance_expanded := false
+var _spawn_chance_signature: Array = []
 
 func _ready() -> void:
 	JobHandler.on_jobs_changed_signal.connect(_on_jobs_changed)
@@ -32,11 +38,14 @@ func _ready() -> void:
 	button_idles.pressed.connect(_select_next_idle)
 	button_highlight.pressed.connect(_enable_worker_highlights)
 	button_mood_foldout.pressed.connect(_on_mood_foldout_pressed)
+	button_spawn_chance_foldout.pressed.connect(_on_spawn_chance_foldout_pressed)
 	FeatureGateHandler.feature_changed_signal.connect(_on_feature_changed)
 	visible = FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN)
 	guest_type_template_row.hide()
+	spawn_chance_template_row.hide()
 	_on_jobs_changed()
 	_update_mood_breakdown_visibility()
+	_update_spawn_chance_visibility()
 
 func _on_feature_changed(feature: FeatureGateHandler.Feature, enabled: bool) -> void:
 	if feature == FeatureGateHandler.Feature.GUEST_AUTO_SPAWN:
@@ -116,6 +125,7 @@ func _process(_delta: float) -> void:
 	_update_avg_mood(guest_count)
 	_update_mood_breakdown(guest_count)
 	_update_guest_type_breakdown(guest_count)
+	_update_spawn_chance_breakdown()
 
 func _update_avg_mood(guest_count: int) -> void:
 	if guest_count == 0:
@@ -279,3 +289,68 @@ func _clear_guest_type_rows() -> void:
 			continue
 		guest_type_row_container.remove_child(child)
 		child.queue_free()
+
+## Foldout showing each guest archetype's current chance to be picked for
+## the next spawn (see NPCLookInfo.get_spawn_chance_percentages()) - unlike
+## the guest-type breakdown above, this reflects odds, not live guest
+## counts, so it's shown even with zero guests on the floor.
+func _update_spawn_chance_breakdown() -> void:
+	var percentages := NPCLookInfo.get_spawn_chance_percentages()
+	var signature := _build_spawn_chance_signature(percentages)
+	if signature != _spawn_chance_signature:
+		_spawn_chance_signature = signature
+		_apply_spawn_chance_percentages(percentages)
+	_update_spawn_chance_visibility()
+
+func _build_spawn_chance_signature(percentages: Dictionary) -> Array:
+	var body_types: Array = percentages.keys()
+	body_types.sort()
+	var signature: Array = []
+	for body_type in body_types:
+		signature.append("%d:%.1f" % [body_type, percentages[body_type]])
+	return signature
+
+func _apply_spawn_chance_percentages(percentages: Dictionary) -> void:
+	_clear_spawn_chance_rows()
+
+	var body_types: Array = percentages.keys()
+	body_types.sort()
+
+	for i in body_types.size():
+		var row := spawn_chance_template_row if i == 0 else spawn_chance_template_row.duplicate() as HBoxContainer
+		if i > 0:
+			spawn_chance_row_container.add_child(row)
+
+		var body_type: int = body_types[i]
+		var percent: float = percentages[body_type]
+		var archetype = NPCArchetypeLibrary.get_archetype(body_type)
+
+		var icon_rect := row.get_node("Icon_TextureRect") as TextureRect
+		var name_label := row.get_node("Name_Label") as Label
+		var percent_label := row.get_node("Percent_Label") as Label
+		icon_rect.texture = archetype.icon if archetype.icon != null else GUEST_TYPE_FALLBACK_ICON
+		name_label.text = archetype.display_name
+		percent_label.text = "%d%%" % roundi(percent)
+		row.show()
+
+func _clear_spawn_chance_rows() -> void:
+	for i in range(spawn_chance_row_container.get_child_count() - 1, -1, -1):
+		var child := spawn_chance_row_container.get_child(i)
+		if child == spawn_chance_template_row:
+			continue
+		spawn_chance_row_container.remove_child(child)
+		child.queue_free()
+
+func _update_spawn_chance_visibility() -> void:
+	var has_rows := spawn_chance_row_container.get_child_count() > 0
+	button_spawn_chance_foldout.visible = has_rows
+	button_spawn_chance_foldout.text = "v" if _is_spawn_chance_expanded else ">"
+	var show_breakdown := has_rows and _is_spawn_chance_expanded
+	spawn_chance_panel.visible = show_breakdown
+	spawn_chance_row_container.visible = show_breakdown
+
+func _on_spawn_chance_foldout_pressed() -> void:
+	if spawn_chance_row_container.get_child_count() == 0:
+		return
+	_is_spawn_chance_expanded = not _is_spawn_chance_expanded
+	_update_spawn_chance_visibility()

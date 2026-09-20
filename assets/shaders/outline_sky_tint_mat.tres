@@ -1,0 +1,29 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dl1l1sxt5gau1"]
+
+[ext_resource type="Shader" uid="uid://c5gy083qruuih" path="res://assets/shaders/outline_sky_tint.gdshader" id="1_wucey"]
+
+[resource]
+shader = ExtResource("1_wucey")
+shader_parameter/dawn_top = Color(0.55, 0.7, 0.95, 1)
+shader_parameter/dawn_bottom = Color(0.98, 0.75, 0.55, 1)
+shader_parameter/sunrise_top = Color(0.75, 0.65, 0.9, 1)
+shader_parameter/sunrise_bottom = Color(1, 0.55, 0.3, 1)
+shader_parameter/morning_top = Color(0.65, 0.82, 1, 1)
+shader_parameter/morning_bottom = Color(0.95, 0.82, 0.65, 1)
+shader_parameter/midday_top = Color(0.8, 0.9, 1, 1)
+shader_parameter/midday_bottom = Color(0.27, 0.51, 0.71, 1)
+shader_parameter/afternoon_top = Color(0.7, 0.85, 1, 1)
+shader_parameter/afternoon_bottom = Color(0.9, 0.72, 0.5, 1)
+shader_parameter/golden_top = Color(0.9, 0.72, 0.55, 1)
+shader_parameter/golden_bottom = Color(1, 0.6, 0.25, 1)
+shader_parameter/sunset_top = Color(0.45, 0.35, 0.7, 1)
+shader_parameter/sunset_bottom = Color(1, 0.4, 0.2, 1)
+shader_parameter/dusk_top = Color(0.12, 0.22, 0.45, 1)
+shader_parameter/dusk_bottom = Color(0.4, 0.28, 0.35, 1)
+shader_parameter/night_blue_top = Color(0.02, 0.08, 0.18, 1)
+shader_parameter/night_blue_bottom = Color(0.05, 0.16, 0.28, 1)
+shader_parameter/night_teal_top = Color(0, 0.1, 0.14, 1)
+shader_parameter/night_teal_bottom = Color(0.02, 0.22, 0.18, 1)
+shader_parameter/tint_strength = 0.3
+shader_parameter/outline_color = Color(0, 0, 0, 1)
+shader_parameter/corner_pixel = false

@@ -12,7 +12,8 @@ service_weights = {
 "cleaning": 0.9,
 "drinking": 0.9,
 "gambling": 0.6,
-"sleep": 1.3
+"sleep": 1.3,
+"soup": 1.0
 }
 drink_weights = {
 "BEER_BARREL": 1.4,

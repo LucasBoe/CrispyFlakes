@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://30u0ocyt7b1b"]
+[gd_scene load_steps=9 format=3 uid="uid://30u0ocyt7b1b"]
 
 [ext_resource type="Script" uid="uid://duxcoiiie55lx" path="res://scripts/autoloads/sound_player.gd" id="1_urxkt"]
 [ext_resource type="AudioStream" uid="uid://ciffirf75ummr" path="res://assets/audio/sounds/click_down.wav" id="2_ex2sn"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://b53o5dtlde2vg" path="res://scripts/custom_audio_stream_player.gd" id="5_q5ukx"]
 [ext_resource type="AudioStream" uid="uid://cqn4a4q88s784" path="res://assets/audio/sounds/coin.wav" id="6_vb5iq"]
 [ext_resource type="AudioStream" uid="uid://0r0dwugdb41c" path="res://assets/audio/sounds/treasure.wav" id="7_l6ka0"]
+
+[ext_resource type="AudioStream" uid="uid://bkukhjmhuhgle" path="res://assets/sounds/sounds/ui_step.wav" id="8_uihover"]
 
 [node name="SoundPlayer" type="Node2D"]
 script = ExtResource("1_urxkt")
@@ -21,6 +23,13 @@ metadata/_custom_type_script = "uid://b53o5dtlde2vg"
 [node name="MouseClickUp" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_bu3la")
 volume_db = -18.0
+bus = &"SFX"
+script = ExtResource("5_q5ukx")
+metadata/_custom_type_script = "uid://b53o5dtlde2vg"
+
+[node name="UiHover" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_uihover")
+volume_db = -8.0
 bus = &"SFX"
 script = ExtResource("5_q5ukx")
 metadata/_custom_type_script = "uid://b53o5dtlde2vg"

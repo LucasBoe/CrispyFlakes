@@ -186,7 +186,7 @@ func try_drop_dirt():
 func clean():
 	is_dirty = false
 	Tint.remove_tint_for(self)
-	add_mood(0.3, "Cleaned")
+	add_service_mood(0.3, "Cleaned", "cleaning")
 
 func get_collapsed_mood_log() -> Array[Dictionary]:
 	var by_reason: Dictionary = {}
@@ -216,6 +216,10 @@ func add_mood(amount: float, reason: String = ""):
 		notify(UiNotifications.ICON_PLUS_2)
 	else:
 		notify(UiNotifications.ICON_PLUS_1)
+
+func add_service_mood(amount: float, reason: String, service_id: String) -> void:
+	var archetype = NPCArchetypeLibrary.get_archetype_for_look(look_info)
+	add_mood(archetype.scale_service_mood(amount, service_id), reason)
 
 func _horse_mood_loop() -> void:
 	while is_inside_tree():

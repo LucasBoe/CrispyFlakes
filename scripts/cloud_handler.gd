@@ -41,5 +41,5 @@ func spawn_new_cloud(rect, fully_randomize_position = false):
 	active_clouds.append(instance)
 
 func pick_random_texture():
-	var path = str("res://assets/sprites/clouds/cloud_", randi_range(1, 6) ,".png")
+	var path = str("res://assets/sprites/clouds/cloud_", randi_range(1, 5) ,".png")
 	return load(path);

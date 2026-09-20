@@ -59,6 +59,7 @@ func queue_scenario(scenario: ScenarioData) -> void:
 
 func start_scenario(scenario: ScenarioData) -> void:
 	current_scenario = scenario
+	Balancing.GUEST_SPAWN_BASE_RATE = scenario.guest_spawn_base_rate
 	win_state = WinState.NONE
 	_registered_quest_keys.clear()
 	active_story_beats.clear()
@@ -103,6 +104,7 @@ func start_scenario(scenario: ScenarioData) -> void:
 
 func resume_scenario(scenario: ScenarioData, saved_win_state: int) -> void:
 	current_scenario = scenario
+	Balancing.GUEST_SPAWN_BASE_RATE = scenario.guest_spawn_base_rate
 	win_state = saved_win_state
 	_registered_quest_keys.clear()
 	active_story_beats.clear()
@@ -196,6 +198,15 @@ func get_lose_condition_descriptions() -> Array[String]:
 
 func is_campaign_active() -> bool:
 	return current_scenario is CampaignScenarioData and win_state == WinState.NONE
+
+
+## Empty allowed_npc_archetypes on the active scenario (or no active
+## scenario, e.g. the default tutorial path) means unrestricted.
+func is_archetype_allowed(body_type: int) -> bool:
+	if current_scenario == null or current_scenario.allowed_npc_archetypes.is_empty():
+		return true
+	var archetype = NPCArchetypeLibrary.get_archetype(body_type)
+	return current_scenario.allowed_npc_archetypes.has(archetype)
 
 
 func get_scenario(id: String) -> ScenarioData:

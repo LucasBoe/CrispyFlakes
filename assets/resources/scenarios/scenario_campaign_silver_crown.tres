@@ -1,0 +1,51 @@
+[gd_resource type="Resource" script_class="CampaignScenarioData" load_steps=13 format=3]
+
+[ext_resource type="Script" uid="uid://c1bcmbdjs5emn" path="res://scripts/scenario/campaign_scenario_data.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://jfkukhhybxtl" path="res://scripts/scenario/scenario_goal_definition.gd" id="2_goal_script"]
+[ext_resource type="Script" uid="uid://q3qovhlsh1tq" path="res://scripts/scenario/campaign_demo_story_beats.gd" id="3_beats"]
+[ext_resource type="Script" path="res://scripts/scenario/campaign_money_conditions.gd" id="4_conditions"]
+[ext_resource type="Script" uid="uid://j0coowy40sr8" path="res://scripts/npc/npc_archetype.gd" id="10_archetype_script"]
+[ext_resource type="Resource" uid="uid://ca31oikqfddgb" path="res://assets/resources/npc_archetypes/miner.tres" id="5_miner"]
+[ext_resource type="Resource" uid="uid://ct2y5eweffr85" path="res://assets/resources/npc_archetypes/investor.tres" id="6_investor"]
+[ext_resource type="Resource" uid="uid://bat4boxixprkb" path="res://assets/resources/npc_archetypes/outlaw.tres" id="7_outlaw"]
+[ext_resource type="Resource" uid="uid://cqujbv4l7s3ci" path="res://assets/resources/npc_archetypes/settler.tres" id="8_settler"]
+[ext_resource type="Resource" uid="uid://deqxfuedyyxvn" path="res://assets/resources/npc_archetypes/farmer.tres" id="9_farmer"]
+
+[sub_resource type="Resource" id="Resource_goal1"]
+script = ExtResource("2_goal_script")
+key = "earn_money_goal"
+title = "A Crown for the Boomtown"
+text = "Grow your saloon's takings to $600."
+description = "Grow your saloon's takings to $600."
+reward_money = 100
+reward_text = "$100 Bonus"
+is_required_for_win = true
+
+[resource]
+script = ExtResource("1_script")
+scenario_id = "scenario_campaign_silver_crown"
+display_name = "Silver Crown"
+description = "A silver strike has turned a mining camp into a boomtown overnight.
+Frostbitten miners, wealthy investors and hungry outlaws all want a seat at your bar."
+difficulty = 5.0
+starting_money = 30
+use_default_starting_layout = true
+starting_bounty_count = 2
+starting_worker_count = 1
+starting_guest_count = 0
+use_default_unlocks = true
+feature_overrides = {
+0: true,
+2: true,
+3: true,
+4: true
+}
+robber_spawn_chance = 0.2
+guest_spawn_base_rate = 1.0
+is_campaign = true
+allowed_npc_archetypes = Array[ExtResource("10_archetype_script")]([ExtResource("5_miner"), ExtResource("6_investor"), ExtResource("7_outlaw"), ExtResource("8_settler"), ExtResource("9_farmer")])
+preview_guest_counts = PackedInt32Array(3, 2, 2, 1, 1)
+money_goal = 600
+goal_definitions = Array[ExtResource("2_goal_script")]([SubResource("Resource_goal1")])
+story_beat_script = ExtResource("3_beats")
+conditions_script = ExtResource("4_conditions")
