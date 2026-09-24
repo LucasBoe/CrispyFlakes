@@ -11,28 +11,23 @@ layout_mode = 2
 theme_override_constants/separation = 1
 
 [node name="CapL" type="TextureRect" parent="HBoxContainer"]
-modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 2
 texture = ExtResource("1_8aml0")
 
 [node name="LL" type="TextureRect" parent="HBoxContainer"]
-modulate = Color(1, 1, 1, 0.39215687)
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 texture = ExtResource("2_eia88")
 
 [node name="Center" type="TextureRect" parent="HBoxContainer"]
-modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 2
 texture = ExtResource("3_k4q1i")
 
 [node name="LD" type="TextureRect" parent="HBoxContainer"]
-modulate = Color(1, 1, 1, 0.39215687)
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 texture = ExtResource("2_eia88")
 
 [node name="CapR" type="TextureRect" parent="HBoxContainer"]
-modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 2
 texture = ExtResource("1_8aml0")

@@ -12,6 +12,35 @@ func _ready() -> void:
 func has_save() -> bool:
 	return FileAccess.file_exists(SAVE_PATH)
 
+func get_save_info(path: String = SAVE_PATH) -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {}
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) != OK or json.data is not Dictionary:
+		return {}
+	var data: Dictionary = json.data
+	var scenario_id := str(data.get("scenario_id", ""))
+	var scenario := ScenarioHandler.get_scenario(scenario_id)
+	var mode := "Tutorial" if scenario_id.is_empty() else "Sandbox"
+	if scenario != null and scenario.is_campaign:
+		mode = "Campaign"
+	var saved_at := str(data.get("saved_at", ""))
+	var date: Dictionary
+	if saved_at.is_empty():
+		var local_timestamp := FileAccess.get_modified_time(path) + int(Time.get_time_zone_from_system().bias) * 60
+		date = Time.get_datetime_dict_from_unix_time(local_timestamp)
+	else:
+		date = Time.get_datetime_dict_from_datetime_string(saved_at, false)
+	return {
+		"game_mode": str(data.get("game_mode", mode)),
+		"scenario_name": str(data.get("scenario_name", scenario.display_name if scenario != null and scenario.is_campaign else "")),
+		"saloon_name": str(data.get("saloon_name", "")),
+		"date": "%02d.%02d.%04d" % [date.day, date.month, date.year],
+	}
+
 func flag_pending_load() -> void:
 	_pending_load = true
 
@@ -35,6 +64,10 @@ func console_save() -> void:
 	var scenario := _serialize_scenario()
 	var payload := {
 		"version": SAVE_VERSION,
+		"saved_at": Time.get_datetime_string_from_system(),
+		"saloon_name": (Building.get_node("SaloonSign") as BuildingSign).saloon_name,
+		"game_mode": "Tutorial" if ScenarioHandler.current_scenario == null else ("Campaign" if ScenarioHandler.current_scenario.is_campaign else "Sandbox"),
+		"scenario_name": ScenarioHandler.current_scenario.display_name if ScenarioHandler.current_scenario != null and ScenarioHandler.current_scenario.is_campaign else "",
 		"rooms": rooms,
 		"water_pipes": water_pipes,
 		"electricity_tiles": electricity_tiles,
@@ -148,6 +181,7 @@ func _apply_save(save_data: Dictionary) -> void:
 	MoneyHandler.free_pool = float(save_data.get("money_free_pool", MoneyHandler.free_pool))
 	MoneyHandler.on_money_changed_signal.emit()
 	_apply_scenario_restore(save_data)
+	(Building.get_node("SaloonSign") as BuildingSign).set_saloon_name(str(save_data.get("saloon_name", "My Saloon")))
 
 	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, true)
 	TimeHandler.pop_pause_lock(self)

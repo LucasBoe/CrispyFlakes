@@ -1,4 +1,4 @@
-[gd_scene load_steps=141 format=4 uid="uid://bk3hult8me1pa"]
+[gd_scene load_steps=142 format=4 uid="uid://bk3hult8me1pa"]
 
 [ext_resource type="Script" uid="uid://oxn4sdja53xs" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dqvdijncopw3g" path="res://scenes/ui/ui_sandbox_config.tscn" id="4_sandbox_config"]
@@ -18,9 +18,11 @@
 [ext_resource type="Texture2D" uid="uid://btwy6266qlv0q" path="res://assets/sprites/saloon_preview_simple.png" id="81_1ppaw"]
 [ext_resource type="Material" uid="uid://dl1l1sxt5gau1" path="res://assets/shaders/outline_sky_tint_mat.tres" id="82_8yyxk"]
 [ext_resource type="Script" uid="uid://cpahleadvanqi" path="res://scripts/building_sign.gd" id="82_romvc"]
-[ext_resource type="Texture2D" uid="uid://buvkmkplqvxha" path="res://assets/sprites/ui/2x/logo_gate.png" id="83_ls525"]
 [ext_resource type="Texture2D" uid="uid://b63y0nx1eubg1" path="res://assets/sprites/npcs/npc_type_source_farmer.png" id="83_romvc"]
+[ext_resource type="Texture2D" uid="uid://cl4j4mpyr8dt0" path="res://assets/sprites/ui/2x/saloon_tycoon_logo.png" id="86_l3yaw"]
+[ext_resource type="Texture2D" uid="uid://bwjaw1yrpb7i3" path="res://assets/sprites/ui/2x/main_menu_buttons_backdrop_shadow_128.png" id="88_8pjb3"]
 [ext_resource type="PackedScene" uid="uid://yc1tsqqnfjm2" path="res://scenes/ui/ui_campaign_selection.tscn" id="88_ls525"]
+[ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="93_l3yaw"]
 [ext_resource type="Theme" uid="uid://cyyj3dstmuttt" path="res://assets/sprites/ui/2x/main_menu/main_menu_button_theme.tres" id="menu_button_theme"]
 [ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="ml_chandelier_tex"]
 [ext_resource type="Texture2D" uid="uid://wwgx7vloef3h" path="res://assets/sprites/fire_glow_overlay.png" id="ml_fire_tex"]
@@ -70,7 +72,6 @@
 [ext_resource type="Texture2D" uid="uid://ujjnpxfv5gow" path="res://assets/sprites/bar_wiskey.png" id="world_47_xvwvd"]
 [ext_resource type="Material" uid="uid://yh4yoajr0huy" path="res://assets/materials/mat_outline_outside_rooms.tres" id="world_48_jwc64"]
 [ext_resource type="Texture2D" uid="uid://cil3pe0hiys2k" path="res://assets/sprites/watertower.png" id="world_50_3sbqh"]
-[ext_resource type="Texture2D" uid="uid://b6rjcdrtjxyot" path="res://assets/sprites/horse_pole.png" id="world_51_ud884"]
 [ext_resource type="Texture2D" uid="uid://dksaqrpf4lcv" path="res://assets/sprites/stable.png" id="world_52_sn7fg"]
 [ext_resource type="Texture2D" uid="uid://c43k5ht037w7i" path="res://assets/sprites/horse.png" id="world_53_r1t36"]
 [ext_resource type="Texture2D" uid="uid://bx26803iwlrp3" path="res://assets/sprites/outhouse_sheet.png" id="world_54_v0xou"]
@@ -1125,8 +1126,8 @@ script = ExtResource("world_1_backdrop")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(130.642, -128)
-zoom = Vector2(1.1357143, 1.1357143)
+position = Vector2(60, -92)
+zoom = Vector2(1.5, 1.5)
 
 [node name="Environment" type="Node2D" parent="."]
 texture_filter = 1
@@ -1177,7 +1178,7 @@ metadata/_aseprite_wizard_source_file_hash_ = "1a66c4b0236c1a2385aed43fbce46e23"
 
 [node name="Gate" type="Sprite2D" parent="Environment"]
 material = ExtResource("13_skytint")
-position = Vector2(238, -17)
+position = Vector2(-257, -17)
 texture = ExtResource("world_13_ps1ie")
 
 [node name="Decoration" type="Node2D" parent="Environment"]
@@ -1856,25 +1857,14 @@ texture = ExtResource("world_34_d5t6u")
 
 [node name="Exterior" type="Node2D" parent="Building/Rooms"]
 
-[node name="WaterTower" type="Node2D" parent="Building/Rooms/Exterior"]
-texture_filter = 1
-material = ExtResource("world_48_jwc64")
-position = Vector2(-240, 0)
-
-[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/WaterTower"]
-
-[node name="Tower" type="Node2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot"]
-
-[node name="Basic" type="Node2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower"]
-
-[node name="WaterTower" type="Sprite2D" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic"]
+[node name="WaterTower2" type="Sprite2D" parent="Building/Rooms/Exterior"]
 z_index = -200
 material = ExtResource("world_48_jwc64")
-position = Vector2(24, 1)
+position = Vector2(375, 1)
 texture = ExtResource("world_50_3sbqh")
 offset = Vector2(0, -47.5)
 
-[node name="ColorRectBackground" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic/WaterTower"]
+[node name="ColorRectBackground" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower2"]
 z_index = -150
 offset_left = -12.0
 offset_top = -84.0
@@ -1883,7 +1873,7 @@ offset_bottom = -58.0
 mouse_filter = 2
 color = Color(0.22745098, 0.105882354, 0.10980392, 1)
 
-[node name="ColorRectFill" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower/ModulesRoot/Tower/Basic/WaterTower"]
+[node name="ColorRectFill" type="ColorRect" parent="Building/Rooms/Exterior/WaterTower2"]
 z_index = -100
 offset_left = -12.0
 offset_top = -80.0
@@ -1892,90 +1882,28 @@ offset_bottom = -58.0
 mouse_filter = 2
 color = Color(0.34553567, 0.56236464, 0.962522, 1)
 
-[node name="HorsePost" type="Node2D" parent="Building/Rooms/Exterior"]
-texture_filter = 1
-position = Vector2(-192, 0)
-
-[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/HorsePost"]
-
-[node name="Structure" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot"]
-
-[node name="Fence" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure"]
-visible = false
-
-[node name="Pole" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence"]
+[node name="StableSprite" type="Sprite2D" parent="Building/Rooms/Exterior"]
 z_index = -100
 material = ExtResource("world_48_jwc64")
-position = Vector2(24, -8)
-texture = ExtResource("world_51_ud884")
-offset = Vector2(0.5, -0.5)
-
-[node name="Slots" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence"]
-
-[node name="SlotLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
-position = Vector2(14, 0)
-
-[node name="SlotCenter" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
-position = Vector2(24, 0)
-
-[node name="SlotRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Fence/Slots"]
-position = Vector2(34, 0)
-
-[node name="Stable" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure"]
-
-[node name="StableSprite" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable"]
-z_index = -100
-material = ExtResource("world_48_jwc64")
-position = Vector2(24, 0)
+position = Vector2(-168, 0)
 texture = ExtResource("world_52_sn7fg")
 offset = Vector2(0.5, -21)
 
-[node name="Slots" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable"]
-
-[node name="SlotFarLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
-position = Vector2(6, 0)
-
-[node name="SlotLeft" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
-position = Vector2(14, 0)
-
-[node name="SlotCenter" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
-position = Vector2(24, 0)
-
-[node name="SlotRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
-position = Vector2(34, 0)
-
-[node name="SlotFarRight" type="Node2D" parent="Building/Rooms/Exterior/HorsePost/ModulesRoot/Structure/Stable/Slots"]
-position = Vector2(42, 0)
-
-[node name="Horse" type="Sprite2D" parent="Building/Rooms/Exterior/HorsePost"]
+[node name="Horse" type="Sprite2D" parent="Building/Rooms/Exterior"]
 z_index = -50
 material = ExtResource("world_48_jwc64")
-position = Vector2(30, -9)
+position = Vector2(-162, -9)
 texture = ExtResource("world_53_r1t36")
 script = ExtResource("13_patron_idle")
 
-[node name="Outhouse" type="Node2D" parent="Building/Rooms/Exterior"]
-texture_filter = 1
-material = ExtResource("world_48_jwc64")
-position = Vector2(144, 0)
-
-[node name="ModulesRoot" type="Node2D" parent="Building/Rooms/Exterior/Outhouse"]
-
-[node name="Bucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot"]
-
-[node name="SmallBucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket"]
-
-[node name="Outhouse" type="Sprite2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket/SmallBucket"]
+[node name="Outhouse2" type="Sprite2D" parent="Building/Rooms/Exterior"]
 z_index = -600
 material = ExtResource("world_48_jwc64")
-position = Vector2(24, -1)
+position = Vector2(168, -1)
 texture = ExtResource("world_54_v0xou")
 offset = Vector2(0, -16.5)
 hframes = 4
 frame = 2
-
-[node name="BigBucket" type="Node2D" parent="Building/Rooms/Exterior/Outhouse/ModulesRoot/Bucket"]
-visible = false
 
 [node name="ForegroundTiles" type="TileMapLayer" parent="Building"]
 z_index = 2000
@@ -2323,7 +2251,7 @@ preprocess = 4.0
 process_material = SubResource("world_ParticleProcessMaterial_r6nqp")
 
 [node name="CampaignPreview" type="Node2D" parent="."]
-position = Vector2(-624, 0)
+position = Vector2(-415, 0)
 
 [node name="Saloon" type="Sprite2D" parent="CampaignPreview"]
 z_index = -3000
@@ -2421,6 +2349,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Background" type="Panel" parent="UI/UIMainMenu/HBoxContainer/Content"]
+visible = false
 modulate = Color(1, 1, 1, 0.39215687)
 layout_mode = 1
 anchors_preset = 15
@@ -2449,7 +2378,7 @@ theme_override_constants/separation = 8
 
 [node name="TextureRect" type="TextureRect" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
 layout_mode = 2
-texture = ExtResource("83_ls525")
+texture = ExtResource("86_l3yaw")
 stretch_mode = 5
 
 [node name="TitleLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
@@ -2467,57 +2396,111 @@ visible = false
 custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="ContinueButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="MarginContainer2" type="MarginContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+show_behind_parent = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2"]
+show_behind_parent = true
+layout_mode = 2
+theme_override_constants/margin_left = -32
+theme_override_constants/margin_top = -64
+theme_override_constants/margin_right = -32
+theme_override_constants/margin_bottom = -32
+
+[node name="NinePatchRect" type="NinePatchRect" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/MarginContainer"]
+modulate = Color(1, 1, 1, 0.2509804)
+show_behind_parent = true
+layout_mode = 2
+texture = ExtResource("88_8pjb3")
+patch_margin_left = 64
+patch_margin_top = 64
+patch_margin_right = 64
+patch_margin_bottom = 64
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+
+[node name="ContinueButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "CONTINUE"
 
-[node name="SaveGameInfoLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/ContinueButton"]
+[node name="TitleLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/ContinueButton"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "CONTINUE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SaveGameInfoLabel" type="Label" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer/ContinueButton"]
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -80.0
 offset_top = -15.0
+offset_right = 80.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(1, 0.6862745, 0.105882354, 1)
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
 theme_override_fonts/font = ExtResource("75_13die")
 theme_override_font_sizes/font_size = 11
-text = "Sierra Verde - 26.01.2026"
 horizontal_alignment = 1
 vertical_alignment = 2
+clip_text = true
+text_overrun_behavior = 3
 
-[node name="NewGameButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="NewGameButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "NEW GAME"
 
-[node name="TutorialButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="TutorialButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "TUTORIAL"
 
-[node name="SandboxButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="SandboxButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "SANDBOX"
 
-[node name="CampaignButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="CampaignButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "CAMPAIGN"
 
-[node name="QuitButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
+size_flags_horizontal = 4
 text = "QUIT GAME"
 
 [node name="MarginContainer" type="MarginContainer" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer"]
@@ -2530,7 +2513,7 @@ layout_mode = 2
 
 [node name="SelectedButtonMarker" type="Control" parent="UI/UIMainMenu/HBoxContainer/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(112, 32)
+custom_minimum_size = Vector2(112, 40)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -2581,6 +2564,23 @@ offset_right = 55.5
 grow_horizontal = 2
 grow_vertical = 0
 
+[node name="VersionLabel" type="Label" parent="UI/UIMainMenu"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -16.0
+offset_right = 178.0
+offset_bottom = -4.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.827451, 0.6, 1)
+theme_override_fonts/font = ExtResource("75_13die")
+theme_override_font_sizes/font_size = 11
+text = "v0.0.0-dev.000"
+vertical_alignment = 2
+
 [node name="SandboxConfig" parent="UI/UIMainMenu" instance=ExtResource("4_sandbox_config")]
 unique_name_in_owner = true
 visible = false
@@ -2590,3 +2590,10 @@ layout_mode = 1
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
+
+[node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("93_l3yaw")
+volume_db = -6.0
+autoplay = true
+bus = &"Music"
+parameters/looping = true

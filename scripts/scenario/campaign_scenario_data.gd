@@ -3,6 +3,10 @@ extends ScenarioData
 
 @export var goal_definitions: Array[ScenarioGoalDefinition] = []
 
+## Money the player must reach to win, read by campaign_money_conditions.gd.
+## Unused by campaigns that author their own conditions_script.
+@export var money_goal: int = 150
+
 ## RefCounted script exposing load_entries() -> Array[Dictionary], same
 ## _encounter()/_choice() shape as EncounterCatalog plus a "trigger_condition"
 ## Callable per entry. Godot resources can't hold arbitrary bound Callables in

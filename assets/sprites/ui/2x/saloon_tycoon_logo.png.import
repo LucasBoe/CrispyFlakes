@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://buvkmkplqvxha"
-path="res://.godot/imported/logo_gate.png-c79bd6ffeb16d35122ab33c019f7ad5f.ctex"
+uid="uid://cl4j4mpyr8dt0"
+path="res://.godot/imported/saloon_tycoon_logo.png-9d6677662ba2203ec302fe06fed1b670.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/2x/logo_gate.png"
-dest_files=["res://.godot/imported/logo_gate.png-c79bd6ffeb16d35122ab33c019f7ad5f.ctex"]
+source_file="res://assets/sprites/ui/2x/saloon_tycoon_logo.png"
+dest_files=["res://.godot/imported/saloon_tycoon_logo.png-9d6677662ba2203ec302fe06fed1b670.ctex"]
 
 [params]
 

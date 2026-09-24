@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://drqq0is6by4ae" path="res://scripts/time_ui_handler.gd" id="6_rt53s"]
 [ext_resource type="Material" uid="uid://qe3h81d6f7he" path="res://assets/materials/mat_ui_outline_white.tres" id="7_wkmvq"]
 [ext_resource type="Texture2D" uid="uid://c1i86518h6wtr" path="res://assets/sprites/ui/item_wood.png" id="8_jj3vu"]
-[ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="10_jifap"]
 [ext_resource type="Texture2D" uid="uid://b85epx64v1c4p" path="res://assets/sprites/ui/2x/ui_circle_32.png" id="12_gejso"]
 [ext_resource type="Texture2D" uid="uid://buatf1542uho8" path="res://assets/sprites/ui/electricity_ui_base.png" id="13_wvm38"]
 [ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_3ou18"]
@@ -21,6 +20,7 @@
 [ext_resource type="Script" uid="uid://b21xcpt5j8cb2" path="res://scripts/ui_dialogue_handler.gd" id="25_8st1d"]
 [ext_resource type="Texture2D" uid="uid://ckpjxsbbfx781" path="res://assets/sprites/ui/icon_dialogue_skip.png" id="27_8145v"]
 [ext_resource type="Texture2D" uid="uid://ceaqnkct2m7dc" path="res://assets/sprites/ui/icon_npc_closeup_cowboy.png" id="29_8st1d"]
+[ext_resource type="AudioStream" uid="uid://c40nnogca0tu3" path="res://assets/audio/music/Komiku_-_08_-_Un_dsert.mp3" id="32_1f2rr"]
 [ext_resource type="Script" uid="uid://bxubwaflp8wkf" path="res://scripts/ui/ui_money_info.gd" id="37_u4j4d"]
 [ext_resource type="Texture2D" uid="uid://dvgtospoeh0sv" path="res://assets/sprites/ui/icon_money.png" id="38_wm4va"]
 [ext_resource type="Script" uid="uid://diiavhcourmhg" path="res://scripts/main_scene.gd" id="main_scene_script"]
@@ -456,15 +456,15 @@ offset_bottom = 2.0
 
 [node name="UICampaignWon" parent="UI" instance=ExtResource("ui_campaign_won")]
 
+[node name="AmbientWind" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("23_4o78i")
+volume_db = -10.0
+autoplay = true
+bus = &"SFX"
+
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("10_jifap")
-volume_db = -18.0
+stream = ExtResource("32_1f2rr")
+volume_db = -6.0
 autoplay = true
 bus = &"Music"
 parameters/looping = true
-
-[node name="AmbientWind" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("23_4o78i")
-volume_db = -6.0
-autoplay = true
-bus = &"SFX"
