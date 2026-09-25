@@ -401,8 +401,24 @@ func add_mood(amount: float, reason: String = ""):
 	else:
 		npc.notify(UiNotifications.ICON_PLUS_1)
 
+func add_service_mood(amount: float, reason: String, service_id: String) -> void:
+	if npc != null and npc.has_method("add_service_mood"):
+		npc.add_service_mood(amount, reason, service_id)
+		return
+	add_mood(amount, reason)
+
 func say(text: String, duration: float = 3.5) -> void:
 	UiNotifications.create_notification_dynamic(text, npc, Vector2(0, -40), null, Color.BLACK, duration)
 
 func end_of_frame():
-	return Global.get_tree().process_frame
+	# Forward through this behaviour so freeing it disconnects pending waits.
+	# Awaiting the persistent SceneTree directly resumes already-freed scripts.
+	if not Global.get_tree().process_frame.is_connected(_on_frame_finished):
+		Global.get_tree().process_frame.connect(_on_frame_finished)
+	return frame_finished
+
+func _on_frame_finished() -> void:
+	# Disconnect before emitting: resumed code can immediately wait again.
+	Global.get_tree().process_frame.disconnect(_on_frame_finished)
+	if not stopped:
+		frame_finished.emit()

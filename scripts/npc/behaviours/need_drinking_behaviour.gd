@@ -71,7 +71,7 @@ func loop():
 			if stopped:
 				return
 			if archetype.no_seat_mood_penalty > 0.0:
-				add_mood(-archetype.no_seat_mood_penalty, "No Seat")
+				add_service_mood(-archetype.no_seat_mood_penalty, "No Seat", "drinking")
 
 		CowboyTalk.talk(["I needed that.", "Hits the spot.", "Mighty fine.", "Ahh."].pick_random(), npc)
 
@@ -104,7 +104,7 @@ func loop():
 			if stopped:
 				return
 			npc.Needs.drunkenness.strength += drunkenenes_increase / float(drink_duration)
-			add_mood(mood_increase / float(drink_duration), "Drinking")
+			add_service_mood(mood_increase / float(drink_duration), "Drinking", "drinking")
 
 		if is_instance_valid(table) and table.is_guest_seated(npc):
 			table.stand_up(npc)
@@ -114,7 +114,7 @@ func loop():
 			drink.destroy()
 	else:
 		#UiNotifications.create_notification_dynamic("...", npc, Vector2(0,-32))
-		npc.add_mood(-0.1, "No Drink")
+		npc.add_service_mood(-0.1, "No Drink", "drinking")
 		npc.notify(UiNotifications.ICON_MINUS_1)
 
 func stop_loop() -> BehaviourSaveData:

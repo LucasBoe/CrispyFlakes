@@ -18,7 +18,7 @@ func loop():
 		)
 		if storage_available:
 			_narrative = ["Picking up a stray bucket...", "Grabbing that loose water...", "Collecting spilled water..."].pick_random()
-			await move(loose.global_position)
+			await move(loose)
 			if is_instance_valid(loose):
 				npc.Item.pick_up(loose)
 				_narrative = ["Storing the bucket...", "Delivering water...", "Taking it where it's needed..."].pick_random()

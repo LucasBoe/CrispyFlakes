@@ -17,7 +17,7 @@ func loop():
 		var loose_money: Item = LooseItemHandler.get_closest_to(npc.global_position, Enum.Items.MONEY)
 		if is_instance_valid(loose_money):
 			_narrative = ["Picking up loose change...", "Grabbing that cash...", "Securing loose funds..."].pick_random()
-			await move(loose_money.global_position)
+			await move(loose_money)
 			if is_instance_valid(loose_money):
 				var amount := loose_money.money_amount
 				npc.Item.pick_up(loose_money)

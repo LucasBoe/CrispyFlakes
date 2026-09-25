@@ -150,7 +150,7 @@ func _collect_source(source: Dictionary) -> bool:
 			var item := source.get("item", null) as Item
 			if is_instance_valid(item):
 				_narrative = _pickup_narrative(item.itemType)
-				await move(item.global_position, EMERGENCY_MOVE_SPEED)
+				await move(item, EMERGENCY_MOVE_SPEED)
 				if is_instance_valid(item):
 					npc.Item.pick_up(item)
 					return true

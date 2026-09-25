@@ -13,6 +13,7 @@ extends Node
 
 const FIREPLACE_KEEPER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_fireplace_keeper_behaviour.gd")
 const OPERA_SINGER_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_opera_singer_behaviour.gd")
+const KITCHEN_BEHAVIOUR = preload("res://scripts/npc/behaviours/job_kitchen_behaviour.gd")
 
 
 enum Items {
@@ -27,6 +28,7 @@ enum Items {
 	CRATE,
 	PICKAXE,
 	COAL,
+	SOUP_BOWL,
 }
 
 enum Resources {
@@ -94,6 +96,7 @@ enum Jobs {
 	DOCTOR,
 	MINER,
 	OPERA_SINGER,
+	KITCHEN,
 }
 
 static func job_to_behaviour(job : Jobs):
@@ -169,6 +172,9 @@ static func job_to_behaviour(job : Jobs):
 
 		Enum.Jobs.OPERA_SINGER:
 			return OPERA_SINGER_BEHAVIOUR
+
+		Enum.Jobs.KITCHEN:
+			return KITCHEN_BEHAVIOUR
 
 enum ZLayer {
 	NPC_IN_OUTHOUSE = -620,

@@ -11,7 +11,7 @@ func loop():
 	bed = _find_available_bed()
 
 	if bed == null:
-		npc.add_mood(-0.05, "No Bed")
+		npc.add_service_mood(-0.05, "No Bed", "sleep")
 		npc.notify(UiNotifications.ICON_MINUS_1)
 		await pause(1)
 		return
@@ -55,7 +55,7 @@ func loop():
 	npc.Needs.Energy.strength = minf(1.0, npc.Needs.Energy.strength + 0.8)
 	var mood_gain := maxf(0.0, 0.7 - npc.Needs.mood.strength)
 	if mood_gain > 0.0:
-		add_mood(mood_gain, "Slept")
+		add_service_mood(mood_gain, "Slept", "sleep")
 
 func _find_available_bed() -> RoomBed:
 	return get_least_loaded_room_of_type(

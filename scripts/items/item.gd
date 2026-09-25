@@ -121,6 +121,12 @@ static func get_info(itemType : Enum.Items) -> TextureInfo:
 			tex = load("res://assets/sprites/item_coal.png")
 			display_name = "Coal"
 
+		Enum.Items.SOUP_BOWL:
+			tex = load("res://assets/sprites/item_soup_bowl.png")
+			display_name = "Soup Bowl"
+			trade_price = 10
+			offset = Vector2i(0, -5.5)
+
 		# SHADOW ITEMS
 		Enum.Items.DRINK:
 			offset = Vector2i(3, -2)

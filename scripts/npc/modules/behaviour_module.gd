@@ -3,6 +3,8 @@ class_name BehaviourModule
 
 const NEED_GAMBLING_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_gambling_behaviour.gd")
 const NEED_SNAKE_OIL_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_snake_oil_behaviour.gd")
+const NEED_SOUP_BEHAVIOUR = preload("res://scripts/npc/behaviours/need_soup_behaviour.gd")
+const ROOM_KITCHEN_SCRIPT = preload("res://scripts/room_kitchen.gd")
 
 var npc: NPC
 var behaviour_instance : Behaviour = null
@@ -43,6 +45,7 @@ func restore_previous_behaviour() -> Behaviour:
 ## (see NPCArchetype.service_weights).
 var SERVICE_ID_BY_BEHAVIOUR := {
 	NeedDrinkingBehaviour: "drinking",
+	NEED_SOUP_BEHAVIOUR: "soup",
 	NeedCleaningBehaviour: "cleaning",
 	NEED_GAMBLING_BEHAVIOUR: "gambling",
 	NEED_SNAKE_OIL_BEHAVIOUR: "snake_oil",
@@ -54,6 +57,9 @@ func get_behaviour_from_available_rooms(all_rooms):
 	for room in all_rooms:
 		if room is RoomBar:
 			all.append(NeedDrinkingBehaviour)
+
+		if is_instance_of(room, ROOM_KITCHEN_SCRIPT):
+			all.append(NEED_SOUP_BEHAVIOUR)
 
 		if room is RoomBath:
 			all.append(NeedCleaningBehaviour)

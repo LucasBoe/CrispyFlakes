@@ -47,7 +47,7 @@ func loop() -> void:
 		await end_of_frame()
 
 	if request.status == Enum.RequestStatus.FULFILLED:
-		add_mood(MOOD_BOOST, "Snake Oil")
+		add_service_mood(MOOD_BOOST, "Snake Oil", "snake_oil")
 
 func stop_loop() -> BehaviourSaveData:
 	if salesman != null:
