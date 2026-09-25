@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3 uid="uid://bhxp66ro7fm4m"]
 
-[ext_resource type="Script" path="res://scripts/room_kitchen.gd" id="1_roomscript"]
-[ext_resource type="Texture2D" path="res://assets/sprites/back-wall.png" id="2_backwall"]
-[ext_resource type="Texture2D" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
-[ext_resource type="Texture2D" path="res://assets/sprites/rooms/kitchen.png" id="4_kitchen"]
+[ext_resource type="Script" uid="uid://bhl5yg8yjaw4" path="res://scripts/room_kitchen.gd" id="1_roomscript"]
+[ext_resource type="Texture2D" uid="uid://darxuu61u4mar" path="res://assets/sprites/back-wall.png" id="2_backwall"]
+[ext_resource type="Texture2D" uid="uid://5li5c6prex3s" path="res://assets/sprites/room_highlight_slim.png" id="3_outline"]
+[ext_resource type="Texture2D" uid="uid://cvobbs2ei8llh" path="res://assets/sprites/rooms/kitchen_foreground.png" id="4_foreground"]
+[ext_resource type="Texture2D" uid="uid://vl6lpa43csg1" path="res://assets/sprites/rooms/kitchen_stove_back_offt.png" id="5_stove_back_off"]
+[ext_resource type="Texture2D" uid="uid://du2usrr8s4qvo" path="res://assets/sprites/rooms/kitchen_stove_pot_on.png" id="6_stove_pot"]
+[ext_resource type="Texture2D" uid="uid://swm2gkkxeoh5" path="res://assets/sprites/rooms/kitchen_stove_front.png" id="7_stove_front"]
+[ext_resource type="PackedScene" uid="uid://dp1ediy0dn4pi" path="res://scenes/single_flame_particles.tscn" id="8_flame"]
 
 [node name="Room_Kitchen" type="Node2D"]
 texture_filter = 1
@@ -20,7 +24,34 @@ z_index = 4000
 position = Vector2(24, -24)
 texture = ExtResource("3_outline")
 
-[node name="Kitchen" type="Sprite2D" parent="."]
+[node name="Foreground" type="Sprite2D" parent="."]
 z_index = -10
 position = Vector2(24, -19.5)
-texture = ExtResource("4_kitchen")
+texture = ExtResource("4_foreground")
+
+[node name="StoveBack" type="Sprite2D" parent="."]
+z_index = -103
+position = Vector2(33, -19.5)
+texture = ExtResource("5_stove_back_off")
+
+[node name="BurningEffects" type="Node2D" parent="."]
+
+[node name="FlameLeft" parent="BurningEffects" instance=ExtResource("8_flame")]
+z_index = -101
+position = Vector2(30, -7)
+scale = Vector2(0.5, 0.5)
+
+[node name="FlameRight" parent="BurningEffects" instance=ExtResource("8_flame")]
+z_index = -101
+position = Vector2(35, -7)
+scale = Vector2(0.5, 0.5)
+
+[node name="StovePot" type="Sprite2D" parent="."]
+z_index = -102
+position = Vector2(33, -19.5)
+texture = ExtResource("6_stove_pot")
+
+[node name="StoveFront" type="Sprite2D" parent="."]
+z_index = -100
+position = Vector2(33, -19.5)
+texture = ExtResource("7_stove_front")

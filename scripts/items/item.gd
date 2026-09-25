@@ -220,6 +220,8 @@ func play_spawn_sound() -> void:
 		SoundPlayer.play_barrel(global_position)
 	elif itemType == Enum.Items.WISKEY_BOX or itemType == Enum.Items.WISKEY_BOX_RAW:
 		SoundPlayer.play_crate(global_position)
+	elif itemType == Enum.Items.SOUP_BOWL:
+		SoundPlayer.play_soup_pour(global_position)
 
 func destroy():
 	play_spawn_sound()

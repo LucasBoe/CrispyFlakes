@@ -23,6 +23,7 @@ func start_loop() -> void:
 		npc.current_job_room = kitchen
 
 func loop() -> void:
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	await move(kitchen.get_random_floor_position())
 
 	while true:
@@ -67,15 +68,18 @@ func stop_loop() -> BehaviourSaveData:
 func _load_water() -> void:
 	var got_water := false
 	if kitchen.uses_infrastructure_layer(&"water"):
+		npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 		got_water = await try_fetch_from_tower(kitchen.get_center_floor_position(), kitchen)
 	if not got_water:
 		_narrative = ["Fetching water...", "Filling a bucket...", "Getting water for the soup..."].pick_random()
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 		await fetch_item(Enum.Items.WATER_BUCKET)
 		if not npc.Item.is_item(Enum.Items.WATER_BUCKET):
 			RoomStatusHandler.notify(kitchen, "no water", Color.ORANGE, _NO_WATER_ICON)
 			await pause(2.0)
 			return
 
+		npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 		await move(kitchen)
 		if not is_instance_valid(kitchen):
 			return
@@ -88,6 +92,7 @@ func _load_water() -> void:
 func _load_fuel() -> void:
 	if not _has_carried_fuel():
 		_narrative = ["Fetching fuel...", "Looking for wood or coal...", "Fetching wood for the stove..."].pick_random()
+		npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)
 		await _fetch_fuel()
 		if not _has_carried_fuel():
 			RoomStatusHandler.notify(kitchen, "no fuel", Color.ORANGE, Item.get_info(Enum.Items.WOOD).Tex)
@@ -98,6 +103,7 @@ func _load_fuel() -> void:
 		return
 
 	_narrative = ["Stoking the kitchen fire...", "Loading the stove...", "Feeding the burner..."].pick_random()
+	npc.Animator.set_z(Enum.ZLayer.NPC_BEHIND_CONTENT)
 	await move(kitchen)
 	if not is_instance_valid(kitchen):
 		return
@@ -139,6 +145,8 @@ func _find_best_available_fuel_type() -> int:
 		var loose_item: Item = LooseItemHandler.get_closest_to(npc.global_position, fuel_type)
 		if loose_item != null:
 			var loose_distance := npc.global_position.distance_squared_to(loose_item.global_position)
+			if LooseItemHandler.debug_fetch:
+				LooseItemHandler.log_fetch(npc, "kitchen fuel candidate: loose %s %s" % [Enum.Items.keys()[fuel_type], LooseItemHandler.describe_position(npc.global_position, loose_item.global_position)])
 			if loose_distance < best_distance:
 				best_distance = loose_distance
 				best_type = fuel_type
@@ -147,11 +155,15 @@ func _find_best_available_fuel_type() -> int:
 			if not storage.has(fuel_type):
 				continue
 			var storage_distance := npc.global_position.distance_squared_to(storage.get_center_floor_position())
+			if LooseItemHandler.debug_fetch:
+				LooseItemHandler.log_fetch(npc, "kitchen fuel candidate: storage %s %s" % [Enum.Items.keys()[fuel_type], LooseItemHandler.describe_position(npc.global_position, storage.get_center_floor_position())])
 			if storage_distance < best_distance:
 				best_distance = storage_distance
 				best_type = fuel_type
 			break
 
+	if LooseItemHandler.debug_fetch:
+		LooseItemHandler.log_fetch(npc, "kitchen picked fuel type: %s" % (Enum.Items.keys()[best_type] if best_type >= 0 else "none (falls back to WOOD)"))
 	return best_type
 
 func _consume_carried_fuel() -> void:

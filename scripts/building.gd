@@ -21,7 +21,7 @@ var _debug_nav_path_start: Vector2 = Vector2.ZERO
 var _debug_nav_path_has_start: bool = false
 var _debug_nav_selected: bool = false
 var _debug_nav_selected_npc : NPC = null
-const FLOOR_POSITION_Y_BIAS := -1.0
+const FLOOR_POSITION_Y_BIAS := -8.0
 const ROOF_STOVE_PIPE_SCENE := preload("res://scenes/building_roof_stove_pipe.tscn")
 const ROOF_STOVE_PIPE_Y_OFFSET := 26.0
 

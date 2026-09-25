@@ -3,8 +3,7 @@ class_name NeedSoupBehaviour
 
 const SOUP_ENERGY_GAIN := 0.35
 const SOUP_MOOD_GAIN := 0.35
-const EAT_DURATION := 8
-const ROOM_KITCHEN_SCRIPT := preload("res://scripts/room_kitchen.gd")
+const EAT_DURATION := 16
 
 var kitchen = null
 var table: RoomTable = null
@@ -15,7 +14,7 @@ static func get_probability_by_needs(needs: NeedsModule):
 func loop() -> void:
 	_narrative = ["Craving something warm...", "Thinking about soup...", "Hungry for a hot meal..."].pick_random()
 	kitchen = get_least_loaded_room_of_type(
-		ROOM_KITCHEN_SCRIPT,
+		RoomKitchen,
 		Callable(),
 		func(candidate): return maxf(float(candidate.soup_requests.size()) - float(candidate.soups_available), 0.0)
 	)

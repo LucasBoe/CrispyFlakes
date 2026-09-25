@@ -5,6 +5,9 @@ uniform sampler2D screen_texture : hint_screen_texture, filter_nearest;
 
 uniform vec2 room_size = vec2(48.0);
 uniform float temperature_strength : hint_range(0.0, 4.0) = 1.35;
+// Passed as a uniform rather than via modulate: a zero-alpha modulate makes Godot skip
+// drawing the item entirely, which would also hide the light auras below.
+uniform vec4 temperature_color = vec4(0.0);
 
 uniform sampler2D aura_texture_0 : source_color, filter_nearest;
 uniform vec4 aura_rect_0 = vec4(0.0);
@@ -42,7 +45,7 @@ vec3 apply_aura(vec3 base, vec4 aura, vec4 tint) {
 }
 
 void fragment() {
-	vec4 temperature = texture(TEXTURE, UV) * COLOR;
+	vec4 temperature = texture(TEXTURE, UV) * temperature_color;
 	vec3 result = texture(screen_texture, SCREEN_UV).rgb;
 	result = apply_overlay(result, temperature.rgb, temperature.a * temperature_strength);
 

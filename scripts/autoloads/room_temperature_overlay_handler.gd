@@ -241,7 +241,7 @@ func _refresh_overlay(room: RoomBase, overlay: Sprite2D) -> void:
 	var visual_state := _resolve_visual_state(_sample_room_temperature(room))
 	var has_light_inputs := _configure_light_inputs(room, overlay)
 	overlay.visible = visual_state.visible or has_light_inputs
-	overlay.modulate = visual_state.color if visual_state.visible else Color(1.0, 1.0, 1.0, 0.0)
+	(overlay.material as ShaderMaterial).set_shader_parameter("temperature_color", visual_state.color if visual_state.visible else Color.TRANSPARENT)
 
 
 func _layout_overlay(room: RoomBase, overlay: Sprite2D) -> void:

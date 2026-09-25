@@ -1,6 +1,20 @@
 extends Node2D
 
 var loose_items = {}
+var debug_fetch := false
+
+func _ready() -> void:
+	Console.add_command("debug_fetch", _console_toggle_debug_fetch, [], 0, "Toggles logging of how workers choose where to fetch items from (loose items vs storage, distances, floors).")
+
+func _console_toggle_debug_fetch() -> void:
+	debug_fetch = not debug_fetch
+	Console.print_line("Fetch debug %s." % ("enabled" if debug_fetch else "disabled"), true)
+
+func log_fetch(npc: NPC, message: String) -> void:
+	Console.print_info("[fetch] %s: %s" % [npc.get_display_name(), message], true)
+
+func describe_position(from: Vector2, pos: Vector2) -> String:
+	return "%s room%s dist=%d" % [pos.round(), Building.round_floor_index_from_global_position(pos), roundi(from.distance_to(pos))]
 
 func register_loose_item_instance(item : Item):
 	if not is_instance_valid(item):

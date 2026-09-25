@@ -28,6 +28,7 @@ const _SERVE_DRINK_STREAM : AudioStream = preload("res://assets/sounds/sounds/se
 const _BARREL_STREAM : AudioStream = preload("res://assets/sounds/sounds/barrel.wav")
 const _CRATE_STREAM : AudioStream = preload("res://assets/sounds/sounds/crate.wav")
 const _WATER_STREAM : AudioStream = preload("res://assets/sounds/sounds/water.wav")
+const _SOUP_POUR_STREAM : AudioStream = preload("res://assets/audio/sounds/soup_pour.wav")
 const _USE_WELL_STREAM : AudioStream = preload("res://assets/sounds/sounds/use_well.wav")
 const _BROOM_STREAM : AudioStream = preload("res://assets/sounds/sounds/broom.wav")
 const _DIGGING_SINGLE_STREAM : AudioStream = preload("res://assets/sounds/sounds/digging_single.wav")
@@ -124,6 +125,9 @@ func play_crate(world_position: Vector2) -> void:
 
 func play_water(world_position: Vector2) -> void:
 	_play_2d(_WATER_STREAM, world_position, -6.0, 0.9, 1.1)
+
+func play_soup_pour(world_position: Vector2) -> void:
+	_play_2d(_SOUP_POUR_STREAM, world_position, -6.0, 0.9, 1.1)
 
 func play_use_well(world_position: Vector2) -> void:
 	_play_2d(_USE_WELL_STREAM, world_position, -10.0, 0.9, 1.1)

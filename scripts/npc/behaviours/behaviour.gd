@@ -237,22 +237,45 @@ func _on_pause_finished() -> void:
 	if not stopped:
 		pause_finished.emit()
 
+func _log_fetch_candidates(item: Enum.Items, closest_loose_item) -> void:
+	var from := npc.global_position
+	var item_name: String = Enum.Items.keys()[item]
+	LooseItemHandler.log_fetch(npc, "fetching %s from %s" % [item_name, LooseItemHandler.describe_position(from, from)])
+	var loose: Array = LooseItemHandler.loose_items.get(item, [])
+	LooseItemHandler.log_fetch(npc, "  loose %s registered: %d" % [item_name, loose.size()])
+	for candidate in loose:
+		if is_instance_valid(candidate):
+			var marker := " <- closest" if candidate == closest_loose_item else ""
+			LooseItemHandler.log_fetch(npc, "    loose %s%s" % [LooseItemHandler.describe_position(from, candidate.global_position), marker])
+	var first_storage := true
+	for b: RoomStorage in get_all_rooms_of_type_ordered_by_distance(RoomStorage):
+		if b.has(item):
+			var marker := " <- compared against loose" if first_storage else " (ignored, only first storage is compared)"
+			LooseItemHandler.log_fetch(npc, "    storage %s reachable=%s%s" % [LooseItemHandler.describe_position(from, b.global_position), npc.Navigation.is_room_reachable(b), marker])
+			first_storage = false
+
 func fetch_item(item: Enum.Items):
 	if npc.Item.current_item and npc.Item.current_item.itemType == item:
 		return
 
 	var source_item = null
 	var closest_loose_item = LooseItemHandler.get_closest_to(npc.global_position, item)
+	if LooseItemHandler.debug_fetch:
+		_log_fetch_candidates(item, closest_loose_item)
 
 	# fetch from storage
 	for b: RoomStorage in get_all_rooms_of_type_ordered_by_distance(RoomStorage):
 		if b.has(item):
 			if closest_loose_item == null or npc.global_position.distance_to(b.global_position) < npc.global_position.distance_to(closest_loose_item.global_position):
+				if LooseItemHandler.debug_fetch:
+					LooseItemHandler.log_fetch(npc, "-> STORAGE %s" % LooseItemHandler.describe_position(npc.global_position, b.global_position))
 				await move(b)
 				source_item = b.take(item)
 			break
 
 	if source_item == null and closest_loose_item != null:
+		if LooseItemHandler.debug_fetch:
+			LooseItemHandler.log_fetch(npc, "-> LOOSE %s" % LooseItemHandler.describe_position(npc.global_position, closest_loose_item.global_position))
 		await move(closest_loose_item)
 		source_item = closest_loose_item
 
