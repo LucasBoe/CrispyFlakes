@@ -48,6 +48,8 @@ const POSE_SINGLE_GUN = 5
 const POSE_DOUBLE_GUN = 6
 const POSE_CARRY = 7
 
+const WORKER_Z_OFFSET := 1
+
 var npc
 var is_sitting : bool = false
 var is_riding : bool = false
@@ -292,6 +294,10 @@ func knocked_out_tween():
 	return TweenTargetData.new(Vector2(0, -4), PI / 2.0 * x, Vector2.ONE)
 
 func set_z(z: Enum.ZLayer) -> void:
+	# a held worker keeps the drag layer; behaviours being interrupted by the pickup
+	# would otherwise reset the z (and leave the drag canvas) mid-drag
+	if npc is NPCWorker and NPCWorker.picked_up_npc == npc and z != Enum.ZLayer.NPC_DRAGGED:
+		return
 	var previous_local_z := z_index
 	var previous_effective_z := get_effective_z_index()
 	if z == Enum.ZLayer.NPC_DRAGGED:
@@ -299,6 +305,8 @@ func set_z(z: Enum.ZLayer) -> void:
 	elif _drag_canvas_wrapper != null:
 		_exit_drag_canvas()
 	z_index = z
+	if npc is NPCWorker and z != Enum.ZLayer.NPC_DRAGGED:
+		z_index += WORKER_Z_OFFSET # workers render in front of guests on the same layer
 	_debug_log_z_change(previous_local_z, previous_effective_z)
 
 func play_gambling_card_punch() -> void:

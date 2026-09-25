@@ -363,6 +363,12 @@ func _get_drop_target_position(room: RoomBase, drop_pos: Vector2) -> Vector2:
 
 func _finish_drop():
 	_is_falling = false
+	# the room can be replaced mid-fall (e.g. a junk room cleared by another worker),
+	# so pick up whatever room now occupies the landing spot
+	if not is_instance_valid(_fall_room):
+		_fall_room = Building.query.room_at_floor_position(_fall_target) as RoomBase
+	if not is_instance_valid(_fall_landed_room):
+		_fall_landed_room = Building.query.room_at_floor_position(_fall_target) as RoomBase
 	var resolved_drop_room: RoomBase = _fall_landed_room if _fall_landed_room != null else _fall_room
 	var assignment_room: RoomBase = _fall_room if _fall_room is RoomDigging else resolved_drop_room
 	var should_snap_to_drop_target := assignment_room is RoomDigging

@@ -55,6 +55,7 @@ func _ready():
 	create_button(groups, Building.room_data_storage)
 	create_button(groups, Building.room_data_outhouse, RoomOuthouse.custom_placement_check)
 	create_button(groups, Building.room_data_brewery)
+	create_button(groups, Building.room_data_kitchen)
 	create_button(groups, Building.room_data_bar_beer)
 	create_button(groups, Building.room_data_gambling)
 	create_button(groups, Building.room_data_entertainment)

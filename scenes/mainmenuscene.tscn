@@ -1,4 +1,4 @@
-[gd_scene load_steps=142 format=4 uid="uid://bk3hult8me1pa"]
+[gd_scene load_steps=144 format=4 uid="uid://bk3hult8me1pa"]
 
 [ext_resource type="Script" uid="uid://oxn4sdja53xs" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://dqvdijncopw3g" path="res://scenes/ui/ui_sandbox_config.tscn" id="4_sandbox_config"]
@@ -23,11 +23,13 @@
 [ext_resource type="Texture2D" uid="uid://bwjaw1yrpb7i3" path="res://assets/sprites/ui/2x/main_menu_buttons_backdrop_shadow_128.png" id="88_8pjb3"]
 [ext_resource type="PackedScene" uid="uid://yc1tsqqnfjm2" path="res://scenes/ui/ui_campaign_selection.tscn" id="88_ls525"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="93_l3yaw"]
+[ext_resource type="PackedScene" path="res://scenes/ui/load_game_menu.tscn" id="load_game_menu"]
 [ext_resource type="Theme" uid="uid://cyyj3dstmuttt" path="res://assets/sprites/ui/2x/main_menu/main_menu_button_theme.tres" id="menu_button_theme"]
 [ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="ml_chandelier_tex"]
 [ext_resource type="Texture2D" uid="uid://wwgx7vloef3h" path="res://assets/sprites/fire_glow_overlay.png" id="ml_fire_tex"]
 [ext_resource type="Script" uid="uid://dniuig7gxodrv" path="res://scripts/ui/menu_light_input.gd" id="ml_input_script"]
 [ext_resource type="Script" uid="uid://b2livuqfgp0xq" path="res://scripts/ui/menu_light_overlay.gd" id="ml_overlay_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_settings.tscn" id="settings_menu"]
 [ext_resource type="Script" uid="uid://dq3vs3bf2usjs" path="res://scripts/ui/main_menu_world.gd" id="world_1_backdrop"]
 [ext_resource type="Shader" uid="uid://qa66dukaogw5" path="res://assets/shaders/sky.gdshader" id="world_1_j7yis"]
 [ext_resource type="Texture2D" uid="uid://bi6080h761o7l" path="res://assets/sprites/clouds/cloud_1.png" id="world_2_kqloo"]
@@ -1128,6 +1130,11 @@ script = ExtResource("world_1_backdrop")
 unique_name_in_owner = true
 position = Vector2(60, -92)
 zoom = Vector2(1.5, 1.5)
+
+[node name="LoadGameCameraTarget" type="Marker2D" parent="."]
+unique_name_in_owner = true
+editor_description = "Camera position used by Load Game. Move this marker downward to move farther into the ground."
+position = Vector2(60, 320)
 
 [node name="Environment" type="Node2D" parent="."]
 texture_filter = 1
@@ -2467,6 +2474,13 @@ vertical_alignment = 2
 clip_text = true
 text_overrun_behavior = 3
 
+[node name="LoadGameButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "LOAD GAME"
+
 [node name="NewGameButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
 visible = false
@@ -2495,6 +2509,13 @@ custom_minimum_size = Vector2(0, 28)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "CAMPAIGN"
+
+[node name="SettingsButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "SETTINGS"
 
 [node name="QuitButton" type="Button" parent="UI/UIMainMenu/HBoxContainer/Content/CenterContainer/VBoxContainer/MarginContainer2/VBoxContainer"]
 unique_name_in_owner = true
@@ -2591,9 +2612,40 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 1
 
+[node name="SettingsMenu" parent="UI/UIMainMenu" instance=ExtResource("settings_menu")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+show_back_button = true
+
+[node name="MarginContainer" parent="UI/UIMainMenu/SettingsMenu" index="0"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -90.0
+offset_right = 96.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadGameMenu" parent="UI/UIMainMenu" instance=ExtResource("load_game_menu")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
 [node name="SunUpGunnedDown" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("93_l3yaw")
 volume_db = -6.0
 autoplay = true
 bus = &"Music"
 parameters/looping = true
+
+[editable path="UI/UIMainMenu/SettingsMenu"]

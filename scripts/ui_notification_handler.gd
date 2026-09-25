@@ -42,6 +42,12 @@ func _ready():
 	npc_notification_dummy.hide()
 	fight_bar_dummy.hide()
 
+func clear_all() -> void:
+	for info in instances:
+		if is_instance_valid(info.instance):
+			info.instance.queue_free()
+	instances.clear()
+
 func _create_from_dummy(dummy, duration) -> instance_info:
 	var instance = dummy.duplicate()
 	_world_layer.add_child(instance)

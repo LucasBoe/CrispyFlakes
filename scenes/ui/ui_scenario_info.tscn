@@ -6,20 +6,23 @@
 
 [node name="UIScenarioInfo" type="Control"]
 layout_mode = 3
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -196.0
-offset_top = -220.0
-grow_horizontal = 0
-grow_vertical = 0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_script")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 2
+layout_mode = 1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -360.0
+offset_top = 24.0
+grow_horizontal = 0
 
 [node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
 layout_mode = 2
@@ -31,44 +34,58 @@ patch_margin_bottom = 8
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
-[node name="NoScenarioLabel" type="Label" parent="MarginContainer/MarginContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MarginContainer"]
 layout_mode = 2
+horizontal_scroll_mode = 0
+follow_focus = true
+
+[node name="NoScenarioLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
 text = "No active scenario."
 horizontal_alignment = 1
 
-[node name="Content" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
+[node name="Content" type="VBoxContainer" parent="MarginContainer/MarginContainer/ScrollContainer"]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 4
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/MarginContainer/Content"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer/Content"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
+autowrap_mode = 2
 text = "Scenario Name"
 horizontal_alignment = 1
 
-[node name="DescriptionLabel" type="Label" parent="MarginContainer/MarginContainer/Content"]
+[node name="DescriptionLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer/Content"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 text = "Description"
 
-[node name="ParamsLabel" type="Label" parent="MarginContainer/MarginContainer/Content"]
+[node name="ParamsLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer/Content"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 text = "Params"
 
-[node name="GoalsLabel" type="Label" parent="MarginContainer/MarginContainer/Content"]
+[node name="GoalsLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer/Content"]
 visible = false
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 text = "Goals"
 
-[node name="ConditionsLabel" type="Label" parent="MarginContainer/MarginContainer/Content"]
+[node name="ConditionsLabel" type="Label" parent="MarginContainer/MarginContainer/ScrollContainer/Content"]
 visible = false
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 autowrap_mode = 2
 text = "Conditions"

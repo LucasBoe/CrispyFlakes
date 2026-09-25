@@ -20,6 +20,8 @@ var _menu_tutorial_arrow_texture: Texture2D
 var _quests
 var _tutorial_worker: NPCWorker
 var _skip_requested := false
+var _cancel_requested := false
+var _sequence_running := false
 var _startup_content_ready := false
 var _served_startup_guests: Array[NPCGuest] = []
 
@@ -31,6 +33,8 @@ func begin() -> void:
 	if done:
 		return
 	done = true
+	_cancel_requested = false
+	_skip_requested = false
 
 	if ScenarioHandler.pending_scenario != null:
 		# A scenario applies its own layout/unlocks/money via start_scenario,
@@ -44,12 +48,29 @@ func begin() -> void:
 		return
 
 	Balancing.GUEST_SPAWN_BASE_RATE = Balancing.GUEST_SPAWN_BASE_RATE_DEFAULT
+	_sequence_running = true
 	_prepare_startup_content()
 	await _run_startup_sequence()
+	_sequence_running = false
+
+func cancel() -> void:
+	# Drain the tutorial before deleting its NPCs, rooms, or UI references.
+	_cancel_requested = true
+	_skip_requested = true
+	while _sequence_running:
+		await get_tree().process_frame
+	_destroy_menu_tutorial_arrow()
+	_tutorial_worker = null
+	_quests = null
+	_served_startup_guests.clear()
+	_startup_content_ready = false
+	done = false
 
 func _run_startup_sequence() -> void:
 	if not _startup_content_ready:
 		await _poll_until(func(): return _startup_content_ready)
+	if _cancel_requested:
+		return
 
 	_reset_outside_overlay()
 	Global.UI.menu.start_tutorial_menu_gating()
@@ -64,8 +85,12 @@ func _run_startup_sequence() -> void:
 
 	RoomStatusHandler.enabled = false
 	_tutorial_worker = await _spawn_tutorial_worker()
+	if _cancel_requested:
+		return
 	var tutorial_worker := _tutorial_worker
 	await _fade_outside_overlay()
+	if _cancel_requested:
+		return
 	if not _skip_requested and is_instance_valid(tutorial_worker):
 		_reveal_quest_for_target(_quests.cleanup, tutorial_worker)
 		if _finish_startup_if_aborted(await _wait_for_tutorial_activation(_quests.cleanup)):
@@ -152,6 +177,8 @@ func _run_startup_sequence() -> void:
 
 func _prepare_startup_content() -> void:
 	await get_tree().process_frame
+	if _cancel_requested:
+		return
 	setup_building()
 	_create_startup_quests()
 	_startup_content_ready = true
@@ -192,6 +219,8 @@ func _spawn_tutorial_worker() -> NPCWorker:
 		return null
 	
 	await get_tree().process_frame
+	if _cancel_requested:
+		return worker
 	worker.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 	worker.force_behaviour(STARTUP_WAIT_BEHAVIOUR)
 	worker.Navigation.set_target(TUTORIAL_WORKER_TARGET, -1)
@@ -447,7 +476,10 @@ func _spawn_tutorial_guest_wave(count: int) -> void:
 		var guest := Global.NPCSpawner.spawn_new_guest() as NPCGuest
 		if guest == null:
 			continue
-		await get_tree().create_timer(3).timeout
+		var remaining := 3.0
+		while remaining > 0.0 and not _skip_requested:
+			await get_tree().process_frame
+			remaining -= get_process_delta_time()
 
 func _wait_for_served_guest_completion(task) -> bool:
 	while not _skip_requested:
@@ -513,6 +545,8 @@ func _finish_startup_if_aborted(aborted: bool) -> bool:
 
 
 func _finish_startup(skipped := false) -> void:
+	if _cancel_requested:
+		return
 	if skipped:
 		_set_startup_money(STARTUP_SKIP_MONEY)
 		for room in Building.query.all_rooms_of_type(RoomJunk).duplicate():

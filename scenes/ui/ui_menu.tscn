@@ -1,4 +1,6 @@
-[gd_scene load_steps=30 format=3 uid="uid://848oy1tnfobv"]
+[gd_scene load_steps=31 format=3 uid="uid://848oy1tnfobv"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/load_game_menu.tscn" id="save_game_menu"]
 
 [ext_resource type="Script" uid="uid://btarxxuiqe0dj" path="res://scripts/ui/build_ui_handler.gd" id="9_60k3h"]
 [ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
@@ -16,7 +18,7 @@
 [ext_resource type="Script" uid="uid://4nwd5trg5nce" path="res://scripts/pixel_line.gd" id="24_xsu8o"]
 [ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="25_q3hll"]
 [ext_resource type="Texture2D" uid="uid://cmpryfb8pr8ql" path="res://assets/sprites/ui/notification_dot_default.png" id="26_qkkkl"]
-[ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ui_settings.tscn" id="28_settings"]
 [ext_resource type="Texture2D" uid="uid://dnonetdv2nbtg" path="res://assets/sprites/ui/2x/arrow_up_icon.png" id="28_got3c"]
 [ext_resource type="Texture2D" uid="uid://couksfqnx40ce" path="res://assets/sprites/ui/2x/progression_button_glow_overlay.png" id="30_7bf1p"]
 [ext_resource type="Texture2D" uid="uid://d1rd4l0udpilw" path="res://assets/sprites/ui/icon_settings.png" id="31_pj0ys"]
@@ -261,94 +263,10 @@ visible = false
 script = ExtResource("24_xsu8o")
 metadata/_custom_type_script = "uid://4nwd5trg5nce"
 
-[node name="UISettings" type="Control" parent="MarginContainer"]
+[node name="UISettings" parent="MarginContainer" instance=ExtResource("28_settings")]
 visible = false
 layout_mode = 2
-mouse_filter = 2
-script = ExtResource("28_1jyyk")
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -128.0
-offset_top = -132.0
-grow_horizontal = 0
-grow_vertical = 0
-
-[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer/UISettings/MarginContainer"]
-layout_mode = 2
-texture = ExtResource("9_xsf2i")
-patch_margin_left = 8
-patch_margin_top = 8
-patch_margin_right = 8
-patch_margin_bottom = 8
-
-[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/UISettings/MarginContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/UISettings/MarginContainer/MarginContainer"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="LabelHeader" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-theme_override_fonts/font = ExtResource("14_p76uh")
-theme_override_font_sizes/font_size = 16
-text = "Settings"
-horizontal_alignment = 1
-
-[node name="ColorRect" type="ColorRect" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(0, 1)
-layout_mode = 2
-
-[node name="Label" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Music Volume"
-horizontal_alignment = 1
-
-[node name="HSlider" type="HSlider" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="Label2" type="Label" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Sound Volume"
-horizontal_alignment = 1
-
-[node name="HSlider2" type="HSlider" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-max_value = 1.0
-step = 0.01
-value = 1.0
-
-[node name="ColorRect2" type="ColorRect" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-custom_minimum_size = Vector2(0, 1)
-layout_mode = 2
-
-[node name="SkipTutorialContainer" type="CenterContainer" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer"]
-visible = false
-layout_mode = 2
-
-[node name="SkipTutorialButton" type="Button" parent="MarginContainer/UISettings/MarginContainer/MarginContainer/GridContainer/SkipTutorialContainer"]
-custom_minimum_size = Vector2(112, 0)
-layout_mode = 2
-theme = ExtResource("22_hpv7r")
-text = "Skip Tutorial"
+show_save_button = true
 
 [node name="UIProgressionTree" parent="MarginContainer" instance=ExtResource("24_8m5dn")]
 visible = false
@@ -427,3 +345,9 @@ layout_mode = 2
 theme = ExtResource("22_hpv7r")
 icon = ExtResource("61_scenario")
 icon_alignment = 1
+
+[node name="SaveGameMenu" parent="." instance=ExtResource("save_game_menu")]
+visible = false
+z_index = 100
+layout_mode = 1
+mode = 1

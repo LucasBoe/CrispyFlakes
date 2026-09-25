@@ -9,16 +9,21 @@ const MAIN_MENU_TWEEN_DURATION = .45
 @export_range(0.0, 1.0, 0.01) var marker_move_duration := 0.18
 
 @onready var continue_button: Button = %ContinueButton
+@onready var load_game_button: Button = %LoadGameButton
 @onready var _continue_title: Label = %ContinueButton/TitleLabel
 @onready var _save_info_label: Label = %ContinueButton/SaveGameInfoLabel
 @onready var new_game_button: Button = %NewGameButton
 @onready var tutorial_button: Button = %TutorialButton
 @onready var sandbox_button: Button = %SandboxButton
 @onready var campaign_button: Button = %CampaignButton
+@onready var settings_button: Button = %SettingsButton
+@onready var settings_menu = %SettingsMenu
+@onready var load_game_menu = %LoadGameMenu
 @onready var quit_button: Button = %QuitButton
 @onready var sandbox_config: SandboxConfigMenu = %SandboxConfig
 @onready var campaign_selection: Control = %CampaignSelection
 @onready var menu_camera: Camera2D = %Camera2D
+@onready var load_game_camera_target: Marker2D = %LoadGameCameraTarget
 @onready var menu_content: Control = %Content
 @onready var selected_button_marker: Control = %SelectedButtonMarker
 @onready var selected_button_arrow: TextureRect = %SelectedButtonArrow
@@ -47,14 +52,21 @@ func _ready() -> void:
 	continue_button.visible = SaveHandler.has_save()
 	_setup_continue_info()
 	continue_button.pressed.connect(_on_continue_pressed)
+	load_game_button.pressed.connect(_on_load_game_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	tutorial_button.pressed.connect(_on_new_game_pressed)
 	sandbox_button.pressed.connect(_on_sandbox_pressed)
 	campaign_button.pressed.connect(_on_campaign_pressed)
+	settings_button.pressed.connect(_on_settings_pressed)
+	settings_menu.back_requested.connect(_on_settings_back_pressed)
+	load_game_menu.back_requested.connect(_on_load_game_back_pressed)
+	load_game_menu.load_requested.connect(_on_load_game_requested)
 	quit_button.pressed.connect(_on_quit_pressed)
 
 	sandbox_config.hide()
 	campaign_selection.hide()
+	settings_menu.hide()
+	load_game_menu.hide()
 	sandbox_config.start_requested.connect(_on_sandbox_start_requested)
 	sandbox_config.back_requested.connect(_on_sandbox_back_pressed)
 	if campaign_selection.has_signal("back_requested"):
@@ -67,7 +79,7 @@ func _ready() -> void:
 	for control: Control in selected_button_marker.find_children("*", "Control", true, false):
 		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	selected_button_marker.hide()
-	var menu_button_candidates: Array[Button] = [continue_button, new_game_button, tutorial_button, sandbox_button, campaign_button, quit_button]
+	var menu_button_candidates: Array[Button] = [continue_button, load_game_button, new_game_button, tutorial_button, sandbox_button, campaign_button, settings_button, quit_button]
 	_menu_buttons.clear()
 	for button: Button in menu_button_candidates:
 		button.focus_mode = Control.FOCUS_ALL
@@ -145,6 +157,14 @@ func _update_continue_selection(selected: bool) -> void:
 		_continue_tween.chain().tween_callback(_save_info_label.hide)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if settings_menu.visible and event.is_action_pressed("ui_cancel"):
+		_on_settings_back_pressed()
+		get_viewport().set_input_as_handled()
+		return
+	if load_game_menu.visible and event.is_action_pressed("ui_cancel"):
+		_on_load_game_back_pressed()
+		get_viewport().set_input_as_handled()
+		return
 	if _is_section_open() or _menu_buttons.is_empty():
 		return
 	var direction := 0
@@ -191,7 +211,34 @@ func _position_selected_marker(animate: bool) -> void:
 		selected_button_marker.global_position = target
 
 func _is_section_open() -> bool:
-	return _transition_tween != null or sandbox_config.visible or campaign_selection.visible
+	return _transition_tween != null or sandbox_config.visible or campaign_selection.visible or settings_menu.visible or load_game_menu.visible
+
+func _on_settings_pressed() -> void:
+	if _is_section_open():
+		return
+	menu_content.hide()
+	selected_button_marker.hide()
+	settings_menu.show()
+	settings_menu.music_slider.grab_focus()
+
+func _on_settings_back_pressed() -> void:
+	settings_menu.hide()
+	menu_content.show()
+	settings_button.grab_focus()
+	_position_selected_marker(false)
+
+func _on_load_game_pressed() -> void:
+	_transition_load_game(true)
+
+func _on_load_game_back_pressed() -> void:
+	_transition_load_game(false)
+
+func _on_load_game_requested(save_path: String) -> void:
+	if not FileAccess.file_exists(save_path):
+		return
+	ScenarioHandler.queue_scenario(null)
+	SaveHandler.flag_pending_load(save_path)
+	_go_to_gameplay()
 
 func _on_continue_pressed() -> void:
 	if not SaveHandler.has_save():
@@ -251,6 +298,39 @@ func _transition_section(section: Control, direction: int, entering: bool) -> vo
 			section.get_node("%BackButton").grab_focus()
 		else:
 			section.hide()
+			if _selected_button != null:
+				_selected_button.grab_focus()
+				_position_selected_marker(false)
+	)
+
+func _transition_load_game(entering: bool) -> void:
+	if _transition_tween != null:
+		return
+	if entering and _is_section_open():
+		return
+	if not entering and not load_game_menu.visible:
+		return
+
+	var viewport_size := get_viewport_rect().size
+	var camera_ground_position := load_game_camera_target.global_position
+	if entering:
+		menu_content.hide()
+		selected_button_marker.hide()
+		load_game_menu.prepare_for_entry()
+	else:
+		menu_content.show()
+		load_game_menu.prepare_for_exit()
+
+	_transition_tween = create_tween().set_parallel(true)
+	_transition_tween.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	_transition_tween.tween_property(menu_camera, "position", camera_ground_position if entering else _camera_home_position, MAIN_MENU_TWEEN_DURATION)
+	_transition_tween.tween_property(load_game_menu, "position:y", 0.0 if entering else viewport_size.y, MAIN_MENU_TWEEN_DURATION)
+	_transition_tween.finished.connect(func() -> void:
+		_transition_tween = null
+		if entering:
+			load_game_menu.focus_first_available_card()
+		else:
+			load_game_menu.hide()
 			if _selected_button != null:
 				_selected_button.grab_focus()
 				_position_selected_marker(false)

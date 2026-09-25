@@ -1,0 +1,184 @@
+[gd_scene load_steps=9 format=3 uid="uid://wn61nbv13ofv"]
+
+[ext_resource type="Script" uid="uid://b06dahvofapxp" path="res://scripts/ui/load_game_card.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_theme"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="3_taqtu"]
+[ext_resource type="FontFile" uid="uid://f7i0w82uta8" path="res://assets/fonts/Micro5-Regular.ttf" id="4_t7hpw"]
+
+[sub_resource type="StyleBoxFlat" id="Normal"]
+bg_color = Color(0.19, 0.095, 0.055, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.48, 0.28, 0.14, 1)
+shadow_color = Color(0, 0, 0, 0.65)
+shadow_size = 2
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="Pressed"]
+bg_color = Color(0.12, 0.055, 0.025, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.84, 0.48, 1)
+
+[sub_resource type="StyleBoxFlat" id="Hover"]
+bg_color = Color(0.26, 0.14, 0.07, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.69, 0.25, 1)
+
+[sub_resource type="StyleBoxFlat" id="Focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.79, 0.32, 1)
+
+[node name="LoadGameCard" type="Button"]
+custom_minimum_size = Vector2(192, 169)
+offset_right = 192.0
+offset_bottom = 169.0
+size_flags_horizontal = 3
+theme = ExtResource("2_theme")
+theme_override_styles/normal = SubResource("Normal")
+theme_override_styles/pressed = SubResource("Pressed")
+theme_override_styles/hover = SubResource("Hover")
+theme_override_styles/disabled = SubResource("Normal")
+theme_override_styles/focus = SubResource("Focus")
+script = ExtResource("1_script")
+
+[node name="PreviewBackground" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 121.0
+mouse_filter = 2
+color = Color(0.04, 0.025, 0.02, 1)
+
+[node name="Preview" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 121.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NoPreview" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 121.0
+theme_override_colors/font_color = Color(0.68, 0.53, 0.37, 1)
+text = "NO SCREENSHOT"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SlotNumber" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 8.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.77, 0.38, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.025, 0.01, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "SAVE 1"
+
+[node name="Details" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 125.0
+offset_right = -10.0
+offset_bottom = -7.0
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="CardName" type="Label" parent="Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.77, 0.38, 1)
+theme_override_fonts/font = ExtResource("3_taqtu")
+theme_override_font_sizes/font_size = 8
+text = "Dusty Creek"
+text_overrun_behavior = 3
+
+[node name="CardMode" type="Label" parent="Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.81, 0.66, 0.49, 1)
+theme_override_font_sizes/font_size = 11
+text = "Campaign · Red Mesa"
+text_overrun_behavior = 3
+
+[node name="Stats" type="HBoxContainer" parent="Details"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Months" type="Label" parent="Details/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 11
+text = "11 months"
+
+[node name="Cash" type="Label" parent="Details/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.82, 0.48, 1)
+theme_override_font_sizes/font_size = 11
+text = "$1,240"
+
+[node name="Workers" type="Label" parent="Details/Stats"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "8 workers"
+
+[node name="CardDate" type="Label" parent="Details"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.72, 0.54, 1)
+theme_override_fonts/font = ExtResource("4_t7hpw")
+theme_override_font_sizes/font_size = 11
+text = "24.09.2026 · 15:01"
+
+[node name="EmptyLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.7, 0.48, 0.25, 1)
+theme_override_font_sizes/font_size = 11
+text = "+
+EMPTY SLOT"
+horizontal_alignment = 1
+vertical_alignment = 1

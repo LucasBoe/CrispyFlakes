@@ -83,8 +83,12 @@ func _ready() -> void:
 	_update_visibility_state()
 
 func _process(_delta: float) -> void:
-	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM):
+	# a scenario can enable the feature after _ready(), so expand on the unlock transition too
+	if not _forecast_unlocked and FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM):
 		_forecast_unlocked = true
+		_is_expanded = true
+		_tutorial_prompt_active = false
+		_destroy_tutorial_arrow()
 
 	_update_visibility_state()
 	if not visible or not (_forecast_unlocked and _is_expanded):

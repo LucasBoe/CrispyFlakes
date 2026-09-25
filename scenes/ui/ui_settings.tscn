@@ -1,0 +1,117 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="9_xsf2i"]
+[ext_resource type="FontFile" uid="uid://duj0grgaylmlh" path="res://assets/fonts/modern_dos/ModernDOS9x16.ttf" id="14_p76uh"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="22_hpv7r"]
+[ext_resource type="Script" uid="uid://cpshwdfv27ve6" path="res://scripts/ui_settings.gd" id="28_1jyyk"]
+
+[node name="UISettings" type="Control"]
+layout_mode = 3
+mouse_filter = 2
+script = ExtResource("28_1jyyk")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="MarginContainer"]
+layout_mode = 2
+texture = ExtResource("9_xsf2i")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="GridContainer" type="VBoxContainer" parent="MarginContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LabelHeader" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+theme_override_fonts/font = ExtResource("14_p76uh")
+theme_override_font_sizes/font_size = 16
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="MarginContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Music Volume"
+horizontal_alignment = 1
+
+[node name="HSlider" type="HSlider" parent="MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Label2" type="Label" parent="MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Sound Volume"
+horizontal_alignment = 1
+
+[node name="HSlider2" type="HSlider" parent="MarginContainer/MarginContainer/GridContainer"]
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="ColorRect2" type="ColorRect" parent="MarginContainer/MarginContainer/GridContainer"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+
+[node name="SkipTutorialContainer" type="CenterContainer" parent="MarginContainer/MarginContainer/GridContainer"]
+visible = false
+layout_mode = 2
+
+[node name="SkipTutorialButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/SkipTutorialContainer"]
+custom_minimum_size = Vector2(112, 0)
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Skip Tutorial"
+
+[node name="SaveButtons" type="HBoxContainer" parent="MarginContainer/MarginContainer/GridContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SaveButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/SaveButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = "Save Game"
+
+[node name="SaveAndMenuButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/SaveButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = "Save & Go to Menu"
+
+[node name="BackButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer"]
+visible = false
+layout_mode = 2
+theme = ExtResource("22_hpv7r")
+text = "Back"

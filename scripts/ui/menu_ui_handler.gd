@@ -5,6 +5,7 @@ class_name MenuUIHandler
 @onready var settings_tab = $MarginContainer/UISettings
 @onready var progression_tab = $MarginContainer/UIProgressionTree
 @onready var scenario_tab = $MarginContainer/UIScenarioInfo
+@onready var save_game_menu = $SaveGameMenu
 
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
@@ -19,8 +20,13 @@ var _tutorial_menu_gating_active := false
 var _tutorial_available_tabs: Dictionary = {}
 var _progression_glow_material: ShaderMaterial
 var _progression_glow_tween: Tween
+var _return_to_menu_after_save := false
 
 func _ready():
+	settings_tab.save_requested.connect(_open_save_menu.bind(false))
+	settings_tab.save_and_menu_requested.connect(_open_save_menu.bind(true))
+	save_game_menu.back_requested.connect(_on_save_menu_back)
+	save_game_menu.save_completed.connect(_on_save_completed)
 	bind_slot(build_button, build_tab)
 	bind_slot(progression_button, progression_tab)
 	bind_slot(settings_button, settings_tab)
@@ -33,6 +39,30 @@ func _ready():
 	_refresh_progression_shader_time()
 	_hide_progression_glow_overlay()
 	_refresh_scenario_button_visibility()
+
+func _open_save_menu(return_to_menu: bool) -> void:
+	_return_to_menu_after_save = return_to_menu
+	save_game_menu.open_for_saving()
+	if return_to_menu:
+		save_game_menu.title.text = "SAVE & GO TO MENU"
+
+func _on_save_menu_back() -> void:
+	var button: Button = settings_tab.save_and_menu_button if _return_to_menu_after_save else settings_tab.save_button
+	_return_to_menu_after_save = false
+	button.grab_focus()
+
+func _on_save_completed(_path: String) -> void:
+	if _return_to_menu_after_save:
+		_return_to_menu_after_save = false
+		_return_to_main_menu.call_deferred()
+
+func _return_to_main_menu() -> void:
+	await SaveHandler.end_session()
+	var error := get_tree().change_scene_to_file("res://scenes/mainmenuscene.tscn")
+	if error == OK:
+		TimeHandler.set_time(TimeHandler.NORMAL_TIME)
+	else:
+		save_game_menu.status_label.text = "Saved, but could not open the main menu: %s." % error_string(error)
 
 func _process(_delta: float) -> void:
 	_refresh_progression_shader_time()
@@ -47,6 +77,8 @@ func bind_slot(button, tab):
 	button.pressed.connect(set_tab.bind(tab))
 
 func set_tab(tab):
+	if save_game_menu.visible:
+		return
 	if tab != null and not _is_tab_available(tab):
 		return
 

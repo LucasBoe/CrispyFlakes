@@ -69,7 +69,7 @@ func clean_puddle(puddle) -> void:
 		puddle.queue_free()
 
 func _fade(puddle: Polygon2D) -> void:
-	var tween = create_tween()
+	var tween = puddle.create_tween()
 	tween.set_parallel(true)
 	#tween.tween_property(puddle, "scale", Vector2(END_SIZE / START_SIZE, END_SIZE / START_SIZE), FADE_DURATION)
 	tween.tween_property(puddle, "color:a", 0.0, FADE_DURATION)

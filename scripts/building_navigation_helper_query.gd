@@ -44,6 +44,8 @@ func _init(_b: Building) -> void:
 func _force_data_model_rebuild(room):
 	if room.y == null:
 		await room.get_tree().process_frame
+		if not is_instance_valid(room):
+			return
 	var floor = room.y
 	DebugLog.info("[NavConnectors]", "rebuild triggered by", room, "floor", floor)
 	_rebuild_row(floor)

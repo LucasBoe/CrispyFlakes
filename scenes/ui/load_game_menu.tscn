@@ -1,0 +1,218 @@
+[gd_scene load_steps=7 format=3 uid="uid://cmlno2l6vfr25"]
+
+[ext_resource type="Script" uid="uid://btrrmf2axmqf1" path="res://scripts/ui/load_game_menu.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cqa0uge758fkj" path="res://assets/sprites/ui/base_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" uid="uid://ccfuife2xnpps" path="res://assets/sprites/ui/2x/ui_rect_base.png" id="3_bg"]
+[ext_resource type="FontFile" uid="uid://c4is46jbsfexq" path="res://assets/fonts/Pixel-Western.ttf" id="4_title"]
+[ext_resource type="PackedScene" uid="uid://wn61nbv13ofv" path="res://scenes/ui/load_game_card.tscn" id="5_card"]
+[ext_resource type="PackedScene" uid="uid://cpwdkfo68aqbq" path="res://scenes/ui/main_menu_divider.tscn" id="5_essc0"]
+
+[node name="LoadGameMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.01, 0.02, 0.04, 0.38)
+
+[node name="Panel" type="Control" parent="."]
+editor_description = "Move this panel vertically to adjust the Load Game UI position."
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -370.0
+offset_top = -250.0
+offset_right = 370.0
+offset_bottom = 196.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Frame" type="NinePatchRect" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_bg")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+
+[node name="Layout" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Control" type="Control" parent="Panel/Margin/Layout"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.76862746, 0.38039216, 1)
+theme_override_fonts/font = ExtResource("4_title")
+theme_override_font_sizes/font_size = 8
+text = "LOAD GAME"
+horizontal_alignment = 1
+
+[node name="MainMenuDivider" parent="Panel/Margin/Layout" instance=ExtResource("5_essc0")]
+layout_mode = 2
+
+[node name="SaveScroll" type="ScrollContainer" parent="Panel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="SaveGrid" type="GridContainer" parent="Panel/Margin/Layout/SaveScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="SaveCard1" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SaveCard2" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SaveCard3" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SaveCard4" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SaveCard5" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SaveCard6" parent="Panel/Margin/Layout/SaveScroll/SaveGrid" instance=ExtResource("5_card")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="Panel/Margin/Layout"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Save complete."
+horizontal_alignment = 1
+
+[node name="BackButton" type="Button" parent="Panel/Margin/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 24)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "BACK"
+
+[node name="OverwriteDialog" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="OverwriteDialog"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -60.0
+offset_right = 180.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Frame" type="NinePatchRect" parent="OverwriteDialog/Panel"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("3_bg")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Margin" type="MarginContainer" parent="OverwriteDialog/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Layout" type="VBoxContainer" parent="OverwriteDialog/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OverwriteMessage" type="Label" parent="OverwriteDialog/Panel/Margin/Layout"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "Overwrite Save 1?
+The existing saved progress will be replaced."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="OverwriteDialog/Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CancelOverwriteButton" type="Button" parent="OverwriteDialog/Panel/Margin/Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../OverwriteButton")
+focus_neighbor_right = NodePath("../OverwriteButton")
+focus_next = NodePath("../OverwriteButton")
+focus_previous = NodePath("../OverwriteButton")
+text = "Cancel"
+
+[node name="OverwriteButton" type="Button" parent="OverwriteDialog/Panel/Margin/Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../CancelOverwriteButton")
+focus_neighbor_right = NodePath("../CancelOverwriteButton")
+focus_next = NodePath("../CancelOverwriteButton")
+focus_previous = NodePath("../CancelOverwriteButton")
+text = "Overwrite"

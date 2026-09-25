@@ -19,6 +19,10 @@ func _on_room_created(room : RoomBase):
 	
 	await get_tree().process_frame
 
+	# Loading can destroy a newly created room before this deferred check resumes.
+	if not is_instance_valid(room) or room.is_queued_for_deletion():
+		return
+
 	if room is RoomWell: #not mandatory
 		return
 
@@ -53,7 +57,16 @@ func notification_loop():
 		if not enabled or rooms.size() == 0:
 			await pause(1)
 		else:
-			for r : RoomBase in rooms:
+			# Room deletion can change the tracked list while notification waits yield.
+			for candidate in rooms.duplicate():
+				if not is_instance_valid(candidate) or candidate.is_queued_for_deletion():
+					rooms.erase(candidate)
+					continue
+				if not enabled:
+					break
+				if not rooms.has(candidate):
+					continue
+				var r: RoomBase = candidate
 				var water_alert := _get_water_shortage_color(r)
 				var electricity_alert := _get_electricity_shortage_color(r)
 				if water_alert != Color.TRANSPARENT:

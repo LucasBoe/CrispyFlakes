@@ -20,7 +20,6 @@ const GRAYSCALE_SHADER := preload("res://assets/shaders/ui_grayscale.gdshader")
 @onready var special_encounters_checkbox: CheckBox = %SpecialEncountersCheckBox
 @onready var start_button: Button = %StartButton
 @onready var back_button: Button = %BackButton
-@onready var _start_gold_plate: NinePatchRect = %GoldPlate
 @onready var _archetype_cards: Dictionary = {
 	1: %CowboyCard,
 	2: %InvestorCard,
@@ -54,11 +53,6 @@ var _default_scenario: ScenarioData
 const ACTIVE_CONTROL_MODULATE := Color.WHITE
 const INACTIVE_CONTROL_MODULATE := Color(0.38, 0.38, 0.38, 1.0)
 const FOCUS_CONTROL_MODULATE := Color(1.0, 0.5, 0.125, 1.0)
-
-func _process(_delta: float) -> void:
-	var material := _start_gold_plate.material as ShaderMaterial
-	if material != null:
-		material.set_shader_parameter("ui_time", float(Time.get_ticks_msec()) / 1000.0)
 
 func _ready() -> void:
 	for body_type: int in _archetype_checkboxes:
@@ -232,7 +226,9 @@ func _on_start_pressed() -> void:
 			checked_archetypes.append(NPCArchetypeLibrary.get_archetype(body_type))
 		else:
 			all_checked = false
-	scenario.allowed_npc_archetypes = [] if all_checked else checked_archetypes
+	if all_checked:
+		checked_archetypes.clear()
+	scenario.allowed_npc_archetypes = checked_archetypes
 
 	start_requested.emit(scenario)
 

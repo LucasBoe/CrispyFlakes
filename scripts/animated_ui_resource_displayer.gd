@@ -56,7 +56,7 @@ func animate_resource_add(resource, amount, global_pos, duration, source: String
 		anim.Sprite = instance
 
 		var offset_target = global_pos + Vector2(randf_range(-SCATTER_X, SCATTER_X), randf_range(-SCATTER_Y, SCATTER_Y))
-		var tween = get_tree().create_tween()
+		var tween = instance.create_tween()
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_OUT)
 		tween.tween_property(instance, "global_position", offset_target, duration * PHASE_1_DURATION)
@@ -76,6 +76,8 @@ func coin_anim_routine():
 				to_start.append(coin)
 
 		for coin in to_start:
+			if not coin_queue.has(coin):
+				continue
 			coin_queue.erase(coin)
 			var remaining = actively_animated.size() + coin_queue.size()
 			var pressure = clampf(float(remaining) / PRESSURE_THRESHOLD, 0.0, 1.0)
@@ -99,7 +101,7 @@ func animate_resource_spend(amount: int, world_target: Vector2, duration: float)
 		instance.play()
 		instance.frame = randi_range(0, 3)
 
-		var tween = get_tree().create_tween()
+		var tween = instance.create_tween()
 		tween.set_trans(Tween.TRANS_QUAD)
 		tween.set_ease(Tween.EASE_OUT)
 
@@ -143,6 +145,16 @@ func _process(_delta):
 		else:
 			coins_played_in_session += 1
 			coin_pitch = lerp(coin_pitch, coin_pitch_target, PITCH_RISE_SPEED / float(remaining))
+
+func clear_all() -> void:
+	coin_queue.clear()
+	actively_animated.clear()
+	coins_played_in_session = 0
+	coin_pitch = PITCH_START_LARGE
+	coin_pitch_target = PITCH_TARGET_SMALL
+	for child in get_children():
+		if child != coin_dummy:
+			child.queue_free()
 
 func create_animation(anim: ActiveAnimation):
 	anim.TimeStart = Time.get_ticks_usec() / 1000000.0

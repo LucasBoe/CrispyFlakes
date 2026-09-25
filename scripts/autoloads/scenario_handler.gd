@@ -57,6 +57,18 @@ func queue_scenario(scenario: ScenarioData) -> void:
 	pending_scenario = scenario
 
 
+func end_session() -> void:
+	current_scenario = null
+	pending_scenario = null
+	win_state = WinState.NONE
+	active_story_beats.clear()
+	_registered_quest_keys.clear()
+	_goal_conditions.clear()
+	_win_conditions.clear()
+	_lose_conditions.clear()
+	_evaluate_accum = 0.0
+
+
 func start_scenario(scenario: ScenarioData) -> void:
 	current_scenario = scenario
 	Balancing.GUEST_SPAWN_BASE_RATE = scenario.guest_spawn_base_rate

@@ -37,7 +37,6 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	start_button.pressed.connect(_on_start_pressed)
 	_add_button_sounds(back_button)
-	_add_button_sounds(start_button)
 	back_button.grab_focus()
 	_build_scenario_buttons()
 

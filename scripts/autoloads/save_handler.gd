@@ -4,15 +4,86 @@ const SAVE_PATH := "user://simple_save.json"
 const SAVE_VERSION := 6
 
 var _pending_load := false
+var _pending_save_path := SAVE_PATH
+const DAYS_PER_MONTH := 30.0
+var played_seconds := 0.0
+var _saving := false
+var save_directory := "user://"
+var active_save_path := ""
+
+func _physics_process(delta: float) -> void:
+	var scene := get_tree().current_scene
+	if scene != null and scene.scene_file_path == "res://scenes/mainscene.tscn":
+		played_seconds += delta
 
 func _ready() -> void:
 	Console.add_command("save", console_save, 0, 0, "Saves placed rooms plus worker and guest positions.")
 	Console.add_command("load", console_load, 0, 0, "Loads the simple room and NPC save file.")
 
 func has_save() -> bool:
-	return FileAccess.file_exists(SAVE_PATH)
+	return not get_save_paths().is_empty()
 
-func get_save_info(path: String = SAVE_PATH) -> Dictionary:
+func get_save_paths() -> Array[String]:
+	var paths: Array[String] = []
+	var legacy_path := save_directory.path_join("simple_save.json")
+	if FileAccess.file_exists(legacy_path):
+		paths.append(legacy_path)
+	var directory := DirAccess.open(save_directory)
+	if directory != null:
+		directory.list_dir_begin()
+		var file_name := directory.get_next()
+		while not file_name.is_empty():
+			if not directory.current_is_dir() and file_name.begins_with("save_") and file_name.ends_with(".json"):
+				paths.append(save_directory.path_join(file_name))
+			file_name = directory.get_next()
+		directory.list_dir_end()
+	var save_times := {}
+	for path in paths:
+		save_times[path] = get_save_info(path).get("saved_at_unix", FileAccess.get_modified_time(path))
+	paths.sort_custom(func(a: String, b: String) -> bool:
+		var a_time: float = save_times[a]
+		var b_time: float = save_times[b]
+		return a_time > b_time if a_time != b_time else a > b
+	)
+	return paths
+
+func get_continue_path() -> String:
+	var paths := get_save_paths()
+	return paths[0] if not paths.is_empty() else ""
+
+func get_save_numbers() -> Dictionary:
+	var numbers := {}
+	var paths := get_save_paths()
+	paths.sort()
+	for path in paths:
+		var suffix := path.get_file().get_basename().trim_prefix("save_")
+		if suffix.is_valid_int() and int(suffix) > 0:
+			numbers[path] = int(suffix)
+	# Preserve old saves without renaming them or colliding with numbered slots.
+	for path in paths:
+		if numbers.has(path):
+			continue
+		var number := 1
+		while number in numbers.values():
+			number += 1
+		numbers[path] = number
+	return numbers
+
+func get_new_save_path() -> String:
+	var number := 1
+	for existing_number: int in get_save_numbers().values():
+		number = maxi(number, existing_number + 1)
+	return save_directory.path_join("save_%04d.json" % number)
+
+func get_save_number(path: String) -> int:
+	var suffix := path.get_file().get_basename().trim_prefix("save_")
+	if suffix.is_valid_int():
+		return int(suffix)
+	return int(get_save_numbers().get(path, 1))
+
+func get_save_info(path: String = "") -> Dictionary:
+	if path.is_empty():
+		path = get_continue_path()
 	if not FileAccess.file_exists(path):
 		return {}
 	var file := FileAccess.open(path, FileAccess.READ)
@@ -34,24 +105,46 @@ func get_save_info(path: String = SAVE_PATH) -> Dictionary:
 		date = Time.get_datetime_dict_from_unix_time(local_timestamp)
 	else:
 		date = Time.get_datetime_dict_from_datetime_string(saved_at, false)
+	var cash := float(data.get("money_free_pool", 0.0))
+	for entry: Dictionary in data.get("money_location_money", []):
+		cash += float(entry.get("amount", 0.0))
 	return {
+		"saved_at_unix": float(data.get("saved_at_unix", FileAccess.get_modified_time(path))),
 		"game_mode": str(data.get("game_mode", mode)),
 		"scenario_name": str(data.get("scenario_name", scenario.display_name if scenario != null and scenario.is_campaign else "")),
 		"saloon_name": str(data.get("saloon_name", "")),
 		"date": "%02d.%02d.%04d" % [date.day, date.month, date.year],
+		"timestamp": "%02d.%02d.%04d · %02d:%02d" % [date.day, date.month, date.year, date.hour, date.minute],
+		"months_played": floori(float(data.played_seconds) / (Global.DAY_DURATION * DAYS_PER_MONTH)) if data.has("played_seconds") else -1,
+		"cash_owned": cash,
+		"worker_count": _get_array(data, "workers").size(),
+		"preview_path": str(data.get("preview_path", "")),
 	}
 
-func flag_pending_load() -> void:
+func flag_pending_load(save_path: String = "") -> void:
 	_pending_load = true
+	_pending_save_path = get_continue_path() if save_path.is_empty() else save_path
 
 func has_pending_load() -> bool:
 	return _pending_load
 
 func load_pending() -> void:
 	_pending_load = false
-	console_load()
+	console_load(_pending_save_path)
 
-func console_save() -> void:
+func console_save(save_path: String = "") -> void:
+	if save_path.is_empty():
+		save_path = active_save_path if not active_save_path.is_empty() else get_new_save_path()
+	var error := await save_game(save_path)
+	if error != OK:
+		Console.print_error("Could not save game: %s." % error_string(error))
+
+func save_game(save_path: String) -> Error:
+	if _saving:
+		return ERR_BUSY
+	_saving = true
+	TimeHandler.push_pause_lock(self)
+	var preview_path := await _capture_save_preview(save_path)
 	var rooms := _serialize_rooms()
 	var water_pipes := _serialize_water_pipes()
 	var electricity_tiles := _serialize_electricity_tiles()
@@ -65,6 +158,9 @@ func console_save() -> void:
 	var payload := {
 		"version": SAVE_VERSION,
 		"saved_at": Time.get_datetime_string_from_system(),
+		"saved_at_unix": Time.get_unix_time_from_system(),
+		"played_seconds": played_seconds,
+		"preview_path": preview_path,
 		"saloon_name": (Building.get_node("SaloonSign") as BuildingSign).saloon_name,
 		"game_mode": "Tutorial" if ScenarioHandler.current_scenario == null else ("Campaign" if ScenarioHandler.current_scenario.is_campaign else "Sandbox"),
 		"scenario_name": ScenarioHandler.current_scenario.display_name if ScenarioHandler.current_scenario != null and ScenarioHandler.current_scenario.is_campaign else "",
@@ -86,12 +182,23 @@ func console_save() -> void:
 		"scenario_fired_beats": scenario.get("scenario_fired_beats", []),
 	}
 
-	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	TimeHandler.pop_pause_lock(self)
+	_saving = false
+	var temporary_path := save_path + ".tmp"
+	var file := FileAccess.open(temporary_path, FileAccess.WRITE)
 	if file == null:
-		Console.print_error("Failed to open %s for writing." % ProjectSettings.globalize_path(SAVE_PATH))
-		return
+		return FileAccess.get_open_error()
 
 	file.store_string(JSON.stringify(payload, "\t"))
+	file.flush()
+	var error := file.get_error()
+	file.close()
+	if error != OK:
+		return error
+	error = DirAccess.rename_absolute(temporary_path, save_path)
+	if error != OK:
+		return error
+	active_save_path = save_path
 	Console.print_line("Saved %d rooms, %d pipes, %d electricity tiles, %d stored items, %d loose items, %d workers, %d guests, %d cages, %d equipment to %s." % [
 		rooms.size(),
 		water_pipes.size(),
@@ -102,17 +209,39 @@ func console_save() -> void:
 		guests.size(),
 		cages.size(),
 		equipment.size(),
-		ProjectSettings.globalize_path(SAVE_PATH),
+		ProjectSettings.globalize_path(save_path),
 	])
+	return OK
 
-func console_load() -> void:
-	if not FileAccess.file_exists(SAVE_PATH):
-		Console.print_error("No save file found at %s." % ProjectSettings.globalize_path(SAVE_PATH))
+func _capture_save_preview(save_path: String) -> String:
+	if DisplayServer.get_name() == "headless":
+		return ""
+	var ui := Global.UI
+	var ui_visible := is_instance_valid(ui) and ui.visible
+	var console_visible: bool = Console.control.visible
+	if is_instance_valid(ui):
+		ui.hide()
+	Console.control.hide()
+	await RenderingServer.frame_post_draw
+	var screenshot := get_viewport().get_texture().get_image()
+	if is_instance_valid(ui):
+		ui.visible = ui_visible
+	Console.control.visible = console_visible
+	var preview_path := save_path.get_basename() + ".png"
+	if screenshot == null or screenshot.is_empty() or screenshot.save_png(preview_path) != OK:
+		return ""
+	return preview_path
+
+func console_load(save_path: String = "") -> void:
+	if save_path.is_empty():
+		save_path = get_continue_path()
+	if not FileAccess.file_exists(save_path):
+		Console.print_error("No save file found at %s." % ProjectSettings.globalize_path(save_path))
 		return
 
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	var file := FileAccess.open(save_path, FileAccess.READ)
 	if file == null:
-		Console.print_error("Failed to open %s for reading." % ProjectSettings.globalize_path(SAVE_PATH))
+		Console.print_error("Failed to open %s for reading." % ProjectSettings.globalize_path(save_path))
 		return
 
 	var parsed = JSON.parse_string(file.get_as_text())
@@ -122,6 +251,7 @@ func console_load() -> void:
 
 	var save_data := parsed as Dictionary
 	await _apply_save(save_data)
+	active_save_path = save_path
 
 	var room_count := _get_array(save_data, "rooms").size()
 	var pipe_count := _get_array(save_data, "water_pipes").size()
@@ -142,10 +272,11 @@ func console_load() -> void:
 		guest_count,
 		cage_count,
 		equipment_count,
-		ProjectSettings.globalize_path(SAVE_PATH),
+		ProjectSettings.globalize_path(save_path),
 	])
 
 func _apply_save(save_data: Dictionary) -> void:
+	played_seconds = float(save_data.get("played_seconds", 0.0))
 	if int(save_data.get("version", 0)) < SAVE_VERSION:
 		save_data = _backfill_save_data(save_data)
 
@@ -519,6 +650,41 @@ func _restore_worker_assignment(worker: NPCWorker, job: int, job_room: RoomBase)
 
 	worker.Behaviour.set_behaviour(behaviour_script, behaviour_data)
 
+func end_session() -> void:
+	TimeHandler.push_pause_lock(self)
+	FeatureGateHandler.set_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN, false)
+	await StartupCoordinator.cancel()
+	ScenarioHandler.end_session()
+	TutorialHandler.clear_quests()
+	PlacementHandler.stop_building()
+	RoomStatusHandler.enabled = false
+	_clear_active_fights()
+	_clear_active_fires()
+	_clear_spawned_npcs()
+	# Let NPC destruction release held items and room reservations first.
+	await get_tree().process_frame
+	_clear_loose_items()
+	_clear_building()
+	for dirt in DirtHandler.dirt_instances.duplicate():
+		DirtHandler.clean_dirt(dirt)
+	for puddle in PuddleHandler.puddle_instances.duplicate():
+		PuddleHandler.clean_puddle(puddle)
+	UiNotifications.clear_all()
+	AnimatedUIResources.clear_all()
+	EquipmentInventory.instances.clear()
+	BountyHandler.npc_bounties.clear()
+	BountyHandler.npc_fight_fines.clear()
+	BountyHandler.npc_fine_reasons.clear()
+	BountyHandler.active_looks.clear()
+	HoverHandler.currently_hovered = null
+	HoverHandler.previously_hovered = null
+	HoverHandler.worker_ui_active = false
+	Global.NPCSpawner.next_guest_progression = 1.0
+	Global.NPCSpawner.next_special_encounter_progression = 0.0
+	Building.visible = false
+	await get_tree().process_frame
+	TimeHandler.pop_pause_lock(self)
+
 func _clear_active_fights() -> void:
 	for fight: Fight in FightHandler.active_fights.duplicate():
 		FightHandler.end_fight(fight)
@@ -567,7 +733,11 @@ func _clear_spawned_npcs() -> void:
 	Global.NPCSpawner.special_npcs.clear()
 
 	for child in Global.NPCSpawner.get_children():
-		if child is HorseNPC or child is TraderWagon or child is NPCSheriff:
+		if child.is_queued_for_deletion():
+			continue
+		if child is NPC:
+			child.destroy()
+		else:
 			child.queue_free()
 
 func _clear_building() -> void:

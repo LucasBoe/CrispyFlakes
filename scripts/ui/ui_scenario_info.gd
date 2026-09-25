@@ -9,13 +9,13 @@ const _FEATURES := [
 	FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS,
 ]
 
-@onready var _no_scenario_label: Label = $MarginContainer/MarginContainer/NoScenarioLabel
-@onready var _content: VBoxContainer = $MarginContainer/MarginContainer/Content
-@onready var _title_label: Label = $MarginContainer/MarginContainer/Content/TitleLabel
-@onready var _description_label: Label = $MarginContainer/MarginContainer/Content/DescriptionLabel
-@onready var _params_label: Label = $MarginContainer/MarginContainer/Content/ParamsLabel
-@onready var _goals_label: Label = $MarginContainer/MarginContainer/Content/GoalsLabel
-@onready var _conditions_label: Label = $MarginContainer/MarginContainer/Content/ConditionsLabel
+@onready var _no_scenario_label: Label = $MarginContainer/MarginContainer/ScrollContainer/NoScenarioLabel
+@onready var _content: VBoxContainer = $MarginContainer/MarginContainer/ScrollContainer/Content
+@onready var _title_label: Label = $MarginContainer/MarginContainer/ScrollContainer/Content/TitleLabel
+@onready var _description_label: Label = $MarginContainer/MarginContainer/ScrollContainer/Content/DescriptionLabel
+@onready var _params_label: Label = $MarginContainer/MarginContainer/ScrollContainer/Content/ParamsLabel
+@onready var _goals_label: Label = $MarginContainer/MarginContainer/ScrollContainer/Content/GoalsLabel
+@onready var _conditions_label: Label = $MarginContainer/MarginContainer/ScrollContainer/Content/ConditionsLabel
 
 func _ready() -> void:
 	TutorialHandler.quests_changed_signal.connect(_refresh)

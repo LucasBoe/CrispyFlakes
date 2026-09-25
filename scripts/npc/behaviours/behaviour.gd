@@ -1,6 +1,9 @@
 extends RefCounted
 class_name Behaviour
 
+signal frame_finished
+signal pause_finished
+
 var npc : NPC
 var data : BehaviourSaveData
 var stopped = false
@@ -19,7 +22,7 @@ func run():
 
 	start_loop()
 
-	await (Engine.get_main_loop() as SceneTree).process_frame
+	await end_of_frame()
 
 	if stopped:
 		return
@@ -48,8 +51,9 @@ func stop_loop() -> BehaviourSaveData:
 func try_get_room_if_not_occupied(saved_data, type, ocupied):
 	var room = null
 
-	if saved_data != null and not ocupied.has(saved_data.room):
-		room = saved_data.room
+	var saved_room: RoomBase = saved_data.room if saved_data != null else null
+	if is_instance_valid(saved_room) and is_instance_of(saved_room, type) and not ocupied.has(saved_room):
+		room = saved_room
 	else:
 		var reachable = npc.Navigation.get_reachable_rooms()
 		room = Building.query.closest_room_of_type(type, npc.global_position, ocupied, Vector2.ZERO, reachable)
@@ -154,8 +158,11 @@ func move(target, custom_speed = -1):
 	var target_type := typeof(target)
 	var target_is_live_node := is_instance_valid(target) and target is Node2D
 	var target_is_live_npc := is_instance_valid(target) and target is NPC
+	var target_is_live_item := is_instance_valid(target) and target is Item
 	var goal_pos: Vector2
-	if target_is_live_node:
+	if target_is_live_item:
+		goal_pos = _get_item_pickup_position(target as Item)
+	elif target_is_live_node:
 		goal_pos = (target as Node2D).global_position
 	elif target_type == TYPE_VECTOR2:
 		goal_pos = target
@@ -178,7 +185,7 @@ func move(target, custom_speed = -1):
 
 	if not is_instance_valid(npc):
 		return
-	npc.Navigation.set_target(target if target_is_live_node else goal_pos, custom_speed)
+	npc.Navigation.set_target(target if target_is_live_node and not target_is_live_item else goal_pos, custom_speed)
 	if target_is_live_npc:
 		while is_instance_valid(target) and is_instance_valid(npc) and npc.Navigation.is_moving:
 			if not npc.Navigation.is_on_stair_path():
@@ -208,8 +215,27 @@ func _get_closest_reachable_room_to(goal_pos: Vector2) -> RoomBase:
 			closest = room
 	return closest
 
+func _get_item_pickup_position(item: Item) -> Vector2:
+	if item == null or not is_instance_valid(item):
+		return Vector2.ZERO
+
+	var source_room := Building.query.closest_on_position_floor(RoomBase, item.global_position) as RoomBase
+	if source_room != null:
+		var room_width := source_room.data.width if source_room.data != null else 1
+		var min_x := source_room.global_position.x + 4.0
+		var max_x := source_room.global_position.x + room_width * 48.0 - 4.0
+		return Vector2(clampf(item.global_position.x, min_x, max_x), source_room.get_center_floor_position().y)
+
+	var floor_index: Vector2i = Building.round_floor_index_from_global_position(item.global_position)
+	return Vector2(item.global_position.x, floor_index.y * -48.0)
+
 func pause(duration):
-	return (Engine.get_main_loop() as SceneTree).create_timer(duration).timeout
+	(Engine.get_main_loop() as SceneTree).create_timer(duration).timeout.connect(_on_pause_finished, CONNECT_ONE_SHOT)
+	return pause_finished
+
+func _on_pause_finished() -> void:
+	if not stopped:
+		pause_finished.emit()
 
 func fetch_item(item: Enum.Items):
 	if npc.Item.current_item and npc.Item.current_item.itemType == item:

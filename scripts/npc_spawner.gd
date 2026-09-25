@@ -18,7 +18,7 @@ var workers = []
 var special_npcs = []
 
 ## Live guest count + average mood per NPCLookInfo.body_type, keyed by
-## the int body_type: {count: int, avg_mood: float}.
+## the int body_type: {count: int, avg_mood: float, mood_entry_count: int}.
 func get_guest_type_stats() -> Dictionary:
 	var stats: Dictionary = {}
 	for guest: NPCGuest in get_live_guests():
@@ -26,10 +26,15 @@ func get_guest_type_stats() -> Dictionary:
 			continue
 		var body_type: int = guest.look_info.body_type
 		if not stats.has(body_type):
-			stats[body_type] = {"count": 0, "_mood_total": 0.0}
+			stats[body_type] = {"count": 0, "_mood_total": 0.0, "mood_entry_count": 0}
 		stats[body_type].count += 1
 		if guest.Needs != null:
 			stats[body_type]._mood_total += guest.Needs.mood.strength
+		for entry in guest.mood_log:
+			var amount: float = entry.amount if entry.has("amount") else 0.0
+			if is_zero_approx(amount):
+				continue
+			stats[body_type].mood_entry_count += 1
 
 	for body_type in stats.keys():
 		var entry: Dictionary = stats[body_type]
@@ -175,6 +180,9 @@ func _console_list_guests() -> void:
 		])
 
 func _process(delta):
+	var scene := get_tree().current_scene
+	if scene == null or scene.scene_file_path != "res://scenes/mainscene.tscn":
+		return
 	_sync_npc_click_collision_debug()
 
 	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
@@ -367,8 +375,11 @@ func spawn_new_guest():
 		guest.init(bounty_entry.look)
 	else:
 		guest.init()
-		while BountyHandler.is_look_similar_to_any_bounty(guest.look_info):
+		# bounded: with many bounties their hue bands can cover every hue
+		var attempts := 0
+		while attempts < 50 and BountyHandler.is_look_similar_to_any_bounty(guest.look_info):
 			guest.apply_look()
+			attempts += 1
 
 	guests.append(guest)
 	ResourceHandler.change_resource(Enum.Resources.GUEST, 1)
