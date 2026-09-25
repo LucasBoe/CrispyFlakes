@@ -23,7 +23,7 @@
 [ext_resource type="Texture2D" uid="uid://bwjaw1yrpb7i3" path="res://assets/sprites/ui/2x/main_menu_buttons_backdrop_shadow_128.png" id="88_8pjb3"]
 [ext_resource type="PackedScene" uid="uid://yc1tsqqnfjm2" path="res://scenes/ui/ui_campaign_selection.tscn" id="88_ls525"]
 [ext_resource type="AudioStream" uid="uid://xh1mhiy0yisy" path="res://assets/audio/music/Sun Up Gunned Down.mp3" id="93_l3yaw"]
-[ext_resource type="PackedScene" path="res://scenes/ui/load_game_menu.tscn" id="load_game_menu"]
+[ext_resource type="PackedScene" uid="uid://cmlno2l6vfr25" path="res://scenes/ui/load_game_menu.tscn" id="load_game_menu"]
 [ext_resource type="Theme" uid="uid://cyyj3dstmuttt" path="res://assets/sprites/ui/2x/main_menu/main_menu_button_theme.tres" id="menu_button_theme"]
 [ext_resource type="Texture2D" uid="uid://skk7uamulti0" path="res://assets/sprites/room_saloon_custom_light_overlay.png" id="ml_chandelier_tex"]
 [ext_resource type="Texture2D" uid="uid://wwgx7vloef3h" path="res://assets/sprites/fire_glow_overlay.png" id="ml_fire_tex"]
@@ -2312,10 +2312,11 @@ position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_l3yaw")
 
 [node name="HBoxContainerGuests" type="HBoxContainer" parent="CampaignPreview"]
-offset_left = -224.0
+offset_left = -407.0
 offset_top = -32.0
-offset_right = -184.0
+offset_right = -1.0
 offset_bottom = 8.0
+size_flags_horizontal = 8
 alignment = 2
 
 [node name="Guest" type="TextureRect" parent="CampaignPreview/HBoxContainerGuests"]

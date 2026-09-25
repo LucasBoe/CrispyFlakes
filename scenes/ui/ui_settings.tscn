@@ -110,6 +110,13 @@ size_flags_horizontal = 3
 theme = ExtResource("22_hpv7r")
 text = "Save & Go to Menu"
 
+[node name="MenuButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer/SaveButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("22_hpv7r")
+text = "Go to Menu"
+tooltip_text = "Return to the main menu without saving."
+
 [node name="BackButton" type="Button" parent="MarginContainer/MarginContainer/GridContainer"]
 visible = false
 layout_mode = 2

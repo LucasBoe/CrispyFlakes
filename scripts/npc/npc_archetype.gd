@@ -40,7 +40,7 @@ extends Resource
 
 ## Chance this archetype enters the saloon by horse when spawning as a
 ## fresh guest. 0.0 = never, 1.0 = always.
-@export_range(0.0, 1.0, 0.01) var horse_arrival_chance: float = 0.3
+@export_range(0.0, 1.0, 0.01) var horse_arrival_chance: float = 0.0
 
 ## Relative weight for this archetype being picked as a bounty target
 ## (see NPCLookInfo.new_random_bounty()). Higher = more likely to end up

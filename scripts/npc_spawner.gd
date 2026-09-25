@@ -388,7 +388,7 @@ func spawn_new_guest():
 	guest.Animator.set_z(Enum.ZLayer.NPC_OUTSIDE)
 
 	var archetype = NPCArchetypeLibrary.get_archetype_for_look(guest.look_info)
-	if randf() < archetype.horse_arrival_chance:
+	if FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.HORSE_ARRIVALS) and randf() < archetype.horse_arrival_chance:
 		guest.force_behaviour(ArriveOnHorseBehaviour)
 
 	return guest

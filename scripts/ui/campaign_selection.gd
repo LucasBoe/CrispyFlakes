@@ -11,12 +11,6 @@ const STAR_HALF := preload("res://assets/sprites/ui/2x/star_difficulty_half.png"
 const STAR_EMPTY := preload("res://assets/sprites/ui/2x/star_difficulty_empty.png")
 const STAR_COUNT := 5
 
-# only gates that have an icon are shown
-const FEATURE_ICONS := {
-	FeatureGateHandler.Feature.INJURY_SYSTEM: preload("res://assets/sprites/ui/icon_injured.png"),
-	FeatureGateHandler.Feature.TEMPERATURE_SYSTEM: preload("res://assets/sprites/ui/icon_cold.png"),
-	FeatureGateHandler.Feature.ROBBER_SPAWN: preload("res://assets/sprites/ui/icon_robbert.png"),
-}
 const DISABLED_FEATURE_MODULATE := Color(1.0, 1.0, 1.0, 0.34)
 
 const DETAILS_PATH := "MarginContainer/HBoxContainer/DetailsContainer/Margin/Layout/Body/Details/"
@@ -107,9 +101,10 @@ func _fill_guests(archetypes: Array[NPCArchetype]) -> void:
 
 func _fill_features(scenario: ScenarioData) -> void:
 	_clear(features_container)
-	for feature in FEATURE_ICONS:
+	# only gates that have an icon are shown
+	for feature in FeatureGateHandler.FEATURE_ICONS:
 		var enabled := bool(scenario.feature_overrides.get(feature, FeatureGateHandler.is_enabled(feature)))
-		var icon := _make_icon(FEATURE_ICONS[feature])
+		var icon := _make_icon(FeatureGateHandler.FEATURE_ICONS[feature])
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		if not enabled:
 			icon.modulate = DISABLED_FEATURE_MODULATE

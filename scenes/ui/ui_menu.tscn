@@ -351,3 +351,85 @@ visible = false
 z_index = 100
 layout_mode = 1
 mode = 1
+
+[node name="LeaveGameDialog" type="ColorRect" parent="."]
+visible = false
+z_index = 100
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("22_hpv7r")
+color = Color(0, 0, 0, 0.6)
+
+[node name="Panel" type="PanelContainer" parent="LeaveGameDialog"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -60.0
+offset_right = 180.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Frame" type="NinePatchRect" parent="LeaveGameDialog/Panel"]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("9_xsf2i")
+patch_margin_left = 8
+patch_margin_top = 8
+patch_margin_right = 8
+patch_margin_bottom = 8
+
+[node name="Margin" type="MarginContainer" parent="LeaveGameDialog/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Layout" type="VBoxContainer" parent="LeaveGameDialog/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Message" type="Label" parent="LeaveGameDialog/Panel/Margin/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Return to the main menu without saving?
+Any progress since your last save will be lost."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="LeaveGameDialog/Panel/Margin/Layout"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CancelLeaveButton" type="Button" parent="LeaveGameDialog/Panel/Margin/Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../LeaveButton")
+focus_neighbor_top = NodePath("../LeaveButton")
+focus_neighbor_right = NodePath("../LeaveButton")
+focus_neighbor_bottom = NodePath("../LeaveButton")
+focus_next = NodePath("../LeaveButton")
+focus_previous = NodePath("../LeaveButton")
+text = "Cancel"
+
+[node name="LeaveButton" type="Button" parent="LeaveGameDialog/Panel/Margin/Layout/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_left = NodePath("../CancelLeaveButton")
+focus_neighbor_top = NodePath("../CancelLeaveButton")
+focus_neighbor_right = NodePath("../CancelLeaveButton")
+focus_neighbor_bottom = NodePath("../CancelLeaveButton")
+focus_next = NodePath("../CancelLeaveButton")
+focus_previous = NodePath("../CancelLeaveButton")
+text = "Leave Without Saving"

@@ -5,7 +5,6 @@ class_name NPC
 const STATE_LABEL_FIGHT := "Fighting"
 const NAMETAG_SCENE := preload("res://scenes/npcs/npc_nametag.tscn")
 const NAMETAG_LABEL_PATH := ^"MarginContainer/MarginContainer/LabelName"
-const NAMETAG_SHOW_ZOOM_THRESHOLD := 3.0
 const CLICK_COLLISION_DEBUG_COLOR := Color(1.0, 0.65, 0.1, 0.9)
 const PRECISE_CLICK_COLLISION_DEBUG_COLOR := Color(0.25, 0.9, 1.0, 0.95)
 
@@ -200,7 +199,7 @@ func _refresh_nametag() -> void:
 		_last_nametag_text = display_name
 		call_deferred("_refresh_nametag_layout")
 
-	var should_show: bool = not display_name.is_empty() and is_instance_valid(Camera) and Camera.zoom.x >= NAMETAG_SHOW_ZOOM_THRESHOLD
+	var should_show: bool = not display_name.is_empty() and HoverHandler.currently_hovered == self
 	if should_show == _last_nametag_visible:
 		return
 

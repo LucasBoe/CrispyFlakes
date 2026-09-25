@@ -24,6 +24,9 @@ enum Feature {
 	## Guests randomly rolling as robbers. Naturally requires enough
 	## guests/workers around and >500 money in the bank.
 	ROBBER_SPAWN,
+	## Guests arriving (and leaving) on horseback, per their archetype's
+	## horse_arrival_chance. Off = everyone walks in.
+	HORSE_ARRIVALS,
 }
 
 const _NAMES := {
@@ -32,6 +35,7 @@ const _NAMES := {
 	Feature.GUEST_AUTO_SPAWN: "guest_auto_spawn",
 	Feature.INJURY_SYSTEM: "injury_system",
 	Feature.ROBBER_SPAWN: "robber_spawn",
+	Feature.HORSE_ARRIVALS: "horse_arrivals",
 }
 
 ## Default on/off state per feature, used whenever there's no manual
@@ -44,6 +48,16 @@ const _DEFAULTS := {
 	Feature.GUEST_AUTO_SPAWN: false,
 	Feature.INJURY_SYSTEM: true,
 	Feature.ROBBER_SPAWN: true,
+	Feature.HORSE_ARRIVALS: true,
+}
+
+## Small UI icon per feature, shown in campaign selection and the sandbox editor.
+## Features without an entry have no icon.
+const FEATURE_ICONS := {
+	Feature.INJURY_SYSTEM: preload("res://assets/sprites/ui/icon_injured.png"),
+	Feature.TEMPERATURE_SYSTEM: preload("res://assets/sprites/ui/icon_cold.png"),
+	Feature.ROBBER_SPAWN: preload("res://assets/sprites/ui/icon_robbert.png"),
+	Feature.HORSE_ARRIVALS: preload("res://assets/sprites/ui/icon_horse.png"),
 }
 
 const ROBBER_SPAWN_MIN_MONEY := 500

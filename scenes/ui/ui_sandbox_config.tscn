@@ -269,6 +269,18 @@ layout_mode = 2
 size_flags_horizontal = 0
 button_pressed = true
 
+[node name="HorseArrivalsLabel" type="Label" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Horse Arrivals"
+
+[node name="HorseArrivalsCheckBox" type="CheckBox" parent="MarginContainer/MarginContainer/HBoxContainer/SettingsColumns/WorldRules/Fields"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+size_flags_horizontal = 0
+button_pressed = true
+
 [node name="GuestTypes" type="VBoxContainer" parent="MarginContainer/MarginContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3

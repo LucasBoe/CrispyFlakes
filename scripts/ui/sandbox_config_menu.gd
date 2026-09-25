@@ -18,6 +18,7 @@ const GRAYSCALE_SHADER := preload("res://assets/shaders/ui_grayscale.gdshader")
 @onready var injury_checkbox: CheckBox = %InjuryCheckBox
 @onready var temperature_checkbox: CheckBox = %TemperatureCheckBox
 @onready var special_encounters_checkbox: CheckBox = %SpecialEncountersCheckBox
+@onready var horse_arrivals_checkbox: CheckBox = %HorseArrivalsCheckBox
 @onready var start_button: Button = %StartButton
 @onready var back_button: Button = %BackButton
 @onready var _archetype_cards: Dictionary = {
@@ -53,6 +54,8 @@ var _default_scenario: ScenarioData
 const ACTIVE_CONTROL_MODULATE := Color.WHITE
 const INACTIVE_CONTROL_MODULATE := Color(0.38, 0.38, 0.38, 1.0)
 const FOCUS_CONTROL_MODULATE := Color(1.0, 0.5, 0.125, 1.0)
+# same dimming campaign selection uses for disabled feature icons
+const DISABLED_FEATURE_ICON_COLOR := Color(1.0, 1.0, 1.0, 0.34)
 
 func _ready() -> void:
 	for body_type: int in _archetype_checkboxes:
@@ -66,6 +69,7 @@ func _ready() -> void:
 		card.gui_input.connect(_on_archetype_card_input.bind(body_type))
 		card.mouse_entered.connect(_refresh_archetype_cards)
 		card.mouse_exited.connect(_refresh_archetype_cards.call_deferred)
+	_apply_feature_icons()
 	_default_scenario = load(DEFAULT_SCENARIO_PATH) as ScenarioData
 	_apply_defaults()
 	_refresh_archetype_cards()
@@ -78,6 +82,22 @@ func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
 	visibility_changed.connect(_on_visibility_changed)
 	_configure_focus_order()
+
+## Shows each gate's campaign-selection icon on its checkbox, dimmed while unchecked.
+func _apply_feature_icons() -> void:
+	var checkboxes := {
+		FeatureGateHandler.Feature.ROBBER_SPAWN: robber_checkbox,
+		FeatureGateHandler.Feature.INJURY_SYSTEM: injury_checkbox,
+		FeatureGateHandler.Feature.TEMPERATURE_SYSTEM: temperature_checkbox,
+		FeatureGateHandler.Feature.HORSE_ARRIVALS: horse_arrivals_checkbox,
+	}
+	for feature in checkboxes:
+		var checkbox: CheckBox = checkboxes[feature]
+		checkbox.icon = FeatureGateHandler.FEATURE_ICONS.get(feature)
+		for color_name in ["icon_normal_color", "icon_hover_color", "icon_focus_color"]:
+			checkbox.add_theme_color_override(color_name, DISABLED_FEATURE_ICON_COLOR)
+		for color_name in ["icon_pressed_color", "icon_hover_pressed_color"]:
+			checkbox.add_theme_color_override(color_name, Color.WHITE)
 
 func _on_visibility_changed() -> void:
 	if is_visible_in_tree():
@@ -97,7 +117,7 @@ func _configure_focus_order() -> void:
 	if robber_slider.editable:
 		controls.append(robber_slider)
 	controls.append_array([guest_auto_spawn_checkbox, injury_checkbox,
-		temperature_checkbox, special_encounters_checkbox])
+		temperature_checkbox, special_encounters_checkbox, horse_arrivals_checkbox])
 	for checkbox: CheckBox in _archetype_checkboxes.values():
 		controls.append(checkbox)
 	controls.append_array([back_button, start_button])
@@ -119,6 +139,7 @@ func _apply_defaults() -> void:
 	injury_checkbox.button_pressed = bool(_default_scenario.feature_overrides.get(FeatureGateHandler.Feature.INJURY_SYSTEM, FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.INJURY_SYSTEM)))
 	temperature_checkbox.button_pressed = bool(_default_scenario.feature_overrides.get(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM, FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.TEMPERATURE_SYSTEM)))
 	special_encounters_checkbox.button_pressed = bool(_default_scenario.feature_overrides.get(FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS, FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS)))
+	horse_arrivals_checkbox.button_pressed = bool(_default_scenario.feature_overrides.get(FeatureGateHandler.Feature.HORSE_ARRIVALS, FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.HORSE_ARRIVALS)))
 	_on_robber_toggled(robber_checkbox.button_pressed)
 
 	var allowed := _default_scenario.allowed_npc_archetypes
@@ -214,6 +235,7 @@ func _on_start_pressed() -> void:
 		FeatureGateHandler.Feature.INJURY_SYSTEM: injury_checkbox.button_pressed,
 		FeatureGateHandler.Feature.TEMPERATURE_SYSTEM: temperature_checkbox.button_pressed,
 		FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS: special_encounters_checkbox.button_pressed,
+		FeatureGateHandler.Feature.HORSE_ARRIVALS: horse_arrivals_checkbox.button_pressed,
 	}
 	scenario.is_campaign = false
 	scenario.show_basic_controls_ui = _default_scenario.show_basic_controls_ui if _default_scenario != null else false

@@ -6,6 +6,9 @@ class_name MenuUIHandler
 @onready var progression_tab = $MarginContainer/UIProgressionTree
 @onready var scenario_tab = $MarginContainer/UIScenarioInfo
 @onready var save_game_menu = $SaveGameMenu
+@onready var leave_dialog: Control = $LeaveGameDialog
+@onready var cancel_leave_button: Button = %CancelLeaveButton
+@onready var leave_button: Button = %LeaveButton
 
 @onready var build_button = $HBoxContainer/Button_Build
 @onready var settings_button = $HBoxContainer/Button_Settings
@@ -21,10 +24,14 @@ var _tutorial_available_tabs: Dictionary = {}
 var _progression_glow_material: ShaderMaterial
 var _progression_glow_tween: Tween
 var _return_to_menu_after_save := false
+var _returning_to_menu := false
 
 func _ready():
 	settings_tab.save_requested.connect(_open_save_menu.bind(false))
 	settings_tab.save_and_menu_requested.connect(_open_save_menu.bind(true))
+	settings_tab.menu_requested.connect(_show_leave_confirmation)
+	cancel_leave_button.pressed.connect(_cancel_leave)
+	leave_button.pressed.connect(_return_to_main_menu)
 	save_game_menu.back_requested.connect(_on_save_menu_back)
 	save_game_menu.save_completed.connect(_on_save_completed)
 	bind_slot(build_button, build_tab)
@@ -41,6 +48,8 @@ func _ready():
 	_refresh_scenario_button_visibility()
 
 func _open_save_menu(return_to_menu: bool) -> void:
+	if leave_dialog.visible or _returning_to_menu:
+		return
 	_return_to_menu_after_save = return_to_menu
 	save_game_menu.open_for_saving()
 	if return_to_menu:
@@ -56,13 +65,47 @@ func _on_save_completed(_path: String) -> void:
 		_return_to_menu_after_save = false
 		_return_to_main_menu.call_deferred()
 
+func _show_leave_confirmation() -> void:
+	if save_game_menu.visible or _returning_to_menu:
+		return
+	TimeHandler.push_pause_lock(self)
+	leave_dialog.show()
+	cancel_leave_button.grab_focus()
+
+func _cancel_leave() -> void:
+	if _returning_to_menu:
+		return
+	leave_dialog.hide()
+	TimeHandler.pop_pause_lock(self)
+	settings_tab.menu_button.grab_focus()
+
+func _input(event: InputEvent) -> void:
+	if leave_dialog.visible and event.is_action_pressed("ui_cancel"):
+		_cancel_leave()
+		get_viewport().set_input_as_handled()
+
+func _unhandled_input(_event: InputEvent) -> void:
+	if leave_dialog.visible:
+		get_viewport().set_input_as_handled()
+
+func _exit_tree() -> void:
+	TimeHandler.pop_pause_lock(self)
+
 func _return_to_main_menu() -> void:
+	if _returning_to_menu:
+		return
+	_returning_to_menu = true
+	leave_button.disabled = true
+	cancel_leave_button.disabled = true
 	await SaveHandler.end_session()
 	var error := get_tree().change_scene_to_file("res://scenes/mainmenuscene.tscn")
 	if error == OK:
 		TimeHandler.set_time(TimeHandler.NORMAL_TIME)
 	else:
-		save_game_menu.status_label.text = "Saved, but could not open the main menu: %s." % error_string(error)
+		_returning_to_menu = false
+		leave_button.disabled = false
+		cancel_leave_button.disabled = false
+		save_game_menu.status_label.text = "Could not open the main menu: %s." % error_string(error)
 
 func _process(_delta: float) -> void:
 	_refresh_progression_shader_time()
@@ -77,7 +120,7 @@ func bind_slot(button, tab):
 	button.pressed.connect(set_tab.bind(tab))
 
 func set_tab(tab):
-	if save_game_menu.visible:
+	if save_game_menu.visible or leave_dialog.visible or _returning_to_menu:
 		return
 	if tab != null and not _is_tab_available(tab):
 		return

@@ -7,6 +7,7 @@ const _FEATURES := [
 	FeatureGateHandler.Feature.INJURY_SYSTEM,
 	FeatureGateHandler.Feature.TEMPERATURE_SYSTEM,
 	FeatureGateHandler.Feature.SPECIAL_ENCOUNTERS,
+	FeatureGateHandler.Feature.HORSE_ARRIVALS,
 ]
 
 @onready var _no_scenario_label: Label = $MarginContainer/MarginContainer/ScrollContainer/NoScenarioLabel

@@ -3,6 +3,7 @@ extends MenuUITab
 signal back_requested
 signal save_requested
 signal save_and_menu_requested
+signal menu_requested
 
 @export var show_back_button := false
 @export var show_save_button := false
@@ -15,6 +16,7 @@ signal save_and_menu_requested
 @onready var save_buttons: HBoxContainer = $MarginContainer/MarginContainer/GridContainer/SaveButtons
 @onready var save_button: Button = $MarginContainer/MarginContainer/GridContainer/SaveButtons/SaveButton
 @onready var save_and_menu_button: Button = $MarginContainer/MarginContainer/GridContainer/SaveButtons/SaveAndMenuButton
+@onready var menu_button: Button = $MarginContainer/MarginContainer/GridContainer/SaveButtons/MenuButton
 
 
 const MUSIC_BUS_NAME := "Music"
@@ -28,6 +30,7 @@ func _ready() -> void:
 	save_and_menu_button.visible = show_save_button
 	save_button.pressed.connect(func() -> void: save_requested.emit())
 	save_and_menu_button.pressed.connect(func() -> void: save_and_menu_requested.emit())
+	menu_button.pressed.connect(func() -> void: menu_requested.emit())
 	back_button.visible = show_back_button
 	back_button.pressed.connect(func() -> void: back_requested.emit())
 	# Connect slider signals (if not already connected in the editor)

@@ -20,6 +20,7 @@ drink_weights = {
 }
 mood_sensitivity = 1.4
 dirt_production = 0.4
+horse_arrival_chance = 0.5
 bounty_weight = 0.5
 no_seat_mood_penalty = 0.3
 boosted_positive_traits = Array[int]([14, 16])

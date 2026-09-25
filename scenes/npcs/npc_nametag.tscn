@@ -40,4 +40,5 @@ theme_override_constants/margin_bottom = -2
 layout_mode = 2
 theme = ExtResource("2_ns76r")
 theme_override_fonts/font = ExtResource("3_vu7n7")
+theme_override_font_sizes/font_size = 11
 text = "MAX BOI"
