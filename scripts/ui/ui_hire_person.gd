@@ -12,13 +12,7 @@ func _ready():
 	Global.NPCSpawner.worker_count_changed_signal.connect(_on_worker_count_changed)
 
 func _get_cost() -> int:
-	const BASE := 25
-	const PER_POSITIVE := 15
-	const PER_NEGATIVE := -5
-	var cost := BASE
-	for t in _hire_traits:
-		cost += PER_POSITIVE if t.is_positive() else PER_NEGATIVE
-	return cost
+	return Global.NPCSpawner.get_hire_cost(_hire_traits)
 
 func _update_label() -> void:
 	var names := _hire_traits.map(func(t): return t.trait_name)
@@ -47,15 +41,10 @@ func hire():
 		_update_label()
 		return
 
-	var cost := _get_cost()
-	var worker := Global.NPCSpawner.spawn_new_worker() as NPCWorker
-	if worker == null:
+	if Global.NPCSpawner.hire_worker(_hire_traits) == null:
 		_update_label()
 		return
 
-	MoneyHandler.spend(cost, "Hire Worker")
-	worker.Traits.traits = _hire_traits.duplicate()
-	worker.apply_trait_conflict_preference()
 	queue_free()
 	hire_ui.hide()
 

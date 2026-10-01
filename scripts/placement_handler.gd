@@ -17,13 +17,29 @@ var building_data: RoomData
 var infrastructure_data : InfrastructureData = null
 var cage_data : CageData = null
 var location : Vector2i
-var landed_location : Vector2i
 var highlights : Array = []
 var custom_placement_check = null
 
 var previous_notification = null
 var _invalid_target_reason := "target invalid"
 var _invalid_target_icon: Texture = null
+
+func _ready() -> void:
+	Console.add_command("try_build_room", _console_try_build_room, ["room_type", "x", "y"], 3, "Builds a room like the player would: enforces placement rules and cost, and lands above-ground rooms on the stack (e.g. 'try_build_room bar 2 0').")
+
+func _console_try_build_room(room_type : String, x : String, y : String) -> void:
+	if not (x.is_valid_int() and y.is_valid_int()):
+		Console.print_error("(x,y) must be integers, got (%s,%s)." % [x, y])
+		return
+	var path := "res://assets/resources/rooms/room_%s.tres" % room_type.strip_edges().to_lower()
+	if not ResourceLoader.exists(path):
+		Console.print_error("Unknown room type '%s' (expected a resource at %s)." % [room_type, path])
+		return
+	var result := try_build_room(load(path) as RoomData, Vector2i(int(x), int(y)))
+	if result.valid:
+		Console.print_line("Built '%s' at (%d,%d)." % [room_type, result.location.x, result.location.y])
+	else:
+		Console.print_error("Could not build '%s' at (%s,%s): %s." % [room_type, x, y, result.reason])
 
 func start_building(data : RoomData, check):
 	build_mode = BuildMode.ROOM
@@ -109,16 +125,11 @@ func _is_building_room() -> bool:
 func _is_building_cage() -> bool:
 	return build_mode == BuildMode.CAGE
 
-func _is_digging_room() -> bool:
-	return building_data == Building.room_data_digging
+func _should_use_above_ground_fall(data: RoomData, target_location: Vector2i) -> bool:
+	return not data.is_outdoor and target_location.y >= 0
 
-func _should_use_above_ground_fall(target_location: Vector2i) -> bool:
-	if not _is_building_room():
-		return false
-	return not building_data.is_outdoor and target_location.y >= 0
-
-func _requires_existing_empty_basement_footprint(target_location: Vector2i) -> bool:
-	return _is_building_room() and not _is_digging_room() and target_location.y < 0
+func _requires_existing_empty_basement_footprint(data: RoomData, target_location: Vector2i) -> bool:
+	return data != Building.room_data_digging and target_location.y < 0
 
 func _get_tetris_y(x: int) -> int:
 	var y = 0
@@ -129,13 +140,13 @@ func _get_tetris_y(x: int) -> int:
 		y += 1
 	return y
 
-func _has_direct_empty_override(target_location: Vector2i) -> bool:
-	if not _should_use_above_ground_fall(target_location):
+func _has_direct_empty_override(data: RoomData, target_location: Vector2i) -> bool:
+	if not _should_use_above_ground_fall(data, target_location):
 		return false
 
 	var has_empty := false
-	for col in building_data.width:
-		for row in building_data.height:
+	for col in data.width:
+		for row in data.height:
 			var cell = Building.get_room_from_index(target_location + Vector2i(col, row))
 			if cell is RoomEmpty:
 				has_empty = true
@@ -143,26 +154,14 @@ func _has_direct_empty_override(target_location: Vector2i) -> bool:
 				return false
 	return has_empty
 
-func _get_landed_location(target_location: Vector2i) -> Vector2i:
-	if not _should_use_above_ground_fall(target_location):
+func _get_landed_location(data: RoomData, target_location: Vector2i) -> Vector2i:
+	if not _should_use_above_ground_fall(data, target_location):
 		return target_location
 
 	var base_y := 0
-	for col in building_data.width:
+	for col in data.width:
 		base_y = max(base_y, _get_tetris_y(target_location.x + col))
 	return Vector2i(target_location.x, base_y)
-
-func _is_footprint_empty(target_location: Vector2i) -> bool:
-	for col in building_data.width:
-		for row in building_data.height:
-			var cell = Building.get_room_from_index(target_location + Vector2i(col, row))
-			if _requires_existing_empty_basement_footprint(target_location):
-				if cell is not RoomEmpty:
-					return false
-				continue
-			if cell != null and not cell is RoomEmpty:
-				return false
-	return true
 
 func _set_invalid_target_reason(reason: String, icon: Texture = null) -> void:
 	_invalid_target_reason = reason
@@ -171,26 +170,138 @@ func _set_invalid_target_reason(reason: String, icon: Texture = null) -> void:
 func _reset_invalid_target_reason() -> void:
 	_set_invalid_target_reason("target invalid", INVALID_TARGET_ICON)
 
-func _validate_room_footprint(target_location: Vector2i) -> bool:
-	for col in building_data.width:
-		for row in building_data.height:
+func _reject(result: Dictionary, reason: String, icon: Texture = null) -> void:
+	result.valid = false
+	result.reason = reason
+	result.icon = icon
+
+func _validate_room_footprint(data: RoomData, target_location: Vector2i, result: Dictionary) -> void:
+	for col in data.width:
+		for row in data.height:
 			var cell_location := target_location + Vector2i(col, row)
 			var cell = Building.get_room_from_index(cell_location)
-			if _requires_existing_empty_basement_footprint(target_location):
+			if _requires_existing_empty_basement_footprint(data, target_location):
 				if cell == null:
-					_set_invalid_target_reason("requires digging first", Enum.placement_limit_to_icon(Enum.PlacementLimit.BELOW_GROUND))
-					return false
+					_reject(result, "requires digging first", Enum.placement_limit_to_icon(Enum.PlacementLimit.BELOW_GROUND))
+					return
 				if cell is RoomDigging:
-					_set_invalid_target_reason("digging in progress")
-					return false
+					_reject(result, "digging in progress")
+					return
 				if cell is not RoomEmpty:
-					_set_invalid_target_reason("space occupied")
-					return false
+					_reject(result, "space occupied")
+					return
 				continue
 			if cell != null and not cell is RoomEmpty:
-				_set_invalid_target_reason("space occupied")
-				return false
-	return true
+				_reject(result, "space occupied")
+				return
+
+func _has_support(data: RoomData, target_location: Vector2i) -> bool:
+	if target_location.y < 0:
+		for col in data.width:
+			for row in data.height:
+				var cell = target_location + Vector2i(col, row)
+				for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+					if Building.get_room_from_index(cell + dir):
+						return true
+		return false
+	if _should_use_above_ground_fall(data, target_location) or target_location.y == 0:
+		return true
+	for col in data.width:
+		if Building.get_room_from_index(target_location + Vector2i(col, data.height)):
+			return true
+		if Building.get_room_from_index(target_location + Vector2i(col, -1)):
+			return true
+	return false
+
+## Checks whether `data` can be placed when targeting `target_location`, using the same rules
+## as the mouse build flow (money excluded). Rooms above ground "fall" onto the stack below, so
+## the room actually lands at `result.location`, which may differ from `target_location`.
+## Returns { valid, reason, icon, wrong_category, location }.
+func evaluate_room_placement(data: RoomData, target_location: Vector2i, custom_check = null) -> Dictionary:
+	var result := {
+		valid = true,
+		reason = "target invalid",
+		icon = INVALID_TARGET_ICON,
+		wrong_category = false,
+		location = target_location,
+	}
+
+	var validation_location := target_location
+	if not _has_direct_empty_override(data, target_location):
+		validation_location = _get_landed_location(data, target_location)
+	result.location = validation_location
+
+	_validate_room_footprint(data, target_location, result)
+	if result.valid and validation_location != target_location:
+		_validate_room_footprint(data, validation_location, result)
+
+	if result.valid and not _has_support(data, target_location):
+		_reject(result, "connect to existing room" if target_location.y < 0 else "needs support below")
+
+	if not data.is_outdoor and validation_location.y >= 0:
+		for col in data.width:
+			if Building.get_room_from_index(Vector2i(validation_location.x + col, 0)) is RoomOutsideBase:
+				_reject(result, "requires indoor room")
+
+	match data.placement_limit:
+		Enum.PlacementLimit.ABOVE_GROUND:
+			if validation_location.y < 0:
+				_reject(result, "only above ground", Enum.placement_limit_to_icon(data.placement_limit))
+				result.wrong_category = true
+		Enum.PlacementLimit.BELOW_GROUND:
+			if validation_location.y >= 0:
+				_reject(result, "only below ground", Enum.placement_limit_to_icon(data.placement_limit))
+				result.wrong_category = true
+
+	if custom_check and not custom_check.call(validation_location):
+		_reject(result, _get_custom_placement_invalid_reason(data, validation_location))
+
+	return result
+
+## Places `data` at a location already validated by evaluate_room_placement() and charges its
+## price. `drop_distance` > 0 animates the room falling from that many rows above.
+func place_room(data: RoomData, placement_location: Vector2i, drop_distance: int = 0) -> void:
+	SoundPlayer.play_construction_placed()
+	for col in data.width:
+		for row in data.height:
+			var existing = Building.get_room_from_index(placement_location + Vector2i(col, row))
+			if existing != null:
+				existing.queue_free()
+	Building.set_room(data, placement_location.x, placement_location.y)
+
+	Building.refresh_adjacent_stair_visuals(placement_location.x, placement_location.y, data.width, data.height)
+
+	var placed_room = Building.get_room_from_index(placement_location)
+	if drop_distance > 0 and placed_room:
+		var final_y = placed_room.position.y
+		var impact_strength := 4.0 + float(min(drop_distance, 3))
+		placed_room.position.y = (placement_location.y + drop_distance) * -48.0
+		var tween = placed_room.create_tween()
+		tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
+			.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+		tween.finished.connect(_refresh_tiles_after_fall.bind(impact_strength, 0.12, placed_room), CONNECT_ONE_SHOT)
+	else:
+		Building.update_foreground_tiles()
+		Camera.add_shake()
+		if placed_room != null:
+			_spawn_place_dust(placed_room)
+
+	if data == Building.room_data_horse_post:
+		var placed_post := placed_room as RoomHorsePost
+		if placed_post != null:
+			Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
+
+	MoneyHandler.spend(data.construction_price, "Construction")
+
+## Non-mouse build entry point (autoplay bot, scripts): validates, checks money, then places.
+## Returns the evaluate_room_placement() result; on success the room was built at result.location.
+func try_build_room(data: RoomData, target_location: Vector2i, custom_check = null) -> Dictionary:
+	var result := evaluate_room_placement(data, target_location, custom_check)
+	if result.valid and not MoneyHandler.has_money(data.construction_price):
+		_reject(result, "not enough money")
+	if result.valid:
+		place_room(data, result.location, target_location.y - result.location.y)
+	return result
 
 func _refresh_tiles_after_fall(impact_strength: float, impact_duration: float, room: Node2D) -> void:
 	Building.update_foreground_tiles()
@@ -213,75 +324,21 @@ func _input(event):
 	_reset_invalid_target_reason()
 
 	if _is_building_room():
-		landed_location = _get_landed_location(location)
-		validation_location = location if _has_direct_empty_override(location) else landed_location
-
-		has_valid_target = _validate_room_footprint(location)
-		if validation_location != location:
-			has_valid_target = has_valid_target && _validate_room_footprint(validation_location)
-
-		var has_adjacent_room_or_is_ground_floor = false
-		if location.y < 0:
-			for col in building_data.width:
-				for row in building_data.height:
-					var cell = location + Vector2i(col, row)
-					for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-						if Building.get_room_from_index(cell + dir):
-							has_adjacent_room_or_is_ground_floor = true
-		elif _should_use_above_ground_fall(location):
-			has_adjacent_room_or_is_ground_floor = true
-		else:
-			for col in building_data.width:
-				if Building.get_room_from_index(location + Vector2i(col, building_data.height)):
-					has_adjacent_room_or_is_ground_floor = true
-				if Building.get_room_from_index(location + Vector2i(col, -1)):
-					has_adjacent_room_or_is_ground_floor = true
-				if location.y == 0:
-					has_adjacent_room_or_is_ground_floor = true
-
-		if has_valid_target and not has_adjacent_room_or_is_ground_floor:
-			if location.y < 0:
-				_set_invalid_target_reason("connect to existing room")
-			else:
-				_set_invalid_target_reason("needs support below")
-			has_valid_target = false
-
-		if not building_data.is_outdoor and validation_location.y >= 0:
-			for col in building_data.width:
-				var ground_room = Building.get_room_from_index(Vector2i(validation_location.x + col, 0))
-				if ground_room is RoomOutsideBase:
-					has_valid_target = false
-					_set_invalid_target_reason("requires indoor room")
-
-		match building_data.placement_limit:
-			Enum.PlacementLimit.ABOVE_GROUND:
-				if validation_location.y < 0:
-					has_valid_target = false
-					has_wrong_placement_category = true
-					_set_invalid_target_reason("only above ground", Enum.placement_limit_to_icon(building_data.placement_limit))
-			Enum.PlacementLimit.BELOW_GROUND:
-				if validation_location.y >= 0:
-					has_valid_target = false
-					has_wrong_placement_category = true
-					_set_invalid_target_reason("only below ground", Enum.placement_limit_to_icon(building_data.placement_limit))
-	elif _is_building_cage():
-		landed_location = location
-		var placement_check: Dictionary = ElevatorHandler.can_place_cage(validation_location)
-		has_valid_target = placement_check.valid
+		var evaluation := evaluate_room_placement(building_data, location, custom_placement_check)
+		validation_location = evaluation.location
+		has_valid_target = evaluation.valid
+		has_wrong_placement_category = evaluation.wrong_category
 		if not has_valid_target:
-			_set_invalid_target_reason(placement_check.reason)
+			_set_invalid_target_reason(evaluation.reason, evaluation.icon)
 	else:
-		landed_location = location
-		var placement_check: Dictionary = Building.infrastructure.can_place(infrastructure_data, validation_location)
+		var placement_check: Dictionary
+		if _is_building_cage():
+			placement_check = ElevatorHandler.can_place_cage(validation_location)
+		else:
+			placement_check = Building.infrastructure.can_place(infrastructure_data, validation_location)
 		has_valid_target = placement_check.valid
 		if not has_valid_target:
 			_set_invalid_target_reason(placement_check.reason)
-
-	if custom_placement_check:
-		var custom_valid: bool = custom_placement_check.call(validation_location)
-		if not custom_valid:
-			_set_invalid_target_reason(_get_custom_placement_invalid_reason(validation_location))
-		has_valid_target = has_valid_target && custom_valid
 
 	var has_money = MoneyHandler.has_money(active_data.construction_price)
 	var can_place = has_valid_target && has_money
@@ -306,44 +363,7 @@ func _input(event):
 			var shift_held = Input.is_key_pressed(KEY_SHIFT)
 
 			if _is_building_room():
-				SoundPlayer.play_construction_placed()
-				for col in building_data.width:
-					for row in building_data.height:
-						var existing = Building.get_room_from_index(placement_location + Vector2i(col, row))
-						if existing != null:
-							existing.queue_free()
-				Building.set_room(building_data, placement_location.x, placement_location.y)
-
-				Building.refresh_adjacent_stair_visuals(placement_location.x, placement_location.y, building_data.width, building_data.height)
-
-				var drop_distance := location.y - placement_location.y
-				if drop_distance > 0:
-					var placed_room = Building.get_room_from_index(placement_location)
-					if placed_room:
-						var final_y = placed_room.position.y
-						var impact_strength := 4.0 + float(min(drop_distance, 3))
-						placed_room.position.y = location.y * -48.0
-						var tween = placed_room.create_tween()
-						tween.tween_property(placed_room, "position:y", final_y, 0.15 + drop_distance * 0.02) \
-							.set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-						tween.finished.connect(_refresh_tiles_after_fall.bind(impact_strength, 0.12, placed_room), CONNECT_ONE_SHOT)
-					else:
-						Building.update_foreground_tiles()
-						Camera.add_shake()
-						var placed_room_a = Building.get_room_from_index(placement_location)
-						if placed_room_a != null:
-							_spawn_place_dust(placed_room_a)
-				else:
-					Building.update_foreground_tiles()
-					Camera.add_shake()
-					var placed_room_b = Building.get_room_from_index(placement_location)
-					if placed_room_b != null:
-						_spawn_place_dust(placed_room_b)
-
-				if building_data == Building.room_data_horse_post:
-					var placed_post := Building.get_room_from_index(placement_location) as RoomHorsePost
-					if placed_post != null:
-						Global.NPCSpawner.assign_loose_horse_to_post(placed_post)
+				place_room(building_data, placement_location, location.y - placement_location.y)
 			elif _is_building_cage():
 				SoundPlayer.play_construction_placed()
 				ElevatorHandler.place_cage(placement_location.x, placement_location.y)
@@ -356,8 +376,9 @@ func _input(event):
 				Building.infrastructure.place(infrastructure_data, placement_location)
 				Camera.add_shake(2.0, 0.08)
 
+			if not _is_building_room():
+				MoneyHandler.spend(active_data.construction_price, "Construction")
 			stop_building()
-			MoneyHandler.spend(active_data.construction_price, "Construction")
 			if shift_held:
 				match repeat_mode:
 					BuildMode.ROOM:
@@ -398,14 +419,14 @@ func _input(event):
 			highlights[idx].modulate = h_color
 			idx += 1
 
-func _get_custom_placement_invalid_reason(target_location: Vector2i) -> String:
-	if building_data == Building.room_data_digging:
+func _get_custom_placement_invalid_reason(data: RoomData, target_location: Vector2i) -> String:
+	if data == Building.room_data_digging:
 		if target_location.y >= 0:
 			return "only below ground"
 		if Building.get_room_from_index(target_location) != null:
 			return "space occupied"
 		return "dig from existing room"
-	if building_data != null and (building_data.is_outdoor or building_data == Building.room_data_bouncer):
+	if data.is_outdoor or data == Building.room_data_bouncer:
 		return "only ground floor"
 	return "target invalid"
 

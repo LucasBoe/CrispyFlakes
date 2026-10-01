@@ -139,10 +139,20 @@ func _ready():
 	Console.add_command("follow_guest", console_follow_guest_test)
 	Console.add_command("arrest_all", console_arrest_all, ["fine"], 0, "Marks all guests for arrest and adds a fine.")
 	Console.add_command("debug_npc_click_collision", _console_toggle_debug_npc_click_collision, 0, 0, "Toggles visualization of NPC click collision shapes, including precise hover capsules.")
+	Console.add_command("hire", _console_hire, 0, 0, "Hires a worker with random traits, paying the normal hire cost.")
 	Console.add_command("worker_count", _console_worker_count, ["job"], 0, "Prints the number of live workers, optionally filtered by job name (e.g. 'bar').")
 	Console.add_command("guest_count", _console_guest_count, 0, 0, "Prints the number of live guests.")
 	Console.add_command("list_workers", _console_list_workers, 0, 0, "Lists every live worker as 'name job (x,y)'.")
 	Console.add_command("list_guests", _console_list_guests, 0, 0, "Lists every live guest as 'name (x,y)'.")
+
+func _console_hire() -> void:
+	var traits := TraitLibrary.roll_traits(TraitModule.MAX_RANDOM_TRAIT_COUNT)
+	var cost := get_hire_cost(traits)
+	var worker := hire_worker(traits)
+	if worker == null:
+		Console.print_error("Could not hire (cost $%d, have $%d)." % [cost, int(MoneyHandler.total_stored())])
+		return
+	Console.print_line("Hired %s for $%d." % [worker.get_display_name(), cost])
 
 func _console_worker_count(job : String) -> void:
 	var normalized_job := job.strip_edges().to_upper()
@@ -261,6 +271,32 @@ func can_hire_worker() -> bool:
 
 func get_worker_hire_block_reason() -> String:
 	return ""
+
+func get_hire_cost(traits: Array) -> int:
+	const BASE := 25
+	const PER_POSITIVE := 15
+	const PER_NEGATIVE := -5
+	var cost := BASE
+	for t in traits:
+		cost += PER_POSITIVE if t.is_positive() else PER_NEGATIVE
+	return cost
+
+## Hires a new worker with the given traits, paying get_hire_cost(traits).
+## Returns null without spending anything if hiring is blocked or unaffordable.
+func hire_worker(traits: Array) -> NPCWorker:
+	if get_worker_hire_block_reason() != "":
+		return null
+	var cost := get_hire_cost(traits)
+	if not MoneyHandler.has_money(cost):
+		return null
+	var worker := spawn_new_worker() as NPCWorker
+	if worker == null:
+		return null
+
+	MoneyHandler.spend(cost, "Hire Worker")
+	worker.Traits.traits = traits.duplicate()
+	worker.apply_trait_conflict_preference()
+	return worker
 
 func get_active_guest_count() -> int:
 	var count := 0

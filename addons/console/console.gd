@@ -511,6 +511,12 @@ func _await_and_run_cmdline_commands(commands : PackedStringArray, should_quit :
 	await get_tree().process_frame
 
 	for line in commands:
+		# "wait <seconds>" lets the game simulate before the next command (e.g. before asserts).
+		var parts := line.strip_edges().split(" ", false)
+		if parts.size() == 2 and parts[0] == "wait" and parts[1].is_valid_float():
+			print_line("> " + line)
+			await get_tree().create_timer(float(parts[1]), true, false, true).timeout
+			continue
 		execute_line(line)
 		await get_tree().process_frame
 
