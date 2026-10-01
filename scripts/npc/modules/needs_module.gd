@@ -9,6 +9,10 @@ var Energy : Need
 
 var needs = []
 
+# Mood integrated over the visit, for get_average_visit_mood().
+var _mood_minutes := 0.0
+var _visit_minutes := 0.0
+
 var npc
 
 func _ready():
@@ -24,6 +28,12 @@ func _ready():
 		
 	npc.Needs = self
 	
+## Time-weighted mood across the whole visit so far - a better summary of
+## how a guest's stay went than its mood at any single moment (guests leave
+## once mood dips below satisfaction, so mood on leaving is always low-ish).
+func get_average_visit_mood() -> float:
+	return _mood_minutes / _visit_minutes if _visit_minutes > 0.0 else mood.strength
+
 func new_need(type, strength):
 	var instance = Need.new()
 	instance.type = type
@@ -54,6 +64,8 @@ func _process(delta):
 	var delta_minute = delta / 60.0
 
 	stay_duration.strength += delta_minute
+	_mood_minutes += mood.strength * delta_minute
+	_visit_minutes += delta_minute
 
 	satisfaction.strength += (1.0 - satisfaction.strength) * Balancing.GUEST_SATISFACTION_DECAY_RATE * delta_minute
 	var energy_loss_multiplier := Balancing.GUEST_ENERGY_SITTING_MULTIPLIER if npc.Animator != null and npc.Animator.is_sitting else 1.0

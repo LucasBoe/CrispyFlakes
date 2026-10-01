@@ -15,6 +15,56 @@ func _ready() -> void:
 	Console.add_command("force_performance_sway", _force_performance_sway, ["room_type", "on_off"], 2, "Forces the target entertainment/opera room's sway flag on or off for headless testing.")
 	Console.add_command("assert_guest_swaying", _assert_guest_swaying, ["guest_index", "expected"], 2, "Fails unless the indexed live guest is currently swaying to music (true/false).")
 	Console.add_command("guest_performance_state", _guest_performance_state, ["guest_index"], 1, "Prints the indexed live guest's current room plus per-performance-room active/in-range/swaying state.")
+	Console.add_command("continue_save", _continue_save, ["save_path"], 0, "Ends the current session (incl. tutorial) and loads the given save, or the newest one - same as quitting to menu and pressing Continue.")
+	Console.add_command("watch_spawn_odds", _watch_spawn_odds, ["interval_game_seconds", "samples"], 2, "Every interval (in game seconds) prints per-type guest spawn odds, live mood stats and spawns since the last sample; quits after the given number of samples.")
+
+func _continue_save(save_path : String) -> void:
+	await SaveHandler.end_session()
+	Building.visible = true
+	RoomStatusHandler.enabled = true
+	await SaveHandler.console_load(save_path)
+
+func _watch_spawn_odds(interval : String, samples : String) -> void:
+	if not interval.is_valid_float() or not samples.is_valid_int():
+		_fail("watch_spawn_odds: expected a number of game seconds and an integer sample count.")
+		return
+	var spawned_since_sample := {}
+	var on_spawned := func(_count) -> void:
+		var guest := Global.NPCSpawner.guests.back() as NPCGuest
+		if guest != null and guest.look_info != null:
+			spawned_since_sample[guest.look_info.body_type] = spawned_since_sample.get(guest.look_info.body_type, 0) + 1
+	# Game-time timer, so it can't elapse while a preceding continue_save holds its pause lock.
+	await get_tree().create_timer(1.0, false).timeout
+	Global.NPCSpawner.spawned_guest_signal.connect(on_spawned)
+
+	for sample in int(samples) + 1:
+		_print_spawn_odds_sample(sample, float(interval) * sample, spawned_since_sample)
+		spawned_since_sample.clear()
+		if sample < int(samples):
+			await get_tree().create_timer(float(interval), false).timeout
+
+	Global.NPCSpawner.spawned_guest_signal.disconnect(on_spawned)
+	get_tree().quit()
+
+func _print_spawn_odds_sample(sample : int, game_seconds : float, spawned : Dictionary) -> void:
+	var stats := Global.NPCSpawner.get_guest_type_stats()
+	var weights := NPCLookInfo.get_spawn_weights()
+	var percentages := NPCLookInfo.get_spawn_chance_percentages()
+	Console.print_line("ODDS sample=%d t=%.0fs day=%.2f guests=%d avg_mood=%.2f rate/day=%.2f" % [
+		sample, game_seconds, game_seconds / Global.DAY_DURATION,
+		Global.NPCSpawner.get_active_guest_count(), Global.NPCSpawner.get_average_mood(), Global.NPCSpawner.guests_per_day_rate(),
+	])
+	for body_type in weights.keys():
+		var entry : Dictionary = stats.get(body_type, {})
+		Console.print_line("ODDS   %-9s live=%2d avg_mood=%s reputation=%.2f weight=%.2f chance=%5.1f%% spawned=%d" % [
+			NPCArchetypeLibrary.get_archetype(body_type).display_name,
+			entry.get("count", 0),
+			"%.2f" % entry.avg_mood if entry.has("avg_mood") else " -  ",
+			Global.NPCSpawner.get_type_reputation(body_type),
+			weights[body_type],
+			percentages[body_type],
+			spawned.get(body_type, 0),
+		])
 
 func _assert_room_count(room_type : String, expected : String) -> void:
 	if not expected.is_valid_int():

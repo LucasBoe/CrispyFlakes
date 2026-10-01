@@ -33,5 +33,5 @@ func loop():
 		horse.queue_free()
 
 	if npc is NPCGuest:
-		Global.NPCSpawner.on_guest_destroy(npc)
+		Global.NPCSpawner.on_guest_departed(npc)
 	npc.destroy()
