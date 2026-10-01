@@ -17,6 +17,36 @@ var guests = []
 var workers = []
 var special_npcs = []
 
+# TODO: Save guest look/mood - restored guests only keep name + position, so on load they re-roll their type (via the saved odds) and restart at mood 0.5.
+# TODO: Show type_reputation in the HUD guest-type breakdown (ui_hud.gd) - it still shows live mood, which no longer drives the spawn odds.
+# TODO: Fix get_meta("horse", null) error spam in NPCGuest._horse_mood_loop - a null default still errors in Godot 4, guard with has_meta("horse").
+## Per-type "word of mouth", keyed by NPCLookInfo.body_type: a running
+## average of departing guests' mood, driving that type's spawn odds (see
+## NPCLookInfo.get_spawn_weights()). Saved with the game.
+var type_reputation: Dictionary = {}
+const NEUTRAL_REPUTATION := 0.5
+## How far one departure pulls its type's reputation toward the guest's
+## average mood over its visit - the last ~5-10 departures of a type dominate.
+const REPUTATION_LEARN_RATE := 0.2
+## Fraction of the gap to neutral each type recovers per in-game day, so a
+## type that has nearly stopped visiting isn't locked out forever.
+const REPUTATION_RECOVERY_PER_DAY := 0.1
+
+func get_type_reputation(body_type: int) -> float:
+	return type_reputation.get(body_type, NEUTRAL_REPUTATION)
+
+## Call when a guest actually walks out (not when hired or cleared on load).
+func on_guest_departed(guest: NPCGuest) -> void:
+	if guest.look_info != null and guest.Needs != null:
+		var body_type: int = guest.look_info.body_type
+		type_reputation[body_type] = lerpf(get_type_reputation(body_type), guest.Needs.get_average_visit_mood(), REPUTATION_LEARN_RATE)
+	on_guest_destroy(guest)
+
+func _recover_type_reputation(delta: float) -> void:
+	var recovery := 1.0 - pow(1.0 - REPUTATION_RECOVERY_PER_DAY, delta / Global.DAY_DURATION)
+	for body_type in type_reputation.keys():
+		type_reputation[body_type] = lerpf(type_reputation[body_type], NEUTRAL_REPUTATION, recovery)
+
 ## Live guest count + average mood per NPCLookInfo.body_type, keyed by
 ## the int body_type: {count: int, avg_mood: float, mood_entry_count: int}.
 func get_guest_type_stats() -> Dictionary:
@@ -198,6 +228,7 @@ func _process(delta):
 	if not FeatureGateHandler.is_enabled(FeatureGateHandler.Feature.GUEST_AUTO_SPAWN):
 		return
 
+	_recover_type_reputation(delta)
 	next_guest_progression += delta * (guests_per_day_rate() / Global.DAY_DURATION)
 	if next_guest_progression > 1.0:
 		spawn_new_guest()

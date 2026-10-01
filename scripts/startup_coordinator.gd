@@ -60,6 +60,9 @@ func cancel() -> void:
 	while _sequence_running:
 		await get_tree().process_frame
 	_destroy_menu_tutorial_arrow()
+	var overlay := _get_outside_overlay()
+	if overlay != null:
+		overlay.visible = false
 	_tutorial_worker = null
 	_quests = null
 	_served_startup_guests.clear()

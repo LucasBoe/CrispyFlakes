@@ -175,6 +175,7 @@ func save_game(save_path: String) -> Error:
 		"equipment": equipment,
 		"money_free_pool": MoneyHandler.free_pool,
 		"money_location_money": _serialize_money_locations(),
+		"guest_type_reputation": _serialize_type_reputation(),
 		"scenario_id": scenario.get("scenario_id", ""),
 		"scenario_goal_progress": scenario.get("scenario_goal_progress", {}),
 		"scenario_win_state": scenario.get("scenario_win_state", ScenarioHandler.WinState.NONE),
@@ -309,6 +310,7 @@ func _apply_save(save_data: Dictionary) -> void:
 	_restore_money_locations(_get_array(save_data, "money_location_money"))
 	MoneyHandler.free_pool = float(save_data.get("money_free_pool", MoneyHandler.free_pool))
 	MoneyHandler.on_money_changed_signal.emit()
+	_restore_type_reputation(save_data.get("guest_type_reputation", {}))
 	_apply_scenario_restore(save_data)
 	(Building.get_node("SaloonSign") as BuildingSign).set_saloon_name(str(save_data.get("saloon_name", "My Saloon")))
 
@@ -592,6 +594,19 @@ func _restore_guests(entries: Array) -> void:
 			String(entry.get("name", ""))
 		)
 
+func _serialize_type_reputation() -> Dictionary:
+	var reputation := {}
+	for body_type in Global.NPCSpawner.type_reputation.keys():
+		reputation[str(body_type)] = Global.NPCSpawner.type_reputation[body_type]
+	return reputation
+
+func _restore_type_reputation(value) -> void:
+	Global.NPCSpawner.type_reputation.clear()
+	if value is not Dictionary:
+		return
+	for key in value.keys():
+		Global.NPCSpawner.type_reputation[int(key)] = float(value[key])
+
 func _restore_cages(entries: Array) -> void:
 	for entry_variant in entries:
 		if entry_variant is not Dictionary:
@@ -679,6 +694,7 @@ func end_session() -> void:
 	HoverHandler.worker_ui_active = false
 	Global.NPCSpawner.next_guest_progression = 1.0
 	Global.NPCSpawner.next_special_encounter_progression = 0.0
+	Global.NPCSpawner.type_reputation.clear()
 	Building.visible = false
 	await get_tree().process_frame
 	TimeHandler.pop_pause_lock(self)
