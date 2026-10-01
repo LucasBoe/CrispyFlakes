@@ -55,7 +55,7 @@ func _on_pressed() -> void:
 	if not is_instance_valid(prisoner):
 		return
 
-	ResourceHandler.change_money(bounty + fine, "Prisoner Cashout")
+	MoneyHandler.earn(bounty + fine, MoneyHandler.NO_LOCATION, "Prisoner Cashout")
 	if prisoner.look_info != null:
 		BountyHandler.npc_bounties.erase(prisoner.look_info)
 	BountyHandler.clear_fine(prisoner)

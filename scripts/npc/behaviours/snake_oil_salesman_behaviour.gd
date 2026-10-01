@@ -54,9 +54,7 @@ func loop() -> void:
 
 		request.status = Enum.RequestStatus.FULFILLED
 		sale_requests.erase(request)
-		await ResourceHandler.add_animated(
-			Enum.Resources.MONEY,
-			Pricing.ENCOUNTER_SNAKE_OIL_CUSTOMER_PAYOUT,
+		await MoneyHandler.earn_animated(Pricing.ENCOUNTER_SNAKE_OIL_CUSTOMER_PAYOUT,
 			npc.global_position + Vector2(0, -20)
 		)
 

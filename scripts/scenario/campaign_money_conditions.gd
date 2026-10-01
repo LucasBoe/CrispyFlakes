@@ -22,4 +22,4 @@ func _goal() -> int:
 	return campaign.money_goal if campaign != null else 0
 
 func _has_goal_money() -> bool:
-	return int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0)) >= _goal()
+	return int(MoneyHandler.total_stored()) >= _goal()

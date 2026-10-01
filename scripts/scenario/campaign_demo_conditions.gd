@@ -23,4 +23,4 @@ func get_lose_conditions() -> Array[Dictionary]:
 	return []
 
 func _has_money(amount: int) -> bool:
-	return int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0)) >= amount
+	return int(MoneyHandler.total_stored()) >= amount

@@ -35,7 +35,7 @@ func try_hire():
 		return
 
 	var cost := _get_cost()
-	if MoneyHandler.total_stored() < cost:
+	if not MoneyHandler.has_money(cost):
 		Global.UI.confirm.show_dialogue("Not enough money! Hiring costs $%d." % cost, null)
 		return
 	Global.UI.confirm.show_dialogue("Hire for $%d? They will also cost you daily wages." % cost, hire)
@@ -53,7 +53,7 @@ func hire():
 		_update_label()
 		return
 
-	MoneyHandler.spend(cost)
+	MoneyHandler.spend(cost, "Hire Worker")
 	worker.Traits.traits = _hire_traits.duplicate()
 	worker.apply_trait_conflict_preference()
 	queue_free()

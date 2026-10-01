@@ -283,7 +283,7 @@ func _input(event):
 			_set_invalid_target_reason(_get_custom_placement_invalid_reason(validation_location))
 		has_valid_target = has_valid_target && custom_valid
 
-	var has_money = ResourceHandler.has_money(active_data.construction_price)
+	var has_money = MoneyHandler.has_money(active_data.construction_price)
 	var can_place = has_valid_target && has_money
 
 	if event is InputEventMouseButton \
@@ -357,7 +357,7 @@ func _input(event):
 				Camera.add_shake(2.0, 0.08)
 
 			stop_building()
-			ResourceHandler.change_resource(Enum.Resources.MONEY, -active_data.construction_price, "Construction")
+			MoneyHandler.spend(active_data.construction_price, "Construction")
 			if shift_held:
 				match repeat_mode:
 					BuildMode.ROOM:

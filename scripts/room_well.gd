@@ -66,9 +66,9 @@ func get_dig_cost() -> int:
 
 func dig_deeper() -> bool:
 	var cost = get_dig_cost()
-	if not ResourceHandler.has_money(cost):
+	if not MoneyHandler.has_money(cost):
 		return false
-	await ResourceHandler.spend_animated(cost, global_position, "Well Upgrade")
+	await MoneyHandler.spend_animated(cost, global_position, "Well Upgrade")
 	SoundPlayer.play_construction_placed()
 	depth += 1
 	max_water += WATER_PER_DEPTH

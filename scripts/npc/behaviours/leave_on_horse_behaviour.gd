@@ -12,7 +12,7 @@ func loop():
 		# Pay tying fee if it was on a post
 		var fee = horse.collect(npc)
 		if fee > 0:
-			await ResourceHandler.add_animated(Enum.Resources.MONEY, fee, horse.global_position, Vector2i(-9999, -9999), "Horse Post Fee")
+			await MoneyHandler.earn_animated(fee, horse.global_position, MoneyHandler.NO_LOCATION, "Horse Post Fee")
 
 	# Mount and ride off — bypass room pathfinder
 	npc.Animator.set_riding(true)

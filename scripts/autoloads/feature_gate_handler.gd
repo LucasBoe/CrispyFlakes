@@ -119,7 +119,7 @@ func _meets_natural_condition(feature: Feature) -> bool:
 			return is_instance_valid(Global.NPCSpawner) \
 				and Global.NPCSpawner.guests.size() > 10 \
 				and Global.NPCSpawner.workers.size() > 2 \
-				and ResourceHandler.has_money(ROBBER_SPAWN_MIN_MONEY)
+				and MoneyHandler.has_money(ROBBER_SPAWN_MIN_MONEY)
 		Feature.INJURY_SYSTEM:
 			var infirmary_room_data := load(InjuryHandler.INFIRMARY_ROOM_DATA_PATH) as RoomData
 			return infirmary_room_data != null and ProgressionHandler.is_room_build_unlocked(infirmary_room_data)

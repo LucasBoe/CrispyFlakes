@@ -25,26 +25,28 @@ var coin_pitch: float = PITCH_START_LARGE
 var coin_pitch_target: float = PITCH_TARGET_LARGE
 var coins_played_in_session: int = 0
 
+## Value of earned coins still flying to the money label. The money is already stored in
+## MoneyHandler; the HUD subtracts this so its count ticks up as each coin lands.
+var pending_money: int = 0
+signal pending_money_changed_signal
+
 func _ready():
 	coin_dummy.visible = false
-	ResourceHandler.on_animate_resource_add_signal.connect(animate_resource_add)
-	ResourceHandler.on_animate_resource_spend_signal.connect(animate_resource_spend)
+	MoneyHandler.on_animate_earn_signal.connect(animate_resource_add)
+	MoneyHandler.on_animate_spend_signal.connect(animate_resource_spend)
 	coin_anim_routine()
 
-func animate_resource_add(resource, amount, global_pos, duration, source: String = ""):
+func animate_resource_add(amount: int, global_pos: Vector2, duration: float):
 	var coin_count = int(min(amount, 1000))
 	if coin_count <= 0:
-		if amount != 0:
-			ResourceHandler.change_resource(resource, amount, source)
 		return
+	_change_pending_money(amount)
 	var base_share = int(amount) / coin_count
 	var remainder = int(amount) - base_share * coin_count
 	for i in coin_count:
 		var anim = ActiveAnimation.new()
 		anim.Origin = global_pos
 		anim.Duration = duration * PHASE_2_DURATION
-		anim.ResourceType = resource
-		anim.Source = source
 		anim.Value = base_share + (1 if i < remainder else 0)
 
 		var instance = coin_dummy.duplicate()
@@ -131,7 +133,7 @@ func _process(_delta):
 	for a in finished:
 		actively_animated.erase(a)
 		a.Sprite.queue_free()
-		ResourceHandler.change_resource(a.ResourceType, a.Value, a.Source)
+		_change_pending_money(-a.Value)
 		var remaining = actively_animated.size() + coin_queue.size()
 		var t = clampf(float(remaining) / PITCH_BATCH_THRESHOLD, 0.0, 1.0)
 		coin_pitch_target = maxf(coin_pitch_target, lerp(PITCH_TARGET_SMALL, PITCH_TARGET_LARGE, t))
@@ -146,7 +148,13 @@ func _process(_delta):
 			coins_played_in_session += 1
 			coin_pitch = lerp(coin_pitch, coin_pitch_target, PITCH_RISE_SPEED / float(remaining))
 
+func _change_pending_money(change: int) -> void:
+	pending_money += change
+	pending_money_changed_signal.emit()
+
 func clear_all() -> void:
+	pending_money = 0
+	pending_money_changed_signal.emit()
 	coin_queue.clear()
 	actively_animated.clear()
 	coins_played_in_session = 0
@@ -167,6 +175,7 @@ func kill_animation(instance):
 		if actively_animated[i].Sprite == instance:
 			to_remove = i
 	if to_remove >= 0:
+		_change_pending_money(-actively_animated[to_remove].Value)
 		actively_animated[to_remove].Sprite.queue_free()
 		actively_animated.remove_at(to_remove)
 
@@ -177,6 +186,4 @@ class ActiveAnimation:
 	var TimeStart: float
 	var TimeEnd: float
 	var Duration: float
-	var ResourceType
 	var Value: int
-	var Source: String = ""

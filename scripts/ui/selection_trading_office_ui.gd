@@ -198,17 +198,17 @@ func _on_order_now_pressed() -> void:
 		UiNotifications.create_notification_ui("needs worker", worker_btn_center, null, Color.ORANGE)
 		return
 
-	if not ResourceHandler.has_money(total_cost):
+	if not MoneyHandler.has_money(total_cost):
 		var btn_center = _order_now_button.global_position + _order_now_button.size / 2
 		UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		return
 
 	_order_now_button.disabled = true
-	await ResourceHandler.spend_animated(total_cost, _room.get_center_position(), "Trading Office Order")
+	await MoneyHandler.spend_animated(total_cost, _room.get_center_position(), "Trading Office Order")
 	if _room == null or not is_instance_valid(_room):
 		return
 	if not _room.place_order(_draft_amounts):
-		ResourceHandler.change_money(total_cost, "Trading Office Refund")
+		MoneyHandler.earn(total_cost, MoneyHandler.NO_LOCATION, "Trading Office Refund")
 		var btn_center = _order_now_button.global_position + _order_now_button.size / 2
 		UiNotifications.create_notification_ui("needs worker", btn_center, null, Color.ORANGE)
 		_refresh()

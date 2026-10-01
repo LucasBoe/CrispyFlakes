@@ -58,9 +58,9 @@ func can_raise() -> bool:
 	return not (Building.floors.has(new_y_idx) and Building.floors[new_y_idx].has(x))
 
 func raise_tower() -> bool:
-	if not ResourceHandler.has_money(Pricing.WATER_TOWER_RAISE_COST):
+	if not MoneyHandler.has_money(Pricing.WATER_TOWER_RAISE_COST):
 		return false
-	await ResourceHandler.spend_animated(Pricing.WATER_TOWER_RAISE_COST, global_position, "Water Tower Upgrade")
+	await MoneyHandler.spend_animated(Pricing.WATER_TOWER_RAISE_COST, global_position, "Water Tower Upgrade")
 	SoundPlayer.play_construction_placed()
 	if extra_height == 0:
 		data = data.duplicate()

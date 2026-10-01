@@ -388,7 +388,7 @@ func _is_choice_affordable(choice: Dictionary) -> bool:
 	var money_delta := int(choice.get("money_delta", 0))
 	if money_delta >= 0:
 		return true
-	return ResourceHandler.has_money(abs(money_delta))
+	return MoneyHandler.has_money(abs(money_delta))
 
 func _get_choice_money_color(choice: Dictionary) -> String:
 	return _CHOICE_MONEY_YELLOW if _is_choice_affordable(choice) else _CHOICE_MONEY_RED
@@ -399,6 +399,6 @@ func _apply_choice_money_delta(choice: Dictionary) -> void:
 		return
 	var effect_position := _target.global_position + Vector2(0, -20)
 	if money_delta > 0:
-		ResourceHandler.add_animated(Enum.Resources.MONEY, money_delta, effect_position, Vector2i(-9999, -9999), "Special Encounter")
+		MoneyHandler.earn_animated(money_delta, effect_position, MoneyHandler.NO_LOCATION, "Special Encounter")
 	else:
-		ResourceHandler.spend_animated(abs(money_delta), effect_position, "Special Encounter")
+		MoneyHandler.spend_animated(abs(money_delta), effect_position, "Special Encounter")

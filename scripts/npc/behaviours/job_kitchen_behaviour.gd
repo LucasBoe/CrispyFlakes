@@ -34,7 +34,7 @@ func loop() -> void:
 			await progress(0.75)
 			kitchen.fulfill_next_request()
 			var sale_price := roundi(kitchen.get_sale_price() * npc.Traits.get_sale_multiplier())
-			ResourceHandler.add_animated(Enum.Resources.MONEY, sale_price, kitchen.get_center_position(), Vector2i(kitchen.x, kitchen.y), "Soup Sales")
+			MoneyHandler.earn_animated(sale_price, kitchen.get_center_position(), Vector2i(kitchen.x, kitchen.y), "Soup Sales")
 			continue
 
 		if not kitchen.water_loaded:

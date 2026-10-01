@@ -32,7 +32,6 @@ enum Items {
 }
 
 enum Resources {
-	MONEY,
 	GUEST
 }
 

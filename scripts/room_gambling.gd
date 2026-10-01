@@ -162,7 +162,7 @@ func show_guest_count_notification() -> void:
 func start_round(jackpot: int) -> bool:
 	if active_round or jackpot <= 0:
 		return false
-	if not ResourceHandler.has_money(jackpot):
+	if not MoneyHandler.has_money(jackpot):
 		UiNotifications.create_notification_static("not enough money", get_notification_position(), null, Color.ORANGE)
 		return false
 
@@ -178,7 +178,7 @@ func start_round(jackpot: int) -> bool:
 		if is_instance_valid(guest):
 			_register_participant(guest)
 	UiNotifications.create_notification_static("-%d$ table stake" % jackpot, get_notification_position(), null, Color.ORANGE)
-	ResourceHandler.spend_animated_from_room_first(jackpot, get_center_position(), Vector2i(x, y), "Gambling Table Stake")
+	MoneyHandler.spend_animated_from_room_first(jackpot, get_center_position(), Vector2i(x, y), "Gambling Table Stake")
 	_run_round()
 	return true
 
@@ -371,9 +371,9 @@ func _apply_round_settlement(summary: Dictionary) -> void:
 	summary.returned_to_house = settlement
 	if settlement > 0:
 		UiNotifications.create_notification_static("+%d$ returned" % settlement, get_notification_position(), null, Color.GREEN)
-		ResourceHandler.add_animated(Enum.Resources.MONEY, settlement, get_center_position(), Vector2i(x, y), "Gambling Settlement")
+		MoneyHandler.earn_animated(settlement, get_center_position(), Vector2i(x, y), "Gambling Settlement")
 	elif settlement < 0:
-		ResourceHandler.spend_animated(-settlement, get_center_position(), "Gambling Settlement")
+		MoneyHandler.spend_animated(-settlement, get_center_position(), "Gambling Settlement")
 
 func _collect_guest_stake(guest: NPCGuest) -> void:
 	var stake: int = selected_jackpot

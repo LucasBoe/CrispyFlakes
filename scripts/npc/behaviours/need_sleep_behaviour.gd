@@ -48,7 +48,7 @@ func loop():
 	if is_instance_valid(bed):
 		bed.release(npc)
 		npc.global_position = bed.get_center_floor_position()
-		ResourceHandler.add_animated(Enum.Resources.MONEY, bed.get_sleep_price(), bed.get_center_position(), Vector2i(bed.x, bed.y), "Bed Rental")
+		MoneyHandler.earn_animated(bed.get_sleep_price(), bed.get_center_position(), Vector2i(bed.x, bed.y), "Bed Rental")
 
 	UiNotifications.create_notification_dynamic("sleep_done", npc, Vector2(0, -64), null, Color.ORANGE_RED, 1.5)
 	npc.Animator.set_z(Enum.ZLayer.NPC_DEFAULT)

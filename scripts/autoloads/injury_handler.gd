@@ -187,9 +187,7 @@ func collect_recovery_payment(npc: NPC) -> void:
 	if price <= 0:
 		return
 
-	ResourceHandler.add_animated(
-		Enum.Resources.MONEY,
-		price,
+	MoneyHandler.earn_animated(price,
 		guest.global_position,
 		Vector2i(infirmary.x, infirmary.y)
 	)

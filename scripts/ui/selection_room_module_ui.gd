@@ -210,7 +210,7 @@ func _on_buy_pressed() -> void:
 	if _selected_module == null or _selected_module.bought:
 		return
 	var effective_price = _get_effective_price(_selected_module)
-	if not ResourceHandler.has_money(effective_price):
+	if not MoneyHandler.has_money(effective_price):
 		var btn_center = details_window_button.global_position + details_window_button.size / 2
 		UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 		return
@@ -232,7 +232,7 @@ func _on_buy_pressed() -> void:
 	# Wait for animation, then update room visuals
 	var purchased = _selected_module
 	var world_pos = _current_room.get_center_position() if is_instance_valid(_current_room) else global_position
-	await ResourceHandler.spend_animated(effective_price, world_pos, "Room Module Purchase")
+	await MoneyHandler.spend_animated(effective_price, world_pos, "Room Module Purchase")
 
 	for module in group.get_children():
 		if module == purchased:

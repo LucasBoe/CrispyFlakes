@@ -55,7 +55,7 @@ func _assert_money(expected : String) -> void:
 	if not expected.is_valid_int():
 		_fail("assert_money: '%s' is not a valid integer." % expected)
 		return
-	_check("money", int(ResourceHandler.resources.get(Enum.Resources.MONEY, 0)), int(expected))
+	_check("money", int(MoneyHandler.total_stored()), int(expected))
 
 func _place_guest_for_performance(guest_index : String, room_type : String, placement : String) -> void:
 	if not guest_index.is_valid_int():

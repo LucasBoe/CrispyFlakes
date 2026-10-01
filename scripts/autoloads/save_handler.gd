@@ -173,7 +173,6 @@ func save_game(save_path: String) -> Error:
 		"guests": guests,
 		"cages": cages,
 		"equipment": equipment,
-		"resources": _serialize_resources(),
 		"money_free_pool": MoneyHandler.free_pool,
 		"money_location_money": _serialize_money_locations(),
 		"scenario_id": scenario.get("scenario_id", ""),
@@ -307,7 +306,6 @@ func _apply_save(save_data: Dictionary) -> void:
 	# deferred (see elevator_handler.gd), so waiting for the process_frame above first is required.
 	_restore_cages(_get_array(save_data, "cages"))
 
-	_restore_resources(save_data.get("resources", {}))
 	_restore_money_locations(_get_array(save_data, "money_location_money"))
 	MoneyHandler.free_pool = float(save_data.get("money_free_pool", MoneyHandler.free_pool))
 	MoneyHandler.on_money_changed_signal.emit()
@@ -953,22 +951,6 @@ func _sort_storage_entries(a: Dictionary, b: Dictionary) -> bool:
 			return ax < bx
 	return int(a.get("slot", 0)) < int(b.get("slot", 0))
 
-func _serialize_resources() -> Dictionary:
-	var result := {}
-	for key in ResourceHandler.resources.keys():
-		result[str(int(key))] = ResourceHandler.resources[key]
-	return result
-
-func _restore_resources(data_variant) -> void:
-	if data_variant is not Dictionary:
-		return
-	var data := data_variant as Dictionary
-	for key in data.keys():
-		var resource_id := int(key)
-		if resource_id < 0 or resource_id >= Enum.Resources.keys().size():
-			continue
-		ResourceHandler.resources[resource_id] = data[key]
-
 func _serialize_money_locations() -> Array[Dictionary]:
 	var entries: Array[Dictionary] = []
 	for loc: Vector2i in MoneyHandler.location_money.keys():
@@ -1052,8 +1034,6 @@ func _backfill_save_data(save_data: Dictionary) -> Dictionary:
 		save_data["scenario_win_state"] = ScenarioHandler.WinState.NONE
 	if not save_data.has("scenario_fired_beats"):
 		save_data["scenario_fired_beats"] = []
-	if not save_data.has("resources"):
-		save_data["resources"] = {}
 	if not save_data.has("money_free_pool"):
 		save_data["money_free_pool"] = MoneyHandler.free_pool
 	if not save_data.has("money_location_money"):

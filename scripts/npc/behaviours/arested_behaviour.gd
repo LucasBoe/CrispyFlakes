@@ -19,7 +19,7 @@ func _return_stolen_money() -> void:
 		if is_instance_valid(carried):
 			carried.destroy()
 	var room := Building.query.room_at_floor_position(npc.global_position) as RoomBase
-	ResourceHandler.add_animated_money_to_room_or_floor(guest.stolen_amount, npc.global_position, room, "Recovered Stolen Money")
+	MoneyHandler.earn_to_room_or_floor(guest.stolen_amount, npc.global_position, room, "Recovered Stolen Money")
 	DebugLog.info("[Arrested]", npc, "return stolen money", guest.stolen_amount)
 	guest.stolen_amount = 0
 

@@ -918,12 +918,12 @@ func _add_gambling_host_ui(room: RoomGambling) -> void:
 		var jackpot := RoomGambling.JACKPOT_OPTIONS[i]
 		var btn := _gambling_jackpot_buttons[i]
 		btn.text = "%d$%s" % [jackpot, " *" if jackpot == room.selected_jackpot else ""]
-		btn.disabled = not ResourceHandler.has_money(jackpot)
+		btn.disabled = not MoneyHandler.has_money(jackpot)
 	gambling_selected_jackpot_label.text = "SELECT JACKPOT" if not room.has_selected_jackpot() else "Jackpot %d$" % room.selected_jackpot
 	gambling_selected_jackpot_label.add_theme_color_override("font_color", Color.ORANGE if not room.has_selected_jackpot() else Color.WHITE)
 	gambling_setup_loop_toggle.set_pressed_no_signal(room.loop_enabled)
 	gambling_start_round_button.text = "Start Round" if not room.has_selected_jackpot() else "Start Round (-%d$)" % room.selected_jackpot
-	gambling_start_round_button.disabled = not room.has_selected_jackpot() or not ResourceHandler.has_money(room.selected_jackpot)
+	gambling_start_round_button.disabled = not room.has_selected_jackpot() or not MoneyHandler.has_money(room.selected_jackpot)
 
 func _add_gambling_active_ui(room: RoomGambling) -> void:
 	gambling_active_state.show()
@@ -1517,7 +1517,7 @@ func _bind_guest_hire_button(guest: NPCGuest):
 			UiNotifications.create_notification_ui(current_block_reason.to_lower(), btn_center, null, Color.ORANGE)
 			_bind_guest_hire_button(guest)
 			return
-		if not ResourceHandler.has_money(cost):
+		if not MoneyHandler.has_money(cost):
 			var btn_center = hire_guest_button.global_position + hire_guest_button.size / 2
 			UiNotifications.create_notification_ui("not enough money", btn_center, null, Color.ORANGE)
 			return
@@ -1525,7 +1525,7 @@ func _bind_guest_hire_button(guest: NPCGuest):
 		hire_guest_button.disabled = true
 		var worker := Global.NPCSpawner.hire_guest_as_worker(guest)
 		if is_instance_valid(worker):
-			ResourceHandler.change_money(-cost, "Hire Worker")
+			MoneyHandler.spend(cost, "Hire Worker")
 			manually_select(worker)
 		else:
 			_bind_guest_hire_button(guest)
